@@ -111,6 +111,21 @@ OpenEOClient <- R6Class(
         return()
       }
 
+      #add if not exists
+      lapply(
+        self[[listName]],
+        function(obj) {
+          if (listName == "products") {
+            id = obj$process_id
+          } else if (listName == "processes") {
+            id = obj$product_id
+          } else {
+            stop("Trying to add something else than products or processes")
+          }
+
+
+        }
+      )
       self[[listName]] = append(self[[listName]],newObj)
 
     }

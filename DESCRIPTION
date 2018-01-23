@@ -21,3 +21,4 @@ Collate:
     'ClientListProcess-class.R'
     'ClientListProduct-class.R'
     'client.R'
+    'wrapper-functions.R'
