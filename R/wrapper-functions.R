@@ -1,12 +1,16 @@
-
+#' @include client.R
+NULL
 
 #' Connect to a openeEO backend
 #'
 #' connects to openEO backend
+#' @param host URL pointing to the openEO server backend host
+#' @param user the user name
+#' @param password the password
 #'
 #' @export
-connect = function() {
-
+connect = function(host, user, password) {
+  return(OpenEOClient$new()$connect(url=host)$login(user=user,password=password))
 }
 
 
@@ -15,7 +19,7 @@ connect = function() {
 #' @param con Connection object
 #' @return authenticated Connection
 #' @export
-authenticate = function (con, ...) {
+openeo.auth = function (con, ...) {
 
 }
 
@@ -43,7 +47,6 @@ listProcesses = function(con, ...) {
 #' lists the jobs that a user has uploaded or in execution
 #'
 #' @param con the authenticated Connection
-#' @return
 #' @export
 listJobs = function(con) {
 
@@ -80,7 +83,44 @@ makeJob = function() {
 #' @param ... named arguments that are passed to the process description
 #' @export
 process = function(process, process_id, ...) {
+  #!!!!!
+  #TODO really check if we can assume that processes and collection are passed through as "collections"
 
+  # type check "process" either collection or process
+
+  if (is.list(process)) {
+    res = list()
+    if ("collection_id" %in% names(process)) {
+      res$collections = process
+    } else if ("process_id" %in% names(process)){
+      res$collections = process
+    } else {
+      stop("Chain corrupted. prior elemente is neither a process or a collection")
+    }
+  }
+  additionalParameter = list(...)
+
+  res$process_id=process_id
+  res = append(res,additionalParameter)
+
+  return(res)
+
+}
+
+#' @export
+# dont't expose it
+taskToJSON = function(task) {
+  return(toJSON(task,auto_unbox = T,pretty=T))
+}
+
+#' A collection object
+#'
+#' creates a list represenation of a collection object
+#' @param collection_id the id of the product
+#' @return a list represenation for a collection / product
+#' @export
+collection = function(collection_id) {
+  return(list(collection_id = collection_id))
 }
 
 #' Executes a job directly and returns the data immediately
@@ -91,7 +131,7 @@ process = function(process, process_id, ...) {
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
-#' @returns Raw data in the specified format
+#' @return Raw data in the specified format
 #' @export
 executeTask = function(con,task,format) {
 
@@ -106,7 +146,7 @@ executeTask = function(con,task,format) {
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
 #' @param path the relative path in the users workspace, where to store the data
-#' @returns A named list or vector with "job_id" and "path" to the file in the users workspace
+#' @return A named list or vector with "job_id" and "path" to the file in the users workspace
 #' @export
 orderResult = function(con, task, format, path) {
 
@@ -115,15 +155,15 @@ orderResult = function(con, task, format, path) {
 #' Stores a job on the backend for execution on demand
 #'
 #' Uploads a job to a server for lazy evaluation
-#' on the server. It relates to POST /api/jobs?evaluation="batch"
+#' on the server. It relates to POST /api/jobs?evaluation="lazy"
 #'
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
-#' @returns A named list or vector with "job_id"
+#' @return A named list or vector with "job_id"
 #' @export
 queueTask = function(con, task) {
-
+  return(con$executeTask(task,"lazy"))
 }
 
 #' Follow an executed Job
@@ -154,7 +194,7 @@ deleteJob = function(con, job_id) {
 #' @param con authenticated Conenction
 #' @param job_id id of the job
 #' @param format specification about the format for the result
-#' @result Data in the requests format
+#' @return Data in the requests format
 #' @export
 downloadJob = function(con, job_id, format) {
 
@@ -168,7 +208,7 @@ downloadJob = function(con, job_id, format) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of job that will be canceled
-#' @result a success / failure notification
+#' @return a success / failure notification
 #' @export
 cancelJob = function(con, job_id) {
 
@@ -180,7 +220,7 @@ cancelJob = function(con, job_id) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of the job
-#' @result a detailed description about the job
+#' @return a detailed description about the job
 #' @export
 queryJob = function(con,job_id) {
 

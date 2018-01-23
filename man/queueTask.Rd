@@ -13,7 +13,10 @@ queueTask(con, task)
 
 \item{format}{The inteded format of the data to be returned}
 }
+\value{
+A named list or vector with "job_id"
+}
 \description{
 Uploads a job to a server for lazy evaluation
-on the server. It relates to POST /api/jobs?evaluation="batch"
+on the server. It relates to POST /api/jobs?evaluation="lazy"
 }

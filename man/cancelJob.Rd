@@ -11,6 +11,9 @@ cancelJob(con, job_id)
 
 \item{job_id}{id of job that will be canceled}
 }
+\value{
+a success / failure notification
+}
 \description{
 Informs the server that the specified job needs to be terminate and taken "canceled" to prevent from
 further executions and related costs.

@@ -15,6 +15,9 @@ orderResult(con, task, format, path)
 
 \item{path}{the relative path in the users workspace, where to store the data}
 }
+\value{
+A named list or vector with "job_id" and "path" to the file in the users workspace
+}
 \description{
 Executes a job on a server directly and stores the data in the user workspace
 on the server. It relates to POST /api/jobs?evaluation="batch"

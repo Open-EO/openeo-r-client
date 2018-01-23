@@ -4,7 +4,14 @@
 \alias{connect}
 \title{Connect to a openeEO backend}
 \usage{
-connect()
+connect(host, user, password)
+}
+\arguments{
+\item{host}{URL pointing to the openEO server backend host}
+
+\item{user}{the user name}
+
+\item{password}{the password}
 }
 \description{
 connects to openEO backend

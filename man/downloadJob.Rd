@@ -13,6 +13,9 @@ downloadJob(con, job_id, format)
 
 \item{format}{specification about the format for the result}
 }
+\value{
+Data in the requests format
+}
 \description{
 Download the result of a finished job
 }

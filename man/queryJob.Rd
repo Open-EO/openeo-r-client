@@ -11,6 +11,9 @@ queryJob(con, job_id)
 
 \item{job_id}{id of the job}
 }
+\value{
+a detailed description about the job
+}
 \description{
 Returns a detailed description about a specified job. For example to check the status of a job.
 }

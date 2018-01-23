@@ -10,6 +10,7 @@ OpenEOClient <- R6Class(
   "OpenEOClient",
   public = list(
     disableAuth = FALSE,
+    general_auth_type = "bearer",
     user_id = NULL,
     products = list(),
     processes = list(),
@@ -40,6 +41,8 @@ OpenEOClient <- R6Class(
       if (!private$isConnected()) {
         stop("No host selected")
       }
+      private$user = user
+      private$password = password
 
       url = paste(private$host, endpoint, sep="/")
       res = POST(url=url,
@@ -123,17 +126,52 @@ OpenEOClient <- R6Class(
             stop("Trying to add something else than products or processes")
           }
 
-
+          #TODO skip already existing objects
+          # if it is incomplete (listElement) and obj is more complete
         }
       )
       self[[listName]] = append(self[[listName]],newObj)
 
+    },
+    describeProcess = function(pid) {
+      endpoint = paste(private$host ,"api/processes",pid,sep="/")
+      response = GET(url=endpoint)
+
+      info = content(response,type="application/json", auto_unbox = TRUE)
+
+      return(info)
+    },
+
+    executeTask = function (task,evaluation) {
+      endpoint = paste(private$host, "api/jobs/",sep="/")
+
+      header = list()
+      if (self$general_auth_type == "bearer") {
+        header = append(header,add_headers(
+          Authorization=paste("Bearer",private$login_token, sep =" ")
+        ))
+      } else {
+        header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
+      }
+
+      header = append(header,content_type("application/json"))
+      return(POST(
+        url= endpoint,
+        config = header,
+        query = list(
+          evaluation = evaluation
+        ),
+        body = taskToJSON(task),
+        encode = "raw"
+      ))
     }
 
 
   ),
   private = list(
     login_token = NULL,
+    user = NULL,
+    password = NULL,
     host = NULL,
 
     isConnected = function() {
@@ -172,5 +210,5 @@ OpenEOClient <- R6Class(
 
 )
 
-#' @export
-openeo <- OpenEOClient$new()
+
+# openeo <- OpenEOClient$new()

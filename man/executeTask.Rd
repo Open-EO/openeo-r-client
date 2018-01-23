@@ -13,6 +13,9 @@ executeTask(con, task, format)
 
 \item{format}{The inteded format of the data to be returned}
 }
+\value{
+Raw data in the specified format
+}
 \description{
 Executes a job directly on the connected openEO backend and returns the data. It relates to
 POST /api/jobs?evaluation="sync"
