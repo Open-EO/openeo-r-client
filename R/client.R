@@ -5,6 +5,8 @@
 #' @include ClientListProduct-class.R
 #' @importFrom R6 R6Class
 #' @import httr
+#' @import magrittr
+#' @import jsonlite
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
