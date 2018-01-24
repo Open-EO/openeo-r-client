@@ -33,9 +33,10 @@ listUDFCapabilities(conn)
 Task = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016", end="2018") %>% process("NDVI", red="B04", nir="B8A")
 
 ## Advanced task: calculating NDVI using processes that have other processes as arguments (assumes NDVI function takes process graphs)
-RedSubset = collection("S2_L2A_T32TPS_20M") %>% process("filter_band", band="red")
-NIRSubset = collection("S2_L2A_T32TPS_20M") %>% process("filter_band", band="nir")
-Task = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016", end="2018") %>% process("NDVI", red=RedSubset, nir=NIRSubset)
+AOICollection = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016", end="2018")
+RedSubset = AOICollection %>% process("filter_band", band="red")
+NIRSubset = AOICollection %>% process("filter_band", band="nir")
+Task = AOICollection %>% process("NDVI", red=RedSubset, nir=NIRSubset)
 
 ## Three ways of processing data in OpenEO:
 # Run right away and give data as an object (Raster?): synchronised; 'format' optional, should default to native that is then read into a Raster* object
