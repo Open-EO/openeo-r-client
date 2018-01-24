@@ -7,6 +7,9 @@
 #' @import httr
 #' @import magrittr
 #' @import jsonlite
+#' @importFrom raster extent
+#' @importFrom gdalUtils gdalsrsinfo
+#' @importFrom lubridate as_datetime
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
@@ -151,7 +154,7 @@ OpenEOClient <- R6Class(
 
       info = content(response,type="application/json", auto_unbox = TRUE)
 
-      return(info)
+      return(private$modifyProductList(info))
     },
 
     executeTask = function (task,evaluate) {
@@ -216,6 +219,23 @@ OpenEOClient <- R6Class(
 
       } else {
         stop("Cannot access data endpoint")
+      }
+    },
+    modifyProductList = function(product) {
+      if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {
+        e = product$extent
+
+        ext = extent(e$left,e$right,e$bottom,e$top)
+        product$extent = ext
+        product$crs = gdalsrsinfo(e$srs, as.CRS = TRUE)
+
+        product$time$from = as_datetime(product$time$from)
+        product$time$to = as_datetime(product$time$to)
+
+        return(product)
+
+      } else {
+        stop("Object that is modified is not the list result of product.")
       }
     }
 

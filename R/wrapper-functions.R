@@ -113,7 +113,7 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
 }
 
 #' @export
-# dont't expose it
+# dont't expose it later
 taskToJSON = function(task) {
   return(toJSON(task,auto_unbox = T,pretty=T))
 }
