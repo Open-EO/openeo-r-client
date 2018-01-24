@@ -35,7 +35,7 @@ OpenEOClient <- R6Class(
     },
 
     login = function(user, password, auth_type="basic") {
-      endpoint = "api/auth/login"
+      endpoint = "auth/login"
 
       if (missing(user) || missing(password)) {
         stop("Username or password is missing.")
@@ -78,7 +78,7 @@ OpenEOClient <- R6Class(
 
     },
     listProcesses = function() {
-      endpoint = "api/processes/"
+      endpoint = "processes/"
       listOfProcesses = private$callListing(endpoint,ClientListProcess)
 
       lapply(listOfProcesses, function(process) {
@@ -136,7 +136,7 @@ OpenEOClient <- R6Class(
 
     },
     describeProcess = function(pid) {
-      endpoint = paste(private$host ,"api/processes",pid,sep="/")
+      endpoint = paste(private$host ,"processes",pid,sep="/")
       response = GET(url=endpoint)
 
       info = content(response,type="application/json", auto_unbox = TRUE)
@@ -144,8 +144,8 @@ OpenEOClient <- R6Class(
       return(info)
     },
 
-    executeTask = function (task,evaluation) {
-      endpoint = paste(private$host, "api/jobs/",sep="/")
+    executeTask = function (task,evaluate) {
+      endpoint = paste(private$host, "jobs/",sep="/")
 
       header = list()
       if (self$general_auth_type == "bearer") {
@@ -156,15 +156,14 @@ OpenEOClient <- R6Class(
         header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
       }
 
-      header = append(header,content_type("application/json"))
       return(POST(
         url= endpoint,
         config = header,
         query = list(
-          evaluation = evaluation
+          evaluate = evaluate
         ),
-        body = taskToJSON(task),
-        encode = "raw"
+        body = task,
+        encode = "json"
       ))
     }
 
