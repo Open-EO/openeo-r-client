@@ -28,8 +28,8 @@ openeo.auth = function (con, ...) {
 #' List available collections stored on a openEO server
 #' @param con Connection object
 #' @export
-listCollection = function(con, ...) {
-
+listCollections = function(con, ...) {
+  return(con$listData())
 }
 
 #' List available processes on server
@@ -39,7 +39,7 @@ listCollection = function(con, ...) {
 #' @return a list of lists with process_id and description
 #' @export
 listProcesses = function(con, ...) {
-
+  return(con$listProcesses())
 }
 
 #' List the jobs that a user has

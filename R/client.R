@@ -66,26 +66,28 @@ OpenEOClient <- R6Class(
       }
     },
     listData = function() {
-      endpoint = "api/data/"
+      endpoint = "data/"
       # private$checkLogin()
       listOfProducts = private$callListing(endpoint=endpoint,
                           Template=ClientListProduct)
-      lapply(listOfProducts, function(product) {
-        product$print()
-        self$register(product)
-      })
-      invisible(self)
+      return(listOfProducts)
+
+      # lapply(listOfProducts, function(product) {
+      #   product$print()
+      #   # self$register(product)
+      # })
+      # invisible(self)
 
     },
     listProcesses = function() {
       endpoint = "processes/"
       listOfProcesses = private$callListing(endpoint,ClientListProcess)
-
-      lapply(listOfProcesses, function(process) {
-        process$print()
-        self$register(process)
-      })
-      invisible(self)
+      return(listOfProcesses)
+      # lapply(listOfProcesses, function(process) {
+      #   process$print()
+      #   # self$register(process)
+      # })
+      # invisible(self)
     },
 
     register = function(obj) {
@@ -196,10 +198,13 @@ OpenEOClient <- R6Class(
       if (response$status_code == 200) {
         info = content(response,type="application/json")
 
-        return(lapply(info, function(product) {
-          obj = Template$new()$fromJSON(product)
-          return(obj)
-        }))
+        # listing = lapply(info, function(element) {
+        #   obj = Template$new()$fromJSON(element)
+        #   return(obj)
+        # })
+        #
+        # return(listing)
+        return(info)
 
       } else {
         stop("Cannot access data endpoint")
