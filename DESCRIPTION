@@ -5,7 +5,7 @@ Version: 0.0.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R
 Depends: 
-    R (>= 3.4.3),
+    R (>= 3.3),
     magrittr (>= 1.5),
     jsonlite(>= 1.5)
 Imports:
