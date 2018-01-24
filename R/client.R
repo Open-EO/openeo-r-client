@@ -145,6 +145,14 @@ OpenEOClient <- R6Class(
 
       return(info)
     },
+    describeProduct = function(pid) {
+      endpoint = paste(private$host ,"data",pid,sep="/")
+      response = GET(url=endpoint)
+
+      info = content(response,type="application/json", auto_unbox = TRUE)
+
+      return(info)
+    },
 
     executeTask = function (task,evaluate) {
       endpoint = paste(private$host, "jobs/",sep="/")

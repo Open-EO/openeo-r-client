@@ -28,7 +28,7 @@ openeo.auth = function (con, ...) {
 #' List available collections stored on a openEO server
 #' @param con Connection object
 #' @export
-listCollections = function(con, ...) {
+listCollections = function(con) {
   return(con$listData())
 }
 
@@ -38,7 +38,7 @@ listCollections = function(con, ...) {
 #' @param con Connection object
 #' @return a list of lists with process_id and description
 #' @export
-listProcesses = function(con, ...) {
+listProcesses = function(con) {
   return(con$listProcesses())
 }
 
@@ -62,17 +62,22 @@ listJobs = function(con) {
 #' @return a list of detailed information
 #' @export
 describe = function(con,process_id=NA, product_id=NA, ...) {
+  describeProcess = !missing(process_id) && !is.na(process_id)
+  describeProduct = !missing(product_id) && !is.na(product_id)
 
-}
-
-#' Starts a job creation
-#'
-#' creates a job that can be extended by processes and udfs
-#'
-#' @return A Job object
-#' @export
-makeJob = function() {
-
+  if (describeProcess && !describeProduct) {
+    return(lapply(process_id,
+                  function(pid) {
+                    con$describeProcess(pid)
+                  }))
+  } else if (describeProduct && !describeProcess) {
+    return(lapply(product_id,
+                  function(pid) {
+                    con$describeProduct(pid)
+                  }))
+  } else {
+    stop("Cannot distinguish whether to fetch process information or products")
+  }
 }
 
 #' Create a process object
@@ -80,22 +85,22 @@ makeJob = function() {
 #' defines a process with arguments
 #' @param process A process that might be chained with this process
 #' @param process_id ID of the process offered by the connected openEO backend
+#' @param prior.name The name of the prior process / collection, default "collections"
 #' @param ... named arguments that are passed to the process description
 #' @export
-process = function(process, process_id, ...) {
-  #!!!!!
-  #TODO really check if we can assume that processes and collection are passed through as "collections"
-
+process = function(process=NULL, process_id, prior.name="collections", ...) {
   # type check "process" either collection or process
+  res = list()
+  if (!missing(process) && !is.null(process)) {
+    if (is.list(process)) {
 
-  if (is.list(process)) {
-    res = list()
-    if ("collection_id" %in% names(process)) {
-      res$collections = process
-    } else if ("process_id" %in% names(process)){
-      res$collections = process
-    } else {
-      stop("Chain corrupted. prior elemente is neither a process or a collection")
+      if ("collection_id" %in% names(process)) {
+        res[[prior.name]] = process
+      } else if ("process_id" %in% names(process)){
+        res[[prior.name]] = process
+      } else {
+        stop("Chain corrupted. prior elemente is neither a process or a collection")
+      }
     }
   }
   additionalParameter = list(...)

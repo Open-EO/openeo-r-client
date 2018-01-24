@@ -4,12 +4,14 @@
 \alias{process}
 \title{Create a process object}
 \usage{
-process(process, process_id, ...)
+process(process = NULL, process_id, prior.name = "collections", ...)
 }
 \arguments{
 \item{process}{A process that might be chained with this process}
 
 \item{process_id}{ID of the process offered by the connected openEO backend}
+
+\item{prior.name}{The name of the prior process / collection, default "collections"}
 
 \item{...}{named arguments that are passed to the process description}
 }
