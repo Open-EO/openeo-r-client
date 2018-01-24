@@ -157,17 +157,23 @@ OpenEOClient <- R6Class(
       return(private$modifyProductList(info))
     },
 
+    uploadUserFile = function(file.path,target) {
+      # TODO implement
+      warning("Upload of user files, not yet implemented", immediate. = TRUE)
+      endpoint = paste(private$host, "user",self$user_id,"files",target,sep="/")
+      header = list()
+      header = private$addAuthorization(header)
+
+      post = POST(url=endpoint, config = header, body=upload_file(file.path))
+
+      return(content(post))
+    },
+
     executeTask = function (task,evaluate) {
       endpoint = paste(private$host, "jobs/",sep="/")
 
       header = list()
-      if (self$general_auth_type == "bearer") {
-        header = append(header,add_headers(
-          Authorization=paste("Bearer",private$login_token, sep =" ")
-        ))
-      } else {
-        header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
-      }
+      header = private$addAuthorization(header)
 
       return(POST(
         url= endpoint,
@@ -237,6 +243,18 @@ OpenEOClient <- R6Class(
       } else {
         stop("Object that is modified is not the list result of product.")
       }
+    },
+    # returns the header list and adds Authorization
+    addAuthorization = function (header) {
+      if (self$general_auth_type == "bearer") {
+        header = append(header,add_headers(
+          Authorization=paste("Bearer",private$login_token, sep =" ")
+        ))
+      } else {
+        header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
+      }
+
+      return(header)
     }
 
 

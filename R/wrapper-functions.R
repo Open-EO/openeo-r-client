@@ -91,13 +91,14 @@ describe = function(con,process_id=NA, product_id=NA, ...) {
 process = function(process=NULL, process_id, prior.name="collections", ...) {
   # type check "process" either collection or process
   res = list()
+  arguments = list()
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
 
       if ("collection_id" %in% names(process)) {
-        res[[prior.name]] = process
+        arguments[[prior.name]] = process
       } else if ("process_id" %in% names(process)){
-        res[[prior.name]] = process
+        arguments[[prior.name]] = process
       } else {
         stop("Chain corrupted. prior elemente is neither a process or a collection")
       }
@@ -106,7 +107,7 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
   additionalParameter = list(...)
 
   res$process_id=process_id
-  res = append(res,additionalParameter)
+  res$args = append(arguments,additionalParameter)
 
   return(res)
 
@@ -229,6 +230,51 @@ cancelJob = function(con, job_id) {
 #' @export
 queryJob = function(con,job_id) {
 
+}
+
+
+#' Defines a UDF on the server
+#'
+#' This function will allow the user to define and uploads the script (content) into
+#' the users workspace (target)
+#'
+#' @param con The authorized Connection
+#' @param prior.name The parameter name of the predecessor of this pipe
+#' @param type The udf type
+#' @param content The local file path of a script the user wants to upload
+#' @param target The relative path on the users workspace on the openEO backend
+#' @param language The programming language of the uploaded script
+#'
+#' @return A named list that represents an UDF as list for the process graph
+#' @export
+defineUDF = function(process,con, prior.name="collections", language, type, content, target, ...) {
+  response = con$uploadUserFile(content,target)
+
+  # type check "process" either collection or process
+  res = list()
+
+  res$process_id = paste("/udf",language,type,sep="/")
+  additionalArgs = list(...)
+
+  arguments = list()
+  arguments$script = target
+  if (!missing(process) && !is.null(process)) {
+    if (is.list(process)) {
+
+      if ("collection_id" %in% names(process)) {
+        arguments[[prior.name]] = process
+      } else if ("process_id" %in% names(process)){
+        arguments[[prior.name]] = process
+      } else {
+        stop("Chain corrupted. prior elemente is neither a process or a collection")
+      }
+    }
+  }
+
+
+  res$args = append(arguments,additionalArgs)
+
+  return(res)
 }
 
 WCS = function() {
