@@ -248,7 +248,14 @@ queryJob = function(con,job_id) {
 #' @return A named list that represents an UDF as list for the process graph
 #' @export
 defineUDF = function(process,con, prior.name="collections", language, type, content, target, ...) {
-  response = con$uploadUserFile(content,target)
+  if (!missing(con) && !missing(content)) {
+    response = con$uploadUserFile(content,target)
+    if (response$status_code != 200) {
+      warning("UDF upload failed")
+    } else {
+      cat("Successfully uploaded the udf script")
+    }
+  }
 
   # type check "process" either collection or process
   res = list()

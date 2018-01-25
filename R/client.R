@@ -30,6 +30,7 @@ OpenEOClient <- R6Class(
           url = substr(url,1,nchar(url)-1)
         }
         private$host = url
+        cat(paste("Registered '",url,"' as host","\n",sep=""))
         invisible(self)
       } else {
         stop("Host-URL is missing")
@@ -158,13 +159,14 @@ OpenEOClient <- R6Class(
     },
 
     uploadUserFile = function(file.path,target) {
-      # TODO implement
-      warning("Upload of user files, not yet implemented", immediate. = TRUE)
-      endpoint = paste(private$host, "user",self$user_id,"files",target,sep="/")
+      target = URLencode(target,reserved = TRUE)
+      target = gsub("\\.","%2E",target)
+
+      endpoint = paste(private$host, "users",self$user_id,"files",target,sep="/")
       header = list()
       header = private$addAuthorization(header)
 
-      post = POST(url=endpoint, config = header, body=upload_file(file.path))
+      post = PUT(url=endpoint, config = header, body=upload_file(file.path))
 
       return(content(post))
     },
