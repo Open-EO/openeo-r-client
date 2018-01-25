@@ -32,7 +32,7 @@ conn %>% describe(product_id = c("sentinel2","landsat7"))
 conn %>% describe(process_id = "filter_daterange")
 
 # create a process graph / task
-sentinel2_subset = collection("sentinel2") %>% process("filter_daterange",from = "2017-07-21",to = "2017-07-28") %>% process("filter_bbox", ... , crs="EPSG:4326") %>% defineUDF(con = conn,
+task = collection("sentinel2") %>% process("filter_daterange",from = "2017-07-21",to = "2017-07-28") %>% process("filter_bbox", left=7.5, right= 8.5, bottom=51.0, top=52.0, crs="EPSG:4326") %>% defineUDF(con = conn,
                                 language = "R",
                                 type = "apply_scene",
                                 content = file.path("C:/files/atmo_corr.R"),
