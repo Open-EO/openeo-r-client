@@ -19,6 +19,8 @@ defineUDF(process, con, prior.name = "collections", language, type, content,
 \item{content}{The local file path of a script the user wants to upload}
 
 \item{target}{The relative path on the users workspace on the openEO backend}
+
+\item{...}{}
 }
 \value{
 A named list that represents an UDF as list for the process graph

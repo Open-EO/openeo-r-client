@@ -93,6 +93,11 @@ OpenEOClient <- R6Class(
       # })
       # invisible(self)
     },
+    listJobs = function() {
+      endpoint = paste("users",self$user_id,"jobs",sep="/")
+      listOfJobs = private$callListing(endpoint,ClientListProcess,authorized=TRUE)
+      return(listOfJobs)
+    },
 
     register = function(obj) {
       # TODO don't add already existing list stuff
@@ -162,13 +167,17 @@ OpenEOClient <- R6Class(
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
 
+      if (is.null(self$user_id)) {
+        stop("User id is not set. Either login or set the id manually.")
+      }
+
       endpoint = paste(private$host, "users",self$user_id,"files",target,sep="/")
       header = list()
       header = private$addAuthorization(header)
 
       post = PUT(url=endpoint, config = header, body=upload_file(file.path))
 
-      return(content(post))
+      return(post)
     },
 
     executeTask = function (task,evaluate) {
@@ -210,9 +219,15 @@ OpenEOClient <- R6Class(
         stop("You are not logged in.")
       }
     },
-    callListing = function(endpoint, Template) {
+    callListing = function(endpoint, Template,authorized=FALSE) {
       url = paste(private$host,endpoint, sep ="/")
-      response = GET(url=url)
+
+      if (authorized) {
+        response = GET(url=url, config=private$addAuthorization())
+      } else {
+        response = GET(url=url)
+      }
+
 
       if (response$status_code == 200) {
         info = content(response,type="application/json")
@@ -248,6 +263,10 @@ OpenEOClient <- R6Class(
     },
     # returns the header list and adds Authorization
     addAuthorization = function (header) {
+      if (missing(header)) {
+        header = list()
+      }
+
       if (self$general_auth_type == "bearer") {
         header = append(header,add_headers(
           Authorization=paste("Bearer",private$login_token, sep =" ")

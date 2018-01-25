@@ -49,7 +49,7 @@ listProcesses = function(con) {
 #' @param con the authenticated Connection
 #' @export
 listJobs = function(con) {
-
+  return(con$listJobs())
 }
 
 #' Describe a process or product
@@ -244,11 +244,19 @@ queryJob = function(con,job_id) {
 #' @param content The local file path of a script the user wants to upload
 #' @param target The relative path on the users workspace on the openEO backend
 #' @param language The programming language of the uploaded script
+#' @param ...
 #'
 #' @return A named list that represents an UDF as list for the process graph
 #' @export
 defineUDF = function(process,con, prior.name="collections", language, type, content, target, ...) {
   if (!missing(con) && !missing(content)) {
+    if (is.character(content)) {
+      content = file.path(content)
+    }
+    if (!file.exists(content)) {
+      stop(paste("Cannot find file at ",content))
+    }
+
     response = con$uploadUserFile(content,target)
     if (response$status_code != 200) {
       warning("UDF upload failed")
@@ -256,6 +264,8 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
       cat("Successfully uploaded the udf script")
     }
   }
+
+
 
   # type check "process" either collection or process
   res = list()
@@ -273,15 +283,45 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
       } else if ("process_id" %in% names(process)){
         arguments[[prior.name]] = process
       } else {
-        stop("Chain corrupted. prior elemente is neither a process or a collection")
+        stop("Chain corrupted. Prior element is neither process, udf nor collection")
       }
     }
   }
 
-
   res$args = append(arguments,additionalArgs)
 
   return(res)
+}
+
+#' Uploads data into the users workspace
+#'
+#' This function sends the file given by 'content' to the specified target location (relative file path in the
+#' user workspace) on the backend.
+#'
+#' @param con authorized Connection
+#' @param content the file path of the file to be uploaded
+#' @param target the relative server path location for the file
+#'
+#' @return the relative file path on the server
+#' @export
+uploadUserData = function (con, content, target) {
+  if (missing(content)) {
+    stop("Content data is missing")
+  }
+  if (is.character(content)) {
+    content = file.path(content)
+  }
+  if (!file.exists(content)) {
+    stop(paste("Cannot find file at ",content))
+  }
+
+  response = con$uploadUserFile(content,target)
+
+  if (response$status_code != 200) {
+    stop(paste("Upload of user data was not successful:",content(response)))
+  } else {
+    return(URLdecode(target))
+  }
 }
 
 WCS = function() {
