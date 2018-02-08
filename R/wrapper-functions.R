@@ -23,13 +23,21 @@ openeo.auth = function (con, ...) {
 
 }
 
+.listToDataFrame = function(list) {
+  df = data.frame(stringsAsFactors = FALSE)
+  for (index in 1:length(list)) {
+    df = rbind(df,as.data.frame(list[[index]],stringsAsFactors=FALSE))
+  }
+  return(df)
+}
+
 #' List Data on conected server
 #'
 #' List available collections stored on a openEO server
 #' @param con Connection object
 #' @export
 listCollections = function(con) {
-  return(con$listData())
+  return(.listToDataFrame(con$listData()))
 }
 
 #' List available processes on server
@@ -39,7 +47,7 @@ listCollections = function(con) {
 #' @return a list of lists with process_id and description
 #' @export
 listProcesses = function(con) {
-  return(con$listProcesses())
+  return(.listToDataFrame(con$listProcesses()))
 }
 
 #' List the jobs that a user has
@@ -50,6 +58,18 @@ listProcesses = function(con) {
 #' @export
 listJobs = function(con) {
   return(con$listJobs())
+}
+
+#' Lists workspace files
+#' 
+#' Lists all files in the workspaces of the authenticated user.
+#' 
+#' @param con authorized connection
+#' 
+#' @return a list of lists with "name" and "size"
+#' @export
+listFiles = function(con) {
+  return(.listToDataFrame(con$listUserFiles()))
 }
 
 #' Describe a process or product
@@ -80,38 +100,7 @@ describe = function(con,process_id=NA, product_id=NA, ...) {
   }
 }
 
-#' Create a process object
-#'
-#' defines a process with arguments
-#' @param process A process that might be chained with this process
-#' @param process_id ID of the process offered by the connected openEO backend
-#' @param prior.name The name of the prior process / collection, default "collections"
-#' @param ... named arguments that are passed to the process description
-#' @export
-process = function(process=NULL, process_id, prior.name="collections", ...) {
-  # type check "process" either collection or process
-  res = list()
-  arguments = list()
-  if (!missing(process) && !is.null(process)) {
-    if (is.list(process)) {
 
-      if ("collection_id" %in% names(process)) {
-        arguments[[prior.name]] = process
-      } else if ("process_id" %in% names(process)){
-        arguments[[prior.name]] = process
-      } else {
-        stop("Chain corrupted. prior elemente is neither a process or a collection")
-      }
-    }
-  }
-  additionalParameter = list(...)
-
-  res$process_id=process_id
-  res$args = append(arguments,additionalParameter)
-
-  return(res)
-
-}
 
 #' @export
 # dont't expose it later
@@ -119,29 +108,23 @@ taskToJSON = function(task) {
   return(toJSON(task,auto_unbox = T,pretty=T))
 }
 
-#' A collection object
-#'
-#' creates a list represenation of a collection object
-#' @param collection_id the id of the product
-#' @return a list represenation for a collection / product
-#' @export
-collection = function(collection_id) {
-  return(list(collection_id = collection_id))
-}
 
 #' Executes a job directly and returns the data immediately
 #'
 #' Executes a job directly on the connected openEO backend and returns the data. It relates to
-#' POST /api/jobs?evaluation="sync"
+#' POST /api/jobs?evaluation="sync" in v0.0.1
+#' POST /api/execute?format=GTiff in v0.0.2
 #'
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
-#' @return Raw data in the specified format
+#' @param output the path, filename and extension, where to store the data
+#' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format) {
-
+executeTask = function(con,task,format,output=NULL) {
+  con$execute(task,format,output)
 }
+
 
 #' Executes a job directly and stores it on the server
 #'
@@ -323,6 +306,7 @@ uploadUserData = function (con, content, target) {
     return(URLdecode(target))
   }
 }
+
 
 WCS = function() {
 

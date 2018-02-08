@@ -72,8 +72,7 @@ OpenEOClient <- R6Class(
     listData = function() {
       endpoint = "data/"
       # private$checkLogin()
-      listOfProducts = private$callListing(endpoint=endpoint,
-                          Template=ClientListProduct)
+      listOfProducts = private$GET(endpoint=endpoint)
       return(listOfProducts)
 
       # lapply(listOfProducts, function(product) {
@@ -85,7 +84,7 @@ OpenEOClient <- R6Class(
     },
     listProcesses = function() {
       endpoint = "processes/"
-      listOfProcesses = private$callListing(endpoint,ClientListProcess)
+      listOfProcesses = private$GET(endpoint)
       return(listOfProcesses)
       # lapply(listOfProcesses, function(process) {
       #   process$print()
@@ -95,7 +94,7 @@ OpenEOClient <- R6Class(
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
-      listOfJobs = private$callListing(endpoint,ClientListProcess,authorized=TRUE)
+      listOfJobs = private$GET(endpoint,authorized=TRUE)
       return(listOfJobs)
     },
 
@@ -179,22 +178,63 @@ OpenEOClient <- R6Class(
 
       return(post)
     },
+    listUserFiles = function() {
+      endpoint = paste("users",self$user_id,"files",sep="/")
+      files = private$GET(endpoint,TRUE)
+      return(files)
+    },
 
-    executeTask = function (task,evaluate) {
-      endpoint = paste(private$host, "jobs/",sep="/")
-
+    execute = function (task,format, output=NULL) {
+      endpoint = paste(private$host,"execute/",sep="/")
+      
       header = list()
       header = private$addAuthorization(header)
-
-      return(POST(
-        url= endpoint,
-        config = header,
-        query = list(
-          evaluate = evaluate
-        ),
-        body = task,
-        encode = "json"
-      ))
+      
+      if (is.list(task)) {
+        # create json and prepare to send graph as post body
+        # jsonTask = taskToJSON(task)
+        res=POST(
+          url= endpoint,
+          config = header,
+          query = list(
+            format = format
+          ),
+          body = task,
+          encode = "json"
+        )
+      } else {
+        # send task as id or url as query parameter
+        res = POST(
+          url= endpoint,
+          config = header,
+          query = list(
+            format = format,
+            graph = task
+          )
+        )
+      }
+      
+      if (res$status_code == 200) {
+        if (!is.null(output)) {
+          tryCatch(
+            {
+              writeBin(content(res,"raw"),output)
+              message("Task result was sucessfully stored.")
+              return(file(output))
+            },
+            error = function(err) {
+              stop(err)
+            }
+          )
+          
+        } else {
+          return(content(res,"raw"))
+        }
+      } else {
+        error = content(res,"text","application/json")
+        stop(error)
+      }
+      
     }
 
 
@@ -219,7 +259,7 @@ OpenEOClient <- R6Class(
         stop("You are not logged in.")
       }
     },
-    callListing = function(endpoint, Template,authorized=FALSE) {
+    GET = function(endpoint,authorized=FALSE) {
       url = paste(private$host,endpoint, sep ="/")
 
       if (authorized) {
@@ -231,13 +271,6 @@ OpenEOClient <- R6Class(
 
       if (response$status_code == 200) {
         info = content(response,type="application/json")
-
-        # listing = lapply(info, function(element) {
-        #   obj = Template$new()$fromJSON(element)
-        #   return(obj)
-        # })
-        #
-        # return(listing)
         return(info)
 
       } else {

@@ -28,4 +28,5 @@ Collate:
     'ClientListProduct-class.R'
     'ClientProcess-class.R'
     'client.R'
+    'process_graph_building.R'
     'wrapper-functions.R'
