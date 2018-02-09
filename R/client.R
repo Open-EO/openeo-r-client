@@ -13,15 +13,20 @@
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
+  # public ----
   public = list(
-    # attributes ----
+    # attributes ====
     disableAuth = FALSE,
     general_auth_type = "bearer",
     user_id = NULL,
+    
+    is_rserver = FALSE,
+    api.version = "0.0.1",
+    
     products = list(),
     processes = list(),
 
-    # public ----
+    # functions ====
     initialize = function() {
 
     },
@@ -33,6 +38,7 @@ OpenEOClient <- R6Class(
         }
         private$host = url
         cat(paste("Registered '",url,"' as host","\n",sep=""))
+        
         invisible(self)
       } else {
         stop("Host-URL is missing")
@@ -72,8 +78,14 @@ OpenEOClient <- R6Class(
       }
     },
     listData = function() {
-      endpoint = "data/"
-      # private$checkLogin()
+      
+      
+      if (self$is_rserver) {
+        endpoint = "data/"
+      } else {
+        endpoint = "data"
+      }
+      
       listOfProducts = private$GET(endpoint=endpoint,type="application/json")
       return(listOfProducts)
 
@@ -85,7 +97,13 @@ OpenEOClient <- R6Class(
 
     },
     listProcesses = function() {
-      endpoint = "processes/"
+      
+      if (self$is_rserver) {
+        endpoint = "processes/"
+      } else {
+        endpoint = "processes"
+      }
+      
       listOfProcesses = private$GET(endpoint,type="application/json")
       return(listOfProcesses)
       # lapply(listOfProcesses, function(process) {
@@ -99,6 +117,7 @@ OpenEOClient <- R6Class(
       listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
       return(listOfJobs)
     },
+    
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
       files = private$GET(endpoint,TRUE,type="application/json")
@@ -202,8 +221,13 @@ OpenEOClient <- R6Class(
       return(dst)
     },
     
-    execute = function (task,format, output=NULL) {
-      endpoint = paste(private$host,"execute/",sep="/")
+    execute = function (task,format, output=NULL,evaluate="sync") {
+      # endpoint = paste(private$host,"execute/",sep="/")
+      if (self$is_rserver) {
+        endpoint = paste(private$host,"jobs/",sep="/")
+      } else {
+        endpoint = paste(private$host,"jobs",sep="/")
+      }
       
       header = list()
       header = private$addAuthorization(header)
@@ -215,21 +239,24 @@ OpenEOClient <- R6Class(
           url= endpoint,
           config = header,
           query = list(
-            format = format
+            format = format,
+            evaluate = evaluate # for API v0.0.2 to be removed
           ),
           body = task,
           encode = "json"
         )
       } else {
+        # API v0.0.2
         # send task as id or url as query parameter
-        res = POST(
-          url= endpoint,
-          config = header,
-          query = list(
-            format = format,
-            graph = task
-          )
-        )
+        # res = POST(
+        #   url= endpoint,
+        #   config = header,
+        #   query = list(
+        #     format = format,
+        #     graph = task
+        #   )
+        # )
+        stop("Not supported task object in client request creation")
       }
       
       if (res$status_code == 200) {
@@ -238,7 +265,7 @@ OpenEOClient <- R6Class(
             {
               writeBin(content(res,"raw"),output)
               message("Task result was sucessfully stored.")
-              return(file(output))
+              return(output)
             },
             error = function(err) {
               stop(err)
@@ -271,11 +298,13 @@ OpenEOClient <- R6Class(
   ),
   # private ----
   private = list(
+    # attributes ====
     login_token = NULL,
     user = NULL,
     password = NULL,
     host = NULL,
-
+    
+    # functions ====
     isConnected = function() {
       return(!is.null(private$host))
     },
@@ -379,3 +408,4 @@ OpenEOClient <- R6Class(
   text = gsub("\\.","%2E",text)
   return(text)
 }
+
