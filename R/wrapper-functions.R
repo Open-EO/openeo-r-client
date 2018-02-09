@@ -152,7 +152,7 @@ orderResult = function(con, task, format, path) {
 #' @return A named list or vector with "job_id"
 #' @export
 queueTask = function(con, task) {
-  return(con$executeTask(task,"lazy"))
+  # return(con$executeTask(task,"lazy"))
 }
 
 #' Follow an executed Job
@@ -305,6 +305,19 @@ uploadUserData = function (con, content, target) {
   } else {
     return(URLdecode(target))
   }
+}
+
+#' Downloads a file from the users workspace
+#' 
+#' Sends a request to a openeo backend to access the users files and downloads them to a given location
+#' 
+#' @param con authorized connection
+#' @param src the relative filepath of the source file on the openeo backend
+#' @param dst the destination file path on the local file system
+#' 
+#' @return The file path of the stored file
+downloadUserData = function(con, src, dst=NULL) {
+  return(con$downloadUserFile(src,dst))
 }
 
 

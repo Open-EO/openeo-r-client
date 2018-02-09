@@ -14,12 +14,14 @@
 OpenEOClient <- R6Class(
   "OpenEOClient",
   public = list(
+    # attributes ----
     disableAuth = FALSE,
     general_auth_type = "bearer",
     user_id = NULL,
     products = list(),
     processes = list(),
 
+    # public ----
     initialize = function() {
 
     },
@@ -72,7 +74,7 @@ OpenEOClient <- R6Class(
     listData = function() {
       endpoint = "data/"
       # private$checkLogin()
-      listOfProducts = private$GET(endpoint=endpoint)
+      listOfProducts = private$GET(endpoint=endpoint,type="application/json")
       return(listOfProducts)
 
       # lapply(listOfProducts, function(product) {
@@ -84,7 +86,7 @@ OpenEOClient <- R6Class(
     },
     listProcesses = function() {
       endpoint = "processes/"
-      listOfProcesses = private$GET(endpoint)
+      listOfProcesses = private$GET(endpoint,type="application/json")
       return(listOfProcesses)
       # lapply(listOfProcesses, function(process) {
       #   process$print()
@@ -94,8 +96,13 @@ OpenEOClient <- R6Class(
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
-      listOfJobs = private$GET(endpoint,authorized=TRUE)
+      listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
       return(listOfJobs)
+    },
+    listUserFiles = function() {
+      endpoint = paste("users",self$user_id,"files",sep="/")
+      files = private$GET(endpoint,TRUE,type="application/json")
+      return(files)
     },
 
     register = function(obj) {
@@ -146,18 +153,16 @@ OpenEOClient <- R6Class(
 
     },
     describeProcess = function(pid) {
-      endpoint = paste(private$host ,"processes",pid,sep="/")
-      response = GET(url=endpoint)
-
-      info = content(response,type="application/json", auto_unbox = TRUE)
+      endpoint = paste("processes",pid,sep="/")
+      
+      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       return(info)
     },
     describeProduct = function(pid) {
-      endpoint = paste(private$host ,"data",pid,sep="/")
-      response = GET(url=endpoint)
-
-      info = content(response,type="application/json", auto_unbox = TRUE)
+      endpoint = paste("data",pid,sep="/")
+      
+      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       return(private$modifyProductList(info))
     },
@@ -178,12 +183,25 @@ OpenEOClient <- R6Class(
 
       return(post)
     },
-    listUserFiles = function() {
-      endpoint = paste("users",self$user_id,"files",sep="/")
-      files = private$GET(endpoint,TRUE)
-      return(files)
+    downloadUserFile = function(src, dst=NULL) {
+      if (!is.character(src)) {
+        stop("Cannot download file with a source statement that is no character")
+      } else {
+        src = .urlHardEncode(src)
+      }
+      
+      if (is.null(dst)) {
+        dst = tempfile()
+      }
+      
+      endpoint = paste("users",self$user_id,"files",src,sep="/")
+      file_connection = file(dst,open="wb")
+      writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
+      close(file_connection,type="wb")
+      
+      return(dst)
     },
-
+    
     execute = function (task,format, output=NULL) {
       endpoint = paste(private$host,"execute/",sep="/")
       
@@ -239,6 +257,7 @@ OpenEOClient <- R6Class(
 
 
   ),
+  # private ----
   private = list(
     login_token = NULL,
     user = NULL,
@@ -259,7 +278,7 @@ OpenEOClient <- R6Class(
         stop("You are not logged in.")
       }
     },
-    GET = function(endpoint,authorized=FALSE) {
+    GET = function(endpoint,authorized=FALSE, ...) {
       url = paste(private$host,endpoint, sep ="/")
 
       if (authorized) {
@@ -269,8 +288,8 @@ OpenEOClient <- R6Class(
       }
 
 
-      if (response$status_code == 200) {
-        info = content(response,type="application/json")
+      if (response$status_code %in% c(200)) {
+        info = content(response, ...)
         return(info)
 
       } else {
@@ -310,11 +329,17 @@ OpenEOClient <- R6Class(
 
       return(header)
     }
+    
 
 
   )
 
 )
 
-
-# openeo <- OpenEOClient$new()
+# statics -----
+.urlHardEncode=function(text) {
+  text = URLencode(text)
+  text = gsub("\\/","%2F",text)
+  text = gsub("\\.","%2E",text)
+  return(text)
+}
