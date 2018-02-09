@@ -253,6 +253,18 @@ OpenEOClient <- R6Class(
         stop(error)
       }
       
+    },
+    
+    deleteUserFile = function (src) {
+      
+      if (is.character(src)) {
+        src = .urlHardEncode(src)
+      } else {
+        stop("Cannot interprete parameter 'src' during delete request")
+      }
+      endpoint = paste("users",self$user_id,"files",src,sep="/")
+      
+      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }
 
 
@@ -295,6 +307,30 @@ OpenEOClient <- R6Class(
       } else {
         stop("Cannot access data endpoint")
       }
+    },
+    DELETE = function(endpoint,authorized=FALSE,...) {
+      url = paste(private$host,endpoint,sep="/")
+      
+      header = list()
+      if (authorized) {
+        header = private$addAuthorization(header)
+      }
+      
+      response = DELETE(url=url, config = header, ...)
+      
+      message = content(response)
+      success = response$status_code %in% c(200,202,204)
+      if (success) {
+        tmp = lapply(message, function(elem) {
+          message(elem)
+        })
+      } else {
+        tmp = lapply(message, function(elem) {
+          warning(elem)
+        })
+      }
+      
+      return(success)
     },
     modifyProductList = function(product) {
       if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {

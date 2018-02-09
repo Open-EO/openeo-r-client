@@ -309,15 +309,29 @@ uploadUserData = function (con, content, target) {
 
 #' Downloads a file from the users workspace
 #' 
-#' Sends a request to a openeo backend to access the users files and downloads them to a given location
+#' Sends a request to an openeo backend to access the users files and downloads them to a given location
 #' 
 #' @param con authorized connection
 #' @param src the relative filepath of the source file on the openeo backend
 #' @param dst the destination file path on the local file system
 #' 
 #' @return The file path of the stored file
+#' @export
 downloadUserData = function(con, src, dst=NULL) {
   return(con$downloadUserFile(src,dst))
+}
+
+#' Deletes a file from the users workspace
+#'
+#' Sends a request to an openeo backend in order to remove a specific file from the users workspaces
+#' 
+#' @param con authorized connection
+#' @param src the relative filepath of the source file on the openeo backend that shall be deleted
+#' 
+#' @return logical
+#' @export
+deleteUserData = function(con, src) {
+  con$deleteUserFile(src = src)
 }
 
 
