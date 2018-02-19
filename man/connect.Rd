@@ -4,7 +4,7 @@
 \alias{connect}
 \title{Connect to a openeEO backend}
 \usage{
-connect(host, user, password)
+connect(host, user, password, rbackend = FALSE)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server backend host}
@@ -12,6 +12,8 @@ connect(host, user, password)
 \item{user}{the user name}
 
 \item{password}{the password}
+
+\item{rbackend}{logical to specify if the backend is the r test backend, default is FALSE}
 }
 \description{
 connects to openEO backend

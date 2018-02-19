@@ -13,13 +13,20 @@
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
+  # public ----
   public = list(
+    # attributes ====
     disableAuth = FALSE,
     general_auth_type = "bearer",
     user_id = NULL,
+    
+    is_rserver = FALSE,
+    api.version = "0.0.1",
+    
     products = list(),
     processes = list(),
 
+    # functions ====
     initialize = function() {
 
     },
@@ -31,6 +38,7 @@ OpenEOClient <- R6Class(
         }
         private$host = url
         cat(paste("Registered '",url,"' as host","\n",sep=""))
+        
         invisible(self)
       } else {
         stop("Host-URL is missing")
@@ -70,10 +78,15 @@ OpenEOClient <- R6Class(
       }
     },
     listData = function() {
-      endpoint = "data/"
-      # private$checkLogin()
-      listOfProducts = private$callListing(endpoint=endpoint,
-                          Template=ClientListProduct)
+      
+      
+      if (self$is_rserver) {
+        endpoint = "data/"
+      } else {
+        endpoint = "data"
+      }
+      
+      listOfProducts = private$GET(endpoint=endpoint,type="application/json")
       return(listOfProducts)
 
       # lapply(listOfProducts, function(product) {
@@ -84,14 +97,31 @@ OpenEOClient <- R6Class(
 
     },
     listProcesses = function() {
-      endpoint = "processes/"
-      listOfProcesses = private$callListing(endpoint,ClientListProcess)
+      
+      if (self$is_rserver) {
+        endpoint = "processes/"
+      } else {
+        endpoint = "processes"
+      }
+      
+      listOfProcesses = private$GET(endpoint,type="application/json")
       return(listOfProcesses)
       # lapply(listOfProcesses, function(process) {
       #   process$print()
       #   # self$register(process)
       # })
       # invisible(self)
+    },
+    listJobs = function() {
+      endpoint = paste("users",self$user_id,"jobs",sep="/")
+      listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
+      return(listOfJobs)
+    },
+    
+    listUserFiles = function() {
+      endpoint = paste("users",self$user_id,"files",sep="/")
+      files = private$GET(endpoint,TRUE,type="application/json")
+      return(files)
     },
 
     register = function(obj) {
@@ -142,18 +172,16 @@ OpenEOClient <- R6Class(
 
     },
     describeProcess = function(pid) {
-      endpoint = paste(private$host ,"processes",pid,sep="/")
-      response = GET(url=endpoint)
-
-      info = content(response,type="application/json", auto_unbox = TRUE)
+      endpoint = paste("processes",pid,sep="/")
+      
+      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       return(info)
     },
     describeProduct = function(pid) {
-      endpoint = paste(private$host ,"data",pid,sep="/")
-      response = GET(url=endpoint)
-
-      info = content(response,type="application/json", auto_unbox = TRUE)
+      endpoint = paste("data",pid,sep="/")
+      
+      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       return(private$modifyProductList(info))
     },
@@ -162,40 +190,121 @@ OpenEOClient <- R6Class(
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
 
+      if (is.null(self$user_id)) {
+        stop("User id is not set. Either login or set the id manually.")
+      }
+
       endpoint = paste(private$host, "users",self$user_id,"files",target,sep="/")
       header = list()
       header = private$addAuthorization(header)
 
       post = PUT(url=endpoint, config = header, body=upload_file(file.path))
 
-      return(content(post))
+      return(post)
     },
-
-    executeTask = function (task,evaluate) {
-      endpoint = paste(private$host, "jobs/",sep="/")
-
+    downloadUserFile = function(src, dst=NULL) {
+      if (!is.character(src)) {
+        stop("Cannot download file with a source statement that is no character")
+      } else {
+        src = .urlHardEncode(src)
+      }
+      
+      if (is.null(dst)) {
+        dst = tempfile()
+      }
+      
+      endpoint = paste("users",self$user_id,"files",src,sep="/")
+      file_connection = file(dst,open="wb")
+      writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
+      close(file_connection,type="wb")
+      
+      return(dst)
+    },
+    
+    execute = function (task,format, output=NULL,evaluate="sync") {
+      # endpoint = paste(private$host,"execute/",sep="/")
+      if (self$is_rserver) {
+        endpoint = paste(private$host,"jobs/",sep="/")
+      } else {
+        endpoint = paste(private$host,"jobs",sep="/")
+      }
+      
       header = list()
       header = private$addAuthorization(header)
-
-      return(POST(
-        url= endpoint,
-        config = header,
-        query = list(
-          evaluate = evaluate
-        ),
-        body = task,
-        encode = "json"
-      ))
+      
+      if (is.list(task)) {
+        # create json and prepare to send graph as post body
+        # jsonTask = taskToJSON(task)
+        res=POST(
+          url= endpoint,
+          config = header,
+          query = list(
+            format = format,
+            evaluate = evaluate # for API v0.0.2 to be removed
+          ),
+          body = task,
+          encode = "json"
+        )
+      } else {
+        # API v0.0.2
+        # send task as id or url as query parameter
+        # res = POST(
+        #   url= endpoint,
+        #   config = header,
+        #   query = list(
+        #     format = format,
+        #     graph = task
+        #   )
+        # )
+        stop("Not supported task object in client request creation")
+      }
+      
+      if (res$status_code == 200) {
+        if (!is.null(output)) {
+          tryCatch(
+            {
+              writeBin(content(res,"raw"),output)
+              message("Task result was sucessfully stored.")
+              return(output)
+            },
+            error = function(err) {
+              stop(err)
+            }
+          )
+          
+        } else {
+          return(content(res,"raw"))
+        }
+      } else {
+        error = content(res,"text","application/json")
+        stop(error)
+      }
+      
+    },
+    
+    deleteUserFile = function (src) {
+      
+      if (is.character(src)) {
+        src = .urlHardEncode(src)
+      } else {
+        stop("Cannot interprete parameter 'src' during delete request")
+      }
+      endpoint = paste("users",self$user_id,"files",src,sep="/")
+      
+      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }
 
 
   ),
+  # private ----
   private = list(
+    # attributes ====
     login_token = NULL,
     user = NULL,
     password = NULL,
     host = NULL,
-
+    
+    # functions ====
     isConnected = function() {
       return(!is.null(private$host))
     },
@@ -210,24 +319,47 @@ OpenEOClient <- R6Class(
         stop("You are not logged in.")
       }
     },
-    callListing = function(endpoint, Template) {
+    GET = function(endpoint,authorized=FALSE, ...) {
       url = paste(private$host,endpoint, sep ="/")
-      response = GET(url=url)
 
-      if (response$status_code == 200) {
-        info = content(response,type="application/json")
+      if (authorized) {
+        response = GET(url=url, config=private$addAuthorization())
+      } else {
+        response = GET(url=url)
+      }
 
-        # listing = lapply(info, function(element) {
-        #   obj = Template$new()$fromJSON(element)
-        #   return(obj)
-        # })
-        #
-        # return(listing)
+
+      if (response$status_code %in% c(200)) {
+        info = content(response, ...)
         return(info)
 
       } else {
         stop("Cannot access data endpoint")
       }
+    },
+    DELETE = function(endpoint,authorized=FALSE,...) {
+      url = paste(private$host,endpoint,sep="/")
+      
+      header = list()
+      if (authorized) {
+        header = private$addAuthorization(header)
+      }
+      
+      response = DELETE(url=url, config = header, ...)
+      
+      message = content(response)
+      success = response$status_code %in% c(200,202,204)
+      if (success) {
+        tmp = lapply(message, function(elem) {
+          message(elem)
+        })
+      } else {
+        tmp = lapply(message, function(elem) {
+          warning(elem)
+        })
+      }
+      
+      return(success)
     },
     modifyProductList = function(product) {
       if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {
@@ -248,6 +380,10 @@ OpenEOClient <- R6Class(
     },
     # returns the header list and adds Authorization
     addAuthorization = function (header) {
+      if (missing(header)) {
+        header = list()
+      }
+
       if (self$general_auth_type == "bearer") {
         header = append(header,add_headers(
           Authorization=paste("Bearer",private$login_token, sep =" ")
@@ -258,11 +394,18 @@ OpenEOClient <- R6Class(
 
       return(header)
     }
+    
 
 
   )
 
 )
 
+# statics -----
+.urlHardEncode=function(text) {
+  text = URLencode(text)
+  text = gsub("\\/","%2F",text)
+  text = gsub("\\.","%2E",text)
+  return(text)
+}
 
-# openeo <- OpenEOClient$new()
