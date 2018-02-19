@@ -21,7 +21,7 @@ ClientListProcess <- R6Class(
       } else {
         # json should be a string
         # parse with jsonlite
-        json = fromJSON(jsond)
+        json = fromJSON(json)
       }
       obj = ClientListProcess$new()
       obj$process_id = json$process_id

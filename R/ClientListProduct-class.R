@@ -22,7 +22,7 @@ ClientListProduct <- R6Class(
       } else {
         # json should be a string
         # parse with jsonlite
-        json = fromJSON(jsond)
+        json = fromJSON(json)
       }
       obj = ClientListProduct$new()
       obj$product_id = json$product_id
