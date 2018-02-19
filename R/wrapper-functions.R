@@ -1,16 +1,29 @@
 #' @include client.R
 NULL
 
+#' Returns the API version
+#' 
+#' This function returns information against which was developed in this R-client version.
+#' 
+#' @return character describing the API version
+api.version = function() {
+  message("This version is not directly compliant to API v0.0.1. It does not implement all intended functions.")
+  return("0.0.1")
+}
+
 #' Connect to a openeEO backend
 #'
 #' connects to openEO backend
 #' @param host URL pointing to the openEO server backend host
 #' @param user the user name
 #' @param password the password
+#' @param rbackend logical to specify if the backend is the r test backend, default is FALSE
 #'
 #' @export
-connect = function(host, user, password) {
-  return(OpenEOClient$new()$connect(url=host)$login(user=user,password=password))
+connect = function(host, user, password, rbackend=FALSE) {
+  con = OpenEOClient$new()$connect(url=host)$login(user=user,password=password)
+  con$is_rserver = rbackend
+  return(con)
 }
 
 

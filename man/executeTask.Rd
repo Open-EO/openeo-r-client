@@ -4,7 +4,7 @@
 \alias{executeTask}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-executeTask(con, task, format, output)
+executeTask(con, task, format, output = NULL)
 }
 \arguments{
 \item{con}{Connection}

@@ -4,10 +4,12 @@
 \alias{collection}
 \title{A collection object}
 \usage{
-collection(collection_id)
+collection(collection_id, id_name = "collection_id")
 }
 \arguments{
 \item{collection_id}{the id of the product}
+
+\item{id_name}{the name of the identifier for this collection, default "collection_id"}
 }
 \value{
 a list represenation for a collection / product

@@ -36,8 +36,11 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
 #'
 #' creates a list representation of a collection object
 #' @param collection_id the id of the product
+#' @param id_name the name of the identifier for this collection, default "collection_id"
 #' @return a list represenation for a collection / product
 #' @export
-collection = function(collection_id) {
-  return(list(collection_id = collection_id))
+collection = function(collection_id,id_name = "collection_id") {
+  result = list(collection_id)
+  names(result) = id_name
+  return(result)
 }

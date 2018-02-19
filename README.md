@@ -41,6 +41,8 @@ task = collection("sentinel2") %>% process("filter_daterange",from = "2017-07-21
 conn %>% queueTask(task)
 ```
 
+Notes: if you are running the openeo-r-backend as backend solution for testing, then please use the optional parameter `rbackend=TRUE`, when calling `connect`. The current openeo-r-backend differs from the strict openeo API in terms of some trailing slashes "/". This is adressed when setting `rbackend=TRUE`. Alternatively set `conn$is_rserver = TRUE` after `connect`.
+
 ## Links
 * [openEO.org](http://openeo.org/)
 * [openEO core API](https://open-eo.github.io/openeo-api-poc/)
