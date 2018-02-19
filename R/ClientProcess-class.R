@@ -1,8 +1,8 @@
 #' @importFrom openEO.R.Backend Process
 #' @importFrom jsonlite fromJSON
 #' @export
-ClientListProcess <- R6Class(
-  "ClientListProcess",
+ClientProcess <- R6Class(
+  "ClientProcess",
   inherit = Process,
   public = list(
     fromJSON = function(json) {
@@ -15,6 +15,13 @@ ClientListProcess <- R6Class(
       #   key = names(attribute)
       # })
 
+    },
+    print = function() {
+      message = paste(
+        paste("Product-ID:",self$process_id),"\n",
+        paste("Description:", self$description),"\n",
+        sep="")
+      cat(message)
     }
   )
 )

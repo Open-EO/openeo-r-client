@@ -4,7 +4,7 @@
 \alias{listProcesses}
 \title{List available processes on server}
 \usage{
-listProcesses(con, ...)
+listProcesses(con)
 }
 \arguments{
 \item{con}{Connection object}
