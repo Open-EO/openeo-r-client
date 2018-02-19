@@ -13,12 +13,11 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
       
-      if ("collection_id" %in% names(process)) {
-        arguments[[prior.name]] = process
-      } else if ("process_id" %in% names(process)){
+
+      if (attr(process,"type") %in% c("process","udf","collection")){
         arguments[[prior.name]] = process
       } else {
-        stop("Chain corrupted. prior elemente is neither a process or a collection")
+        stop("Chain corrupted. Prior element is neither a process or a collection")
       }
     }
   }
@@ -26,6 +25,7 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
   
   res$process_id=process_id
   res$args = append(arguments,additionalParameter)
+  attr(res,"type") <- "process"
   
   return(res)
   
@@ -42,5 +42,7 @@ process = function(process=NULL, process_id, prior.name="collections", ...) {
 collection = function(collection_id,id_name = "collection_id") {
   result = list(collection_id)
   names(result) = id_name
+  
+  attr(result, "type") <- "collection"
   return(result)
 }

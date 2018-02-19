@@ -290,9 +290,7 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
 
-      if ("collection_id" %in% names(process)) {
-        arguments[[prior.name]] = process
-      } else if ("process_id" %in% names(process)){
+      if (attr(process,"type") %in% c("collection","process","udf")) {
         arguments[[prior.name]] = process
       } else {
         stop("Chain corrupted. Prior element is neither process, udf nor collection")
@@ -301,6 +299,8 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   }
 
   res$args = append(arguments,additionalArgs)
+  
+  attr(res,"type") <- "udf"
 
   return(res)
 }
