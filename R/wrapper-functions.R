@@ -8,7 +8,7 @@ NULL
 #' @return character describing the API version
 api.version = function() {
   message("This version is not directly compliant to API v0.0.1. It does not implement all intended functions.")
-  return("0.0.1")
+  return("0.0.2")
 }
 
 #' Connect to a openeEO backend
@@ -85,34 +85,50 @@ listFiles = function(con) {
   return(.listToDataFrame(con$listUserFiles()))
 }
 
-#' Describe a process or product
+#' Describe a process
 #'
-#' retrieve more detailed information data and processes
+#' Queries an openeo backend and retrieves more detailed information about offered processes
 #' @param con Authentication object
 #' @param process_id id of a process to be described
-#' @param product_id id of a product to be described
 #'
 #' @return a list of detailed information
 #' @export
-describe = function(con,process_id=NA, product_id=NA, ...) {
+describeProcess = function(con,process_id=NA) {
   describeProcess = !missing(process_id) && !is.na(process_id)
-  describeProduct = !missing(product_id) && !is.na(product_id)
+  
+  if (!describeProcess) {
+    stop("No or invalid process_id(s)")
+  }
 
-  if (describeProcess && !describeProduct) {
-    return(lapply(process_id,
+  return(lapply(process_id,
                   function(pid) {
                     con$describeProcess(pid)
-                  }))
-  } else if (describeProduct && !describeProcess) {
-    return(lapply(product_id,
-                  function(pid) {
-                    con$describeProduct(pid)
-                  }))
-  } else {
-    stop("Cannot distinguish whether to fetch process information or products")
-  }
+                  }
+                ))
 }
 
+#' Describe a product
+#' 
+#' Queries an openeo backend and retrieves a detailed description about one or more collections offered by the backend
+#' 
+#' @param con Authentication object
+#' @param collection_id id of a product/collection to be described
+#' 
+#' @return a list of detailed information about a product/collection
+#' @export
+describeCollection = function(con, collection_id=NA) {
+  describeProduct = !missing(collection_id) && !is.na(collection_id)
+  
+  if (!describeProduct) {
+    stop("No or invalid collection id(s)")
+  }
+  
+  return(lapply(collection_id,
+                  function(pid) {
+                    con$describeProduct(pid)
+                  }
+                ))
+}
 
 
 #' @export
@@ -274,9 +290,7 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
 
-      if ("collection_id" %in% names(process)) {
-        arguments[[prior.name]] = process
-      } else if ("process_id" %in% names(process)){
+      if (attr(process,"type") %in% c("collection","process","udf")) {
         arguments[[prior.name]] = process
       } else {
         stop("Chain corrupted. Prior element is neither process, udf nor collection")
@@ -285,6 +299,8 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   }
 
   res$args = append(arguments,additionalArgs)
+  
+  attr(res,"type") <- "udf"
 
   return(res)
 }
