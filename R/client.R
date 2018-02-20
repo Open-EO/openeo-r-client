@@ -265,7 +265,7 @@ OpenEOClient <- R6Class(
             {
               writeBin(content(res,"raw"),output)
               message("Task result was sucessfully stored.")
-              return(output)
+              return(raster(output))
             },
             error = function(err) {
               stop(err)
