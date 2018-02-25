@@ -299,6 +299,11 @@ OpenEOClient <- R6Class(
       endpoint = paste("users",self$user_id,"files",src,sep="/")
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
+    }, 
+    deleteJob = function(job_id) {
+      endpoint = paste("jobs",job_id,sep="/")
+      
+      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }
 
 

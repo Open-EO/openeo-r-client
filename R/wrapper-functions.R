@@ -289,7 +289,7 @@ followJob = function(con, job_id) {
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return A success notification
 deleteJob = function(con, job_id) {
-  .not_implemented_yet()
+  con$deleteJob(job_id)
 }
 
 #' Downloads the result of job
