@@ -1,6 +1,35 @@
 #' @include client.R
 NULL
 
+# utility functions ----
+.not_implemented_yet = function() {
+  warning("Not implemented yet.")
+}
+
+.listToDataFrame = function(list) {
+  df = data.frame(stringsAsFactors = FALSE)
+  for (index in 1:length(list)) {
+    df = rbind(df,as.data.frame(list[[index]],stringsAsFactors=FALSE))
+  }
+  return(df)
+}
+
+#' Wrapper for toJSON
+#' 
+#' This function is intended to have a preconfigured toJSON function
+#' to allow a user to visualize the process graph in JSON (like it will
+#' be sent to the backend)
+#' 
+#' @param task a list / nested list representing the process graph
+#' @return JSON string of the process graph as a character string 
+#' 
+#' @export
+# dont't expose it later
+taskToJSON = function(task) {
+  return(toJSON(task,auto_unbox = T,pretty=T))
+}
+
+# server endpoint ----
 #' Returns the API version
 #' 
 #' This function returns information against which was developed in this R-client version.
@@ -11,6 +40,7 @@ api.version = function() {
   return("0.0.2")
 }
 
+# login ----
 #' Connect to a openeEO backend
 #'
 #' connects to openEO backend
@@ -33,17 +63,10 @@ connect = function(host, user, password, rbackend=FALSE) {
 #' @return authenticated Connection
 #' @export
 openeo.auth = function (con, ...) {
-
+  .not_implemented_yet()
 }
 
-.listToDataFrame = function(list) {
-  df = data.frame(stringsAsFactors = FALSE)
-  for (index in 1:length(list)) {
-    df = rbind(df,as.data.frame(list[[index]],stringsAsFactors=FALSE))
-  }
-  return(df)
-}
-
+# data endpoint ----
 #' List Data on conected server
 #'
 #' List available collections stored on a openEO server
@@ -52,6 +75,33 @@ openeo.auth = function (con, ...) {
 listCollections = function(con) {
   return(.listToDataFrame(con$listData()))
 }
+
+#' Describe a product
+#' 
+#' Queries an openeo backend and retrieves a detailed description about one or more collections offered by the backend
+#' 
+#' @param con Authentication object
+#' @param collection_id id of a product/collection to be described
+#' 
+#' @return a list of detailed information about a product/collection
+#' @export
+describeCollection = function(con, collection_id=NA) {
+  describeProduct = !missing(collection_id) && !is.na(collection_id)
+  
+  if (!describeProduct) {
+    stop("No or invalid collection id(s)")
+  }
+  
+  return(lapply(collection_id,
+                function(pid) {
+                  con$describeProduct(pid)
+                }
+  ))
+}
+
+#
+# processes endpoint ----
+# 
 
 #' List available processes on server
 #'
@@ -62,6 +112,32 @@ listCollections = function(con) {
 listProcesses = function(con) {
   return(.listToDataFrame(con$listProcesses()))
 }
+
+#' Describe a process
+#'
+#' Queries an openeo backend and retrieves more detailed information about offered processes
+#' @param con Authentication object
+#' @param process_id id of a process to be described
+#'
+#' @return a list of detailed information
+#' @export
+describeProcess = function(con,process_id=NA) {
+  describeProcess = !missing(process_id) && !is.na(process_id)
+  
+  if (!describeProcess) {
+    stop("No or invalid process_id(s)")
+  }
+  
+  return(lapply(process_id,
+                function(pid) {
+                  con$describeProcess(pid)
+                }
+  ))
+}
+
+#
+# user endpoint ----
+#
 
 #' List the jobs that a user has
 #'
@@ -85,58 +161,67 @@ listFiles = function(con) {
   return(.listToDataFrame(con$listUserFiles()))
 }
 
-#' Describe a process
+#' Uploads data into the users workspace
 #'
-#' Queries an openeo backend and retrieves more detailed information about offered processes
-#' @param con Authentication object
-#' @param process_id id of a process to be described
+#' This function sends the file given by 'content' to the specified target location (relative file path in the
+#' user workspace) on the backend.
 #'
-#' @return a list of detailed information
+#' @param con authorized Connection
+#' @param content the file path of the file to be uploaded
+#' @param target the relative server path location for the file
+#'
+#' @return the relative file path on the server
 #' @export
-describeProcess = function(con,process_id=NA) {
-  describeProcess = !missing(process_id) && !is.na(process_id)
-  
-  if (!describeProcess) {
-    stop("No or invalid process_id(s)")
+uploadUserData = function (con, content, target) {
+  if (missing(content)) {
+    stop("Content data is missing")
   }
-
-  return(lapply(process_id,
-                  function(pid) {
-                    con$describeProcess(pid)
-                  }
-                ))
-}
-
-#' Describe a product
-#' 
-#' Queries an openeo backend and retrieves a detailed description about one or more collections offered by the backend
-#' 
-#' @param con Authentication object
-#' @param collection_id id of a product/collection to be described
-#' 
-#' @return a list of detailed information about a product/collection
-#' @export
-describeCollection = function(con, collection_id=NA) {
-  describeProduct = !missing(collection_id) && !is.na(collection_id)
-  
-  if (!describeProduct) {
-    stop("No or invalid collection id(s)")
+  if (is.character(content)) {
+    content = file.path(content)
+  }
+  if (!file.exists(content)) {
+    stop(paste("Cannot find file at ",content))
   }
   
-  return(lapply(collection_id,
-                  function(pid) {
-                    con$describeProduct(pid)
-                  }
-                ))
+  response = con$uploadUserFile(content,target)
+  
+  if (response$status_code != 200) {
+    stop(paste("Upload of user data was not successful:",content(response)))
+  } else {
+    return(URLdecode(target))
+  }
 }
 
-
+#' Downloads a file from the users workspace
+#' 
+#' Sends a request to an openeo backend to access the users files and downloads them to a given location
+#' 
+#' @param con authorized connection
+#' @param src the relative filepath of the source file on the openeo backend
+#' @param dst the destination file path on the local file system
+#' 
+#' @return The file path of the stored file
 #' @export
-# dont't expose it later
-taskToJSON = function(task) {
-  return(toJSON(task,auto_unbox = T,pretty=T))
+downloadUserData = function(con, src, dst=NULL) {
+  return(con$downloadUserFile(src,dst))
 }
 
+#' Deletes a file from the users workspace
+#'
+#' Sends a request to an openeo backend in order to remove a specific file from the users workspaces
+#' 
+#' @param con authorized connection
+#' @param src the relative filepath of the source file on the openeo backend that shall be deleted
+#' 
+#' @return logical
+#' @export
+deleteUserData = function(con, src) {
+  con$deleteUserFile(src = src)
+}
+
+#
+# jobs endpoint ----
+#
 
 #' Executes a job directly and returns the data immediately
 #'
@@ -167,7 +252,7 @@ executeTask = function(con,task,format,output=NULL) {
 #' @return A named list or vector with "job_id" and "path" to the file in the users workspace
 #' @export
 orderResult = function(con, task, format, path) {
-
+  .not_implemented_yet()
 }
 
 #' Stores a job on the backend for execution on demand
@@ -182,6 +267,7 @@ orderResult = function(con, task, format, path) {
 #' @export
 queueTask = function(con, task) {
   # return(con$executeTask(task,"lazy"))
+  .not_implemented_yet()
 }
 
 #' Follow an executed Job
@@ -193,7 +279,7 @@ queueTask = function(con, task) {
 #' @return a WebSocket connection
 #' @export
 followJob = function(con, job_id) {
-
+ .not_implemented_yet()
 }
 
 #' Deletes a job on the server
@@ -203,7 +289,7 @@ followJob = function(con, job_id) {
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return A success notification
 deleteJob = function(con, job_id) {
-
+  .not_implemented_yet()
 }
 
 #' Downloads the result of job
@@ -215,7 +301,7 @@ deleteJob = function(con, job_id) {
 #' @return Data in the requests format
 #' @export
 downloadJob = function(con, job_id, format) {
-
+  .not_implemented_yet()
 }
 
 
@@ -229,7 +315,7 @@ downloadJob = function(con, job_id, format) {
 #' @return a success / failure notification
 #' @export
 cancelJob = function(con, job_id) {
-
+    .not_implemented_yet()
 }
 
 #' Fetches information about a job
@@ -241,8 +327,12 @@ cancelJob = function(con, job_id) {
 #' @return a detailed description about the job
 #' @export
 queryJob = function(con,job_id) {
-
+  .not_implemented_yet()
 }
+
+#
+# udf endpoint ----
+#
 
 
 #' Defines a UDF on the server
@@ -305,65 +395,9 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   return(res)
 }
 
-#' Uploads data into the users workspace
-#'
-#' This function sends the file given by 'content' to the specified target location (relative file path in the
-#' user workspace) on the backend.
-#'
-#' @param con authorized Connection
-#' @param content the file path of the file to be uploaded
-#' @param target the relative server path location for the file
-#'
-#' @return the relative file path on the server
-#' @export
-uploadUserData = function (con, content, target) {
-  if (missing(content)) {
-    stop("Content data is missing")
-  }
-  if (is.character(content)) {
-    content = file.path(content)
-  }
-  if (!file.exists(content)) {
-    stop(paste("Cannot find file at ",content))
-  }
-
-  response = con$uploadUserFile(content,target)
-
-  if (response$status_code != 200) {
-    stop(paste("Upload of user data was not successful:",content(response)))
-  } else {
-    return(URLdecode(target))
-  }
-}
-
-#' Downloads a file from the users workspace
-#' 
-#' Sends a request to an openeo backend to access the users files and downloads them to a given location
-#' 
-#' @param con authorized connection
-#' @param src the relative filepath of the source file on the openeo backend
-#' @param dst the destination file path on the local file system
-#' 
-#' @return The file path of the stored file
-#' @export
-downloadUserData = function(con, src, dst=NULL) {
-  return(con$downloadUserFile(src,dst))
-}
-
-#' Deletes a file from the users workspace
-#'
-#' Sends a request to an openeo backend in order to remove a specific file from the users workspaces
-#' 
-#' @param con authorized connection
-#' @param src the relative filepath of the source file on the openeo backend that shall be deleted
-#' 
-#' @return logical
-#' @export
-deleteUserData = function(con, src) {
-  con$deleteUserFile(src = src)
-}
-
-
+#
+# service functions? ----
+#
 WCS = function() {
-
+  .not_implemented_yet()
 }
