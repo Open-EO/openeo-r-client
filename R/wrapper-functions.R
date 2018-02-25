@@ -252,7 +252,8 @@ executeTask = function(con,task,format,output=NULL) {
 #' @return A named list or vector with "job_id" and "path" to the file in the users workspace
 #' @export
 orderResult = function(con, task, format, path) {
-  .not_implemented_yet()
+  #TODO incorporate format and path -> probably extend task
+  return(con$storeJob(task,"batch"))
 }
 
 #' Stores a job on the backend for execution on demand
@@ -263,11 +264,11 @@ orderResult = function(con, task, format, path) {
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
-#' @return A named list or vector with "job_id"
+#' @return the job_id
 #' @export
 queueTask = function(con, task) {
   # return(con$executeTask(task,"lazy"))
-  .not_implemented_yet()
+  return(con$storeJob(task,"lazy"))
 }
 
 #' Follow an executed Job

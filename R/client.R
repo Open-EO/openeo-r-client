@@ -227,7 +227,48 @@ OpenEOClient <- R6Class(
       
       return(dst)
     },
-    
+    uploadJob = function(task,evaluate) {
+      #store the job on the backend either as batch or lazy
+      if (! evaluate %in% c("batch","lazy")) {
+        stop("Cannot store job on the backend. Evaluate parameter is neither 'batch' nor 'lazy'")
+      }
+      
+      if (self$is_rserver) {
+        endpoint = paste(private$host,"jobs/",sep="/")
+      } else {
+        endpoint = paste(private$host,"jobs",sep="/")
+      }
+      
+      if (is.list(task)) {
+        
+        header = list()
+        header = private$addAuthorization(header)
+        
+        # create json and prepare to send graph as post body
+        # jsonTask = taskToJSON(task)
+        res=POST(
+          url= endpoint,
+          config = header,
+          query = list(
+            evaluate = evaluate # for API v0.0.2 to be removed
+          ),
+          body = task,
+          encode = "json"
+        )
+        
+        if (res$status_code == 200) {
+          okMessage = content(res,"text","application/json")
+          message("Task result was sucessfully stored.")
+          return(okMessage$job_id)
+        } else {
+          error = content(res,"text","application/json")
+          stop(error)
+        }
+      } else {
+        stop("Cannot interprete 'task' - task is no list")
+      }
+      
+    },
     execute = function (task,format, output=NULL,evaluate="sync") {
       # endpoint = paste(private$host,"execute/",sep="/")
       if (self$is_rserver) {
@@ -270,8 +311,8 @@ OpenEOClient <- R6Class(
         if (!is.null(output)) {
           tryCatch(
             {
-              writeBin(content(res,"raw"),output)
               message("Task result was sucessfully stored.")
+              writeBin(content(res,"raw"),output)
               return(raster(output))
             },
             error = function(err) {
