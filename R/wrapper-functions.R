@@ -327,7 +327,7 @@ cancelJob = function(con, job_id) {
 #' @return a detailed description about the job
 #' @export
 queryJob = function(con,job_id) {
-  .not_implemented_yet()
+  return(con$describeJob(job_id))
 }
 
 #

@@ -185,6 +185,13 @@ OpenEOClient <- R6Class(
 
       return(private$modifyProductList(info))
     },
+    describeJob = function(job_id) {
+      endpoint = paste("jobs",job_id,sep="/")
+      
+      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      
+      return(info)
+    },
 
     uploadUserFile = function(file.path,target) {
       target = URLencode(target,reserved = TRUE)
@@ -334,7 +341,7 @@ OpenEOClient <- R6Class(
         return(info)
 
       } else {
-        stop("Cannot access data endpoint")
+        stop(paste("Cannot access endpoint ","'",endpoint,"'",sep=""))
       }
     },
     DELETE = function(endpoint,authorized=FALSE,...) {
