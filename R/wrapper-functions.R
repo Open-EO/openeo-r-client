@@ -45,13 +45,32 @@ api.version = function() {
 #'
 #' connects to openEO backend
 #' @param host URL pointing to the openEO server backend host
-#' @param user the user name
-#' @param password the password
+#' @param user the user name (optional)
+#' @param password the password (optional)
 #' @param rbackend logical to specify if the backend is the r test backend, default is FALSE
+#' @param disable_auth flag to specify if the backend supports authorization on its endpoints
+#' @param auth_type the general authentication method used on all endpoints. Either "bearer" or "basic".
 #'
 #' @export
-connect = function(host, user, password, rbackend=FALSE) {
-  con = OpenEOClient$new()$connect(url=host)$login(user=user,password=password)
+connect = function(host, user=NULL, password=NULL, rbackend=FALSE, disable_auth=FALSE, auth_type="bearer") {
+  if (is.null(user) && is.null(password)) {
+    con = OpenEOClient$new()$connect(url=host)
+  } else if (!is.null(user) && !is.null(password)) {
+    con = OpenEOClient$new()$connect(url=host)$login(user=user,password=password)  
+  } else {
+    stop("Incomplete credentials. Either username or password is missing")
+  }
+  
+  if (disable_auth) {
+    con$disableAuth = TRUE
+  }
+  
+  if (!disable_auth && !auth_type %in% c("basic","bearer")) {
+    stop("Unsupported authentication type. Use 'bearer' or 'basic' or disable the authentication")
+  } else {
+    con$general_auth_type = auth_type
+  }
+  
   con$is_rserver = rbackend
   return(con)
 }

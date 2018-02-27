@@ -4,16 +4,21 @@
 \alias{connect}
 \title{Connect to a openeEO backend}
 \usage{
-connect(host, user, password, rbackend = FALSE)
+connect(host, user = NULL, password = NULL, rbackend = FALSE,
+  disable_auth = FALSE, auth_type = "bearer")
 }
 \arguments{
 \item{host}{URL pointing to the openEO server backend host}
 
-\item{user}{the user name}
+\item{user}{the user name (optional)}
 
-\item{password}{the password}
+\item{password}{the password (optional)}
 
 \item{rbackend}{logical to specify if the backend is the r test backend, default is FALSE}
+
+\item{disable_auth}{flag to specify if the backend supports authorization on its endpoints}
+
+\item{auth_type}{the general authentication method used on all endpoints. Either "bearer" or "basic".}
 }
 \description{
 connects to openEO backend
