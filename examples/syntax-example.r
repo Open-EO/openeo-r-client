@@ -18,9 +18,12 @@ listProcesses(conn)
 # Same for listing collections on the backend
 listCollections(conn)
 
-# Get in-depth information about a process or collection
-describe(conn, "S2_L2A_T32TPS_20M")
+# Get in-depth information about a collection
+describeCollection(conn, "S2_L2A_T32TPS_20M")
 # class with Extent, crs, etc.
+
+# Get in-depth information about a process
+describeProcess(conn, "filter_daterange")
 
 # Listing existing user jobs
 listJobs(conn)
@@ -29,11 +32,11 @@ listJobs(conn)
 listUDFCapabilities(conn)
 
 
-## Simple task: calculating NDVI using a linked list of processes (assumes NDVI function takes band names as parameters)
-Task = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016", end="2018") %>% process("NDVI", red="B04", nir="B8A")
+## Simple task: calculating NDVI using a linked list of processes (assumes NDVI function takes band names as parameters, currently uses numbers)
+Task = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016-01-01", end="2018-01-01") %>% process("NDVI", red="B04", nir="B8A")
 
 ## Advanced task: calculating NDVI using processes that have other processes as arguments (assumes NDVI function takes process graphs)
-AOICollection = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016", end="2018")
+AOICollection = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016-01-01", end="2018-01-01")
 RedSubset = AOICollection %>% process("filter_band", band="red")
 NIRSubset = AOICollection %>% process("filter_band", band="nir")
 Task = AOICollection %>% process("NDVI", red=RedSubset, nir=NIRSubset)
@@ -43,7 +46,7 @@ Task = AOICollection %>% process("NDVI", red=RedSubset, nir=NIRSubset)
 Result = executeTask(conn, Task, format="GTiff")
 
 # Batch: ask the server to prepare it the USGS ESPA way, get a job ID and the URL to the output location
-OutputInfo = orderTask(conn, Task)
+OutputInfo = orderResult(conn, Task)
 JobID = OutputInfo$JobID
 
 # Lazy: ask the server to run it when needed (on WCS, but also download etc.)
@@ -72,7 +75,7 @@ CompositeTask = collection("S2_L2A_T32TPS_20M") %>% process("date_range_filter",
 Conn = connect(host="http://saocompute.eurac.edu/openEO_WCPS_Driver", user="nobody", password="nobody")
 Job = queueTask(Conn, CompositeTask)
 OutPath = file.path("Downloads", "Result.netcdf")
-downloadJob(Conn, Job, OutPath, "netcdf") # Processing happens here
+downloadJob(Conn, Job, "netcdf", OutPath) # Processing happens here
 Result = brick(OutPath)
 
 # Synchronous
@@ -83,10 +86,10 @@ plot(Result)
 ## Complex use case: Land cover classification ##
 
 # UDF definitions: not in API yet!
-defineUDF(conn, udf_id="resample", type="aggregate_space", content=file.path("resample.r")) # This could be a server-defined function too
-defineUDF(conn, udf_id="temporal_cloud_filter", type="apply_time", content=file.path("temporal_cloud_filter.r")) # No such type in API yet
-defineUDF(conn, udf_id="harmonic_analysis", type="reduce_time", content=file.path("harmonic_analysis.r"))
-defineUDF(conn, udf_id="ranger_classification", type="apply_pixel", content=file.path("ranger_classification.r"))
+defineUDF(conn, target="resample", type="aggregate_space", content=file.path("resample.r")) # This could be a server-defined function too
+defineUDF(conn, target="temporal_cloud_filter", type="apply_time", content=file.path("temporal_cloud_filter.r")) # No such type in API yet
+defineUDF(conn, target="harmonic_analysis", type="reduce_time", content=file.path("harmonic_analysis.r"))
+defineUDF(conn, target="ranger_classification", type="apply_pixel", content=file.path("ranger_classification.r"))
 
 DEMCollection = collection("GLSDEM") %>% process("bbox_filter", left=652000, right=672000, top=5161000, bottom=5181000, srs="EPSG:32632") %>%
     process("resample", collection("S2_L2A_T32TPS_20M")) # UDF to resample to Sentinel 2 pixel size
