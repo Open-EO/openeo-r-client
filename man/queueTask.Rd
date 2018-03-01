@@ -10,8 +10,6 @@ queueTask(con, task)
 \item{con}{Connection}
 
 \item{task}{A Process or chained processes to a Task}
-
-\item{format}{The inteded format of the data to be returned}
 }
 \value{
 the job_id

@@ -257,8 +257,8 @@ OpenEOClient <- R6Class(
         )
         
         if (res$status_code == 200) {
-          okMessage = content(res,"text","application/json")
-          message("Task result was sucessfully stored.")
+          okMessage = content(res,"parsed","application/json")
+          message("Task was sucessfully registered on the backend.")
           return(okMessage$job_id)
         } else {
           error = content(res,"text","application/json")

@@ -282,12 +282,10 @@ orderResult = function(con, task, format, path) {
 #'
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
-#' @param format The inteded format of the data to be returned
 #' @return the job_id
 #' @export
 queueTask = function(con, task) {
-  # return(con$executeTask(task,"lazy"))
-  return(con$storeJob(task,"lazy"))
+  return(con$uploadJob(task,"lazy"))
 }
 
 #' Follow an executed Job
