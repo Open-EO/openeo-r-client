@@ -135,6 +135,12 @@ OpenEOClient <- R6Class(
       
       return(listOfGraphIds)
     },
+    listServices = function() {
+      endpoint = paste("users",self$user_id,"services",sep="/")
+      listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
+      
+      return(listOfServices)
+    },
     
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
@@ -268,64 +274,55 @@ OpenEOClient <- R6Class(
       message("Task was sucessfully registered on the backend.")
       return(okMessage$job_id)
     },
-    execute = function (task,format, output=NULL,evaluate="sync") {
-      # endpoint = paste(private$host,"execute/",sep="/")
+    execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
+      # former sync evaluation
       if (self$is_rserver) {
-        endpoint = paste(private$host,"jobs/",sep="/")
+        endpoint = paste("execute/",sep="/")
       } else {
-        endpoint = paste(private$host,"jobs",sep="/")
+        endpoint = paste("execute",sep="/")
+      }
+      if (is.null(format)) {
+        format = self$output_formats()$default
+      }
+      
+      output = list(...)
+      output = append(output, list(format=format))
+      if (!is.null(task)) {
+        if (is.list(task)) {
+          job = list(process_graph=task,output = output)
+        } else {
+          stop("Parameter task is not a task object. Awaiting a list.")
+        }
+      } else if (! is.null(graph_id)) {
+        job = list(process_graph=graph_id,output = output)
       }
       
       header = list()
       header = private$addAuthorization(header)
       
-      if (is.list(task)) {
-        # create json and prepare to send graph as post body
-        # jsonTask = taskToJSON(task)
-        res=POST(
-          url= endpoint,
-          config = header,
-          query = list(
-            format = format,
-            evaluate = evaluate # for API v0.0.2 to be removed
-          ),
-          body = task,
-          encode = "json"
-        )
-      } else {
-        # API v0.0.2
-        # send task as id or url as query parameter
-        # res = POST(
-        #   url= endpoint,
-        #   config = header,
-        #   query = list(
-        #     format = format,
-        #     graph = task
-        #   )
-        # )
-        stop("Not supported task object in client request creation")
-      }
       
-      if (res$status_code == 200) {
-        if (!is.null(output)) {
-          tryCatch(
-            {
-              message("Task result was sucessfully stored.")
-              writeBin(content(res,"raw"),output)
-              return(raster(output))
-            },
-            error = function(err) {
-              stop(err)
-            }
-          )
-          
-        } else {
-          return(content(res,"raw"))
-        }
+      res = private$POST(endpoint,
+                         authorized = TRUE, 
+                         data=job,
+                         encodeType = "json",
+                         raw=TRUE)
+      
+      if (!is.null(output_file)) {
+        tryCatch(
+          {
+            message("Task result was sucessfully stored.")
+            writeBin(content(res,"raw"),output_file)
+            return(raster(output_file))
+          },
+          error = function(err) {
+            stop(err)
+          }
+        )
+        
       } else {
-        error = content(res,"text","application/json")
-        stop(error)
+        return(content(res,"raw"))
       }
+
       
     },
     
@@ -341,16 +338,51 @@ OpenEOClient <- R6Class(
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }, 
     deleteJob = function(job_id) {
+      #TODO remove this function
       endpoint = paste("jobs",job_id,sep="/")
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     },
     deleteGraph = function(graph_id) {
-      endpoint = paste("users",self$user_id,process_graphs,graph_id,sep="/")
+      endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
+    },
+    getUserCredits = function() {
+      endpoint = paste("users",self$user_id,"credits",sep="/")
+      
+      return(private$GET(endpoint,authorized = TRUE))
+    },
+    toService = function(job_id, service_type, ...) {
+      if (is.null(job_id)) {
+        stop("Cannot create service. job_id is missing.")
+      }
+      if (is.null(service_type)) {
+        stop("No service_type specified.")
+      }
+      if (self$is_rserver) {
+        endpoint = "services/"
+      } else {
+        endpoint = "services"
+      }
+    
+      service_args = list(...)
+      
+      service_request_object = list(
+        job_id = job_id,
+        service_type = service_type,
+        service_args = service_args
+      )
+      
+      response = private$POST(endpoint,
+                   authorized = TRUE, 
+                   data = service_request_object, 
+                   encodeType = "json")
+      
+      message("Service was successfully created.")
+      return(response)
+      
     }
-
 
   ),
   # private ----
@@ -418,7 +450,7 @@ OpenEOClient <- R6Class(
       
       return(success)
     },
-    POST = function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...) {
+    POST = function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
       url = paste(private$host,endpoint,sep="/")
       if (!is.list(query)) {
         stop("Query parameters are no list of key-value-pairs")
@@ -443,8 +475,12 @@ OpenEOClient <- R6Class(
         
         success = response$status_code %in% c(200,202,204)
         if (success) {
-          okMessage = content(response,"parsed","application/json")
-          return(okMessage)
+          if (raw) {
+            return(response)
+          } else {
+            okMessage = content(response,"parsed","application/json")
+            return(okMessage)
+          }
         } else {
           error = content(response,"text","application/json")
           stop(error)

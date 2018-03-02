@@ -4,7 +4,7 @@
 \alias{executeTask}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-executeTask(con, task, format, output = NULL)
+executeTask(con, task, format, ...)
 }
 \arguments{
 \item{con}{Connection}
@@ -13,7 +13,7 @@ executeTask(con, task, format, output = NULL)
 
 \item{format}{The inteded format of the data to be returned}
 
-\item{output}{the path, filename and extension, where to store the data}
+\item{...}{additional configuration parameter for output generation}
 }
 \value{
 a connection to file if output was provided, the raw data if not

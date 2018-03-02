@@ -256,18 +256,40 @@ storeGraph = function(con, graph) {
 }
 
 #
-# user endpoint ----
+# services endpoint ----
 #
 
-#' List the jobs that a user has
-#'
-#' lists the jobs that a user has uploaded or in execution
-#'
-#' @param con the authenticated Connection
+#' Lists the current users services
+#' 
+#' Queries the backend to retrieve a list of services that the current user owns. Services are 
+#' webservices like WCS, WFS, etc.
+#' 
+#' @param con connected and authenticated openeo client object
+#' 
+#' @return list of services lists
 #' @export
-listJobs = function(con) {
-  return(con$listJobs())
+listServices = function(con) {
+  return(con$listServices())
 }
+
+#' Prepares and publishes a service on the backend
+#' 
+#' The function will send a configuration object to the backend to create a webservice from a job considering
+#' additional parameter.
+#' 
+#' @param con connected and authenticated openeo clien object
+#' @param job_id the job id to create the service from
+#' @param service_type one of the supported services (see services())
+#' @param ... additional parameter which are send as 'service_args'
+#' @return service representation as list
+#' @export
+toService = function(con, job_id, service_type, ...) {
+  return(con$toService(job_id = job_id, service_type = service_type, ...))
+}
+
+#
+# user endpoint ----
+#
 
 #' Lists workspace files
 #' 
@@ -336,9 +358,29 @@ deleteUserData = function(con, src) {
   con$deleteUserFile(src = src)
 }
 
+#' Returns the users available credits
+#' 
+#' Queries the server and returns the available credits of the current user.
+#' @param con connected and authenticated openeo client object
+#' @return the credits
+#' @export
+credits = function(con) {
+  return(con$getUserCredits())
+}
+
 #
 # jobs endpoint ----
 #
+
+#' List the jobs that a user has
+#'
+#' lists the jobs that a user has uploaded or in execution
+#'
+#' @param con the authenticated Connection
+#' @export
+listJobs = function(con) {
+  return(con$listJobs())
+}
 
 #' Executes a job directly and returns the data immediately
 #'
@@ -349,11 +391,11 @@ deleteUserData = function(con, src) {
 #' @param con Connection
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
-#' @param output the path, filename and extension, where to store the data
+#' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format,output=NULL) {
-  con$execute(task,format,output)
+executeTask = function(con,task,format, ...) {
+  con$execute(task,format, ...)
 }
 
 
