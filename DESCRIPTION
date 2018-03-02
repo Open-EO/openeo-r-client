@@ -14,7 +14,6 @@ Imports:
     jsonlite,
     httr,
     R6,
-    openEO.R.Backend,
     magrittr,
     gdalUtils,
     raster,
@@ -25,9 +24,6 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 License: Apache License
 Collate: 
-    'ClientListProcess-class.R'
-    'ClientListProduct-class.R'
-    'ClientProcess-class.R'
     'client.R'
     'process_graph_building.R'
     'wrapper-functions.R'

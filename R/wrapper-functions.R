@@ -57,6 +57,23 @@ capabilities = function(con) {
   return(data.frame(endpoints=capabilities))
 }
 
+#' Returns the output formats
+#' 
+#' The function queries the backend for supported output formats.
+#' 
+#' @param connected openeo client object
+#' @return list of formats with optional configuration parameter
+#' @export
+formats = function(con) {
+  if (api.version() == "0.0.1") {
+    return(.not_implemented_yet())
+  }
+  
+  formats = con$output_formats()
+  message(paste("Host uses '",formats$default,"' as default output format",sep=""))
+  return(formats$formats)
+}
+
 # login ----
 #' Connect to a openeEO backend
 #'

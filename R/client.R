@@ -2,7 +2,6 @@
 #'
 #' A R6Class that interacts with an openEO-conformant backend.
 #'
-#' @include ClientListProduct-class.R
 #' @importFrom R6 R6Class
 #' @import httr
 #' @import magrittr
@@ -56,6 +55,12 @@ OpenEOClient <- R6Class(
       
       return(capabilities)
     },
+    output_formats = function() {
+      endpoint = "capabilities/output_formats"
+      formats = private$GET(endpoint,authorized = FALSE)
+      
+      return(formats)
+    },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
@@ -100,12 +105,6 @@ OpenEOClient <- R6Class(
       listOfProducts = private$GET(endpoint=endpoint,type="application/json")
       return(listOfProducts)
 
-      # lapply(listOfProducts, function(product) {
-      #   product$print()
-      #   # self$register(product)
-      # })
-      # invisible(self)
-
     },
     listProcesses = function() {
       
@@ -117,11 +116,6 @@ OpenEOClient <- R6Class(
       
       listOfProcesses = private$GET(endpoint,type="application/json")
       return(listOfProcesses)
-      # lapply(listOfProcesses, function(process) {
-      #   process$print()
-      #   # self$register(process)
-      # })
-      # invisible(self)
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
@@ -135,53 +129,6 @@ OpenEOClient <- R6Class(
       return(files)
     },
 
-    register = function(obj) {
-      # TODO don't add already existing list stuff
-      listName = NULL
-      newObj = NULL
-
-      if (isProcess(obj) || isClientListProcess(obj)) {
-        if (is.null(self$processes)) {
-          self$processes = list()
-        }
-        listName = "processes"
-
-        newObj = list(obj)
-        names(newObj) = obj$process_id
-
-      } else if (isProduct(obj) || isClientListProduct(obj)) {
-        if (is.null(self$products)) {
-          self$products = list()
-        }
-        listName = "products"
-
-        newObj = list(obj)
-        names(newObj) = c(obj$product_id)
-
-      } else {
-        warning("Cannot register object. It is neither Process nor Product")
-        return()
-      }
-
-      #add if not exists
-      lapply(
-        self[[listName]],
-        function(obj) {
-          if (listName == "products") {
-            id = obj$process_id
-          } else if (listName == "processes") {
-            id = obj$product_id
-          } else {
-            stop("Trying to add something else than products or processes")
-          }
-
-          #TODO skip already existing objects
-          # if it is incomplete (listElement) and obj is more complete
-        }
-      )
-      self[[listName]] = append(self[[listName]],newObj)
-
-    },
     describeProcess = function(pid) {
       endpoint = paste("processes",pid,sep="/")
       
@@ -195,6 +142,7 @@ OpenEOClient <- R6Class(
       info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       return(private$modifyProductList(info))
+      # return(info)
     },
     describeJob = function(job_id) {
       endpoint = paste("jobs",job_id,sep="/")
@@ -427,14 +375,25 @@ OpenEOClient <- R6Class(
     },
     modifyProductList = function(product) {
       if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {
-        e = product$extent
-
-        ext = extent(e$left,e$right,e$bottom,e$top)
-        product$extent = ext
-        product$crs = gdalsrsinfo(e$srs, as.CRS = TRUE)
-
-        product$time$from = as_datetime(product$time$from)
-        product$time$to = as_datetime(product$time$to)
+        if ("extent" %in% names(product)) {
+          e = product$extent
+  
+          ext = extent(e$left,e$right,e$bottom,e$top)
+          product$extent = ext
+          
+          if ("srs" %in% names(e)) {
+            product$crs = gdalsrsinfo(e$srs, as.CRS = TRUE)
+          }
+        }
+        
+        if ("time" %in% names(product)) {
+          if ("from" %in% names(product$time)) {
+            product$time$from = as_datetime(product$time$from)
+          }
+          if ("to" %in% names(product$time)) {
+            product$time$to = as_datetime(product$time$to)
+          }
+        }
 
         return(product)
 
