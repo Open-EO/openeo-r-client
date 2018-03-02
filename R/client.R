@@ -45,6 +45,17 @@ OpenEOClient <- R6Class(
       }
 
     },
+    capabilities = function() {
+      endpoint = "capabilities"
+      
+      if (!private$isConnected()) {
+        stop("No host selected")
+      }
+      
+      capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
+      
+      return(capabilities)
+    },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
@@ -387,7 +398,7 @@ OpenEOClient <- R6Class(
         return(info)
 
       } else {
-        stop(paste("Cannot access endpoint ","'",endpoint,"'",sep=""))
+        stop(paste("Cannot find or access endpoint ","'",endpoint,"'",sep=""))
       }
     },
     DELETE = function(endpoint,authorized=FALSE,...) {

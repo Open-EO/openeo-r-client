@@ -35,9 +35,26 @@ taskToJSON = function(task) {
 #' This function returns information against which was developed in this R-client version.
 #' 
 #' @return character describing the API version
+#' @export
 api.version = function() {
   message("This version is not directly compliant to API v0.0.1. It does not implement all intended functions.")
-  return("0.0.2")
+  return("0.0.1")
+}
+
+#' Returns the offered enpoints of the openEO API
+#' 
+#' The function queries the backend for its capabilities. The offered enpoints that are specified in the openeo
+#' API are then returned.
+#' 
+#' @param con A connected openeo client
+#' @return data.frame containing the supported / implemented endpoints of the backend
+#' @export
+capabilities = function(con) {
+  capabilities = con$capabilities()
+  if (is.list(capabilities)) {
+    capabilities = unlist(capabilities)
+  }
+  return(data.frame(endpoints=capabilities))
 }
 
 # login ----
