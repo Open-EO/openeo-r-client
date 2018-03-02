@@ -47,13 +47,19 @@ OpenEOClient <- R6Class(
     capabilities = function() {
       endpoint = "capabilities"
       
-      if (!private$isConnected()) {
-        stop("No host selected")
-      }
+      .stopIfNotConnected()
       
       capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
       
       return(capabilities)
+    },
+    services = function() {
+      endpoint = "capabilities/services"
+      
+      .stopIfNotConnected()
+      
+      services = private$GET(endpoint, authorized = FALSE)
+      return(services)
     },
     output_formats = function() {
       endpoint = "capabilities/output_formats"
@@ -123,6 +129,13 @@ OpenEOClient <- R6Class(
       return(listOfJobs)
     },
     
+    listGraphs = function() {
+      endpoint = paste("users",self$user_id,"process_graphs",sep="/")
+      listOfGraphIds = private$GET(endpoint, authorized = TRUE)
+      
+      return(listOfGraphIds)
+    },
+    
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
       files = private$GET(endpoint,TRUE,type="application/json")
@@ -151,7 +164,41 @@ OpenEOClient <- R6Class(
       
       return(info)
     },
-
+    describeGraph = function(graph_id, user_id = NULL) {
+      if (is.null(graph_id)) {
+        stop("No graph id specified. Cannot fetch unknown graph.")
+      }
+      
+      if (is.null(user_id)) {
+        user_id = self$user_id #or "me"
+      }
+      
+      enpoint = paste("users", user_id, "process_graphs", graph_id, sep="/")
+      graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
+      
+      return(graph)
+    },
+    
+    replaceGraph = function(graph_id, graph) {
+      if (is.null(graph_id)) {
+        stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
+      }
+      if (is.null(graph)) {
+        stop("Cannot replace graph with 'NULL'")
+      }
+      if (!is.list(graph) || is.null(graph)) {
+        stop("The graph information is missing or not a list")
+      }
+      endpoint = ""
+      message = private$PUT(endpoint = endpoint, 
+                              authorized = TRUE, 
+                              data = graph,
+                              encodeType = "json")
+      
+      return(message) #in principle a void function
+      
+    },
+    
     uploadUserFile = function(file.path,target) {
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
@@ -160,13 +207,11 @@ OpenEOClient <- R6Class(
         stop("User id is not set. Either login or set the id manually.")
       }
 
-      endpoint = paste(private$host, "users",self$user_id,"files",target,sep="/")
-      header = list()
-      header = private$addAuthorization(header)
+      endpoint = paste("users",self$user_id,"files",target,sep="/")
+      
+      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path))
 
-      post = PUT(url=endpoint, config = header, body=upload_file(file.path))
-
-      return(post)
+      return(message)
     },
     downloadUserFile = function(src, dst=NULL) {
       if (!is.character(src)) {
@@ -186,47 +231,42 @@ OpenEOClient <- R6Class(
       
       return(dst)
     },
-    uploadJob = function(task,evaluate) {
+    storeGraph = function(graph) {
+      if (!is.list(graph) || is.null(graph)) {
+        stop("The graph information is missing or not a list")
+      }
+      
+      okMessage = private$POST(endpoint=endpoint,
+                               authorized = TRUE,
+                               data=graph)
+      
+      message("Graph was sucessfully stored on the backend.")
+      return(okMessage$process_graph_id)
+    },
+    storeJob = function(task,evaluate) {
       #store the job on the backend either as batch or lazy
       if (! evaluate %in% c("batch","lazy")) {
         stop("Cannot store job on the backend. Evaluate parameter is neither 'batch' nor 'lazy'")
       }
       
       if (self$is_rserver) {
-        endpoint = paste(private$host,"jobs/",sep="/")
+        endpoint = "jobs/"
       } else {
-        endpoint = paste(private$host,"jobs",sep="/")
+        endpoint = "jobs"
       }
       
-      if (is.list(task)) {
-        
-        header = list()
-        header = private$addAuthorization(header)
-        
-        # create json and prepare to send graph as post body
-        # jsonTask = taskToJSON(task)
-        res=POST(
-          url= endpoint,
-          config = header,
-          query = list(
-            evaluate = evaluate # for API v0.0.2 to be removed
-          ),
-          body = task,
-          encode = "json"
-        )
-        
-        if (res$status_code == 200) {
-          okMessage = content(res,"parsed","application/json")
-          message("Task was sucessfully registered on the backend.")
-          return(okMessage$job_id)
-        } else {
-          error = content(res,"text","application/json")
-          stop(error)
-        }
-      } else {
-        stop("Cannot interprete 'task' - task is no list")
-      }
+      query = list(
+        evaluate = evaluate # for API v0.0.2 to be removed
+      )
       
+      #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
+      okMessage = private$POST(endpoint=endpoint,
+                               authorized = TRUE,
+                               data=task,
+                               query=query)
+      
+      message("Task was sucessfully registered on the backend.")
+      return(okMessage$job_id)
     },
     execute = function (task,format, output=NULL,evaluate="sync") {
       # endpoint = paste(private$host,"execute/",sep="/")
@@ -304,6 +344,11 @@ OpenEOClient <- R6Class(
       endpoint = paste("jobs",job_id,sep="/")
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
+    },
+    deleteGraph = function(graph_id) {
+      endpoint = paste("users",self$user_id,process_graphs,graph_id,sep="/")
+      
+      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }
 
 
@@ -334,7 +379,7 @@ OpenEOClient <- R6Class(
     GET = function(endpoint,authorized=FALSE, ...) {
       url = paste(private$host,endpoint, sep ="/")
 
-      if (authorized) {
+      if (authorized && !self$disableAuth) {
         response = GET(url=url, config=private$addAuthorization())
       } else {
         response = GET(url=url)
@@ -353,7 +398,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized) {
+      if (authorized && !self$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -372,6 +417,67 @@ OpenEOClient <- R6Class(
       }
       
       return(success)
+    },
+    POST = function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...) {
+      url = paste(private$host,endpoint,sep="/")
+      if (!is.list(query)) {
+        stop("Query parameters are no list of key-value-pairs")
+      }
+      
+      if (is.list(data)) {
+        
+        header = list()
+        if (authorized && !self$disableAuth) {
+          header = private$addAuthorization(header)
+        }
+        
+        # create json and prepare to send graph as post body
+        
+        response=POST(
+          url= url,
+          config = header,
+          query = query,
+          body = data,
+          encode = encodeType
+        )
+        
+        success = response$status_code %in% c(200,202,204)
+        if (success) {
+          okMessage = content(response,"parsed","application/json")
+          return(okMessage)
+        } else {
+          error = content(response,"text","application/json")
+          stop(error)
+        }
+      } else {
+        stop("Cannot interprete data - data is no list that can be transformed into json")
+      }
+    },
+    PUT = function(endpoint, authorized=FALSE, data, encodeType = NULL, ...) {
+      url = paste(private$host,endpoint,sep="/")
+      
+      header = list()
+      if (authorized && !self$disableAuth) {
+        header = private$addAuthorization(header)
+      }
+      
+      params = list(url=url, 
+                    config = header, 
+                    body=data)
+      
+      if (!is.null(encodeType)) {
+        params = append(params, list(encode = encodeType))
+      }
+      response = do.call("PUT", args = params)
+      
+      success = response$status_code %in% c(200,202,204)
+      if (success) {
+        okMessage = content(response,"parsed","application/json")
+        return(okMessage)
+      } else {
+        error = content(response,"text","application/json")
+        stop(error)
+      }
     },
     modifyProductList = function(product) {
       if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {
@@ -430,5 +536,11 @@ OpenEOClient <- R6Class(
   text = gsub("\\/","%2F",text)
   text = gsub("\\.","%2E",text)
   return(text)
+}
+
+.stopIfNotConnected = function() {
+  if (!private$isConnected()) {
+    stop("No host selected")
+  }
 }
 

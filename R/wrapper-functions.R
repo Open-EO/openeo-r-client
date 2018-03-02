@@ -38,7 +38,7 @@ taskToJSON = function(task) {
 #' @export
 api.version = function() {
   message("This version is not directly compliant to API v0.0.1. It does not implement all intended functions.")
-  return("0.0.1")
+  return("0.0.2")
 }
 
 #' Returns the offered enpoints of the openEO API
@@ -72,6 +72,17 @@ formats = function(con) {
   formats = con$output_formats()
   message(paste("Host uses '",formats$default,"' as default output format",sep=""))
   return(formats$formats)
+}
+
+#' Returns the offered webservice types of the backend
+#' 
+#' The function queries the backend for the supported webservice types that can be used on the client.
+#' 
+#' @param con a connected openeo client object
+#' @return vector of identifier of supported webservice
+#' @export
+services = function(con) {
+  return(con$services())
 }
 
 # login ----
@@ -189,6 +200,62 @@ describeProcess = function(con,process_id=NA) {
 }
 
 #
+# process graph endpoint ----
+#
+
+#' Lists the Ids of the process graphs from the current user
+#' 
+#' Queries the backend to retrieve a list of graph ids that the current user has stored on the backend.
+#' 
+#' @param con connected and authenticated openeo client object
+#' @return vector of process graph ids
+#' @export
+listGraphs = function(con) {
+  graphIds = con$listGraphs()
+  
+  return(unlist(graphIds))
+}
+
+#' Fetches the representation of a stored graph
+#' 
+#' The function queries the backend for a specific user defined process graph
+#' 
+#' @param con connected and authenticated openeo client object
+#' @param graph_id The id of a process graph on the backend
+#' @param user_id (optional) the user id from which user to fetch the process graph
+#' 
+#' @return the process graph as list
+#' @export
+describeGraph = function(con, graph_id, user_id=NULL) {
+  return(con$describeGraph(graph_id, user_id))
+}
+
+#' Deletes a previously stored process graph
+#' 
+#' The function initiates the deletion of a process graph on the backend. Only the owning user can delete
+#' a graph. The graph also should not be part of any particular job.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph_id the id of the graph
+#' 
+#' @export
+deleteGraph = function(con, graph_id) {
+  con$deleteGraph(graph_id)
+  message(paste("Graph '",graph_id,"' was successfully deleted from the backend",sep=""))
+}
+
+#' Stores a graph on the backend
+#' 
+#' Uploads the process graph information to the backend and stores it for reuse.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph a process graph definitions
+#' @export
+storeGraph = function(con, graph) {
+  return(con$storeGraph(graph))
+}
+
+#
 # user endpoint ----
 #
 
@@ -208,11 +275,12 @@ listJobs = function(con) {
 #' 
 #' @param con authorized connection
 #' 
-#' @return a list of lists with "name" and "size"
+#' @return a data.frame of for filenames and their size
 #' @export
 listFiles = function(con) {
   return(.listToDataFrame(con$listUserFiles()))
 }
+
 
 #' Uploads data into the users workspace
 #'
@@ -237,12 +305,8 @@ uploadUserData = function (con, content, target) {
   }
   
   response = con$uploadUserFile(content,target)
-  
-  if (response$status_code != 200) {
-    stop(paste("Upload of user data was not successful:",content(response)))
-  } else {
-    return(URLdecode(target))
-  }
+  message("Upload of user data was successful.")
+  invisible(response)
 }
 
 #' Downloads a file from the users workspace
@@ -319,7 +383,7 @@ orderResult = function(con, task, format, path) {
 #' @return the job_id
 #' @export
 queueTask = function(con, task) {
-  return(con$uploadJob(task,"lazy"))
+  return(con$storeJob(task,"lazy"))
 }
 
 #' Follow an executed Job
@@ -340,6 +404,8 @@ followJob = function(con, job_id) {
 #' @param con An authenticated connection
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return A success notification
+#' 
+#' @export
 deleteJob = function(con, job_id) {
   con$deleteJob(job_id)
 }

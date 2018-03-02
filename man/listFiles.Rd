@@ -10,7 +10,7 @@ listFiles(con)
 \item{con}{authorized connection}
 }
 \value{
-a list of lists with "name" and "size"
+a data.frame of for filenames and their size
 }
 \description{
 Lists all files in the workspaces of the authenticated user.
