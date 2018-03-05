@@ -626,6 +626,31 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   return(res)
 }
 
+#' Lists the supported UDF runtimes
+#' 
+#' The function queries the backend for its supported udf runtimes and returns detailed information about each
+#' runtime.
+#' 
+#' @param con connected and authenticated openeo client object
+#' @return list of udf runtimes with supported udf types, versions and installed packages
+#' @export
+udfRuntimes = function(con) {
+  return(con$udf_runtimes())
+}
+
+#' Gets detailed information about a particular udf type
+#' 
+#' Queries the backend for a particular runtime and time to retrieve information how the udf_type will work.
+#' 
+#' @param con connected and authenticated openeo client object
+#' @param language the udf runtime identifier
+#' @param type the udf type
+#' @return list with udf runtime type information
+#' @export
+describeUdfType = function(con, language, type) {
+  return(con$describeUdfRuntime)
+}
+
 #
 # service functions? ----
 #

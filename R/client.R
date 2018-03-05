@@ -67,6 +67,12 @@ OpenEOClient <- R6Class(
       
       return(formats)
     },
+    udf_runtimes = function() {
+      endpoint = "udf_runtimes"
+      
+      return(private$GET(endpoint = endpoint,
+                         authorized = FALSE))
+    },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
@@ -191,6 +197,17 @@ OpenEOClient <- R6Class(
       endpoint = paste("/services",service_id,sep="")
       
       return(private$GET(endpoint,authorized = TRUE))
+    },
+    describeUdfType = function(language, udf_type) {
+      if (is.null(language) || is.null(udf_type)) {
+        stop("Missing parameter language or udf_type")
+      }
+      
+      endpoint = paste("udf_runtimes",language,udf_type,sep="/")
+      
+      msg = private$GET(endpoint = endpoint,
+                        authorized = FALSE)
+      return(msg)
     },
     
     replaceGraph = function(graph_id, graph) {
