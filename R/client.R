@@ -473,7 +473,7 @@ OpenEOClient <- R6Class(
       
       return(private$GET(endpoint,authorized = TRUE))
     },
-    toService = function(job_id, service_type, ...) {
+    createService = function(job_id, service_type, ...) {
       if (is.null(job_id)) {
         stop("Cannot create service. job_id is missing.")
       }

@@ -283,8 +283,8 @@ listServices = function(con) {
 #' @param ... additional parameter which are send as 'service_args'
 #' @return service representation as list
 #' @export
-toService = function(con, job_id, service_type, ...) {
-  return(con$toService(job_id = job_id, service_type = service_type, ...))
+createService = function(con, job_id, service_type, ...) {
+  return(con$createService(job_id = job_id, service_type = service_type, ...))
 }
 
 #' Modifies a service
