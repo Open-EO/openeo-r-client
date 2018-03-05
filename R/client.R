@@ -184,6 +184,14 @@ OpenEOClient <- R6Class(
       
       return(graph)
     },
+    describeService = function(service_id) {
+      if (is.null(service_id)) {
+        stop("No service id specified.")
+      }
+      endpoint = paste("/services",service_id,sep="")
+      
+      return(private$GET(endpoint,authorized = TRUE))
+    },
     
     replaceGraph = function(graph_id, graph) {
       if (is.null(graph_id)) {
@@ -435,6 +443,14 @@ OpenEOClient <- R6Class(
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     },
+    deleteService = function(service_id) {
+      endpoint = paste("services",service_id,sep="")
+      
+      msg = private$DELETE(endpoint = endpoint,
+                     authorized = TRUE)
+      message("Service '",service_id,"' successfully deactivated")
+      invisibile(msg)
+    },
     getUserCredits = function() {
       endpoint = paste("users",self$user_id,"credits",sep="/")
       
@@ -468,6 +484,9 @@ OpenEOClient <- R6Class(
       
       message("Service was successfully created.")
       return(response)
+      
+    },
+    modifyService = function() {
       
     }
 

@@ -287,6 +287,36 @@ toService = function(con, job_id, service_type, ...) {
   return(con$toService(job_id = job_id, service_type = service_type, ...))
 }
 
+#' Modifies a service
+#' 
+#' @param con connected and authorized openeo client object
+#' @param service_id the service id
+modifyService = function(con, service_id, ...) {
+  .not_implemented_yet()
+}
+
+#' Describes a service
+#' 
+#' Queries the server and returns information about a particular service
+#' 
+#' @param con connected and authorized openeo client object
+#' @param service_id the service id
+#' @return service as a list
+#' @export
+describeService = function(con, service_id) {
+  return(con$describeService(service_id))
+}
+
+#' Deletes a service function for a job
+#' 
+#' Queries the backend and removes the current set service function of job.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param service_id the service id
+deleteService = function(con, service_id) {
+  return(con$deleteService(service_id))
+}
+
 #
 # user endpoint ----
 #
