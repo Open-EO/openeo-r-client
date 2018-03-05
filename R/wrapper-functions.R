@@ -385,48 +385,51 @@ listJobs = function(con) {
 #' Executes a job directly and returns the data immediately
 #'
 #' Executes a job directly on the connected openEO backend and returns the data. It relates to
-#' POST /api/jobs?evaluation="sync" in v0.0.1
-#' POST /api/execute?format=GTiff in v0.0.2
+#' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 #'
-#' @param con Connection
+#' @param con connected and authenticated openeo client
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format, ...) {
+executeTask = function(con,task,format=NULL, ...) {
   con$execute(task,format, ...)
 }
 
 
-#' Executes a job directly and stores it on the server
-#'
-#' Executes a job on a server directly and stores the data in the user workspace
-#' on the server. It relates to POST /api/jobs?evaluation="batch"
-#'
-#' @param con Connection
+#' Creates a job on the backend from a prepared task
+#' 
+#' This function shall be called after the user defined a task for the backend to create a job on the
+#' backend. Therefore the user sends the task (process graph) and the optional output specifications like
+#' format and additional creation parameter by '...'. Afterwards ths user can decide to either execute the
+#' job asynchronous or they can create a service from it.
+#' 
+#' @param con connected and authenticated openeo client
 #' @param task A Process or chained processes to a Task
+#' @param graph_id The id of an already stored process graph on the same backend
 #' @param format The inteded format of the data to be returned
-#' @param path the relative path in the users workspace, where to store the data
-#' @return A named list or vector with "job_id" and "path" to the file in the users workspace
+#' @param ... additional configuration parameter for output generation
+#' 
+#' @return the id of the job
 #' @export
-orderResult = function(con, task, format, path) {
-  #TODO incorporate format and path -> probably extend task
-  return(con$storeJob(task,"batch"))
+createJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
+  return(con$storeJob(task=task,graph_id = graph_id, format = format, ...))
 }
 
-#' Stores a job on the backend for execution on demand
-#'
-#' Uploads a job to a server for lazy evaluation
-#' on the server. It relates to POST /api/jobs?evaluation="lazy"
-#'
-#' @param con Connection
-#' @param task A Process or chained processes to a Task
-#' @return the job_id
+#' Queues a job on the backend for evaluation
+#' 
+#' The function will queue a job for evaluation that has been created before by 'createJob'. There will be
+#' a notification for success or failure, but no return value.
+#' 
+#' @param con connected and authenticated openeo client
+#' @param job_id the job id of a created job
+#' 
 #' @export
-queueTask = function(con, task) {
-  return(con$storeJob(task,"lazy"))
+queueJob = function(con, job_id) {
+  return(con$queue(job_id))
 }
+
 
 #' Follow an executed Job
 #'

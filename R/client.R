@@ -249,29 +249,38 @@ OpenEOClient <- R6Class(
       message("Graph was sucessfully stored on the backend.")
       return(okMessage$process_graph_id)
     },
-    storeJob = function(task,evaluate) {
-      #store the job on the backend either as batch or lazy
-      if (! evaluate %in% c("batch","lazy")) {
-        stop("Cannot store job on the backend. Evaluate parameter is neither 'batch' nor 'lazy'")
-      }
-      
+    storeJob = function(task=NULL,graph_id=NULL,format, ...) {
+
       if (self$is_rserver) {
-        endpoint = "jobs/"
+        endpoint = paste("jobs/",sep="/")
       } else {
-        endpoint = "jobs"
+        endpoint = paste("jobs",sep="/")
+      }
+      if (is.null(format)) {
+        format = self$output_formats()$default
       }
       
-      query = list(
-        evaluate = evaluate # for API v0.0.2 to be removed
-      )
+      output = list(...)
+      output = append(output, list(format=format))
       
+      if (!is.null(task)) {
+        if (is.list(task)) {
+          job = list(process_graph=task,output = output)
+        } else {
+          stop("Parameter task is not a task object. Awaiting a list.")
+        }
+      } else if (! is.null(graph_id)) {
+        job = list(process_graph=graph_id,output = output)
+      } else {
+        stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+      }
+
       #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
       okMessage = private$POST(endpoint=endpoint,
                                authorized = TRUE,
-                               data=task,
-                               query=query)
+                               data=job)
       
-      message("Task was sucessfully registered on the backend.")
+      message("Job was sucessfully registered on the backend.")
       return(okMessage$job_id)
     },
     execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
@@ -295,6 +304,8 @@ OpenEOClient <- R6Class(
         }
       } else if (! is.null(graph_id)) {
         job = list(process_graph=graph_id,output = output)
+      } else {
+        stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
       }
       
       header = list()
@@ -324,6 +335,16 @@ OpenEOClient <- R6Class(
       }
 
       
+    },
+    queue = function(job_id) {
+      if (is.null(job_id)) {
+        stop("No job id specified.")
+      }
+      endpoint = paste("jobs",job_id,"queue",sep="/")
+      
+      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+      message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
+      return(success)
     },
     
     deleteUserFile = function (src) {
@@ -505,6 +526,35 @@ OpenEOClient <- R6Class(
         params = append(params, list(encode = encodeType))
       }
       response = do.call("PUT", args = params)
+      
+      success = response$status_code %in% c(200,202,204)
+      if (success) {
+        okMessage = content(response,"parsed","application/json")
+        return(okMessage)
+      } else {
+        error = content(response,"text","application/json")
+        stop(error)
+      }
+    },
+    PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...) {
+      url = paste(private$host,endpoint,sep="/")
+      
+      header = list()
+      if (authorized && !self$disableAuth) {
+        header = private$addAuthorization(header)
+      }
+      
+      params = list(url=url, 
+                    config = header)
+      
+      if (!is.null(data)) {
+        params = append(params, list(body = data))
+      }
+      
+      if (!is.null(encodeType)) {
+        params = append(params, list(encode = encodeType))
+      }
+      response = do.call("PATCH", args = params)
       
       success = response$status_code %in% c(200,202,204)
       if (success) {

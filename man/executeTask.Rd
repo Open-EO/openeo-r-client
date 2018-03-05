@@ -4,10 +4,10 @@
 \alias{executeTask}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-executeTask(con, task, format, ...)
+executeTask(con, task, format = NULL, ...)
 }
 \arguments{
-\item{con}{Connection}
+\item{con}{connected and authenticated openeo client}
 
 \item{task}{A Process or chained processes to a Task}
 
@@ -20,6 +20,5 @@ a connection to file if output was provided, the raw data if not
 }
 \description{
 Executes a job directly on the connected openEO backend and returns the data. It relates to
-POST /api/jobs?evaluation="sync" in v0.0.1
-POST /api/execute?format=GTiff in v0.0.2
+POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 }
