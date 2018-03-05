@@ -2,20 +2,20 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{downloadJob}
 \alias{downloadJob}
-\title{Downloads the result of job}
+\title{Creates a list of download paths}
 \usage{
 downloadJob(con, job_id, format)
 }
 \arguments{
-\item{con}{authenticated Conenction}
+\item{con}{connected and authenticated openeo client object}
 
-\item{job_id}{id of the job}
+\item{job_id}{the id of the job}
 
-\item{format}{specification about the format for the result}
+\item{format}{optional format of the output result, in case it shall differ from the one stated in the job}
 }
 \value{
-Data in the requests format
+vector of URLs
 }
 \description{
-Download the result of a finished job
+The function queries the backend to receive the URLs to the downloadable files of a particular batch job.
 }

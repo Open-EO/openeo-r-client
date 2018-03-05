@@ -497,16 +497,18 @@ followJob = function(con, job_id) {
  .not_implemented_yet()
 }
 
-#' Downloads the result of job
-#'
-#' Download the result of a finished job
-#' @param con authenticated Conenction
-#' @param job_id id of the job
-#' @param format specification about the format for the result
-#' @return Data in the requests format
+#' Creates a list of download paths
+#' 
+#' The function queries the backend to receive the URLs to the downloadable files of a particular batch job.
+#' 
+#' @param con connected and authenticated openeo client object
+#' @param job_id the id of the job
+#' @param format optional format of the output result, in case it shall differ from the one stated in the job
+#' 
+#' @return vector of URLs
 #' @export
 downloadJob = function(con, job_id, format) {
-  .not_implemented_yet()
+  return(con$results(job_id=job_id,format=format))
 }
 
 #' Pauses a running batch job
@@ -545,20 +547,6 @@ cancelJob = function(con, job_id) {
 #' @export
 queryJob = function(con,job_id) {
   return(con$describeJob(job_id))
-}
-
-#' Creates a list of download paths
-#' 
-#' The function queries the backend to receive the URLs to the downloadable files of a particular job.
-#' 
-#' @param con connected and authenticated openeo client object
-#' @param job_id the id of the job
-#' @param format optional format of the output result, in case it shall differ from the one stated in the job
-#' 
-#' @return vector of URLs
-#' @export
-jobResult = function(con,job_id,format=NULL) {
-  return(con$results(job_id=job_id,format=format))
 }
 
 #
