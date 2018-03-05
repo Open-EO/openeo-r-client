@@ -430,6 +430,30 @@ queueJob = function(con, job_id) {
   return(con$queue(job_id))
 }
 
+#' Modifies a job with given parameter
+#' 
+#' The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
+#' that shall be replaced or removed. Shows a message of result or failure.
+#' 
+#' @details The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
+#' keys. 
+#' 'task' will replace the process graph with a newly defined one, therefore the task needs to be a list like in
+#' createJob.
+#' 'graph_id' will replace the process graph with the stated process graph id.
+#' 'format' will change the desired output format.
+#' All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a task or graph_id,
+#' e.g. if you just want to update the output format. 
+#' To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
+#' 
+#' @param con connected and authenticated openeo client
+#' @param job_id the job id of a created job
+#' @param ... The parameter you want to change. See Details for more information
+#' @export
+modifyJob = function(con, job_id, ...) {
+  temp = con$modifyJob(job_id = job_id,...)
+  message(paste("Job '",job_id,"' was successfully updated.",sep=""))
+  invisible(temp)
+} 
 
 #' Follow an executed Job
 #'
@@ -441,18 +465,6 @@ queueJob = function(con, job_id) {
 #' @export
 followJob = function(con, job_id) {
  .not_implemented_yet()
-}
-
-#' Deletes a job on the server
-#'
-#' Deletes a job on the server
-#' @param con An authenticated connection
-#' @param job_id the id of the job on the server the user wants to connect to
-#' @return A success notification
-#' 
-#' @export
-deleteJob = function(con, job_id) {
-  con$deleteJob(job_id)
 }
 
 #' Downloads the result of job
@@ -467,10 +479,22 @@ downloadJob = function(con, job_id, format) {
   .not_implemented_yet()
 }
 
+#' Pauses a running batch job
+#'
+#' Sends a request to the server in order to pause a running batch job.
+#'
+#' @param con authenticated Connection
+#' @param job_id id of job that will be canceled
+#' @return a success / failure notification
+#' @export
+pauseJob = function(con, job_id) {
+  return(con$pause(job_id))
+}
+
 
 #' Terminates a running job
 #'
-#' Informs the server that the specified job needs to be terminate and taken "canceled" to prevent from
+#' Informs the server that the specified job needs to be terminated and taken "canceled" to prevent from
 #' further executions and related costs.
 #'
 #' @param con authenticated Connection
@@ -478,7 +502,7 @@ downloadJob = function(con, job_id, format) {
 #' @return a success / failure notification
 #' @export
 cancelJob = function(con, job_id) {
-    .not_implemented_yet()
+    return(con$cancel(job_id))
 }
 
 #' Fetches information about a job
@@ -491,6 +515,20 @@ cancelJob = function(con, job_id) {
 #' @export
 queryJob = function(con,job_id) {
   return(con$describeJob(job_id))
+}
+
+#' Creates a list of download paths
+#' 
+#' The function queries the backend to receive the URLs to the downloadable files of a particular job.
+#' 
+#' @param con connected and authenticated openeo client object
+#' @param job_id the id of the job
+#' @param format optional format of the output result, in case it shall differ from the one stated in the job
+#' 
+#' @return vector of URLs
+#' @export
+jobResult = function(con,job_id,format=NULL) {
+  return(con$results(job_id=job_id,format=format))
 }
 
 #

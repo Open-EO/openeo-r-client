@@ -283,6 +283,38 @@ OpenEOClient <- R6Class(
       message("Job was sucessfully registered on the backend.")
       return(okMessage$job_id)
     },
+    modifyJob = function(job_id,...) {
+      if (is.null(job_id)) {
+        stop("No job i was specified.")
+      }
+      endpoint = paste("jobs",job_id,sep="/")
+      
+      updateables = list(...)
+      
+      patch = list()
+      graph = NULL
+      if ("graph_id" %in% names(updateables)) {
+        graph = updateables$graph_id
+        updateables$graph_id = NULL
+      } else if ("task" %in% names(updateables)) {
+        graph = updateables$task
+        updateables$task = NULL
+      }
+      if (!is.null(graph)) {
+        patch = append(patch,process_graph = graph)
+      }
+      
+      if (length(updateables) > 0) {
+        patch = append(patch, output=updateables)
+      }
+      
+      #endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...
+      return(private$PATCH(endpoint = endpoint,
+                    authorized = TRUE,
+                    encodeType = "json",
+                    data=patch))
+      
+    },
     execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
       # former sync evaluation
       if (self$is_rserver) {
@@ -346,6 +378,46 @@ OpenEOClient <- R6Class(
       message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
       return(success)
     },
+    results = function(job_id, format = NULL) {
+      if (is.null(job_id)) {
+        stop("No job id specified.")
+      }
+      
+      endpoint = paste("jobs",job_id,"download",sep="/")
+      supportedFormats = names(output_formats()$formats)
+      if (!is.null(format) && format %in% supportedFormats) {
+        sucess = private$GET(endpoint = endpoint,
+                             authorized = TRUE,
+                             query=list(
+                               format=format
+                             ))
+      } else {
+        success = private$GET(endpoint = endpoint,
+                              authorized = TRUE)
+      }
+      
+      return(success)
+    },
+    pause = function(job_id) {
+      if (is.null(job_id)) {
+        stop("No job id specified.")
+      }
+      endpoint = paste("jobs",job_id,"pause",sep="/")
+      
+      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+      message(paste("Job '",job_id,"' has been successfully paused.",sep=""))
+      return(success)
+    },
+    cancel = function(job_id) {
+      if (is.null(job_id)) {
+        stop("No job id specified.")
+      }
+      endpoint = paste("jobs",job_id,"cancel",sep="/")
+      
+      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+      message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
+      return(success)
+    },
     
     deleteUserFile = function (src) {
       
@@ -358,12 +430,6 @@ OpenEOClient <- R6Class(
       
       return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }, 
-    deleteJob = function(job_id) {
-      #TODO remove this function
-      endpoint = paste("jobs",job_id,sep="/")
-      
-      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
-    },
     deleteGraph = function(graph_id) {
       endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
       
@@ -429,13 +495,13 @@ OpenEOClient <- R6Class(
         stop("You are not logged in.")
       }
     },
-    GET = function(endpoint,authorized=FALSE, ...) {
+    GET = function(endpoint,authorized=FALSE,query = list(), ...) {
       url = paste(private$host,endpoint, sep ="/")
 
       if (authorized && !self$disableAuth) {
-        response = GET(url=url, config=private$addAuthorization())
+        response = GET(url=url, config=private$addAuthorization(),query=query)
       } else {
-        response = GET(url=url)
+        response = GET(url=url,query=query)
       }
 
 
