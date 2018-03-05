@@ -283,7 +283,7 @@ listServices = function(con) {
 #' @param ... additional parameter which are send as 'service_args'
 #' @return service representation as list
 #' @export
-createService = function(con, job_id, service_type, ...) {
+defineService = function(con, job_id, service_type, ...) {
   return(con$createService(job_id = job_id, service_type = service_type, ...))
 }
 
@@ -443,7 +443,7 @@ executeTask = function(con,task,format=NULL, ...) {
 #' 
 #' @return the id of the job
 #' @export
-createJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
+defineJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
   return(con$storeJob(task=task,graph_id = graph_id, format = format, ...))
 }
 
@@ -458,6 +458,29 @@ createJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
 #' @export
 queueJob = function(con, job_id) {
   return(con$queue(job_id))
+}
+
+#' Defines a job and starts the evaluation
+#' 
+#' Function to execute two operations in one call. First define a job on the server, then call
+#' the endpoint to execute it immediately on the backend.
+#' 
+#' @param con connected and authenticated openeo client
+#' @param task A Process or chained processes to a Task
+#' @param graph_id The id of an already stored process graph on the same backend
+#' @param format The inteded format of the data to be returned
+#' @param ... additional configuration parameter for output generation
+#' 
+#' @return the job_id of the defined job
+#' @export 
+orderResult = function(con, task=NULL, graph_id=NULL, format, ...) {
+  job_id = con$storeJob(task=task,
+                        graph_id = graph_id,
+                        format = format,
+                        ...)
+  processing = con$queue(job_id)
+  
+  return(job_id)
 }
 
 #' Modifies a job with given parameter
