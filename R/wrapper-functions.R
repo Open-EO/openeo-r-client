@@ -37,7 +37,6 @@ taskToJSON = function(task) {
 #' @return character describing the API version
 #' @export
 api.version = function() {
-  message("This version is not directly compliant to API v0.0.1. It does not implement all intended functions.")
   return("0.0.2")
 }
 
@@ -420,11 +419,15 @@ listJobs = function(con) {
 #' @param con connected and authenticated openeo client
 #' @param task A Process or chained processes to a Task
 #' @param format The inteded format of the data to be returned
+#' @param output_file Where to store the retrieved data under
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format=NULL, ...) {
-  con$execute(task,format, ...)
+executeTask = function(con,task,format=NULL,output_file=NULL, ...) {
+  con$execute(task=task,
+              format=format,
+              output_file=output_file, 
+              ...)
 }
 
 
@@ -530,7 +533,7 @@ followJob = function(con, job_id) {
 #' 
 #' @return vector of URLs
 #' @export
-downloadJob = function(con, job_id, format) {
+downloadJob = function(con, job_id, format=NULL) {
   return(con$results(job_id=job_id,format=format))
 }
 
@@ -568,7 +571,7 @@ cancelJob = function(con, job_id) {
 #' @param job_id id of the job
 #' @return a detailed description about the job
 #' @export
-queryJob = function(con,job_id) {
+describeJob = function(con,job_id) {
   return(con$describeJob(job_id))
 }
 

@@ -47,7 +47,7 @@ OpenEOClient <- R6Class(
     capabilities = function() {
       endpoint = "capabilities"
       
-      .stopIfNotConnected()
+      private$stopIfNotConnected()
       
       capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
       
@@ -56,7 +56,7 @@ OpenEOClient <- R6Class(
     services = function() {
       endpoint = "capabilities/services"
       
-      .stopIfNotConnected()
+      private$stopIfNotConnected()
       
       services = private$GET(endpoint, authorized = FALSE)
       return(services)
@@ -409,19 +409,18 @@ OpenEOClient <- R6Class(
       }
       
       endpoint = paste("jobs",job_id,"download",sep="/")
-      supportedFormats = names(output_formats()$formats)
+      supportedFormats = names(self$output_formats()$formats)
       if (!is.null(format) && format %in% supportedFormats) {
-        sucess = private$GET(endpoint = endpoint,
+        return(private$GET(endpoint = endpoint,
                              authorized = TRUE,
                              query=list(
                                format=format
-                             ))
+                             )))
       } else {
-        success = private$GET(endpoint = endpoint,
-                              authorized = TRUE)
+        return(private$GET(endpoint = endpoint,
+                              authorized = TRUE))
       }
       
-      return(success)
     },
     pause = function(job_id) {
       if (is.null(job_id)) {
@@ -710,6 +709,11 @@ OpenEOClient <- R6Class(
       }
 
       return(header)
+    },
+    stopIfNotConnected = function() {
+      if (!private$isConnected()) {
+        stop("No host selected")
+      }
     }
     
 
@@ -726,9 +730,5 @@ OpenEOClient <- R6Class(
   return(text)
 }
 
-.stopIfNotConnected = function() {
-  if (!private$isConnected()) {
-    stop("No host selected")
-  }
-}
+
 

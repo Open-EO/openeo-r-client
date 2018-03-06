@@ -4,7 +4,7 @@
 \alias{executeTask}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-executeTask(con, task, format = NULL, ...)
+executeTask(con, task, format = NULL, output_file = NULL, ...)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}
@@ -12,6 +12,8 @@ executeTask(con, task, format = NULL, ...)
 \item{task}{A Process or chained processes to a Task}
 
 \item{format}{The inteded format of the data to be returned}
+
+\item{output_file}{Where to store the retrieved data under}
 
 \item{...}{additional configuration parameter for output generation}
 }
