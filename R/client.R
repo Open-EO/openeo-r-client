@@ -376,16 +376,32 @@ OpenEOClient <- R6Class(
                          raw=TRUE)
       
       if (!is.null(output_file)) {
+        drivers = gdalDrivers()
+        ogr_drivers = ogrDrivers()
+        
+        allowedGDALFormats = drivers[drivers$create,"name"]
+        allowedOGRFormats = ogr_drivers[ogr_drivers$write, "name"]
+        
         tryCatch(
           {
             message("Task result was sucessfully stored.")
             writeBin(content(res,"raw"),output_file)
-            return(raster(output_file))
           },
           error = function(err) {
             stop(err)
           }
         )
+        if (format %in% allowedGDALFormats) {
+          suppressMessages(
+            tryCatch ({
+              return(raster(output_file))
+            },error = function(err) {
+              return(readOGR(output_file))
+            })
+          )
+        } else {
+          return(readOGR(output_file))
+        }
         
       } else {
         return(content(res,"raw"))

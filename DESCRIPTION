@@ -9,7 +9,8 @@ Depends:
     magrittr (>= 1.5),
     jsonlite(>= 1.5),
     gdalUtils (>= 2.0.1.7),
-    raster (>= 2.6-7)
+    raster (>= 2.6-7),
+    rgdal (>= 1.2-16)
 Imports:
     jsonlite,
     httr,
@@ -17,6 +18,7 @@ Imports:
     magrittr,
     gdalUtils,
     raster,
+    rgdal,
     lubridate
 Encoding: UTF-8
 LazyData: true
