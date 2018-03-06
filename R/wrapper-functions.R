@@ -48,7 +48,7 @@ api.version = function() {
 #' @param con A connected openeo client
 #' @return data.frame containing the supported / implemented endpoints of the backend
 #' @export
-capabilities = function(con) {
+listCapabilities = function(con) {
   capabilities = con$capabilities()
   if (is.list(capabilities)) {
     capabilities = unlist(capabilities)
@@ -63,7 +63,7 @@ capabilities = function(con) {
 #' @param connected openeo client object
 #' @return list of formats with optional configuration parameter
 #' @export
-formats = function(con) {
+listFormats = function(con) {
   if (api.version() == "0.0.1") {
     return(.not_implemented_yet())
   }

@@ -4,7 +4,7 @@
 \alias{downloadJob}
 \title{Creates a list of download paths}
 \usage{
-downloadJob(con, job_id, format)
+downloadJob(con, job_id, format = NULL)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client object}
