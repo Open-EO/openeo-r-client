@@ -36,8 +36,8 @@ OpenEOClient <- R6Class(
           url = substr(url,1,nchar(url)-1)
         }
         private$host = url
-        cat(paste("Registered '",url,"' as host","\n",sep=""))
-        
+        # cat(paste("Registered '",url,"' as host","\n",sep=""))
+        cat("Registered host\n")
         invisible(self)
       } else {
         stop("Host-URL is missing")
@@ -172,7 +172,7 @@ OpenEOClient <- R6Class(
     describeJob = function(job_id) {
       endpoint = paste("jobs",job_id,sep="/")
       
-      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
       
       return(info)
     },
@@ -282,7 +282,7 @@ OpenEOClient <- R6Class(
         endpoint = paste("jobs",sep="/")
       }
       if (is.null(format)) {
-        format = self$output_formats()$default
+        # format = self$output_formats()$default
       }
       
       output = list(...)
