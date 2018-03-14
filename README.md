@@ -45,4 +45,4 @@ Notes: if you are running the openeo-r-backend as backend solution for testing, 
 
 ## Links
 * [openEO.org](http://openeo.org/)
-* [openEO core API](https://open-eo.github.io/openeo-api-poc/)
+* [openEO core API](https://open-eo.github.io/openeo-api/)
