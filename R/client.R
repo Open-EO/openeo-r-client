@@ -87,7 +87,7 @@ OpenEOClient <- R6Class(
       private$password = password
 
       url = paste(private$host, endpoint, sep="/")
-      res = POST(url=url,
+      res = GET(url=url,
                  config = authenticate(user=user,
                                        password = password,
                                        type = auth_type)
