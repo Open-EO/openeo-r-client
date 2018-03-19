@@ -25,8 +25,8 @@ conn %>% listCollections()
 conn %>% listProcesses()
 
 # get detailed descriptions
-conn %>% describe(product_id = c("sentinel2","landsat7"))
-conn %>% describe(process_id = "filter_daterange")
+conn %>% describeProduct(c("sentinel2","landsat7"))
+conn %>% describeProcess("filter_daterange")
 
 # create a process graph / task
 task = collection("sentinel2") 
@@ -38,7 +38,8 @@ task = collection("sentinel2")
                   content = file.path("C:/files/atmo_corr.R"),
                   target = "udfs/atmospherical_correction.R")
                                 
-conn %>% createJob(task)
+job_id = conn %>% defineJob(task)
+conn %>% downloadJob(job_id)
 ```
 
 Notes: if you are running the openeo-r-backend as backend solution for testing, then please use the optional parameter `rbackend=TRUE`, when calling `connect`. The current openeo-r-backend differs from the strict openeo API in terms of some trailing slashes "/". This is adressed when setting `rbackend=TRUE`. Alternatively set `conn$is_rserver = TRUE` after `connect`.
