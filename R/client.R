@@ -105,6 +105,7 @@ OpenEOClient <- R6Class(
         stop("Login failed.")
       }
     },
+    # list functions ####
     listData = function() {
       
       
@@ -132,7 +133,24 @@ OpenEOClient <- R6Class(
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
       listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
-      return(listOfJobs)
+      # list to tibble
+      table = tibble(job_id=character(),
+                     status=character(),
+                     submitted=.POSIXct(integer(0)),
+                     last_update=.POSIXct(integer(0)),
+                     consumed_credits=integer(0))
+      
+      for (index in 1:length(listOfJobs)) {
+        job = listOfJobs[[index]]
+        table= add_row(table,
+                job_id=job$job_id,
+                status = job$status,
+                submitted = as.POSIXct(strptime(job$submitted,format="%Y-%m-%d %H:%M:%S")),
+                last_update = as.POSIXct(strptime(job$last_update,format="%Y-%m-%d %H:%M:%S")),
+                consumed_credits = job$consumed_credits)
+      }
+      
+      return(table)
     },
     
     listGraphs = function() {
@@ -153,7 +171,7 @@ OpenEOClient <- R6Class(
       files = private$GET(endpoint,TRUE,type="application/json")
       return(files)
     },
-
+    # describe functions ####
     describeProcess = function(pid) {
       endpoint = paste("processes",pid,sep="/")
       
@@ -562,8 +580,10 @@ OpenEOClient <- R6Class(
         info = content(response, ...)
         return(info)
 
-      } else {
+      } else if (response$status_code %in% c(404)) {
         stop(paste("Cannot find or access endpoint ","'",endpoint,"'",sep=""))
+      } else {
+        stop(response$message)
       }
     },
     DELETE = function(endpoint,authorized=FALSE,...) {

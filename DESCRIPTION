@@ -1,16 +1,17 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
-Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.0.1
+Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.2.0
 Depends: 
     R (>= 3.3),
     magrittr (>= 1.5),
     jsonlite(>= 1.5),
     gdalUtils (>= 2.0.1.7),
     raster (>= 2.6-7),
-    rgdal (>= 1.2-16)
+    rgdal (>= 1.2-16),
+    tibble (>= 1.4.2)
 Imports:
     jsonlite,
     httr,
@@ -19,7 +20,8 @@ Imports:
     gdalUtils,
     raster,
     rgdal,
-    lubridate
+    lubridate,
+    tibble
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
