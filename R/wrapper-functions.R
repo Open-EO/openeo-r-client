@@ -569,7 +569,7 @@ cancelJob = function(con, job_id) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of the job
-#' @return a detailed description about the job
+#' @return a detailed description about the job as tibble
 #' @export
 describeJob = function(con,job_id) {
   return(con$describeJob(job_id))

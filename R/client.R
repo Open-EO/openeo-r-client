@@ -137,7 +137,7 @@ OpenEOClient <- R6Class(
       table = tibble(job_id=character(),
                      status=character(),
                      submitted=.POSIXct(integer(0)),
-                     last_update=.POSIXct(integer(0)),
+                     updated=.POSIXct(integer(0)),
                      consumed_credits=integer(0))
       
       for (index in 1:length(listOfJobs)) {
@@ -146,7 +146,7 @@ OpenEOClient <- R6Class(
                 job_id=job$job_id,
                 status = job$status,
                 submitted = as.POSIXct(strptime(job$submitted,format="%Y-%m-%d %H:%M:%S")),
-                last_update = as.POSIXct(strptime(job$last_update,format="%Y-%m-%d %H:%M:%S")),
+                updated = as.POSIXct(strptime(job$updated,format="%Y-%m-%d %H:%M:%S")),
                 consumed_credits = job$consumed_credits)
       }
       
@@ -191,8 +191,16 @@ OpenEOClient <- R6Class(
       endpoint = paste("jobs",job_id,sep="/")
       
       info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
+      table = tibble(job_id = info$job_id,
+                     status = info$status,
+                     process_graph = list(info$process_graph),
+                     output = list(info$output),
+                     submitted = as.POSIXct(strptime(info$submitted,format="%Y-%m-%d %H:%M:%S")),
+                     updated = as.POSIXct(strptime(info$updated,format="%Y-%m-%d %H:%M:%S")),
+                     user_id = info$user_id,
+                     consumed_credits = info$consumed_credits)
       
-      return(info)
+      return(table)
     },
     describeGraph = function(graph_id, user_id = NULL) {
       if (is.null(graph_id)) {
