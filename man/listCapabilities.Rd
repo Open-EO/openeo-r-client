@@ -10,9 +10,9 @@ listCapabilities(con)
 \item{con}{A connected openeo client}
 }
 \value{
-data.frame containing the supported / implemented endpoints of the backend
+data.frame containing the supported / implemented endpoints of the back-end
 }
 \description{
-The function queries the backend for its capabilities. The offered enpoints that are specified in the openeo
+The function queries the back-end for its capabilities. The offered enpoints that are specified in the openeo
 API are then returned.
 }

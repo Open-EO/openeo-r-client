@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{defineService}
 \alias{defineService}
-\title{Prepares and publishes a service on the backend}
+\title{Prepares and publishes a service on the back-end}
 \usage{
 defineService(con, job_id, service_type, ...)
 }
@@ -19,6 +19,6 @@ defineService(con, job_id, service_type, ...)
 service representation as list
 }
 \description{
-The function will send a configuration object to the backend to create a webservice from a job considering
+The function will send a configuration object to the back-end to create a webservice from a job considering
 additional parameter.
 }

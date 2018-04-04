@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{queueJob}
 \alias{queueJob}
-\title{Queues a job on the backend for evaluation}
+\title{Queues a job on the back-end for evaluation}
 \usage{
 queueJob(con, job_id)
 }

@@ -15,5 +15,5 @@ JSON string of the process graph as a character string
 \description{
 This function is intended to have a preconfigured toJSON function
 to allow a user to visualize the process graph in JSON (like it will
-be sent to the backend)
+be sent to the back-end)
 }

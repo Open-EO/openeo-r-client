@@ -9,7 +9,7 @@ downloadUserData(con, src, dst = NULL)
 \arguments{
 \item{con}{authorized connection}
 
-\item{src}{the relative filepath of the source file on the openeo backend}
+\item{src}{the relative filepath of the source file on the openeo back-end}
 
 \item{dst}{the destination file path on the local file system}
 }
@@ -17,5 +17,5 @@ downloadUserData(con, src, dst = NULL)
 The file path of the stored file
 }
 \description{
-Sends a request to an openeo backend to access the users files and downloads them to a given location
+Sends a request to an openeo back-end to access the users files and downloads them to a given location
 }

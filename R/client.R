@@ -128,7 +128,17 @@ OpenEOClient <- R6Class(
       }
       
       listOfProcesses = private$GET(endpoint,type="application/json")
-      return(listOfProcesses)
+      
+      table = tibble(process_id = character(),
+                     description = character())
+      
+      for (index in 1:length(listOfProcesses)) {
+        process = listOfProcesses[[index]]
+        table = table %>% add_row(process_id = process$process_id,
+                                  description = process$description)
+      }
+      
+      return(table)
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
@@ -548,6 +558,14 @@ OpenEOClient <- R6Class(
     },
     modifyService = function() {
       
+    },
+    getProcessGraphBuilder = function() {
+      
+      if (is.null(private$graph_builder)) {
+        private$graph_builder = ProcessGraphBuilder$new(self)
+      }
+      
+      return(private$graph_builder)
     }
 
   ),
@@ -558,6 +576,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
+    graph_builder=NULL,
     
     # functions ====
     isConnected = function() {

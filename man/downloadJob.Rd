@@ -17,5 +17,5 @@ downloadJob(con, job_id, format = NULL)
 vector of URLs
 }
 \description{
-The function queries the backend to receive the URLs to the downloadable files of a particular batch job.
+The function queries the back-end to receive the URLs to the downloadable files of a particular batch job.
 }

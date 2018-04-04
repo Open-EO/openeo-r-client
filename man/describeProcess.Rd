@@ -15,5 +15,5 @@ describeProcess(con, process_id = NA)
 a list of detailed information
 }
 \description{
-Queries an openeo backend and retrieves more detailed information about offered processes
+Queries an openeo back-end and retrieves more detailed information about offered processes
 }

@@ -9,7 +9,7 @@ describeGraph(con, graph_id, user_id = NULL)
 \arguments{
 \item{con}{connected and authenticated openeo client object}
 
-\item{graph_id}{The id of a process graph on the backend}
+\item{graph_id}{The id of a process graph on the back-end}
 
 \item{user_id}{(optional) the user id from which user to fetch the process graph}
 }
@@ -17,5 +17,5 @@ describeGraph(con, graph_id, user_id = NULL)
 the process graph as list
 }
 \description{
-The function queries the backend for a specific user defined process graph
+The function queries the back-end for a specific user defined process graph
 }

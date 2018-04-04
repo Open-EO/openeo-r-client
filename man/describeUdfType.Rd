@@ -17,5 +17,5 @@ describeUdfType(con, language, type)
 list with udf runtime type information
 }
 \description{
-Queries the backend for a particular runtime and time to retrieve information how the udf_type will work.
+Queries the back-end for a particular runtime and time to retrieve information how the udf_type will work.
 }

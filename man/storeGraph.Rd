@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{storeGraph}
 \alias{storeGraph}
-\title{Stores a graph on the backend}
+\title{Stores a graph on the back-end}
 \usage{
 storeGraph(con, graph)
 }
@@ -12,5 +12,5 @@ storeGraph(con, graph)
 \item{graph}{a process graph definitions}
 }
 \description{
-Uploads the process graph information to the backend and stores it for reuse.
+Uploads the process graph information to the back-end and stores it for reuse.
 }

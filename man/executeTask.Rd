@@ -21,6 +21,6 @@ executeTask(con, task, format = NULL, output_file = NULL, ...)
 a connection to file if output was provided, the raw data if not
 }
 \description{
-Executes a job directly on the connected openEO backend and returns the data. It relates to
+Executes a job directly on the connected openEO back-end and returns the data. It relates to
 POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 }

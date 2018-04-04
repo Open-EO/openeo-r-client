@@ -15,5 +15,5 @@ followJob(con, job_id)
 a WebSocket connection
 }
 \description{
-Opens up a websocket to the openEO backend to fetch updates about a running job.
+Opens up a websocket to the openEO back-end to fetch updates about a running job.
 }

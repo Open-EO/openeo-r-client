@@ -18,5 +18,5 @@ the relative file path on the server
 }
 \description{
 This function sends the file given by 'content' to the specified target location (relative file path in the
-user workspace) on the backend.
+user workspace) on the back-end.
 }

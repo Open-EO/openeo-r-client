@@ -28,6 +28,7 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 License: Apache License
 Collate: 
+    'ProcessGraphBuilder-class.R'
     'client.R'
     'process_graph_building.R'
     'wrapper-functions.R'

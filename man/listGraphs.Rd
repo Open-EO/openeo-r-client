@@ -13,5 +13,5 @@ listGraphs(con)
 vector of process graph ids
 }
 \description{
-Queries the backend to retrieve a list of graph ids that the current user has stored on the backend.
+Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.
 }

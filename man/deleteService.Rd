@@ -12,5 +12,5 @@ deleteService(con, service_id)
 \item{service_id}{the service id}
 }
 \description{
-Queries the backend and removes the current set service function of job.
+Queries the back-end and removes the current set service function of job.
 }

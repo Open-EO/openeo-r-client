@@ -13,6 +13,6 @@ udfRuntimes(con)
 list of udf runtimes with supported udf types, versions and installed packages
 }
 \description{
-The function queries the backend for its supported udf runtimes and returns detailed information about each
+The function queries the back-end for its supported udf runtimes and returns detailed information about each
 runtime.
 }

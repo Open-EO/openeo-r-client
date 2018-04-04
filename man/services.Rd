@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{services}
 \alias{services}
-\title{Returns the offered webservice types of the backend}
+\title{Returns the offered webservice types of the back-end}
 \usage{
 services(con)
 }
@@ -13,5 +13,5 @@ services(con)
 vector of identifier of supported webservice
 }
 \description{
-The function queries the backend for the supported webservice types that can be used on the client.
+The function queries the back-end for the supported webservice types that can be used on the client.
 }
