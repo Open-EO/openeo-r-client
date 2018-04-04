@@ -44,6 +44,8 @@ conn %>% downloadJob(job_id)
 
 Notes: if you are running the openeo-r-backend as backend solution for testing, then please use the optional parameter `rbackend=TRUE`, when calling `connect`. The current openeo-r-backend differs from the strict openeo API in terms of some trailing slashes "/". This is adressed when setting `rbackend=TRUE`. Alternatively set `conn$is_rserver = TRUE` after `connect`.
 
+The process graph creation was improved in version 0.2.1 with the introduction of the ProcessGraphBuilder. For more details have a look on the [Process Graph Building-Wiki page](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building)
+
 ## Links
 * [openEO.org](http://openeo.org/)
 * [openEO core API](https://open-eo.github.io/openeo-api/)
