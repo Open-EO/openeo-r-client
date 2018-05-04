@@ -148,7 +148,7 @@ openeo.auth = function (con, ...) {
 #' @param con Connection object
 #' @export
 listCollections = function(con) {
-  return(.listToDataFrame(con$listData()))
+  return(con$listData())
 }
 
 #' Describe a product
@@ -166,12 +166,15 @@ describeCollection = function(con, collection_id=NA) {
   if (!describeProduct) {
     stop("No or invalid collection id(s)")
   }
-  
-  return(lapply(collection_id,
-                function(pid) {
-                  con$describeProduct(pid)
-                }
-  ))
+  if (length(collection_id) > 1) {
+    return(lapply(collection_id,
+                  function(pid) {
+                    con$describeProduct(pid)
+                  }
+    ))
+  } else {
+    return(con$describeProduct(collection_id))
+  }
 }
 
 #

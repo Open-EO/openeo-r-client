@@ -116,7 +116,17 @@ OpenEOClient <- R6Class(
       }
       
       listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-      return(listOfProducts)
+      table = tibble(product_id = character(),
+                     description = character(),
+                     source = character())
+      for (index in 1: length(listOfProducts)) {
+        product = listOfProducts[[index]]
+        table = table %>% add_row(product_id = product$product_id,
+                                  description = product$description,
+                                  source = product$source)
+      }
+      
+      return(table)
 
     },
     listProcesses = function() {
@@ -172,8 +182,22 @@ OpenEOClient <- R6Class(
     listServices = function() {
       endpoint = paste("users",self$user_id,"services",sep="/")
       listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
+      table = tibble(service_id=character(),
+                     service_type=character(),
+                     service_args=list(),
+                     job_id=character(),
+                     service_url=character())
       
-      return(listOfServices)
+      for (index in 1:length(listOfServices)) {
+        service = listOfServices[[index]]
+        
+        if (!is.null(service$service_args) && length(service$service_args) == 0) {
+          service$service_args <- NULL
+        }
+        table= do.call("add_row",append(list(.data=table),service))
+      }
+      
+      return(table)
     },
     
     listUserFiles = function() {
@@ -186,6 +210,10 @@ OpenEOClient <- R6Class(
       endpoint = paste("processes",pid,sep="/")
       
       info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      
+      # info is currently a list 
+      # make a class of it and define print
+      class(info) <- "ProcessInfo"
 
       return(info)
     },
@@ -230,7 +258,7 @@ OpenEOClient <- R6Class(
       if (is.null(service_id)) {
         stop("No service id specified.")
       }
-      endpoint = paste("/services",service_id,sep="")
+      endpoint = paste("services",service_id,sep="/")
       
       return(private$GET(endpoint,authorized = TRUE))
     },
@@ -455,7 +483,8 @@ OpenEOClient <- R6Class(
       
       success = private$PATCH(endpoint = endpoint, authorized = TRUE)
       message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
-      return(success)
+      
+      invisible(self)
     },
     results = function(job_id, format = NULL) {
       if (is.null(job_id)) {
