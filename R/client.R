@@ -20,7 +20,7 @@ OpenEOClient <- R6Class(
     user_id = NULL,
     
     is_rserver = FALSE,
-    api.version = "0.0.1",
+    api.version = "0.0.2",
     
     products = list(),
     processes = list(),
@@ -121,9 +121,24 @@ OpenEOClient <- R6Class(
                      source = character())
       for (index in 1: length(listOfProducts)) {
         product = listOfProducts[[index]]
-        table = table %>% add_row(product_id = product$product_id,
-                                  description = product$description,
-                                  source = product$source)
+        
+        product_id = product$product_id
+        if ("description" %in% names(product)) {
+          description = product$description
+        } else {
+          description = NA
+        }
+        
+        if ("source" %in% names(product)) {
+          source = product$source
+        } else {
+          source = NA
+        }
+        
+        
+        table = table %>% add_row(product_id = product_id,
+                                  description = description,
+                                  source = source)
       }
       
       return(table)
@@ -222,8 +237,13 @@ OpenEOClient <- R6Class(
       
       info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
-      return(private$modifyProductList(info))
-      # return(info)
+      tryCatch({
+        info = private$modifyProductList(info)
+      },
+      error = function(e) {
+        warning(as.character(e))
+      },
+      finally = return(info))
     },
     describeJob = function(job_id) {
       endpoint = paste("jobs",job_id,sep="/")
