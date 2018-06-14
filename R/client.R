@@ -180,8 +180,8 @@ OpenEOClient <- R6Class(
         table= add_row(table,
                 job_id=job$job_id,
                 status = job$status,
-                submitted = as.POSIXct(strptime(job$submitted,format="%Y-%m-%d %H:%M:%S")),
-                updated = as.POSIXct(strptime(job$updated,format="%Y-%m-%d %H:%M:%S")),
+                submitted = as_datetime(job$submitted),
+                updated = as_datetime(job$updated),
                 consumed_credits = job$consumed_credits)
       }
       
@@ -253,8 +253,8 @@ OpenEOClient <- R6Class(
                      status = info$status,
                      process_graph = list(info$process_graph),
                      output = list(info$output),
-                     submitted = as.POSIXct(strptime(info$submitted,format="%Y-%m-%d %H:%M:%S")),
-                     updated = as.POSIXct(strptime(info$updated,format="%Y-%m-%d %H:%M:%S")),
+                     submitted = as_datetime(info$submitted),
+                     updated = as_datetime(info$updated),
                      user_id = info$user_id,
                      consumed_credits = info$consumed_credits)
       
@@ -314,7 +314,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    uploadUserFile = function(file.path,target) {
+    uploadUserFile = function(file.path,target,...) {
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
 
@@ -323,8 +323,9 @@ OpenEOClient <- R6Class(
       }
 
       endpoint = paste("users",self$user_id,"files",target,sep="/")
+      dots = list(...)
       
-      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path))
+      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=dots$mime),encodeType = dots$encode)
 
       return(message)
     },
@@ -736,7 +737,6 @@ OpenEOClient <- R6Class(
       params = list(url=url, 
                     config = header, 
                     body=data)
-      
       if (!is.null(encodeType)) {
         params = append(params, list(encode = encodeType))
       }

@@ -352,10 +352,12 @@ listFiles = function(con) {
 #' @param con authorized Connection
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file
+#' @param encode the encoding type used to upload the data, e.g. "multipart","form","json","raw"
+#' @param mime mime type used in upload_file
 #'
 #' @return the relative file path on the server
 #' @export
-uploadUserData = function (con, content, target) {
+uploadUserData = function (con, content, target,encode=NULL,mime=NULL) {
   if (missing(content)) {
     stop("Content data is missing")
   }
@@ -366,7 +368,7 @@ uploadUserData = function (con, content, target) {
     stop(paste("Cannot find file at ",content))
   }
   
-  response = con$uploadUserFile(content,target)
+  response = con$uploadUserFile(content,target,encode=encode,mime=mime)
   message("Upload of user data was successful.")
   invisible(response)
 }
