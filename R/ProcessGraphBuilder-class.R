@@ -29,6 +29,7 @@ ProcessGraphBuilder = R6Class(
         forms$... <- NULL
         forms = append(forms,arguments)
         forms$process_id = id
+        
         if ("imagery" %in% names(arguments)) {
           forms$prior.name = "imagery"
         } else if ("collection" %in% names(arguments)) {
@@ -51,11 +52,18 @@ ProcessGraphBuilder = R6Class(
             }
           }
           call = as.list(match.call())
+          
           call[[1]] <- NULL #delete the function name
           #also replace all those arguments we know are the static ones of "process"
           call[["process"]] <- NULL
           call[["process_id"]] <- NULL
           call[["prior.name"]] <- NULL
+          
+          if (length(call) > 0) {
+            for (index in 1:length(call)) {
+              call[[index]] = eval(call[[index]])
+            }
+          }
           
           additionalParameter = call
           res$process_id = process_id
