@@ -251,10 +251,22 @@ deleteGraph = function(con, graph_id) {
 #' Uploads the process graph information to the back-end and stores it for reuse.
 #' 
 #' @param con connected and authorized openeo client object
-#' @param graph a process graph definitions
+#' @param graph a process graph definition
 #' @export
 storeGraph = function(con, graph) {
   return(con$storeGraph(graph))
+}
+
+#' Replaces the current graph with a given
+#' 
+#' Upload a process graph to the back-end under a given (existing) process graph.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph_id process graph id
+#' @param graph a process graph definition created by chaining "process()", "collection()" or using a ProcessGraphBuilder
+#' @export
+replaceGraph = function(con, graph_id, graph) {
+  return(con$replaceGraph(graph_id=graph_id, graph=graph))
 }
 
 #

@@ -9,7 +9,7 @@ storeGraph(con, graph)
 \arguments{
 \item{con}{connected and authorized openeo client object}
 
-\item{graph}{a process graph definitions}
+\item{graph}{a process graph definition}
 }
 \description{
 Uploads the process graph information to the back-end and stores it for reuse.

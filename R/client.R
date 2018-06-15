@@ -73,6 +73,31 @@ OpenEOClient <- R6Class(
       return(private$GET(endpoint = endpoint,
                          authorized = FALSE))
     },
+    
+    register = function(user=NULL,password) {
+      #currently this will be used for GEE only
+      endpoint = "auth/register"
+      
+      if (!private$isConnected()) {
+        stop("No host selected")
+      }
+      
+      
+      private$password = password
+      
+      url = paste(private$host, endpoint, sep="/")
+      
+      #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
+      res = private$POST(endpoint=url,
+                data = list(password=password))
+           
+      if (res$status_code == 200) {
+          cont = content(res,type="application/json") 
+          private$user = cont$user_id
+          return(private$user)
+      } else stop("Registration failed.")
+      
+    },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
@@ -312,7 +337,7 @@ OpenEOClient <- R6Class(
       if (!is.list(graph) || is.null(graph)) {
         stop("The graph information is missing or not a list")
       }
-      endpoint = ""
+      endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
       message = private$PUT(endpoint = endpoint, 
                               authorized = TRUE, 
                               data = graph,
@@ -356,6 +381,8 @@ OpenEOClient <- R6Class(
       return(dst)
     },
     storeGraph = function(graph) {
+      endpoint = paste("users",self$user_id,"process_graphs",sep="/")
+      
       if (!is.list(graph) || is.null(graph)) {
         stop("The graph information is missing or not a list")
       }
