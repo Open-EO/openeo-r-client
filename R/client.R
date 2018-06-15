@@ -269,6 +269,7 @@ OpenEOClient <- R6Class(
 
       tryCatch({
         info = private$modifyProductList(info)
+        class(info) = "openeo_product"
       },
       error = function(e) {
         warning(as.character(e))
@@ -874,6 +875,11 @@ OpenEOClient <- R6Class(
   text = gsub("\\/","%2F",text)
   text = gsub("\\.","%2E",text)
   return(text)
+}
+
+#' @export
+print.openeo_product = function(x, ...) {
+  return(str(x))
 }
 
 

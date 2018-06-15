@@ -14,12 +14,12 @@ Depends:
     tibble (>= 1.4.2),
     future (>= 1.7.0),
     lubridate (>= 1.7.4),
-    dplyr (>= 0.7.5)
-Suggests:
-    leaflet (== 2.0.0),
-    mapview (== 2.4.0),
+    dplyr (>= 0.7.5),
     Rcpp (>= 0.12.16),
     rlang (>= 0.2.0)
+Suggests:
+    leaflet (== 2.0.0),
+    mapview (== 2.4.0)
 Imports:
     jsonlite,
     httr,
