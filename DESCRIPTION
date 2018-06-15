@@ -13,7 +13,8 @@ Depends:
     rgdal (>= 1.2-16),
     tibble (>= 1.4.2),
     future (>= 1.7.0),
-    lubridate (>= 1.7.4)
+    lubridate (>= 1.7.4),
+    dplyr (>= 0.7.5)
 Suggests:
     leaflet (== 2.0.0),
     mapview (== 2.4.0)
@@ -28,7 +29,8 @@ Imports:
     lubridate,
     tibble,
     future,
-    lubridate
+    lubridate,
+    dplyr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
