@@ -123,6 +123,21 @@ connect = function(host, user=NULL, password=NULL, rbackend=FALSE, disable_auth=
   return(con)
 }
 
+#' Function to login to a specific backend
+#' 
+#' Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
+#' is usually also performed in the "connect" step. But if you only connected to a back-end in order to 
+#' register, then you need to log in afterwards.
+#' 
+#' @param con connected back-end connection
+#' @param user the user name
+#' @param password the password
+#' @return a connected and authenticated back-end connection
+#' @export
+login = function(con, user, password) {
+  return(con$login(user = user, password = password))
+}
+
 
 #' Authenticate
 #'

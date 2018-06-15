@@ -85,17 +85,14 @@ OpenEOClient <- R6Class(
       
       private$password = password
       
-      url = paste(private$host, endpoint, sep="/")
-      
       #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
-      res = private$POST(endpoint=url,
-                data = list(password=password))
-           
-      if (res$status_code == 200) {
-          cont = content(res,type="application/json") 
-          private$user = cont$user_id
-          return(private$user)
-      } else stop("Registration failed.")
+      res = private$POST(endpoint=endpoint,
+                data = list(password=password),
+                authorized = FALSE)
+
+          
+      private$user = res$user_id
+      return(private$user)
       
     },
 
