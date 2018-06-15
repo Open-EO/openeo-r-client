@@ -17,7 +17,9 @@ Depends:
     dplyr (>= 0.7.5)
 Suggests:
     leaflet (== 2.0.0),
-    mapview (== 2.4.0)
+    mapview (== 2.4.0),
+    Rcpp (>= 0.12.16),
+    rlang (>= 0.2.0)
 Imports:
     jsonlite,
     httr,
