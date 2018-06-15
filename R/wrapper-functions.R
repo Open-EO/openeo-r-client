@@ -6,14 +6,6 @@ NULL
   warning("Not implemented yet.")
 }
 
-.listToDataFrame = function(list) {
-  df = data.frame(stringsAsFactors = FALSE)
-  for (index in 1:length(list)) {
-    df = rbind(df,as.data.frame(list[[index]],stringsAsFactors=FALSE))
-  }
-  return(df)
-}
-
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
@@ -337,10 +329,10 @@ deleteService = function(con, service_id) {
 #' 
 #' @param con authorized connection
 #' 
-#' @return a data.frame of for filenames and their size
+#' @return a tibble of for filenames and their sizes
 #' @export
 listFiles = function(con) {
-  return(.listToDataFrame(con$listUserFiles()))
+  return(con$listUserFiles())
 }
 
 

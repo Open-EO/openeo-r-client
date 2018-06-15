@@ -218,6 +218,14 @@ OpenEOClient <- R6Class(
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
       files = private$GET(endpoint,TRUE,type="application/json")
+      
+      if (is.null(files) || length(files) == 0) {
+        message("The user workspace at this host is empty.")
+        return(invisible(files))
+      }
+      
+      files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
+      
       return(files)
     },
     # describe functions ####

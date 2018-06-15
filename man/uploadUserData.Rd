@@ -4,7 +4,7 @@
 \alias{uploadUserData}
 \title{Uploads data into the users workspace}
 \usage{
-uploadUserData(con, content, target)
+uploadUserData(con, content, target, encode = NULL, mime = NULL)
 }
 \arguments{
 \item{con}{authorized Connection}
@@ -12,6 +12,10 @@ uploadUserData(con, content, target)
 \item{content}{the file path of the file to be uploaded}
 
 \item{target}{the relative server path location for the file}
+
+\item{encode}{the encoding type used to upload the data, e.g. "multipart","form","json","raw"}
+
+\item{mime}{mime type used in upload_file}
 }
 \value{
 the relative file path on the server
