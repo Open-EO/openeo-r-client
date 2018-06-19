@@ -371,12 +371,12 @@ listFiles = function(con) {
 #' @param con authorized Connection
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file
-#' @param encode the encoding type used to upload the data, e.g. "multipart","form","json","raw"
-#' @param mime mime type used in upload_file
-#'
+#' @param encode the encoding type used to upload the data, e.g. "multipart","form","json","raw" ("raw" by default)
+#' @param mime mime type used in upload_file ("application/octet-stream" as a default)
+#' 
 #' @return the relative file path on the server
 #' @export
-uploadUserData = function (con, content, target,encode=NULL,mime=NULL) {
+uploadUserData = function (con, content, target,encode="raw",mime="application/octet-stream") {
   if (missing(content)) {
     stop("Content data is missing")
   }

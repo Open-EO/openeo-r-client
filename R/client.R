@@ -345,7 +345,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    uploadUserFile = function(file.path,target,...) {
+    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
 
@@ -354,9 +354,8 @@ OpenEOClient <- R6Class(
       }
 
       endpoint = paste("users",self$user_id,"files",target,sep="/")
-      dots = list(...)
       
-      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=dots$mime),encodeType = dots$encode)
+      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
 
       return(message)
     },
