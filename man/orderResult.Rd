@@ -11,7 +11,7 @@ orderResult(con, task = NULL, graph_id = NULL, format, ...)
 
 \item{task}{A Process or chained processes to a Task}
 
-\item{graph_id}{The id of an already stored process graph on the same backend}
+\item{graph_id}{The id of an already stored process graph on the same back-end}
 
 \item{format}{The inteded format of the data to be returned}
 
@@ -22,5 +22,5 @@ the job_id of the defined job
 }
 \description{
 Function to execute two operations in one call. First define a job on the server, then call
-the endpoint to execute it immediately on the backend.
+the endpoint to execute it immediately on the back-end.
 }

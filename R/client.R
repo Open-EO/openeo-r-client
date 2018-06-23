@@ -20,7 +20,7 @@ OpenEOClient <- R6Class(
     user_id = NULL,
     
     is_rserver = FALSE,
-    api.version = "0.0.1",
+    api.version = "0.0.2",
     
     products = list(),
     processes = list(),
@@ -73,6 +73,28 @@ OpenEOClient <- R6Class(
       return(private$GET(endpoint = endpoint,
                          authorized = FALSE))
     },
+    
+    register = function(user=NULL,password) {
+      #currently this will be used for GEE only
+      endpoint = "auth/register"
+      
+      if (!private$isConnected()) {
+        stop("No host selected")
+      }
+      
+      
+      private$password = password
+      
+      #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
+      res = private$POST(endpoint=endpoint,
+                data = list(password=password),
+                authorized = FALSE)
+
+          
+      private$user = res$user_id
+      return(private$user)
+      
+    },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
@@ -105,6 +127,7 @@ OpenEOClient <- R6Class(
         stop("Login failed.")
       }
     },
+    # list functions ####
     listData = function() {
       
       
@@ -115,7 +138,32 @@ OpenEOClient <- R6Class(
       }
       
       listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-      return(listOfProducts)
+      table = tibble(product_id = character(),
+                     description = character(),
+                     source = character())
+      for (index in 1: length(listOfProducts)) {
+        product = listOfProducts[[index]]
+        
+        product_id = product$product_id
+        if ("description" %in% names(product)) {
+          description = product$description
+        } else {
+          description = NA
+        }
+        
+        if ("source" %in% names(product)) {
+          source = product$source
+        } else {
+          source = NA
+        }
+        
+        
+        table = table %>% add_row(product_id = product_id,
+                                  description = description,
+                                  source = source)
+      }
+      
+      return(table)
 
     },
     listProcesses = function() {
@@ -127,12 +175,39 @@ OpenEOClient <- R6Class(
       }
       
       listOfProcesses = private$GET(endpoint,type="application/json")
-      return(listOfProcesses)
+      
+      table = tibble(process_id = character(),
+                     description = character())
+      
+      for (index in 1:length(listOfProcesses)) {
+        process = listOfProcesses[[index]]
+        table = table %>% add_row(process_id = process$process_id,
+                                  description = process$description)
+      }
+      
+      return(table)
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
       listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
-      return(listOfJobs)
+      # list to tibble
+      table = tibble(job_id=character(),
+                     status=character(),
+                     submitted=.POSIXct(integer(0)),
+                     updated=.POSIXct(integer(0)),
+                     consumed_credits=integer(0))
+      
+      for (index in 1:length(listOfJobs)) {
+        job = listOfJobs[[index]]
+        table= add_row(table,
+                job_id=job$job_id,
+                status = job$status,
+                submitted = as_datetime(job$submitted),
+                updated = as_datetime(job$updated),
+                consumed_credits = job$consumed_credits)
+      }
+      
+      return(table)
     },
     
     listGraphs = function() {
@@ -144,20 +219,46 @@ OpenEOClient <- R6Class(
     listServices = function() {
       endpoint = paste("users",self$user_id,"services",sep="/")
       listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
+      table = tibble(service_id=character(),
+                     service_type=character(),
+                     service_args=list(),
+                     job_id=character(),
+                     service_url=character())
       
-      return(listOfServices)
+      for (index in 1:length(listOfServices)) {
+        service = listOfServices[[index]]
+        
+        if (!is.null(service$service_args) && length(service$service_args) == 0) {
+          service$service_args <- NULL
+        }
+        table= do.call("add_row",append(list(.data=table),service))
+      }
+      
+      return(table)
     },
     
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
       files = private$GET(endpoint,TRUE,type="application/json")
+      
+      if (is.null(files) || length(files) == 0) {
+        message("The user workspace at this host is empty.")
+        return(invisible(files))
+      }
+      
+      files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
+      
       return(files)
     },
-
+    # describe functions ####
     describeProcess = function(pid) {
       endpoint = paste("processes",pid,sep="/")
       
       info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      
+      # info is currently a list 
+      # make a class of it and define print
+      class(info) <- "ProcessInfo"
 
       return(info)
     },
@@ -166,15 +267,29 @@ OpenEOClient <- R6Class(
       
       info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
-      return(private$modifyProductList(info))
-      # return(info)
+      tryCatch({
+        info = private$modifyProductList(info)
+        class(info) = "openeo_product"
+      },
+      error = function(e) {
+        warning(as.character(e))
+      },
+      finally = return(info))
     },
     describeJob = function(job_id) {
       endpoint = paste("jobs",job_id,sep="/")
       
       info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
+      table = tibble(job_id = info$job_id,
+                     status = info$status,
+                     process_graph = list(info$process_graph),
+                     output = list(info$output),
+                     submitted = as_datetime(info$submitted),
+                     updated = as_datetime(info$updated),
+                     user_id = info$user_id,
+                     consumed_credits = info$consumed_credits)
       
-      return(info)
+      return(table)
     },
     describeGraph = function(graph_id, user_id = NULL) {
       if (is.null(graph_id)) {
@@ -194,7 +309,7 @@ OpenEOClient <- R6Class(
       if (is.null(service_id)) {
         stop("No service id specified.")
       }
-      endpoint = paste("/services",service_id,sep="")
+      endpoint = paste("services",service_id,sep="/")
       
       return(private$GET(endpoint,authorized = TRUE))
     },
@@ -220,7 +335,7 @@ OpenEOClient <- R6Class(
       if (!is.list(graph) || is.null(graph)) {
         stop("The graph information is missing or not a list")
       }
-      endpoint = ""
+      endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
       message = private$PUT(endpoint = endpoint, 
                               authorized = TRUE, 
                               data = graph,
@@ -230,7 +345,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    uploadUserFile = function(file.path,target) {
+    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
       target = URLencode(target,reserved = TRUE)
       target = gsub("\\.","%2E",target)
 
@@ -240,7 +355,7 @@ OpenEOClient <- R6Class(
 
       endpoint = paste("users",self$user_id,"files",target,sep="/")
       
-      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path))
+      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
 
       return(message)
     },
@@ -263,6 +378,8 @@ OpenEOClient <- R6Class(
       return(dst)
     },
     storeGraph = function(graph) {
+      endpoint = paste("users",self$user_id,"process_graphs",sep="/")
+      
       if (!is.list(graph) || is.null(graph)) {
         stop("The graph information is missing or not a list")
       }
@@ -419,7 +536,8 @@ OpenEOClient <- R6Class(
       
       success = private$PATCH(endpoint = endpoint, authorized = TRUE)
       message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
-      return(success)
+      
+      invisible(self)
     },
     results = function(job_id, format = NULL) {
       if (is.null(job_id)) {
@@ -522,6 +640,14 @@ OpenEOClient <- R6Class(
     },
     modifyService = function() {
       
+    },
+    getProcessGraphBuilder = function() {
+      
+      if (is.null(private$graph_builder)) {
+        private$graph_builder = ProcessGraphBuilder$new(self)
+      }
+      
+      return(private$graph_builder)
     }
 
   ),
@@ -532,6 +658,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
+    graph_builder=NULL,
     
     # functions ====
     isConnected = function() {
@@ -562,8 +689,10 @@ OpenEOClient <- R6Class(
         info = content(response, ...)
         return(info)
 
-      } else {
+      } else if (response$status_code %in% c(404)) {
         stop(paste("Cannot find or access endpoint ","'",endpoint,"'",sep=""))
+      } else {
+        stop(response$message)
       }
     },
     DELETE = function(endpoint,authorized=FALSE,...) {
@@ -640,7 +769,6 @@ OpenEOClient <- R6Class(
       params = list(url=url, 
                     config = header, 
                     body=data)
-      
       if (!is.null(encodeType)) {
         params = append(params, list(encode = encodeType))
       }
@@ -746,6 +874,11 @@ OpenEOClient <- R6Class(
   text = gsub("\\/","%2F",text)
   text = gsub("\\.","%2E",text)
   return(text)
+}
+
+#' @export
+print.openeo_product = function(x, ...) {
+  return(str(x))
 }
 
 

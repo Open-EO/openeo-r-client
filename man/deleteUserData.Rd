@@ -9,11 +9,11 @@ deleteUserData(con, src)
 \arguments{
 \item{con}{authorized connection}
 
-\item{src}{the relative filepath of the source file on the openeo backend that shall be deleted}
+\item{src}{the relative filepath of the source file on the openeo back-end that shall be deleted}
 }
 \value{
 logical
 }
 \description{
-Sends a request to an openeo backend in order to remove a specific file from the users workspaces
+Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
 }

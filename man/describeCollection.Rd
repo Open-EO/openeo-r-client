@@ -15,5 +15,5 @@ describeCollection(con, collection_id = NA)
 a list of detailed information about a product/collection
 }
 \description{
-Queries an openeo backend and retrieves a detailed description about one or more collections offered by the backend
+Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 }

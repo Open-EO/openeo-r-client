@@ -4,7 +4,8 @@
 \alias{uploadUserData}
 \title{Uploads data into the users workspace}
 \usage{
-uploadUserData(con, content, target)
+uploadUserData(con, content, target, encode = "raw",
+  mime = "application/octet-stream")
 }
 \arguments{
 \item{con}{authorized Connection}
@@ -12,11 +13,15 @@ uploadUserData(con, content, target)
 \item{content}{the file path of the file to be uploaded}
 
 \item{target}{the relative server path location for the file}
+
+\item{encode}{the encoding type used to upload the data, e.g. "multipart","form","json","raw" ("raw" by default)}
+
+\item{mime}{mime type used in upload_file ("application/octet-stream" as a default)}
 }
 \value{
 the relative file path on the server
 }
 \description{
 This function sends the file given by 'content' to the specified target location (relative file path in the
-user workspace) on the backend.
+user workspace) on the back-end.
 }

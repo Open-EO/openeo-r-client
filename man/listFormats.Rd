@@ -13,5 +13,5 @@ listFormats(con)
 list of formats with optional configuration parameter
 }
 \description{
-The function queries the backend for supported output formats.
+The function queries the back-end for supported output formats.
 }

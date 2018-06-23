@@ -13,6 +13,6 @@ listServices(con)
 list of services lists
 }
 \description{
-Queries the backend to retrieve a list of services that the current user owns. Services are 
+Queries the back-end to retrieve a list of services that the current user owns. Services are 
 webservices like WCS, WFS, etc.
 }

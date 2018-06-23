@@ -2,24 +2,24 @@
 % Please edit documentation in R/wrapper-functions.R
 \name{connect}
 \alias{connect}
-\title{Connect to a openeEO backend}
+\title{Connect to a openeEO back-end}
 \usage{
 connect(host, user = NULL, password = NULL, rbackend = FALSE,
   disable_auth = FALSE, auth_type = "bearer")
 }
 \arguments{
-\item{host}{URL pointing to the openEO server backend host}
+\item{host}{URL pointing to the openEO server back-end host}
 
 \item{user}{the user name (optional)}
 
 \item{password}{the password (optional)}
 
-\item{rbackend}{logical to specify if the backend is the r test backend, default is FALSE}
+\item{rbackend}{logical to specify if the back-end is the r test back-end, default is FALSE}
 
-\item{disable_auth}{flag to specify if the backend supports authorization on its endpoints}
+\item{disable_auth}{flag to specify if the back-end supports authorization on its endpoints}
 
 \item{auth_type}{the general authentication method used on all endpoints. Either "bearer" or "basic".}
 }
 \description{
-connects to openEO backend
+connects to openEO back-end
 }

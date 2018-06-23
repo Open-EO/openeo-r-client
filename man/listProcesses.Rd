@@ -13,5 +13,5 @@ listProcesses(con)
 a list of lists with process_id and description
 }
 \description{
-list all processes available on the backend
+list all processes available on the back-end
 }

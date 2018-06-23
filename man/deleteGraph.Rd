@@ -12,6 +12,6 @@ deleteGraph(con, graph_id)
 \item{graph_id}{the id of the graph}
 }
 \description{
-The function initiates the deletion of a process graph on the backend. Only the owning user can delete
+The function initiates the deletion of a process graph on the back-end. Only the owning user can delete
 a graph. The graph also should not be part of any particular job.
 }

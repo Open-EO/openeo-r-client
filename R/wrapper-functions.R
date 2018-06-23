@@ -6,19 +6,11 @@ NULL
   warning("Not implemented yet.")
 }
 
-.listToDataFrame = function(list) {
-  df = data.frame(stringsAsFactors = FALSE)
-  for (index in 1:length(list)) {
-    df = rbind(df,as.data.frame(list[[index]],stringsAsFactors=FALSE))
-  }
-  return(df)
-}
-
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
 #' to allow a user to visualize the process graph in JSON (like it will
-#' be sent to the backend)
+#' be sent to the back-end)
 #' 
 #' @param task a list / nested list representing the process graph
 #' @return JSON string of the process graph as a character string 
@@ -27,6 +19,18 @@ NULL
 # dont't expose it later
 taskToJSON = function(task) {
   return(toJSON(task,auto_unbox = T,pretty=T))
+}
+
+#' Get a process graph builder from the connection
+#' 
+#' Queries the connected back-end for all available processes and registers them as R functions on
+#' a process builder class to build up the process graph.
+#' 
+#' @param con a connection to an openeo back-end
+#' @return a ProcessGraphBuilder class with the offered processes of the backend
+#' @export
+pgb = function(con) {
+  con$getProcessGraphBuilder()
 }
 
 # server endpoint ----
@@ -42,11 +46,11 @@ api.version = function() {
 
 #' Returns the offered enpoints of the openEO API
 #' 
-#' The function queries the backend for its capabilities. The offered enpoints that are specified in the openeo
+#' The function queries the back-end for its capabilities. The offered enpoints that are specified in the openeo
 #' API are then returned.
 #' 
 #' @param con A connected openeo client
-#' @return data.frame containing the supported / implemented endpoints of the backend
+#' @return data.frame containing the supported / implemented endpoints of the back-end
 #' @export
 listCapabilities = function(con) {
   capabilities = con$capabilities()
@@ -58,7 +62,7 @@ listCapabilities = function(con) {
 
 #' Returns the output formats
 #' 
-#' The function queries the backend for supported output formats.
+#' The function queries the back-end for supported output formats.
 #' 
 #' @param connected openeo client object
 #' @return list of formats with optional configuration parameter
@@ -73,9 +77,9 @@ listFormats = function(con) {
   return(formats$formats)
 }
 
-#' Returns the offered webservice types of the backend
+#' Returns the offered webservice types of the back-end
 #' 
-#' The function queries the backend for the supported webservice types that can be used on the client.
+#' The function queries the back-end for the supported webservice types that can be used on the client.
 #' 
 #' @param con a connected openeo client object
 #' @return vector of identifier of supported webservice
@@ -85,14 +89,14 @@ services = function(con) {
 }
 
 # login ----
-#' Connect to a openeEO backend
+#' Connect to a openeEO back-end
 #'
-#' connects to openEO backend
-#' @param host URL pointing to the openEO server backend host
+#' connects to openEO back-end
+#' @param host URL pointing to the openEO server back-end host
 #' @param user the user name (optional)
 #' @param password the password (optional)
-#' @param rbackend logical to specify if the backend is the r test backend, default is FALSE
-#' @param disable_auth flag to specify if the backend supports authorization on its endpoints
+#' @param rbackend logical to specify if the back-end is the r test back-end, default is FALSE
+#' @param disable_auth flag to specify if the back-end supports authorization on its endpoints
 #' @param auth_type the general authentication method used on all endpoints. Either "bearer" or "basic".
 #'
 #' @export
@@ -119,6 +123,21 @@ connect = function(host, user=NULL, password=NULL, rbackend=FALSE, disable_auth=
   return(con)
 }
 
+#' Function to login to a specific backend
+#' 
+#' Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
+#' is usually also performed in the "connect" step. But if you only connected to a back-end in order to 
+#' register, then you need to log in afterwards.
+#' 
+#' @param con connected back-end connection
+#' @param user the user name
+#' @param password the password
+#' @return a connected and authenticated back-end connection
+#' @export
+login = function(con, user, password) {
+  return(con$login(user = user, password = password))
+}
+
 
 #' Authenticate
 #'
@@ -136,12 +155,12 @@ openeo.auth = function (con, ...) {
 #' @param con Connection object
 #' @export
 listCollections = function(con) {
-  return(.listToDataFrame(con$listData()))
+  return(con$listData())
 }
 
 #' Describe a product
 #' 
-#' Queries an openeo backend and retrieves a detailed description about one or more collections offered by the backend
+#' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 #' 
 #' @param con Authentication object
 #' @param collection_id id of a product/collection to be described
@@ -154,12 +173,15 @@ describeCollection = function(con, collection_id=NA) {
   if (!describeProduct) {
     stop("No or invalid collection id(s)")
   }
-  
-  return(lapply(collection_id,
-                function(pid) {
-                  con$describeProduct(pid)
-                }
-  ))
+  if (length(collection_id) > 1) {
+    return(lapply(collection_id,
+                  function(pid) {
+                    con$describeProduct(pid)
+                  }
+    ))
+  } else {
+    return(con$describeProduct(collection_id))
+  }
 }
 
 #
@@ -168,17 +190,17 @@ describeCollection = function(con, collection_id=NA) {
 
 #' List available processes on server
 #'
-#' list all processes available on the backend
+#' list all processes available on the back-end
 #' @param con Connection object
 #' @return a list of lists with process_id and description
 #' @export
 listProcesses = function(con) {
-  return(.listToDataFrame(con$listProcesses()))
+  return(con$listProcesses())
 }
 
 #' Describe a process
 #'
-#' Queries an openeo backend and retrieves more detailed information about offered processes
+#' Queries an openeo back-end and retrieves more detailed information about offered processes
 #' @param con Authentication object
 #' @param process_id id of a process to be described
 #'
@@ -191,11 +213,7 @@ describeProcess = function(con,process_id=NA) {
     stop("No or invalid process_id(s)")
   }
   
-  return(lapply(process_id,
-                function(pid) {
-                  con$describeProcess(pid)
-                }
-  ))
+  return(con$describeProcess(process_id))
 }
 
 #
@@ -204,7 +222,7 @@ describeProcess = function(con,process_id=NA) {
 
 #' Lists the Ids of the process graphs from the current user
 #' 
-#' Queries the backend to retrieve a list of graph ids that the current user has stored on the backend.
+#' Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.
 #' 
 #' @param con connected and authenticated openeo client object
 #' @return vector of process graph ids
@@ -217,10 +235,10 @@ listGraphs = function(con) {
 
 #' Fetches the representation of a stored graph
 #' 
-#' The function queries the backend for a specific user defined process graph
+#' The function queries the back-end for a specific user defined process graph
 #' 
 #' @param con connected and authenticated openeo client object
-#' @param graph_id The id of a process graph on the backend
+#' @param graph_id The id of a process graph on the back-end
 #' @param user_id (optional) the user id from which user to fetch the process graph
 #' 
 #' @return the process graph as list
@@ -231,7 +249,7 @@ describeGraph = function(con, graph_id, user_id=NULL) {
 
 #' Deletes a previously stored process graph
 #' 
-#' The function initiates the deletion of a process graph on the backend. Only the owning user can delete
+#' The function initiates the deletion of a process graph on the back-end. Only the owning user can delete
 #' a graph. The graph also should not be part of any particular job.
 #' 
 #' @param con connected and authorized openeo client object
@@ -240,18 +258,30 @@ describeGraph = function(con, graph_id, user_id=NULL) {
 #' @export
 deleteGraph = function(con, graph_id) {
   con$deleteGraph(graph_id)
-  message(paste("Graph '",graph_id,"' was successfully deleted from the backend",sep=""))
+  message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
 }
 
-#' Stores a graph on the backend
+#' Stores a graph on the back-end
 #' 
-#' Uploads the process graph information to the backend and stores it for reuse.
+#' Uploads the process graph information to the back-end and stores it for reuse.
 #' 
 #' @param con connected and authorized openeo client object
-#' @param graph a process graph definitions
+#' @param graph a process graph definition
 #' @export
 storeGraph = function(con, graph) {
   return(con$storeGraph(graph))
+}
+
+#' Replaces the current graph with a given
+#' 
+#' Upload a process graph to the back-end under a given (existing) process graph.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph_id process graph id
+#' @param graph a process graph definition created by chaining "process()", "collection()" or using a ProcessGraphBuilder
+#' @export
+replaceGraph = function(con, graph_id, graph) {
+  return(con$replaceGraph(graph_id=graph_id, graph=graph))
 }
 
 #
@@ -260,7 +290,7 @@ storeGraph = function(con, graph) {
 
 #' Lists the current users services
 #' 
-#' Queries the backend to retrieve a list of services that the current user owns. Services are 
+#' Queries the back-end to retrieve a list of services that the current user owns. Services are 
 #' webservices like WCS, WFS, etc.
 #' 
 #' @param con connected and authenticated openeo client object
@@ -271,9 +301,9 @@ listServices = function(con) {
   return(con$listServices())
 }
 
-#' Prepares and publishes a service on the backend
+#' Prepares and publishes a service on the back-end
 #' 
-#' The function will send a configuration object to the backend to create a webservice from a job considering
+#' The function will send a configuration object to the back-end to create a webservice from a job considering
 #' additional parameter.
 #' 
 #' @param con connected and authenticated openeo clien object
@@ -308,7 +338,7 @@ describeService = function(con, service_id) {
 
 #' Deletes a service function for a job
 #' 
-#' Queries the backend and removes the current set service function of job.
+#' Queries the back-end and removes the current set service function of job.
 #' 
 #' @param con connected and authorized openeo client object
 #' @param service_id the service id
@@ -326,25 +356,27 @@ deleteService = function(con, service_id) {
 #' 
 #' @param con authorized connection
 #' 
-#' @return a data.frame of for filenames and their size
+#' @return a tibble of for filenames and their sizes
 #' @export
 listFiles = function(con) {
-  return(.listToDataFrame(con$listUserFiles()))
+  return(con$listUserFiles())
 }
 
 
 #' Uploads data into the users workspace
 #'
 #' This function sends the file given by 'content' to the specified target location (relative file path in the
-#' user workspace) on the backend.
+#' user workspace) on the back-end.
 #'
 #' @param con authorized Connection
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file
-#'
+#' @param encode the encoding type used to upload the data, e.g. "multipart","form","json","raw" ("raw" by default)
+#' @param mime mime type used in upload_file ("application/octet-stream" as a default)
+#' 
 #' @return the relative file path on the server
 #' @export
-uploadUserData = function (con, content, target) {
+uploadUserData = function (con, content, target,encode="raw",mime="application/octet-stream") {
   if (missing(content)) {
     stop("Content data is missing")
   }
@@ -355,17 +387,17 @@ uploadUserData = function (con, content, target) {
     stop(paste("Cannot find file at ",content))
   }
   
-  response = con$uploadUserFile(content,target)
+  response = con$uploadUserFile(content,target,encode=encode,mime=mime)
   message("Upload of user data was successful.")
   invisible(response)
 }
 
 #' Downloads a file from the users workspace
 #' 
-#' Sends a request to an openeo backend to access the users files and downloads them to a given location
+#' Sends a request to an openeo back-end to access the users files and downloads them to a given location
 #' 
 #' @param con authorized connection
-#' @param src the relative filepath of the source file on the openeo backend
+#' @param src the relative filepath of the source file on the openeo back-end
 #' @param dst the destination file path on the local file system
 #' 
 #' @return The file path of the stored file
@@ -376,10 +408,10 @@ downloadUserData = function(con, src, dst=NULL) {
 
 #' Deletes a file from the users workspace
 #'
-#' Sends a request to an openeo backend in order to remove a specific file from the users workspaces
+#' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
 #' 
 #' @param con authorized connection
-#' @param src the relative filepath of the source file on the openeo backend that shall be deleted
+#' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' 
 #' @return logical
 #' @export
@@ -413,7 +445,7 @@ listJobs = function(con) {
 
 #' Executes a job directly and returns the data immediately
 #'
-#' Executes a job directly on the connected openEO backend and returns the data. It relates to
+#' Executes a job directly on the connected openEO back-end and returns the data. It relates to
 #' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 #'
 #' @param con connected and authenticated openeo client
@@ -431,16 +463,16 @@ executeTask = function(con,task,format=NULL,output_file=NULL, ...) {
 }
 
 
-#' Creates a job on the backend from a prepared task
+#' Creates a job on the back-end from a prepared task
 #' 
-#' This function shall be called after the user defined a task for the backend to create a job on the
-#' backend. Therefore the user sends the task (process graph) and the optional output specifications like
+#' This function shall be called after the user defined a task for the back-end to create a job on the
+#' back-end. Therefore the user sends the task (process graph) and the optional output specifications like
 #' format and additional creation parameter by '...'. Afterwards ths user can decide to either execute the
 #' job asynchronous or they can create a service from it.
 #' 
 #' @param con connected and authenticated openeo client
 #' @param task A Process or chained processes to a Task
-#' @param graph_id The id of an already stored process graph on the same backend
+#' @param graph_id The id of an already stored process graph on the same back-end
 #' @param format The inteded format of the data to be returned
 #' @param ... additional configuration parameter for output generation
 #' 
@@ -450,7 +482,7 @@ defineJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
   return(con$storeJob(task=task,graph_id = graph_id, format = format, ...))
 }
 
-#' Queues a job on the backend for evaluation
+#' Queues a job on the back-end for evaluation
 #' 
 #' The function will queue a job for evaluation that has been created before by 'createJob'. There will be
 #' a notification for success or failure, but no return value.
@@ -466,11 +498,11 @@ queueJob = function(con, job_id) {
 #' Defines a job and starts the evaluation
 #' 
 #' Function to execute two operations in one call. First define a job on the server, then call
-#' the endpoint to execute it immediately on the backend.
+#' the endpoint to execute it immediately on the back-end.
 #' 
 #' @param con connected and authenticated openeo client
 #' @param task A Process or chained processes to a Task
-#' @param graph_id The id of an already stored process graph on the same backend
+#' @param graph_id The id of an already stored process graph on the same back-end
 #' @param format The inteded format of the data to be returned
 #' @param ... additional configuration parameter for output generation
 #' 
@@ -513,7 +545,7 @@ modifyJob = function(con, job_id, ...) {
 
 #' Follow an executed Job
 #'
-#' Opens up a websocket to the openEO backend to fetch updates about a running job.
+#' Opens up a websocket to the openEO back-end to fetch updates about a running job.
 #'
 #' @param con An authenticated connection
 #' @param job_id the id of the job on the server the user wants to connect to
@@ -525,7 +557,7 @@ followJob = function(con, job_id) {
 
 #' Creates a list of download paths
 #' 
-#' The function queries the backend to receive the URLs to the downloadable files of a particular batch job.
+#' The function queries the back-end to receive the URLs to the downloadable files of a particular batch job.
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param job_id the id of the job
@@ -569,7 +601,7 @@ cancelJob = function(con, job_id) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of the job
-#' @return a detailed description about the job
+#' @return a detailed description about the job as tibble
 #' @export
 describeJob = function(con,job_id) {
   return(con$describeJob(job_id))
@@ -589,7 +621,7 @@ describeJob = function(con,job_id) {
 #' @param prior.name The parameter name of the predecessor of this pipe
 #' @param type The udf type
 #' @param content The local file path of a script the user wants to upload
-#' @param target The relative path on the users workspace on the openEO backend
+#' @param target The relative path on the users workspace on the openEO back-end
 #' @param language The programming language of the uploaded script
 #' @param ...
 #'
@@ -642,7 +674,7 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
 
 #' Lists the supported UDF runtimes
 #' 
-#' The function queries the backend for its supported udf runtimes and returns detailed information about each
+#' The function queries the back-end for its supported udf runtimes and returns detailed information about each
 #' runtime.
 #' 
 #' @param con connected and authenticated openeo client object
@@ -654,7 +686,7 @@ udfRuntimes = function(con) {
 
 #' Gets detailed information about a particular udf type
 #' 
-#' Queries the backend for a particular runtime and time to retrieve information how the udf_type will work.
+#' Queries the back-end for a particular runtime and time to retrieve information how the udf_type will work.
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param language the udf runtime identifier
