@@ -12,7 +12,7 @@ if (!require(devtools)) {
   install.packages("devtools",dependencies=TRUE)
   library(devtools)
 }
-install_github(repo="Open-EO/openeo-r-client",ref="v0.2.0-poc",dependencies=TRUE)
+install_github(repo="Open-EO/openeo-r-client",ref="v0.2.2",dependencies=TRUE)
 library(openeo)
 ```
 
