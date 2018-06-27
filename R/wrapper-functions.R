@@ -106,7 +106,8 @@ connect = function(host, user=NULL, password=NULL, rbackend=FALSE, disable_auth=
   } else if (!is.null(user) && !is.null(password)) {
     con = OpenEOClient$new()$connect(url=host)$login(user=user,password=password)  
   } else {
-    stop("Incomplete credentials. Either username or password is missing")
+    message("Incomplete credentials. Either username or password is missing")
+    return()
   }
   
   if (disable_auth) {
@@ -114,7 +115,8 @@ connect = function(host, user=NULL, password=NULL, rbackend=FALSE, disable_auth=
   }
   
   if (!disable_auth && !auth_type %in% c("basic","bearer")) {
-    stop("Unsupported authentication type. Use 'bearer' or 'basic' or disable the authentication")
+    message("Unsupported authentication type. Use 'bearer' or 'basic' or disable the authentication")
+    return()
   } else {
     con$general_auth_type = auth_type
   }
@@ -171,7 +173,8 @@ describeCollection = function(con, collection_id=NA) {
   describeProduct = !missing(collection_id) && !is.na(collection_id)
   
   if (!describeProduct) {
-    stop("No or invalid collection id(s)")
+    message("No or invalid collection id(s)")
+    return()
   }
   if (length(collection_id) > 1) {
     return(lapply(collection_id,
@@ -210,7 +213,8 @@ describeProcess = function(con,process_id=NA) {
   describeProcess = !missing(process_id) && !is.na(process_id)
   
   if (!describeProcess) {
-    stop("No or invalid process_id(s)")
+    message("No or invalid process_id(s)")
+    return()
   }
   
   return(con$describeProcess(process_id))
@@ -258,7 +262,6 @@ describeGraph = function(con, graph_id, user_id=NULL) {
 #' @export
 deleteGraph = function(con, graph_id) {
   con$deleteGraph(graph_id)
-  message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
 }
 
 #' Stores a graph on the back-end
@@ -377,19 +380,21 @@ listFiles = function(con) {
 #' @return the relative file path on the server
 #' @export
 uploadUserData = function (con, content, target,encode="raw",mime="application/octet-stream") {
-  if (missing(content)) {
-    stop("Content data is missing")
-  }
-  if (is.character(content)) {
-    content = file.path(content)
-  }
-  if (!file.exists(content)) {
-    stop(paste("Cannot find file at ",content))
-  }
-  
-  response = con$uploadUserFile(content,target,encode=encode,mime=mime)
-  message("Upload of user data was successful.")
-  invisible(response)
+
+    if (missing(content)) {
+      stop("Content data is missing")
+    }
+    if (is.character(content)) {
+      content = file.path(content)
+    }
+    if (!file.exists(content)) {
+      stop(paste("Cannot find file at ",content))
+    }
+    
+    response = con$uploadUserFile(content,target,encode=encode,mime=mime)
+    invisible(response)
+
+
 }
 
 #' Downloads a file from the users workspace
@@ -539,7 +544,6 @@ orderResult = function(con, task=NULL, graph_id=NULL, format, ...) {
 #' @export
 modifyJob = function(con, job_id, ...) {
   temp = con$modifyJob(job_id = job_id,...)
-  message(paste("Job '",job_id,"' was successfully updated.",sep=""))
   invisible(temp)
 } 
 
@@ -633,15 +637,11 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
       content = file.path(content)
     }
     if (!file.exists(content)) {
-      stop(paste("Cannot find file at ",content))
+      message(paste("Cannot find file at ",content))
+      return()
     }
 
     response = con$uploadUserFile(content,target)
-    if (response$status_code != 200) {
-      warning("UDF upload failed")
-    } else {
-      cat("Successfully uploaded the udf script")
-    }
   }
 
 

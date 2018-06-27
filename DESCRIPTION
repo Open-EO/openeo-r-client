@@ -42,6 +42,7 @@ Collate:
     'DetailedDescription-functions.R'
     'ProcessGraphBuilder-class.R'
     'client.R'
+    'errors.R'
     'map-functions.R'
     'process_graph_building.R'
     'wrapper-functions.R'

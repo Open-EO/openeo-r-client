@@ -46,125 +46,146 @@ OpenEOClient <- R6Class(
     },
     capabilities = function() {
       endpoint = "capabilities"
+      tryCatch({
+        private$stopIfNotConnected()
+        
+        capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
+        
+        return(capabilities)
+      },
+      error = .capturedErrorToMessage)
       
-      private$stopIfNotConnected()
-      
-      capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
-      
-      return(capabilities)
     },
     services = function() {
       endpoint = "capabilities/services"
       
-      private$stopIfNotConnected()
-      
-      services = private$GET(endpoint, authorized = FALSE)
-      return(services)
+      tryCatch({
+        private$stopIfNotConnected()
+        
+        services = private$GET(endpoint, authorized = FALSE)
+        return(services)
+      },error=.capturedErrorToMessage)
     },
     output_formats = function() {
       endpoint = "capabilities/output_formats"
-      formats = private$GET(endpoint,authorized = FALSE)
       
-      return(formats)
+      tryCatch({
+        formats = private$GET(endpoint,authorized = FALSE)
+        
+        return(formats)
+      },
+      error = .capturedErrorToMessage
+      )
+      
     },
     udf_runtimes = function() {
       endpoint = "udf_runtimes"
-      
-      return(private$GET(endpoint = endpoint,
-                         authorized = FALSE))
+      tryCatch(
+        {
+          return(private$GET(endpoint = endpoint,
+                             authorized = FALSE))
+        }, 
+        error = .capturedErrorToMessage
+      )
     },
     
     register = function(user=NULL,password) {
       #currently this will be used for GEE only
       endpoint = "auth/register"
       
-      if (!private$isConnected()) {
-        stop("No host selected")
-      }
-      
-      
-      private$password = password
-      
-      #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
-      res = private$POST(endpoint=endpoint,
-                data = list(password=password),
-                authorized = FALSE)
-
-          
-      private$user = res$user_id
-      return(private$user)
-      
+      tryCatch({
+        if (!private$isConnected()) {
+          stop("No host selected")
+        }
+        
+        private$password = password
+        
+        #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
+        res = private$POST(endpoint=endpoint,
+                           data = list(password=password),
+                           authorized = FALSE)
+        
+        private$user = res$user_id
+        return(private$user)
+      },
+      error = .capturedErrorToMessage
+      )
     },
 
     login = function(user, password, auth_type="basic") {
       endpoint = "auth/login"
+      
+      tryCatch({
+        if (missing(user) || missing(password)) {
+          stop("Username or password is missing.")
+        }
 
-      if (missing(user) || missing(password)) {
-        stop("Username or password is missing.")
-      }
-      if (!private$isConnected()) {
-        stop("No host selected")
-      }
-      private$user = user
-      private$password = password
-
-      url = paste(private$host, endpoint, sep="/")
-      res = GET(url=url,
-                 config = authenticate(user=user,
-                                       password = password,
-                                       type = auth_type)
+        private$stopIfNotConnected()
+        
+        private$user = user
+        private$password = password
+        
+        url = paste(private$host, endpoint, sep="/")
+        res = GET(url=url,
+                  config = authenticate(user=user,
+                                        password = password,
+                                        type = auth_type)
+        )
+        
+        if (res$status_code == 200) {
+          cont = content(res,type="application/json")
+          
+          private$login_token = cont$token
+          self$user_id = cont$user_id
+          
+          cat("Login successful." )
+          invisible(self)
+        } else {
+          stop("Login failed.")
+        }
+      },
+      error = .capturedErrorToMessage
       )
-
-      if (res$status_code == 200) {
-        cont = content(res,type="application/json")
-
-        private$login_token = cont$token
-        self$user_id = cont$user_id
-
-        cat("Login successful." )
-        invisible(self)
-      } else {
-        stop("Login failed.")
-      }
+      
     },
     # list functions ####
     listData = function() {
-      
-      
       if (self$is_rserver) {
         endpoint = "data/"
       } else {
         endpoint = "data"
       }
       
-      listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-      table = tibble(product_id = character(),
-                     description = character(),
-                     source = character())
-      for (index in 1: length(listOfProducts)) {
-        product = listOfProducts[[index]]
-        
-        product_id = product$product_id
-        if ("description" %in% names(product)) {
-          description = product$description
-        } else {
-          description = NA
+      tryCatch({
+        listOfProducts = private$GET(endpoint=endpoint,type="application/json")
+        table = tibble(product_id = character(),
+                       description = character(),
+                       source = character())
+        for (index in 1: length(listOfProducts)) {
+          product = listOfProducts[[index]]
+          
+          product_id = product$product_id
+          if ("description" %in% names(product)) {
+            description = product$description
+          } else {
+            description = NA
+          }
+          
+          if ("source" %in% names(product)) {
+            source = product$source
+          } else {
+            source = NA
+          }
+          
+          
+          table = table %>% add_row(product_id = product_id,
+                                    description = description,
+                                    source = source)
         }
         
-        if ("source" %in% names(product)) {
-          source = product$source
-        } else {
-          source = NA
-        }
-        
-        
-        table = table %>% add_row(product_id = product_id,
-                                  description = description,
-                                  source = source)
-      }
-      
-      return(table)
-
+        return(table)
+      },
+      error=.capturedErrorToMessage)
     },
     listProcesses = function() {
       
@@ -174,480 +195,537 @@ OpenEOClient <- R6Class(
         endpoint = "processes"
       }
       
-      listOfProcesses = private$GET(endpoint,type="application/json")
+      tryCatch({
+        listOfProcesses = private$GET(endpoint,type="application/json")
+        
+        table = tibble(process_id = character(),
+                       description = character())
+        
+        for (index in 1:length(listOfProcesses)) {
+          process = listOfProcesses[[index]]
+          table = table %>% add_row(process_id = process$process_id,
+                                    description = process$description)
+        }
+        
+        return(table)
+      },
+      error=.capturedErrorToMessage)
       
-      table = tibble(process_id = character(),
-                     description = character())
-      
-      for (index in 1:length(listOfProcesses)) {
-        process = listOfProcesses[[index]]
-        table = table %>% add_row(process_id = process$process_id,
-                                  description = process$description)
-      }
-      
-      return(table)
     },
     listJobs = function() {
       endpoint = paste("users",self$user_id,"jobs",sep="/")
-      listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
-      # list to tibble
-      table = tibble(job_id=character(),
-                     status=character(),
-                     submitted=.POSIXct(integer(0)),
-                     updated=.POSIXct(integer(0)),
-                     consumed_credits=integer(0))
       
-      for (index in 1:length(listOfJobs)) {
-        job = listOfJobs[[index]]
-        table= add_row(table,
-                job_id=job$job_id,
-                status = job$status,
-                submitted = as_datetime(job$submitted),
-                updated = as_datetime(job$updated),
-                consumed_credits = job$consumed_credits)
-      }
-      
-      return(table)
+      tryCatch({
+        listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
+        # list to tibble
+        table = tibble(job_id=character(),
+                       status=character(),
+                       submitted=.POSIXct(integer(0)),
+                       updated=.POSIXct(integer(0)),
+                       consumed_credits=integer(0))
+        
+        for (index in 1:length(listOfJobs)) {
+          job = listOfJobs[[index]]
+          table= add_row(table,
+                         job_id=job$job_id,
+                         status = job$status,
+                         submitted = as_datetime(job$submitted),
+                         updated = as_datetime(job$updated),
+                         consumed_credits = job$consumed_credits)
+        }
+        
+        return(table)
+      },
+      error=.capturedErrorToMessage)
     },
     
     listGraphs = function() {
       endpoint = paste("users",self$user_id,"process_graphs",sep="/")
-      listOfGraphIds = private$GET(endpoint, authorized = TRUE)
       
-      return(listOfGraphIds)
+      tryCatch({
+        listOfGraphIds = private$GET(endpoint, authorized = TRUE)
+        
+        return(listOfGraphIds)
+      }, error = .capturedErrorToMessage)
     },
     listServices = function() {
       endpoint = paste("users",self$user_id,"services",sep="/")
-      listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
-      table = tibble(service_id=character(),
-                     service_type=character(),
-                     service_args=list(),
-                     job_id=character(),
-                     service_url=character())
       
-      for (index in 1:length(listOfServices)) {
-        service = listOfServices[[index]]
+      tryCatch({
+        listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
+        table = tibble(service_id=character(),
+                       service_type=character(),
+                       service_args=list(),
+                       job_id=character(),
+                       service_url=character())
         
-        if (!is.null(service$service_args) && length(service$service_args) == 0) {
-          service$service_args <- NULL
+        for (index in 1:length(listOfServices)) {
+          service = listOfServices[[index]]
+          
+          if (!is.null(service$service_args) && length(service$service_args) == 0) {
+            service$service_args <- NULL
+          }
+          table= do.call("add_row",append(list(.data=table),service))
         }
-        table= do.call("add_row",append(list(.data=table),service))
-      }
-      
-      return(table)
+        
+        return(table)
+      }, error = .capturedErrorToMessage)
     },
     
     listUserFiles = function() {
       endpoint = paste("users",self$user_id,"files",sep="/")
-      files = private$GET(endpoint,TRUE,type="application/json")
       
-      if (is.null(files) || length(files) == 0) {
-        message("The user workspace at this host is empty.")
-        return(invisible(files))
-      }
-      
-      files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
-      
-      return(files)
+      tryCatch({
+        files = private$GET(endpoint,TRUE,type="application/json")
+        
+        if (is.null(files) || length(files) == 0) {
+          message("The user workspace at this host is empty.")
+          return(invisible(files))
+        }
+        
+        files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
+        
+        return(files)
+      },error=.capturedErrorToMessage)
     },
     # describe functions ####
     describeProcess = function(pid) {
       endpoint = paste("processes",pid,sep="/")
       
-      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
-      
-      # info is currently a list 
-      # make a class of it and define print
-      class(info) <- "ProcessInfo"
-
-      return(info)
+      tryCatch({
+        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+        
+        # info is currently a list 
+        # make a class of it and define print
+        class(info) <- "ProcessInfo"
+        
+        return(info)
+      },error=.capturedErrorToMessage)
     },
     describeProduct = function(pid) {
       endpoint = paste("data",pid,sep="/")
       
-      info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
-
       tryCatch({
+        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+
+      
         info = private$modifyProductList(info)
         class(info) = "openeo_product"
+        return(info)
       },
-      error = function(e) {
-        warning(as.character(e))
-      },
-      finally = return(info))
+      error = .capturedErrorToMessage)
     },
     describeJob = function(job_id) {
       endpoint = paste("jobs",job_id,sep="/")
       
-      info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
-      table = tibble(job_id = info$job_id,
-                     status = info$status,
-                     process_graph = list(info$process_graph),
-                     output = list(info$output),
-                     submitted = as_datetime(info$submitted),
-                     updated = as_datetime(info$updated),
-                     user_id = info$user_id,
-                     consumed_credits = info$consumed_credits)
+      tryCatch({
+        info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
+        table = tibble(job_id = info$job_id,
+                       status = info$status,
+                       process_graph = list(info$process_graph),
+                       output = list(info$output),
+                       submitted = as_datetime(info$submitted),
+                       updated = as_datetime(info$updated),
+                       user_id = info$user_id,
+                       consumed_credits = info$consumed_credits)
+        
+        return(table)
+      },error=.capturedErrorToMessage)
       
-      return(table)
     },
     describeGraph = function(graph_id, user_id = NULL) {
-      if (is.null(graph_id)) {
-        stop("No graph id specified. Cannot fetch unknown graph.")
-      }
+      tryCatch(
+        {
+          if (is.null(graph_id)) {
+            stop("No graph id specified. Cannot fetch unknown graph.")
+          }
+          
+          if (is.null(user_id)) {
+            user_id = self$user_id #or "me"
+          }
+          
+          endpoint = paste("users", user_id, "process_graphs", graph_id, sep="/")
+          graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
+          
+          return(graph)
+        },
+        error=.capturedErrorToMessage
+      )
       
-      if (is.null(user_id)) {
-        user_id = self$user_id #or "me"
-      }
-      
-      enpoint = paste("users", user_id, "process_graphs", graph_id, sep="/")
-      graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
-      
-      return(graph)
     },
     describeService = function(service_id) {
-      if (is.null(service_id)) {
-        stop("No service id specified.")
-      }
-      endpoint = paste("services",service_id,sep="/")
-      
-      return(private$GET(endpoint,authorized = TRUE))
+      tryCatch({
+        if (is.null(service_id)) {
+          stop("No service id specified.")
+        }
+        endpoint = paste("services",service_id,sep="/")
+        
+        return(private$GET(endpoint,authorized = TRUE))
+      }, error=.capturedErrorToMessage)
     },
     describeUdfType = function(language, udf_type) {
-      if (is.null(language) || is.null(udf_type)) {
-        stop("Missing parameter language or udf_type")
-      }
+      tryCatch({
+        if (is.null(language) || is.null(udf_type)) {
+          stop("Missing parameter language or udf_type")
+        }
+        
+        endpoint = paste("udf_runtimes",language,udf_type,sep="/")
+        
+        msg = private$GET(endpoint = endpoint,
+                          authorized = FALSE)
+        return(msg)
+      },error=.capturedErrorToMessage)
       
-      endpoint = paste("udf_runtimes",language,udf_type,sep="/")
-      
-      msg = private$GET(endpoint = endpoint,
-                        authorized = FALSE)
-      return(msg)
     },
     
     replaceGraph = function(graph_id, graph) {
-      if (is.null(graph_id)) {
-        stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
-      }
-      if (is.null(graph)) {
-        stop("Cannot replace graph with 'NULL'")
-      }
-      if (!is.list(graph) || is.null(graph)) {
-        stop("The graph information is missing or not a list")
-      }
-      endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
-      message = private$PUT(endpoint = endpoint, 
+      tryCatch({
+        if (is.null(graph_id)) {
+          stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
+        }
+        if (is.null(graph)) {
+          stop("Cannot replace graph with 'NULL'")
+        }
+        if (!is.list(graph) || is.null(graph)) {
+          stop("The graph information is missing or not a list")
+        }
+        endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
+        message = private$PUT(endpoint = endpoint, 
                               authorized = TRUE, 
                               data = graph,
                               encodeType = "json")
-      
-      return(message) #in principle a void function
-      
+        
+        return(message) #in principle a void function
+      },error=.capturedErrorToMessage)
     },
     
     uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
-      target = URLencode(target,reserved = TRUE)
-      target = gsub("\\.","%2E",target)
-
-      if (is.null(self$user_id)) {
-        stop("User id is not set. Either login or set the id manually.")
-      }
-
-      endpoint = paste("users",self$user_id,"files",target,sep="/")
+      tryCatch({
+        target = URLencode(target,reserved = TRUE)
+        target = gsub("\\.","%2E",target)
+        
+        if (is.null(self$user_id)) {
+          stop("User id is not set. Either login or set the id manually.")
+        }
+        
+        endpoint = paste("users",self$user_id,"files",target,sep="/")
+        
+        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
+        message("Upload of user data was successful.")
+        return(message)
+      },error=.capturedErrorToMessage)
       
-      message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
-
-      return(message)
     },
     downloadUserFile = function(src, dst=NULL) {
-      if (!is.character(src)) {
-        stop("Cannot download file with a source statement that is no character")
-      } else {
-        src = .urlHardEncode(src)
-      }
-      
-      if (is.null(dst)) {
-        dst = tempfile()
-      }
-      
-      endpoint = paste("users",self$user_id,"files",src,sep="/")
-      file_connection = file(dst,open="wb")
-      writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
-      close(file_connection,type="wb")
-      
-      return(dst)
+      tryCatch({
+        if (!is.character(src)) {
+          stop("Cannot download file with a source statement that is no character")
+        } else {
+          src = .urlHardEncode(src)
+        }
+        
+        if (is.null(dst)) {
+          dst = tempfile()
+        }
+        
+        endpoint = paste("users",self$user_id,"files",src,sep="/")
+        file_connection = file(dst,open="wb")
+        writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
+        
+        message("Successfully uploaded the udf script.")
+        
+        return(dst)
+      },error=.capturedErrorToMessage,
+      finally=function() {
+        close(file_connection,type="wb")
+      })
     },
     storeGraph = function(graph) {
-      endpoint = paste("users",self$user_id,"process_graphs",sep="/")
-      
-      if (!is.list(graph) || is.null(graph)) {
-        stop("The graph information is missing or not a list")
-      }
-      
-      okMessage = private$POST(endpoint=endpoint,
-                               authorized = TRUE,
-                               data=graph)
-      
-      message("Graph was sucessfully stored on the backend.")
-      return(okMessage$process_graph_id)
+      tryCatch({
+        endpoint = paste("users",self$user_id,"process_graphs",sep="/")
+        
+        if (!is.list(graph) || is.null(graph)) {
+          stop("The graph information is missing or not a list")
+        }
+        
+        okMessage = private$POST(endpoint=endpoint,
+                                 authorized = TRUE,
+                                 data=graph)
+        
+        message("Graph was sucessfully stored on the backend.")
+        return(okMessage$process_graph_id)
+      },error = .capturedErrorToMessage)
     },
     storeJob = function(task=NULL,graph_id=NULL,format, ...) {
-
-      if (self$is_rserver) {
-        endpoint = paste("jobs/",sep="/")
-      } else {
-        endpoint = paste("jobs",sep="/")
-      }
-      if (is.null(format)) {
-        # format = self$output_formats()$default
-      }
-      
-      output = list(...)
-      output = append(output, list(format=format))
-      
-      if (!is.null(task)) {
-        if (is.list(task)) {
-          job = list(process_graph=task,output = output)
+      tryCatch({
+        if (self$is_rserver) {
+          endpoint = paste("jobs/",sep="/")
         } else {
-          stop("Parameter task is not a task object. Awaiting a list.")
+          endpoint = paste("jobs",sep="/")
         }
-      } else if (! is.null(graph_id)) {
-        job = list(process_graph=graph_id,output = output)
-      } else {
-        stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-      }
-
-      #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
-      okMessage = private$POST(endpoint=endpoint,
-                               authorized = TRUE,
-                               data=job)
+        if (is.null(format)) {
+          # format = self$output_formats()$default
+        }
+        
+        output = list(...)
+        output = append(output, list(format=format))
+        
+        if (!is.null(task)) {
+          if (is.list(task)) {
+            job = list(process_graph=task,output = output)
+          } else {
+            stop("Parameter task is not a task object. Awaiting a list.")
+          }
+        } else if (! is.null(graph_id)) {
+          job = list(process_graph=graph_id,output = output)
+        } else {
+          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+        }
+        
+        #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
+        okMessage = private$POST(endpoint=endpoint,
+                                 authorized = TRUE,
+                                 data=job)
+        
+        message("Job was sucessfully registered on the backend.")
+        return(okMessage$job_id)
+      },error=.capturedErrorToMessage)
       
-      message("Job was sucessfully registered on the backend.")
-      return(okMessage$job_id)
     },
     modifyJob = function(job_id,...) {
-      if (is.null(job_id)) {
-        stop("No job i was specified.")
-      }
-      endpoint = paste("jobs",job_id,sep="/")
-      
-      updateables = list(...)
-      
-      patch = list()
-      graph = NULL
-      if ("graph_id" %in% names(updateables)) {
-        graph = updateables$graph_id
-        updateables$graph_id = NULL
-      } else if ("task" %in% names(updateables)) {
-        graph = updateables$task
-        updateables$task = NULL
-      }
-      if (!is.null(graph)) {
-        patch = append(patch,process_graph = graph)
-      }
-      
-      if (length(updateables) > 0) {
-        patch = append(patch, output=updateables)
-      }
-      
-      #endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...
-      return(private$PATCH(endpoint = endpoint,
-                    authorized = TRUE,
-                    encodeType = "json",
-                    data=patch))
-      
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job i was specified.")
+        }
+        endpoint = paste("jobs",job_id,sep="/")
+        
+        updateables = list(...)
+        
+        patch = list()
+        graph = NULL
+        if ("graph_id" %in% names(updateables)) {
+          graph = updateables$graph_id
+          updateables$graph_id = NULL
+        } else if ("task" %in% names(updateables)) {
+          graph = updateables$task
+          updateables$task = NULL
+        }
+        if (!is.null(graph)) {
+          patch = append(patch,list(process_graph = graph))
+        }
+        
+        if (length(updateables) > 0) {
+          patch = append(patch, list(output=updateables))
+        }
+        
+        #endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...
+        res = private$PATCH(endpoint = endpoint,
+                            authorized = TRUE,
+                            encodeType = "json",
+                            data=patch)
+        message(paste("Job '",job_id,"' was successfully updated.",sep=""))
+        return(res)
+      },error=.capturedErrorToMessage)
     },
     execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
-      # former sync evaluation
-      if (self$is_rserver) {
-        endpoint = paste("execute/",sep="/")
-      } else {
-        endpoint = paste("execute",sep="/")
-      }
-      if (is.null(format)) {
-        format = self$output_formats()$default
-      }
-      
-      output = list(...)
-      output = append(output, list(format=format))
-      if (!is.null(task)) {
-        if (is.list(task)) {
-          job = list(process_graph=task,output = output)
+      tryCatch({
+        # former sync evaluation
+        if (self$is_rserver) {
+          endpoint = paste("execute/",sep="/")
         } else {
-          stop("Parameter task is not a task object. Awaiting a list.")
+          endpoint = paste("execute",sep="/")
         }
-      } else if (! is.null(graph_id)) {
-        job = list(process_graph=graph_id,output = output)
-      } else {
-        stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-      }
-      
-      header = list()
-      header = private$addAuthorization(header)
-      
-      
-      res = private$POST(endpoint,
-                         authorized = TRUE, 
-                         data=job,
-                         encodeType = "json",
-                         raw=TRUE)
-      
-      if (!is.null(output_file)) {
-        tryCatch(
-          {
-            message("Task result was sucessfully stored.")
-            writeBin(content(res,"raw"),output_file)
-          },
-          error = function(err) {
-            stop(err)
+        if (is.null(format)) {
+          format = self$output_formats()$default
+        }
+        
+        output = list(...)
+        output = append(output, list(format=format))
+        if (!is.null(task)) {
+          if (is.list(task)) {
+            job = list(process_graph=task,output = output)
+          } else {
+            stop("Parameter task is not a task object. Awaiting a list.")
           }
-        )
+        } else if (! is.null(graph_id)) {
+          job = list(process_graph=graph_id,output = output)
+        } else {
+          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+        }
         
-        return(output_file)
-        # drivers = gdalDrivers()
-        # ogr_drivers = ogrDrivers()
-        # 
-        # allowedGDALFormats = drivers[drivers$create,"name"]
-        # allowedOGRFormats = ogr_drivers[ogr_drivers$write, "name"]
-        # 
-        # if (format %in% allowedGDALFormats) {
-        #   suppressMessages(
-        #     tryCatch ({
-        #       return(raster(output_file))
-        #     },error = function(err) {
-        #       return(readOGR(output_file))
-        #     })
-        #   )
-        # } else {
-        #   return(readOGR(output_file))
-        # }
+        header = list()
+        header = private$addAuthorization(header)
         
-      } else {
-        return(content(res,"raw"))
-      }
-
+        res = private$POST(endpoint,
+                           authorized = TRUE, 
+                           data=job,
+                           encodeType = "json",
+                           raw=TRUE)
+        
+        if (!is.null(output_file)) {
+          tryCatch(
+            {
+              message("Task result was sucessfully stored.")
+              writeBin(content(res,"raw"),output_file)
+            },
+            error = function(err) {
+              stop(err)
+            }
+          )
+          
+          return(output_file)
+        } else {
+          return(content(res,"raw"))
+        }
+      },error=.capturedErrorToMessage)
       
     },
     queue = function(job_id) {
-      if (is.null(job_id)) {
-        stop("No job id specified.")
-      }
-      endpoint = paste("jobs",job_id,"queue",sep="/")
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job id specified.")
+        }
+        endpoint = paste("jobs",job_id,"queue",sep="/")
+        
+        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+        message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
+        
+        invisible(self)
+      },error=.capturedErrorToMessage)
       
-      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
-      message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
-      
-      invisible(self)
     },
     results = function(job_id, format = NULL) {
-      if (is.null(job_id)) {
-        stop("No job id specified.")
-      }
-      
-      endpoint = paste("jobs",job_id,"download",sep="/")
-      supportedFormats = names(self$output_formats()$formats)
-      if (!is.null(format) && format %in% supportedFormats) {
-        return(private$GET(endpoint = endpoint,
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job id specified.")
+        }
+        
+        endpoint = paste("jobs",job_id,"download",sep="/")
+        supportedFormats = names(self$output_formats()$formats)
+        if (!is.null(format) && format %in% supportedFormats) {
+          return(private$GET(endpoint = endpoint,
                              authorized = TRUE,
                              query=list(
                                format=format
                              )))
-      } else {
-        return(private$GET(endpoint = endpoint,
-                              authorized = TRUE))
-      }
-      
+        } else {
+          return(private$GET(endpoint = endpoint,
+                             authorized = TRUE))
+        }
+      },error=.capturedErrorToMessage)
     },
     pause = function(job_id) {
-      if (is.null(job_id)) {
-        stop("No job id specified.")
-      }
-      endpoint = paste("jobs",job_id,"pause",sep="/")
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job id specified.")
+        }
+        endpoint = paste("jobs",job_id,"pause",sep="/")
+        
+        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+        message(paste("Job '",job_id,"' has been successfully paused.",sep=""))
+        return(success)
+      },error=.capturedErrorToMessage)
       
-      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
-      message(paste("Job '",job_id,"' has been successfully paused.",sep=""))
-      return(success)
     },
     cancel = function(job_id) {
-      if (is.null(job_id)) {
-        stop("No job id specified.")
-      }
-      endpoint = paste("jobs",job_id,"cancel",sep="/")
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job id specified.")
+        }
+        endpoint = paste("jobs",job_id,"cancel",sep="/")
+        
+        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+        message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
+        return(success)
+      },error=.capturedErrorToMessage)
       
-      success = private$PATCH(endpoint = endpoint, authorized = TRUE)
-      message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
-      return(success)
     },
     
     deleteUserFile = function (src) {
+      tryCatch({
+        if (is.character(src)) {
+          src = .urlHardEncode(src)
+        } else {
+          stop("Cannot interprete parameter 'src' during delete request")
+        }
+        endpoint = paste("users",self$user_id,"files",src,sep="/")
+        
+        return(private$DELETE(endpoint = endpoint, authorized = TRUE))
+      },error=.capturedErrorToMessage)
       
-      if (is.character(src)) {
-        src = .urlHardEncode(src)
-      } else {
-        stop("Cannot interprete parameter 'src' during delete request")
-      }
-      endpoint = paste("users",self$user_id,"files",src,sep="/")
-      
-      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     }, 
     deleteGraph = function(graph_id) {
-      endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
+      tryCatch({
+        endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
+        
+        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
+        message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+        return(success)
+      },error=.capturedErrorToMessage)
       
-      return(private$DELETE(endpoint = endpoint, authorized = TRUE))
     },
     deleteService = function(service_id) {
-      endpoint = paste("services",service_id,sep="")
-      
-      msg = private$DELETE(endpoint = endpoint,
-                     authorized = TRUE)
-      message("Service '",service_id,"' successfully deactivated")
-      invisibile(msg)
+      tryCatch({
+        endpoint = paste("services",service_id,sep="")
+        
+        msg = private$DELETE(endpoint = endpoint,
+                             authorized = TRUE)
+        message("Service '",service_id,"' successfully deactivated")
+        invisibile(msg)
+      },error=.capturedErrorToMessage)
+     
     },
     getUserCredits = function() {
-      endpoint = paste("users",self$user_id,"credits",sep="/")
+      tryCatch({
+        endpoint = paste("users",self$user_id,"credits",sep="/")
+        
+        return(private$GET(endpoint,authorized = TRUE))
+      },error=.capturedErrorToMessage)
       
-      return(private$GET(endpoint,authorized = TRUE))
     },
     createService = function(job_id, service_type, ...) {
-      if (is.null(job_id)) {
-        stop("Cannot create service. job_id is missing.")
-      }
-      if (is.null(service_type)) {
-        stop("No service_type specified.")
-      }
-      if (self$is_rserver) {
-        endpoint = "services/"
-      } else {
-        endpoint = "services"
-      }
-    
-      service_args = list(...)
-      
-      service_request_object = list(
-        job_id = job_id,
-        service_type = service_type,
-        service_args = service_args
-      )
-      
-      response = private$POST(endpoint,
-                   authorized = TRUE, 
-                   data = service_request_object, 
-                   encodeType = "json")
-      
-      message("Service was successfully created.")
-      return(response)
-      
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("Cannot create service. job_id is missing.")
+        }
+        if (is.null(service_type)) {
+          stop("No service_type specified.")
+        }
+        if (self$is_rserver) {
+          endpoint = "services/"
+        } else {
+          endpoint = "services"
+        }
+        
+        service_args = list(...)
+        
+        service_request_object = list(
+          job_id = job_id,
+          service_type = service_type,
+          service_args = service_args
+        )
+        
+        response = private$POST(endpoint,
+                                authorized = TRUE, 
+                                data = service_request_object, 
+                                encodeType = "json")
+        
+        message("Service was successfully created.")
+        return(response)
+      },error=.capturedErrorToMessage)
     },
     modifyService = function() {
       
     },
     getProcessGraphBuilder = function() {
+      tryCatch({
+        if (is.null(private$graph_builder)) {
+          private$graph_builder = ProcessGraphBuilder$new(self)
+        }
+        
+        return(private$graph_builder)
+      },error=.capturedErrorToMessage)
       
-      if (is.null(private$graph_builder)) {
-        private$graph_builder = ProcessGraphBuilder$new(self)
-      }
-      
-      return(private$graph_builder)
     }
 
   ),
@@ -665,16 +743,6 @@ OpenEOClient <- R6Class(
       return(!is.null(private$host))
     },
 
-    isLoggedIn = function() {
-
-      hasToken = !is.null(private$login_token)
-      return(hasToken || self$disableAuth)
-    },
-    checkLogin = function() {
-      if (!private$isLoggedIn()) {
-        stop("You are not logged in.")
-      }
-    },
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
       url = paste(private$host,endpoint, sep ="/")
 
@@ -689,10 +757,8 @@ OpenEOClient <- R6Class(
         info = content(response, ...)
         return(info)
 
-      } else if (response$status_code %in% c(404)) {
-        stop(paste("Cannot find or access endpoint ","'",endpoint,"'",sep=""))
       } else {
-        stop(response$message)
+        private$errorHandling(response,url)
       }
     },
     DELETE = function(endpoint,authorized=FALSE,...) {
@@ -712,9 +778,11 @@ OpenEOClient <- R6Class(
           message(elem)
         })
       } else {
-        tmp = lapply(message, function(elem) {
-          warning(elem)
-        })
+        if (!is.null(message) && is.list(message)) {
+          warning(message[["message"]])
+        } else {
+          warning(message)
+        }
       }
       
       return(success)
@@ -748,11 +816,11 @@ OpenEOClient <- R6Class(
             return(response)
           } else {
             okMessage = content(response,"parsed","application/json")
+            
             return(okMessage)
           }
         } else {
-          error = content(response,"text","application/json")
-          stop(error)
+          private$errorHandling(response,url)
         }
       } else {
         stop("Cannot interprete data - data is no list that can be transformed into json")
@@ -779,8 +847,7 @@ OpenEOClient <- R6Class(
         okMessage = content(response,"parsed","application/json")
         return(okMessage)
       } else {
-        error = content(response,"text","application/json")
-        stop(error)
+        private$errorHandling(response,url)
       }
     },
     PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...) {
@@ -808,8 +875,7 @@ OpenEOClient <- R6Class(
         okMessage = content(response,"parsed","application/json")
         return(okMessage)
       } else {
-        error = content(response,"text","application/json")
-        stop(error)
+        private$errorHandling(response,url)
       }
     },
     modifyProductList = function(product) {
@@ -858,12 +924,25 @@ OpenEOClient <- R6Class(
     },
     stopIfNotConnected = function() {
       if (!private$isConnected()) {
-        stop("No host selected")
+        stop(.notConnected())
+      }
+    },
+    errorHandling = function(response,url) {
+      if (response$status_code %in% c(400,404)) {
+        stop(paste("REQUEST-ERROR: Cannot find or access endpoint ","'",url,"'.",sep=""))
+      } else if (response$status_code == 401) {
+        stop(.notLoggedInOrExpired())
+      } else if (response$status_code == 403) {
+        stop(.notAuthorized())
+      } else {
+        if (!is.null(response) && is.list(response)) {
+          stop(paste("SERVER-ERROR:",response[["message"]]))
+        } else {
+          stop(paste("SERVER-ERROR:",response))
+        }
+        
       }
     }
-    
-
-
   )
 
 )
@@ -879,6 +958,11 @@ OpenEOClient <- R6Class(
 #' @export
 print.openeo_product = function(x, ...) {
   return(str(x))
+}
+
+.capturedErrorToMessage = function(e) {
+  message(e)
+  invisible(NULL)
 }
 
 
