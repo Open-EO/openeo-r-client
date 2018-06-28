@@ -6,8 +6,6 @@
 #' @import httr
 #' @import magrittr
 #' @import jsonlite
-#' @importFrom raster extent
-#' @importFrom gdalUtils gdalsrsinfo
 #' @importFrom lubridate as_datetime
 #' @export
 OpenEOClient <- R6Class(
@@ -883,11 +881,22 @@ OpenEOClient <- R6Class(
         if ("extent" %in% names(product)) {
           e = product$extent
   
-          ext = extent(e$left,e$right,e$bottom,e$top)
+          ext = sp::bbox(matrix(nrow=2,ncol=2,c(e$left,e$right,e$bottom,e$top)))
           product$extent = ext
           
           if ("srs" %in% names(e)) {
-            product$crs = gdalsrsinfo(e$srs, as.CRS = TRUE)
+
+            if (grepl("EPSG",toupper(e$srs))) {
+              product$crs = sp::CRS(paste("+init=",e$srs,sep="")) # epsg code
+            } else if (startsWith(e$srs,"+")) {
+              product$crs = sp::CRS(e$srs) # proj4string (potentially)
+            } else {
+              product$crs = e$srs
+              warning("Cannot interprete SRS statement (no EPSG code or PROJ4 string).")
+            }
+            
+            
+           
           }
         }
         

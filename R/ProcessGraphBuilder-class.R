@@ -26,7 +26,7 @@ ProcessGraphBuilder = R6Class(
         
         f = openeo::process
         forms = formals(f)
-        forms$... <- NULL
+        forms$... = NULL
         forms = append(forms,arguments)
         forms$process_id = id
         

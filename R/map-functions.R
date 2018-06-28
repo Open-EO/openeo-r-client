@@ -37,16 +37,23 @@ mapService = function(con, service_id, layers,transparent=TRUE) {
 #' 
 #' @export
 mapCollection = function(con, collection) {
+  suppressWarnings({
+    if (!require(mapview)) {
+      message("Library 'mapview' was not installed.")
+      return(invisible())
+    }
+  })
+  
+  
   collections = lapply(collection, function(coll_name,con) {
     col = con %>% describeCollection(coll_name)
     return(col)
   }, con=con)
   
-  P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
+  P4S.latlon <- sp::CRS("+proj=longlat +datum=WGS84")
   sps = lapply(collections, function(coll_desc,crs) {
-    polygon = as(coll_desc$extent,"SpatialPolygons")
-    crs(polygon) <- coll_desc$crs
-    
+
+    polygon = .bboxToSpatialPolygon(coll_desc$extent,coll_desc$crs)
     
     return(spTransform(polygon,crs))
   },crs=P4S.latlon)
@@ -57,5 +64,25 @@ mapCollection = function(con, collection) {
     coll_sp_lat_lon = sps[[i]]
     map = addFeatures(map = map, data=coll_sp_lat_lon,label=coll_name)
   }
+  # TODO add automatic centering and zoom level to map
   return(map)
+}
+
+.bboxToSpatialPolygon = function(bbox,crs) {
+  
+  coordinates= rbind(
+    c(bbox["x","min"],bbox["y","min"]),
+    c(bbox["x","max"],bbox["y","min"]),
+    c(bbox["x","max"],bbox["y","max"]),
+    c(bbox["x","min"],bbox["y","max"]),
+    c(bbox["x","min"],bbox["y","min"])
+  )
+  
+  colnames(coordinates) = c("x","y")
+  
+  p = Polygon(coordinates)
+  pp = Polygons(list(p),ID=1)
+  sp = SpatialPolygons(list(pp),proj4string = crs)
+  
+  return(sp)
 }
