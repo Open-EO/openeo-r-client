@@ -14,7 +14,8 @@ Depends:
     sp (>= 1.2)
 Suggests:
     leaflet (== 2.0.0),
-    mapview (== 2.4.0)
+    mapview (== 2.4.0),
+    commonmark (== 1.5)
 Imports:
     jsonlite,
     httr,
@@ -24,7 +25,8 @@ Imports:
     tibble,
     lubridate,
     dplyr,
-    sp
+    sp,
+    commonmark
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
@@ -36,5 +38,6 @@ Collate:
     'client.R'
     'errors.R'
     'map-functions.R'
+    'markdown_viewer.R'
     'process_graph_building.R'
     'wrapper-functions.R'
