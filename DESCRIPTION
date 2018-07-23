@@ -35,6 +35,7 @@ License: Apache License
 Collate: 
     'DetailedDescription-functions.R'
     'ProcessGraphBuilder-class.R'
+    'capabilities-mapping.R'
     'client.R'
     'errors.R'
     'map-functions.R'

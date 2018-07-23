@@ -944,10 +944,11 @@ OpenEOClient <- R6Class(
       } else if (response$status_code == 403) {
         stop(.notAuthorized())
       } else {
-        if (!is.null(response) && is.list(response)) {
-          stop(paste("SERVER-ERROR:",response[["message"]]))
+        errorMessage = content(response)
+        if (!is.null(errorMessage) && is.list(errorMessage)) {
+          stop(paste("SERVER-ERROR:",errorMessage[["message"]]))
         } else {
-          stop(paste("SERVER-ERROR:",response))
+          stop(paste("SERVER-ERROR:",errorMessage))
         }
         
       }

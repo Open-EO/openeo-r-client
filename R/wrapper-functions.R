@@ -57,7 +57,7 @@ listCapabilities = function(con) {
   if (is.list(capabilities)) {
     capabilities = unlist(capabilities)
   }
-  return(data.frame(endpoints=capabilities))
+  return(data.frame(endpoints=capabilities,stringsAsFactors = FALSE))
 }
 
 #' Returns the output formats
