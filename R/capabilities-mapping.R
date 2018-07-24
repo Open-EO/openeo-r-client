@@ -18,7 +18,7 @@ api.v0.0.2 = function() {
     add_row(endpoint="/users/{user_id}/files",operation="GET",tag="user_files") %>% 
     add_row(endpoint="/users/{user_id}/files/{path}",operation="GET",tag="user_file_download") %>%
     add_row(endpoint="/users/{user_id}/files/{path}",operation="PUT",tag="user_file_upload") %>%
-    add_row(endpoint="/users/{user_id}/files/{path}",operation="DELETE",tag="user_file_upload") %>%
+    add_row(endpoint="/users/{user_id}/files/{path}",operation="DELETE",tag="user_file_delete") %>%
     add_row(endpoint="/users/{user_id}/jobs",operation="GET",tag="user_jobs") %>%
     add_row(endpoint="/users/{user_id}/services",operation="GET",tag="user_services") %>%
     add_row(endpoint="/users/{user_id}/credits",operation="GET",tag="user_credits") %>%
@@ -60,7 +60,7 @@ endpoints_compare = function(e1,e2) {
     
     if (length(df12) != length(df21)) return(FALSE)
     
-    varible_pattern = "^[\\{<%\\[].*[\\}>%\\]$"
+    varible_pattern = "^[\\{|<|\\[|%].*[\\}|>|\\]|%]$"
     
     df12_var = all(grepl(varible_pattern,df12))
     df21_var = all(grepl(varible_pattern,df21))
@@ -72,7 +72,7 @@ endpoints_compare = function(e1,e2) {
 }
 
 endpoint_mapping = function(con) {
-  capabilities_list = listCapabilities(con)
+  capabilities_list = con %>% listCapabilities()
   api = api.v0.0.2()
   
   mapping = api %>% rowwise() %>% summarise(endpoint,operation,tag,available = tibble(endpoint) %>% (function(endpoint){
@@ -93,5 +93,31 @@ endpoint_mapping = function(con) {
               %>% (function(l)l$available))
   
   return(mapping)
+  
+}
+
+replace_endpoint_parameter = function(endpoint, ...) {
+  if (startsWith(endpoint,"/")) {
+    coll = unlist(strsplit(endpoint,split = "/"))[-1]
+  } else {
+    coll = unlist(strsplit(endpoint,split = "/"))
+  }
+  
+  endsWithSlash = endsWith(endpoint,"/")
+  
+  # get parameter
+  variable_pattern = "^[\\{|<|\\[|%].*[\\}|>|\\]|%]$"
+  
+  param_names = grepl(variable_pattern,coll)
+  
+  params = list(...)
+  # replace those parameter by given ... parameter (based on order)
+  coll[param_names] = params
+  
+  if (endsWithSlash) {
+    return(paste(coll,collapse="",sep="","/"))
+  } else {
+    return(paste(coll,collapse = "/",sep=""))
+  }
   
 }

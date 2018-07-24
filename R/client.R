@@ -13,12 +13,12 @@ OpenEOClient <- R6Class(
   # public ----
   public = list(
     # attributes ====
-    disableAuth = FALSE,
+    disableAuth = TRUE,
     general_auth_type = "bearer",
     user_id = NULL,
     
-    is_rserver = FALSE,
     api.version = "0.0.2",
+    api.mapping = NULL,
     
     products = list(),
     processes = list(),
@@ -30,13 +30,21 @@ OpenEOClient <- R6Class(
 
     connect = function(url) {
       if (!missing(url)) {
-        if (endsWith(url,"/")) {
-          url = substr(url,1,nchar(url)-1)
+        tryCatch({
+          if (endsWith(url,"/")) {
+            url = substr(url,1,nchar(url)-1)
+          }
+          private$host = url
+          # cat(paste("Registered '",url,"' as host","\n",sep=""))
+          cat("Registered host\n")
+        
+          self$api.mapping = endpoint_mapping(self)
+          invisible(self)
+        }, error = function(e){
+          invisible(self)
         }
-        private$host = url
-        # cat(paste("Registered '",url,"' as host","\n",sep=""))
-        cat("Registered host\n")
-        invisible(self)
+        )
+        
       } else {
         stop("Host-URL is missing")
       }
@@ -55,19 +63,21 @@ OpenEOClient <- R6Class(
       
     },
     services = function() {
-      endpoint = "capabilities/services"
-      
       tryCatch({
         private$stopIfNotConnected()
+        
+        tag = "ogc_services"
+        endpoint = private$getBackendEndpoint(tag)
         
         services = private$GET(endpoint, authorized = FALSE)
         return(services)
       },error=.capturedErrorToMessage)
     },
     output_formats = function() {
-      endpoint = "capabilities/output_formats"
-      
       tryCatch({
+        tag = "formats"
+        endpoint = private$getBackendEndpoint(tag)
+        
         formats = private$GET(endpoint,authorized = FALSE)
         
         return(formats)
@@ -77,9 +87,11 @@ OpenEOClient <- R6Class(
       
     },
     udf_runtimes = function() {
-      endpoint = "udf_runtimes"
       tryCatch(
         {
+          tag = "udf_runtimes"
+          endpoint = private$getBackendEndpoint(tag)
+          
           return(private$GET(endpoint = endpoint,
                              authorized = FALSE))
         }, 
@@ -89,12 +101,13 @@ OpenEOClient <- R6Class(
     
     register = function(user=NULL,password) {
       #currently this will be used for GEE only
-      endpoint = "auth/register"
-      
       tryCatch({
         if (!private$isConnected()) {
           stop("No host selected")
         }
+        
+        tag = "registration"
+        endpoint = private$getBackendEndpoint(tag)
         
         private$password = password
         
@@ -111,11 +124,17 @@ OpenEOClient <- R6Class(
     },
 
     login = function(user, password, auth_type="basic") {
-      endpoint = "auth/login"
       
       tryCatch({
         if (missing(user) || missing(password)) {
           stop("Username or password is missing.")
+        }
+        
+        if (!is.null(self$api.mapping)) {
+          tag = "login"
+          endpoint = private$getBackendEndpoint(tag)
+        } else {
+          endpoint = "auth/login"
         }
 
         private$stopIfNotConnected()
@@ -137,24 +156,30 @@ OpenEOClient <- R6Class(
           self$user_id = cont$user_id
           
           cat("Login successful." )
+          
+          if (is.null(self$api.mapping)) {
+            self$api.mapping = endpoint_mapping(self)
+          }
+          
           invisible(self)
         } else {
           stop("Login failed.")
         }
       },
-      error = .capturedErrorToMessage
+      error = .capturedErrorToMessage,
+      finally = {
+        
+      }
       )
       
     },
     # list functions ####
     listData = function() {
-      if (self$is_rserver) {
-        endpoint = "data/"
-      } else {
-        endpoint = "data"
-      }
-      
+
       tryCatch({
+        tag = "data_overview"
+        endpoint = private$getBackendEndpoint(tag)
+        
         listOfProducts = private$GET(endpoint=endpoint,type="application/json")
         table = tibble(product_id = character(),
                        description = character(),
@@ -185,15 +210,13 @@ OpenEOClient <- R6Class(
       },
       error=.capturedErrorToMessage)
     },
+    
     listProcesses = function() {
-      
-      if (self$is_rserver) {
-        endpoint = "processes/"
-      } else {
-        endpoint = "processes"
-      }
-      
+
       tryCatch({
+        tag = "process_overview"
+        endpoint = private$getBackendEndpoint(tag)
+        
         listOfProcesses = private$GET(endpoint,type="application/json")
         
         table = tibble(process_id = character(),
@@ -211,9 +234,11 @@ OpenEOClient <- R6Class(
       
     },
     listJobs = function() {
-      endpoint = paste("users",self$user_id,"jobs",sep="/")
       
       tryCatch({
+        tag = "user_jobs"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        
         listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
         # list to tibble
         table = tibble(job_id=character(),
@@ -238,18 +263,22 @@ OpenEOClient <- R6Class(
     },
     
     listGraphs = function() {
-      endpoint = paste("users",self$user_id,"process_graphs",sep="/")
-      
       tryCatch({
+        tag = "graph_overview"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        
         listOfGraphIds = private$GET(endpoint, authorized = TRUE)
         
         return(listOfGraphIds)
       }, error = .capturedErrorToMessage)
     },
+    
     listServices = function() {
-      endpoint = paste("users",self$user_id,"services",sep="/")
       
       tryCatch({
+        tag = "user_services"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        
         listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
         table = tibble(service_id=character(),
                        service_type=character(),
@@ -271,9 +300,11 @@ OpenEOClient <- R6Class(
     },
     
     listUserFiles = function() {
-      endpoint = paste("users",self$user_id,"files",sep="/")
       
       tryCatch({
+        tag = "user_files"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        
         files = private$GET(endpoint,TRUE,type="application/json")
         
         if (is.null(files) || length(files) == 0) {
@@ -286,11 +317,13 @@ OpenEOClient <- R6Class(
         return(files)
       },error=.capturedErrorToMessage)
     },
+    
     # describe functions ####
     describeProcess = function(pid) {
-      endpoint = paste("processes",pid,sep="/")
-      
       tryCatch({
+        tag = "processes_details"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
+        
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
         
         # info is currently a list 
@@ -300,10 +333,13 @@ OpenEOClient <- R6Class(
         return(info)
       },error=.capturedErrorToMessage)
     },
+    
     describeProduct = function(pid) {
-      endpoint = paste("data",pid,sep="/")
       
       tryCatch({
+        tag = "data_details"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
+        
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
       
@@ -313,10 +349,13 @@ OpenEOClient <- R6Class(
       },
       error = .capturedErrorToMessage)
     },
+    
     describeJob = function(job_id) {
-      endpoint = paste("jobs",job_id,sep="/")
       
       tryCatch({
+        tag = "jobs_details"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        
         info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
         table = tibble(job_id = info$job_id,
                        status = info$status,
@@ -331,6 +370,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
+    
     describeGraph = function(graph_id, user_id = NULL) {
       tryCatch(
         {
@@ -342,7 +382,9 @@ OpenEOClient <- R6Class(
             user_id = self$user_id #or "me"
           }
           
-          endpoint = paste("users", user_id, "process_graphs", graph_id, sep="/")
+          tag = "jobs_details"
+          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(user_id,graph_id)
+          
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
           return(graph)
@@ -351,23 +393,27 @@ OpenEOClient <- R6Class(
       )
       
     },
+    
     describeService = function(service_id) {
       tryCatch({
         if (is.null(service_id)) {
           stop("No service id specified.")
         }
-        endpoint = paste("services",service_id,sep="/")
+        
+        tag = "services_details"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
         
         return(private$GET(endpoint,authorized = TRUE))
       }, error=.capturedErrorToMessage)
     },
+    
     describeUdfType = function(language, udf_type) {
       tryCatch({
         if (is.null(language) || is.null(udf_type)) {
           stop("Missing parameter language or udf_type")
         }
-        
-        endpoint = paste("udf_runtimes",language,udf_type,sep="/")
+        tag = "udf_functions"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(language,udf_type)
         
         msg = private$GET(endpoint = endpoint,
                           authorized = FALSE)
@@ -387,7 +433,10 @@ OpenEOClient <- R6Class(
         if (!is.list(graph) || is.null(graph)) {
           stop("The graph information is missing or not a list")
         }
-        endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
+        
+        tag = "graph_replace"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,graph_id)
+        
         message = private$PUT(endpoint = endpoint, 
                               authorized = TRUE, 
                               data = graph,
@@ -406,7 +455,8 @@ OpenEOClient <- R6Class(
           stop("User id is not set. Either login or set the id manually.")
         }
         
-        endpoint = paste("users",self$user_id,"files",target,sep="/")
+        tag = "user_file_upload"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
         
         message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
         message("Upload of user data was successful.")
@@ -426,7 +476,9 @@ OpenEOClient <- R6Class(
           dst = tempfile()
         }
         
-        endpoint = paste("users",self$user_id,"files",src,sep="/")
+        tag = "user_file_download"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,src)
+        
         file_connection = file(dst,open="wb")
         writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
         
@@ -438,9 +490,11 @@ OpenEOClient <- R6Class(
         close(file_connection,type="wb")
       })
     },
+    
     storeGraph = function(graph) {
       tryCatch({
-        endpoint = paste("users",self$user_id,"process_graphs",sep="/")
+        tag = "new_graph"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         if (!is.list(graph) || is.null(graph)) {
           stop("The graph information is missing or not a list")
@@ -454,16 +508,11 @@ OpenEOClient <- R6Class(
         return(okMessage$process_graph_id)
       },error = .capturedErrorToMessage)
     },
+    
     storeJob = function(task=NULL,graph_id=NULL,format, ...) {
       tryCatch({
-        if (self$is_rserver) {
-          endpoint = paste("jobs/",sep="/")
-        } else {
-          endpoint = paste("jobs",sep="/")
-        }
-        if (is.null(format)) {
-          # format = self$output_formats()$default
-        }
+        tag = "jobs_define"
+        endpoint = private$getBackendEndpoint(tag)
         
         output = list(...)
         output = append(output, list(format=format))
@@ -488,14 +537,16 @@ OpenEOClient <- R6Class(
         message("Job was sucessfully registered on the backend.")
         return(okMessage$job_id)
       },error=.capturedErrorToMessage)
-      
     },
+    
     modifyJob = function(job_id,...) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job i was specified.")
         }
-        endpoint = paste("jobs",job_id,sep="/")
+        
+        tag = "jobs_update"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
         updateables = list(...)
         
@@ -525,14 +576,13 @@ OpenEOClient <- R6Class(
         return(res)
       },error=.capturedErrorToMessage)
     },
+    
     execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
       tryCatch({
         # former sync evaluation
-        if (self$is_rserver) {
-          endpoint = paste("execute/",sep="/")
-        } else {
-          endpoint = paste("execute",sep="/")
-        }
+        tag = "execute_sync"
+        endpoint = private$getBackendEndpoint(tag)
+        
         if (is.null(format)) {
           format = self$output_formats()$default
         }
@@ -578,12 +628,15 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
+    
     queue = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
         }
-        endpoint = paste("jobs",job_id,"queue",sep="/")
+        
+        tag = "execute_async"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
         success = private$PATCH(endpoint = endpoint, authorized = TRUE)
         message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
@@ -592,13 +645,16 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
+    
     results = function(job_id, format = NULL) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
         }
         
-        endpoint = paste("jobs",job_id,"download",sep="/")
+        tag= "jobs_download"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+
         supportedFormats = names(self$output_formats()$formats)
         if (!is.null(format) && format %in% supportedFormats) {
           return(private$GET(endpoint = endpoint,
@@ -612,25 +668,30 @@ OpenEOClient <- R6Class(
         }
       },error=.capturedErrorToMessage)
     },
+    
     pause = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
         }
-        endpoint = paste("jobs",job_id,"pause",sep="/")
+        
+        tag = "jobs_pause"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
         success = private$PATCH(endpoint = endpoint, authorized = TRUE)
         message(paste("Job '",job_id,"' has been successfully paused.",sep=""))
         return(success)
       },error=.capturedErrorToMessage)
-      
     },
+    
     cancel = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
         }
-        endpoint = paste("jobs",job_id,"cancel",sep="/")
+        
+        tag = "jobs_cancel"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
         success = private$PATCH(endpoint = endpoint, authorized = TRUE)
         message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
@@ -646,15 +707,18 @@ OpenEOClient <- R6Class(
         } else {
           stop("Cannot interprete parameter 'src' during delete request")
         }
-        endpoint = paste("users",self$user_id,"files",src,sep="/")
+        
+        tag = "user_file_delete"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id, src)
         
         return(private$DELETE(endpoint = endpoint, authorized = TRUE))
       },error=.capturedErrorToMessage)
-      
     }, 
+    
     deleteGraph = function(graph_id) {
       tryCatch({
-        endpoint = paste("users",self$user_id,"process_graphs",graph_id,sep="/")
+        tag = "graph_delete"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id, graph_id)
         
         success = private$DELETE(endpoint = endpoint, authorized = TRUE)
         message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
@@ -662,25 +726,28 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
+    
     deleteService = function(service_id) {
       tryCatch({
-        endpoint = paste("services",service_id,sep="")
+        tag = "services_delete"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
         
         msg = private$DELETE(endpoint = endpoint,
                              authorized = TRUE)
         message("Service '",service_id,"' successfully deactivated")
         invisibile(msg)
       },error=.capturedErrorToMessage)
-     
     },
+    
     getUserCredits = function() {
       tryCatch({
-        endpoint = paste("users",self$user_id,"credits",sep="/")
+        tag = "user_credits"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         return(private$GET(endpoint,authorized = TRUE))
       },error=.capturedErrorToMessage)
-      
     },
+    
     createService = function(job_id, service_type, ...) {
       tryCatch({
         if (is.null(job_id)) {
@@ -689,11 +756,9 @@ OpenEOClient <- R6Class(
         if (is.null(service_type)) {
           stop("No service_type specified.")
         }
-        if (self$is_rserver) {
-          endpoint = "services/"
-        } else {
-          endpoint = "services"
-        }
+
+        tag = "service_publish"
+        endpoint = private$getBackendEndpoint(tag)
         
         service_args = list(...)
         
@@ -712,9 +777,14 @@ OpenEOClient <- R6Class(
         return(response)
       },error=.capturedErrorToMessage)
     },
-    modifyService = function() {
+    
+    modifyService = function(service_id) {
+      tag = "services_update"
+      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
       
+      .not_implemented_yet()
     },
+    
     getProcessGraphBuilder = function() {
       tryCatch({
         if (is.null(private$graph_builder)) {
@@ -915,6 +985,25 @@ OpenEOClient <- R6Class(
         stop("Object that is modified is not the list result of product.")
       }
     },
+    
+    getBackendEndpoint = function(endpoint_name) {
+      if (!is.null(self$api.mapping)) {
+        endpoint = api %>% filter(tag==endpoint_name,available) %>% select(backend_endpoint) %>% unname() %>% unlist()
+        if (length(endpoint) > 0) {
+          if (startsWith(endpoint,"/")) {
+            return(substr(endpoint,2,nchar(endpoint)))
+          } else {
+            return(endpoint)
+          }
+        } else {
+          stop("Endpoint for this function is not supported by the current back-end.")
+        }
+        
+      } else {
+        stop("Not connected / loggedin. You need to connect or login to a back-end.")
+      }
+    },
+    
     # returns the header list and adds Authorization
     addAuthorization = function (header) {
       if (missing(header)) {
