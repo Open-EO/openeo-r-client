@@ -124,7 +124,6 @@ OpenEOClient <- R6Class(
     },
 
     login = function(user, password, auth_type="basic") {
-      
       tryCatch({
         if (missing(user) || missing(password)) {
           stop("Username or password is missing.")
@@ -988,7 +987,7 @@ OpenEOClient <- R6Class(
     
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
-        endpoint = api %>% filter(tag==endpoint_name,available) %>% select(backend_endpoint) %>% unname() %>% unlist()
+        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% select(backend_endpoint) %>% unname() %>% unlist()
         if (length(endpoint) > 0) {
           if (startsWith(endpoint,"/")) {
             return(substr(endpoint,2,nchar(endpoint)))
@@ -1052,11 +1051,6 @@ OpenEOClient <- R6Class(
   text = gsub("\\/","%2F",text)
   text = gsub("\\.","%2E",text)
   return(text)
-}
-
-#' @export
-print.openeo_product = function(x, ...) {
-  return(str(x))
 }
 
 .capturedErrorToMessage = function(e) {

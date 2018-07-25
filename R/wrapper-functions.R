@@ -100,6 +100,8 @@ services = function(con) {
 #'
 #' @export
 connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer") {
+  con = OpenEOClient$new()
+  
   con$disableAuth = disable_auth
   
   if (!disable_auth && !auth_type %in% c("basic","bearer")) {
@@ -110,9 +112,9 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
   }
   
   if (is.null(user) && is.null(password)) {
-    con = OpenEOClient$new()$connect(url=host)
+    con = con$connect(url=host)
   } else if (!is.null(user) && !is.null(password)) {
-    con = OpenEOClient$new()$connect(url=host)$login(user=user,password=password)  
+    con = con$connect(url=host)$login(user=user,password=password)  
   } else {
     message("Incomplete credentials. Either username or password is missing")
     return()
