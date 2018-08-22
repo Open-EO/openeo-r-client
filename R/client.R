@@ -17,7 +17,7 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     user_id = NULL,
     
-    api.version = "0.0.2",
+    api.version = "0.3.0",
     api.mapping = NULL,
     
     products = list(),
@@ -151,7 +151,7 @@ OpenEOClient <- R6Class(
         if (res$status_code == 200) {
           cont = content(res,type="application/json")
           
-          private$login_token = cont$token
+          private$login_token = cont$access_token
           self$user_id = cont$user_id
           
           cat("Login successful." )
@@ -171,6 +171,17 @@ OpenEOClient <- R6Class(
       }
       )
       
+    },
+    user_info = function() {
+      tryCatch({
+        tag = "user_info"
+        endpoint = private$getBackendEndpoint(tag)
+        
+        user_info = private$GET(endpoint=endpoint,authorized = TRUE,type="application/json")
+        return(user_info)
+        
+      },
+      error = .capturedErrorToMessage)
     },
     # list functions ####
     listData = function() {
