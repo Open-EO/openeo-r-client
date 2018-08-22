@@ -41,7 +41,52 @@ api.v0.0.2 = function() {
   return(api)
 }
 
-endpoints_compare = function(e1,e2) {
+api.v0.3.0 = function() {
+  api = tibble(endpoint="/",operation="GET",tag="capabilities")
+  
+  api = api %>% 
+    add_row(endpoint="/output_formats",operation="GET",tag="formats") %>% 
+    add_row(endpoint="/service_types",operation="GET",tag="ogc_services") %>% 
+    add_row(endpoint="/data",operation="GET",tag="data_overview") %>% 
+    add_row(endpoint="/data/{data_id}",operation="GET",tag="data_details") %>% 
+    add_row(endpoint="/processes",operation="GET",tag="process_overview") %>% 
+    add_row(endpoint="/process_graphs",operation="GET",tag="graph_overview") %>% 
+    add_row(endpoint="/process_graphs",operation="POST",tag="new_graph") %>% 
+    add_row(endpoint="/process_graphs/{process_graph_id}",operation="GET",tag="graph_details") %>% 
+    add_row(endpoint="/process_graphs/{process_graph_id}",operation="PATCH",tag="graph_replace") %>% 
+    add_row(endpoint="/process_graphs/{process_graph_id}",operation="DELETE",tag="graph_delete") %>% 
+    add_row(endpoint="/process_graphs/{process_graph_id}",operation="GET",tag="graph_details") %>% 
+    add_row(endpoint="/files/{user_id}",operation="GET",tag="user_files") %>% 
+    add_row(endpoint="/files/{user_id}/{path}",operation="GET",tag="user_file_download") %>%
+    add_row(endpoint="/files/{user_id}/{path}",operation="PUT",tag="user_file_upload") %>%
+    add_row(endpoint="/files/{user_id}/{path}",operation="DELETE",tag="user_file_delete") %>%
+    add_row(endpoint="/credentials/basic",operation="GET",tag="login") %>%
+    add_row(endpoint="/preview",operation="POST",tag="execute_sync") %>%
+    add_row(endpoint="/jobs",operation="GET",tag="user_jobs") %>%
+    add_row(endpoint="/jobs",operation="POST",tag="jobs_define") %>%
+    add_row(endpoint="/jobs/{job_id}",operation="PATCH",tag="jobs_update") %>%
+    add_row(endpoint="/jobs/{job_id}",operation="GET",tag="jobs_details") %>%
+    add_row(endpoint="/jobs/{job_id}",operation="DELETE",tag="jobs_delete") %>%
+    add_row(endpoint="/jobs/{job_id}/estimate",operation="GET",tag="jobs_cost_estimation") %>%
+    add_row(endpoint="/jobs/{job_id}/results",operation="POST",tag="execute_async") %>%
+    add_row(endpoint="/jobs/{job_id}/results",operation="DELETE",tag="jobs_cancel") %>%
+    add_row(endpoint="/jobs/{job_id}/results",operation="GET",tag="jobs_download") %>%
+    add_row(endpoint="/subscribe",operation="PATCH",tag="jobs_log") %>%
+    add_row(endpoint="/services",operation="GET",tag="user_services") %>%
+    add_row(endpoint="/services",operation="POST",tag="service_publish") %>%
+    add_row(endpoint="/services/{service_id}",operation="GET",tag="services_details") %>%
+    add_row(endpoint="/services/{service_id}",operation="PATCH",tag="services_update") %>%
+    add_row(endpoint="/services/{service_id}",operation="DELETE",tag="services_delete") %>%
+    add_row(endpoint="/me",operation="GET",tag="user_info") %>%
+    add_row(endpoint="/validation",operation="POST",tag="process_graph_validate")
+    
+  return(api)
+}
+
+endpoints_compare = function(offering,e2,o2) {
+  e1 = offering$path
+  o1 = offering$method
+  
   if (startsWith(e1,"/")) {
     coll1 = unlist(strsplit(e1,split = "/"))[-1]
   } else {
@@ -54,6 +99,9 @@ endpoints_compare = function(e1,e2) {
     coll2 = unlist(strsplit(e2,split = "/"))
   }  
   
+  if (length(coll1) == 0) coll1=""
+  if (length(coll2) == 0) coll2=""
+  
   if (length(intersect(coll1,coll2) > 0)) {
     df12 = setdiff(coll1,coll2)
     df21 = setdiff(coll2,coll1)
@@ -65,31 +113,37 @@ endpoints_compare = function(e1,e2) {
     df12_var = all(grepl(varible_pattern,df12))
     df21_var = all(grepl(varible_pattern,df21))
     
-    return(df12_var && df21_var)
+    return(df12_var && df21_var && o1 == o2)
   }
   
   return(FALSE)
 }
 
 endpoint_mapping = function(con) {
-  capabilities_list = con %>% listCapabilities()
-  api = api.v0.0.2()
+  server_offering = con %>% listCapabilities()
+  api = api.v0.3.0()
   
-  mapping = api %>% rowwise() %>% summarise(endpoint,operation,tag,available = tibble(endpoint) %>% (function(endpoint){
-    evaluation = unname(sapply(capabilities_list$endpoints,endpoints_compare,endpoint[[1]]))
+  mapping = api %>% rowwise() %>% summarise(endpoint,operation,tag,available = tibble(endpoint,operation) %>% (function(row){
+    evaluation = c()
+    
+    for (i in 1:nrow(server_offering)) {
+      evaluation = c(evaluation, endpoints_compare(server_offering[i,],endpoint[[1]], operation[[1]]))
+    }
+    # evaluation = unname(sapply(server_offering,endpoints_compare,endpoint[[1]],operation[[1]]))
+    # add also operation[[1]] = server_offering$method [value]
     if (any(evaluation)) {
-      return (list(list(available=TRUE,backend_endpoint=capabilities_list$endpoints[evaluation])))
+      return (list(list(available=TRUE,backend_endpoint=server_offering$path[evaluation])))
     } else {
       return(list(list(available=FALSE,backend_endpoint=NA_character_)))
     }
   }))
   
-  mapping = mapping %>% 
-    rowwise() %>% 
+  mapping = mapping %>%
+    rowwise() %>%
     summarise(endpoint,operation,tag,
-              backend_endpoint = available 
+              backend_endpoint = available
               %>% (function(l)l$backend_endpoint),
-              available = available 
+              available = available
               %>% (function(l)l$available))
   
   return(mapping)

@@ -55,9 +55,25 @@ api.version = function() {
 listCapabilities = function(con) {
   capabilities = con$capabilities()
   if (is.list(capabilities)) {
-    capabilities = unlist(capabilities)
+    version = capabilities$version
+    endpoints = capabilities$endpoints
+    billing = capabilities$billing
+    
+    # capabilities = unlist(capabilities)
+    
+    server_offering = tibble(path=character(),method=character())
+    for (i in 1:length(endpoints)) {
+      entry = endpoints[[i]]
+      path = entry$path
+      
+      for (j in 1:length(entry$method)) {
+        method = entry$method[[j]]
+        
+        server_offering = server_offering %>% add_row(path=path,method=method)
+      }
+    }
   }
-  return(data.frame(endpoints=capabilities,stringsAsFactors = FALSE))
+  return(server_offering)
 }
 
 #' Returns the output formats
