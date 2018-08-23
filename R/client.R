@@ -70,9 +70,17 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         services = private$GET(endpoint, authorized = FALSE)
-        return(lapply(services,function(s){
-          class(s) = "ServiceType"
-          return(s)
+        
+        updated_services = list()
+        for (key in names(services)) {
+          service = services[[key]]
+          service$service = key
+          
+          updated_services = c(updated_services,list(service))
+        }
+        return(lapply(updated_services, function(service) {
+          class(service) = "ServiceType"
+          return(service)
         }))
       },error=.capturedErrorToMessage)
     },

@@ -35,6 +35,39 @@ print.ProcessInfo <- function(x, ...) {
 }
 
 #' @export
+print.ServiceType = function(x,...) {
+  service_type = paste(x$service,"\n")
+  parameters = paste("Parameters","(used on service creation)\n")
+  
+  d1 = data.frame(Parameter = names(x$parameters), 
+                 Description=sapply(x$parameters,function(arg) arg$description),
+                 Type=sapply(x$parameters,function(arg) arg$type),
+                 default=sapply(x$parameters,function(arg) arg$default),
+                 example=sapply(x$parameters,function(arg) {
+                   enum = arg$enum
+                   return(paste("[",paste(enum,sep="", collapse=", "),"]",sep=""))
+                 }),
+                 stringsAsFactors = FALSE)
+  row.names(d1) = NULL
+  
+  attributes = paste("Attributes","(used during request)\n")
+  
+  d2 = data.frame(Attributes = names(x$attributes), 
+                  Description=sapply(x$attributes,function(arg) arg$description),
+                  example=sapply(x$attributes,function(arg) {
+                    example = arg$example
+                    return(paste("[",paste(example,sep="", collapse=", "),"]",sep=""))
+                  }),
+                  stringsAsFactors = FALSE)
+  row.names(d2) = NULL
+  
+  cat(service_type,parameters)
+  print(d1)
+  cat(attributes)
+  print(d2)
+}
+
+#' @export
 print.openeo_product = function(x, ...) {
   id = paste(x$product_id)
   description = paste("Description:\t\t",x$description,sep="")
