@@ -61,6 +61,7 @@ api.v0.3.0 = function() {
     add_row(endpoint="/files/{user_id}/{path}",operation="PUT",tag="user_file_upload") %>%
     add_row(endpoint="/files/{user_id}/{path}",operation="DELETE",tag="user_file_delete") %>%
     add_row(endpoint="/credentials/basic",operation="GET",tag="login") %>%
+    add_row(endpoint="/credentials/oidc",operation="GET",tag="oidc_login") %>%
     add_row(endpoint="/preview",operation="POST",tag="execute_sync") %>%
     add_row(endpoint="/jobs",operation="GET",tag="user_jobs") %>%
     add_row(endpoint="/jobs",operation="POST",tag="jobs_define") %>%

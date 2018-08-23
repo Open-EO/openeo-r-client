@@ -164,6 +164,17 @@ openeo.auth = function (con, ...) {
   .not_implemented_yet()
 }
 
+#' Retrieves the current users account information
+#' 
+#' Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
+#' 
+#' @param con authenticated client object
+#' @return object of type user
+#' @export
+user.account = function(con) {
+  return(con$user_info())
+}
+
 # data endpoint ----
 #' List Data on conected server
 #'

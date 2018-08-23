@@ -33,12 +33,12 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 License: Apache License
 Collate: 
-    'DetailedDescription-functions.R'
     'ProcessGraphBuilder-class.R'
     'capabilities-mapping.R'
     'client.R'
     'errors.R'
     'map-functions.R'
     'markdown_viewer.R'
+    'print-functions.R'
     'process_graph_building.R'
     'wrapper-functions.R'

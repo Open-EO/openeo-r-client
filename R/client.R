@@ -70,7 +70,10 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         services = private$GET(endpoint, authorized = FALSE)
-        return(services)
+        return(lapply(services,function(s){
+          class(s) = "ServiceType"
+          return(s)
+        }))
       },error=.capturedErrorToMessage)
     },
     output_formats = function() {
@@ -178,6 +181,8 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         user_info = private$GET(endpoint=endpoint,authorized = TRUE,type="application/json")
+        
+        class(user_info) = "User"
         return(user_info)
         
       },
@@ -229,16 +234,20 @@ OpenEOClient <- R6Class(
         
         listOfProcesses = private$GET(endpoint,type="application/json")
         
-        table = tibble(process_id = character(),
-                       description = character())
+        # table = tibble(process_id = character(),
+        #                description = character())
+        # 
+        # for (index in 1:length(listOfProcesses)) {
+        #   process = listOfProcesses[[index]]
+        #   table = table %>% add_row(process_id = process$process_id,
+        #                             description = process$description)
+        # }
         
-        for (index in 1:length(listOfProcesses)) {
-          process = listOfProcesses[[index]]
-          table = table %>% add_row(process_id = process$process_id,
-                                    description = process$description)
-        }
         
-        return(table)
+        return(lapply(listOfProcesses,function(process) {
+          class(process) = "ProcessInfo"
+          return(process)
+        }))
       },
       error=.capturedErrorToMessage)
       
@@ -331,6 +340,8 @@ OpenEOClient <- R6Class(
     # describe functions ####
     describeProcess = function(pid) {
       tryCatch({
+        stop("This is not provided anymore in API v0.3.0. Use listProcess to get a detailed overview over all processes")
+        
         tag = "processes_details"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
         
