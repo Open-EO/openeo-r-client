@@ -269,19 +269,47 @@ OpenEOClient <- R6Class(
         listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
         # list to tibble
         table = tibble(job_id=character(),
+                       title = character(),
                        status=character(),
                        submitted=.POSIXct(integer(0)),
                        updated=.POSIXct(integer(0)),
-                       consumed_credits=integer(0))
+                       costs=integer(0),
+                       budget=integer(0),
+                       plan=character()
+                       )
+        # desription left out on purpose... it might be to much to visualize
         
         for (index in 1:length(listOfJobs)) {
           job = listOfJobs[[index]]
-          table= add_row(table,
-                         job_id=job$job_id,
-                         status = job$status,
-                         submitted = as_datetime(job$submitted),
-                         updated = as_datetime(job$updated),
-                         consumed_credits = job$consumed_credits)
+          
+          suppressWarnings({
+            job_id = NA
+            if (!is.null(job$job_id)) job_id = job$job_id
+            title = NA
+            if (!is.null(job$title)) title = job$title
+            status = NA
+            if (!is.null(job$status)) status = job$status
+            submitted = NA
+            if (!is.null(job$submitted)) submitted = as_datetime(job$submitted)
+            updated = NA
+            if (!is.null(job$updated)) updated = as_datetime(job$updated)
+            costs = NA
+            if (!is.null(job$costs)) costs = as.numeric(job$costs)
+            budget = NA
+            if (!is.null(job$budget)) budget = as.numeric(job$budget)
+            plan = NA
+            if (!is.null(job$plan)) plan = job$plan
+            
+            table= add_row(table,
+                           job_id=job_id,
+                           title = title,
+                           status=status,
+                           submitted=submitted,
+                           updated=updated,
+                           costs=costs,
+                           budget=budget,
+                           plan=plan)
+            })
         }
         
         return(table)
