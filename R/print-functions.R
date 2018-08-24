@@ -72,9 +72,9 @@ print.openeo_product = function(x, ...) {
   id = paste(x$product_id)
   description = paste("Description:\t\t",x$description,sep="")
   source = paste("Source:\t\t\t",x$source,sep="")
-  extent = paste("Spatial extent:\t\t",paste(x$extent,sep="",collapse=", "),sep="")
+  extent = paste("Spatial extent:\t\t",paste(x$spatial_extent,sep="",collapse=", "),sep="")
   crs = paste("SRS:\t\t\t",x$crs@projargs,sep="")
-  time = paste("Temporal extent:\t", paste(x$time$from,x$time$to,sep=", "),sep="")
+  time = paste("Temporal extent:\t",paste(sapply(x$temporal_extent,function(obj) {format(obj,format="%Y-%m-%dT%H:%M:%SZ")}),collapse="/"),sep="")
   
   cat(paste(id,description,source,extent,crs,time,"Bands:\n",sep="\n"))
   print(bandlist_to_df(x$bands),row.names=FALSE)

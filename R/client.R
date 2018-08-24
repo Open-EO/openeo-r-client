@@ -210,7 +210,7 @@ OpenEOClient <- R6Class(
         for (index in 1: length(listOfProducts)) {
           product = listOfProducts[[index]]
           
-          product_id = product$product_id
+          product_id = product$data_id
           if ("description" %in% names(product)) {
             description = product$description
           } else {
@@ -371,7 +371,6 @@ OpenEOClient <- R6Class(
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
-      
         info = private$modifyProductList(info)
         class(info) = "openeo_product"
         return(info)
@@ -976,21 +975,21 @@ OpenEOClient <- R6Class(
       }
     },
     modifyProductList = function(product) {
-      if (is.list(product) && any(c("collection_id","product_id") %in% names(product))) {
-        if ("extent" %in% names(product)) {
-          e = product$extent
+      if (is.list(product) && any(c("collection_id","product_id","data_id") %in% names(product))) {
+        if ("spatial_extent" %in% names(product)) {
+          e = product$spatial_extent
   
           ext = sp::bbox(matrix(nrow=2,ncol=2,c(e$left,e$right,e$bottom,e$top)))
-          product$extent = ext
+          product$spatial_extent = ext
           
-          if ("srs" %in% names(e)) {
+          if ("crs" %in% names(e)) {
 
-            if (grepl("EPSG",toupper(e$srs))) {
-              product$crs = sp::CRS(paste("+init=",e$srs,sep="")) # epsg code
-            } else if (startsWith(e$srs,"+")) {
-              product$crs = sp::CRS(e$srs) # proj4string (potentially)
+            if (grepl("EPSG",toupper(e$crs))) {
+              product$crs = sp::CRS(paste("+init=",e$crs,sep="")) # epsg code
+            } else if (startsWith(e$crs,"+")) {
+              product$crs = sp::CRS(e$crs) # proj4string (potentially)
             } else {
-              product$crs = e$srs
+              product$crs = e$crs
               warning("Cannot interprete SRS statement (no EPSG code or PROJ4 string).")
             }
             
@@ -999,13 +998,14 @@ OpenEOClient <- R6Class(
           }
         }
         
-        if ("time" %in% names(product)) {
-          if ("from" %in% names(product$time)) {
-            product$time$from = as_datetime(product$time$from)
-          }
-          if ("to" %in% names(product$time)) {
-            product$time$to = as_datetime(product$time$to)
-          }
+        if ("temporal_extent" %in% names(product)) {
+          range = unlist(strsplit(product$temporal_extent, "/"))
+          
+          t_range = list(from = as_datetime(range[[1]]),
+                         to = as_datetime(range[[2]])
+                         )
+          
+          product$temporal_extent = t_range
         }
 
         return(product)
