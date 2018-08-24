@@ -768,10 +768,12 @@ OpenEOClient <- R6Class(
     deleteGraph = function(graph_id) {
       tryCatch({
         tag = "graph_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id, graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
         
         success = private$DELETE(endpoint = endpoint, authorized = TRUE)
-        message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+        if(success) {
+          message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+        }
         return(success)
       },error=.capturedErrorToMessage)
       
@@ -890,7 +892,7 @@ OpenEOClient <- R6Class(
       response = DELETE(url=url, config = header, ...)
       
       message = content(response)
-      success = response$status_code %in% c(200,202,204)
+      success = response$status_code %in% c(200,201,202,204)
       if (success) {
         tmp = lapply(message, function(elem) {
           message(elem)
