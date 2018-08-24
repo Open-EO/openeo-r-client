@@ -257,9 +257,7 @@ describeProcess = function(con,process_id=NA) {
 #' @return vector of process graph ids
 #' @export
 listGraphs = function(con) {
-  graphIds = con$listGraphs()
-  
-  return(unlist(graphIds))
+  return(con$listGraphs())
 }
 
 #' Fetches the representation of a stored graph

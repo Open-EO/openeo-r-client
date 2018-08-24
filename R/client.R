@@ -292,11 +292,29 @@ OpenEOClient <- R6Class(
     listGraphs = function() {
       tryCatch({
         tag = "graph_overview"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        endpoint = private$getBackendEndpoint(tag)
         
-        listOfGraphIds = private$GET(endpoint, authorized = TRUE)
+        listOfGraphShortInfos = private$GET(endpoint, authorized = TRUE)
         
-        return(listOfGraphIds)
+        table = tibble(process_graph_id=character(),
+                       title=character(),
+                       description=character())
+        
+        for (index in 1:length(listOfGraphShortInfos)) {
+          graph_short = listOfGraphShortInfos[[index]]
+          id = graph_short$process_graph_id
+          title = NA
+          if (!is.null(graph_short$title)) title = graph_short$title
+          description = NA
+          if (!is.null(graph_short$description)) description = graph_short$description
+          
+          table= add_row(table,
+                         process_graph_id=id,
+                         title = title,
+                         description = description)
+        }
+        
+        return(table)
       }, error = .capturedErrorToMessage)
     },
     
