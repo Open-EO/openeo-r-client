@@ -750,7 +750,7 @@ OpenEOClient <- R6Class(
         tag = "execute_async"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
-        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
+        success = private$POST(endpoint = endpoint, authorized = TRUE)
         message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
         
         invisible(self)
@@ -982,7 +982,7 @@ OpenEOClient <- R6Class(
       
       return(success)
     },
-    POST = function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
+    POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
       url = paste(private$host,endpoint,sep="/")
       if (!is.list(query)) {
         stop("Query parameters are no list of key-value-pairs")
