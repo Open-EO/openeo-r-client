@@ -8,26 +8,24 @@
 #' @export
 process = function(process=NULL, process_id, prior.name="imagery", ...) {
   # type check "process" either collection or process
-  res = list()
-  arguments = list()
+  process_body = list()
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
       
 
       if (attr(process,"type") %in% c("process","udf","collection")){
-        arguments[[prior.name]] = process
+        process_body[[prior.name]] = process
       } else {
-        stop("Chain corrupted. Prior element is neither a process or a collection")
+        stop("Chain corrupted. Prior element is neither a process nor a collection")
       }
     }
   }
-  additionalParameter = list(...)
   
-  res$process_id=process_id
-  res$args = append(arguments,additionalParameter)
-  attr(res,"type") <- "process"
+  process_body$process_id=process_id
+  process_body = append(process_body,list(...))
+  attr(process_body,"type") <- "process"
   
-  return(res)
+  return(process_body)
   
 }
 
