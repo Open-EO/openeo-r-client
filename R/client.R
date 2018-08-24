@@ -431,16 +431,10 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
         info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
-        table = tibble(job_id = info$job_id,
-                       status = info$status,
-                       process_graph = list(info$process_graph),
-                       output = list(info$output),
-                       submitted = as_datetime(info$submitted),
-                       updated = as_datetime(info$updated),
-                       user_id = info$user_id,
-                       consumed_credits = info$consumed_credits)
         
-        return(table)
+        class(info) = "JobInfo"
+        
+        return(info)
       },error=.capturedErrorToMessage)
       
     },

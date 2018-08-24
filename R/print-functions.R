@@ -99,3 +99,38 @@ bandlist_to_df = function(bands) {
   
   return(u)
 }
+
+#' @export
+print.JobInfo = function(x,...) {
+  job_id = paste("Job ID:\t\t", x$job_id, "\n",sep="")
+  if (is.null(x$title)) x$title = "---"
+  title = paste("Title:\t\t",x$title,"\n",sep="")
+  if (is.null(x$description)) x$description = "---"
+  description = paste("Description:\t",x$description,"\n",sep="")
+  status = paste("Status:\t\t",x$status,"\n",sep="")
+  submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
+  updated = paste("Updated:\t",x$updated,"\n",sep="")
+  if (is.null(x$plan)) x$plan = "---"
+  plan = paste("Plan:\t\t",x$plan,"\n",sep="")
+  costs = paste("Costs:\t\t",x$costs,"\n",sep="")
+  if (is.null(x$budget)) x$budget = "---"
+  budget = paste("Budget:\t\t",x$budget,"\n",sep="")
+  
+  cat(job_id,title,description,status,submitted,updated,plan,costs,budget,sep = "")
+  
+  output = "Output:"
+  cat(output)
+  if (is.null(x$output)) {
+    cat("\t\t---\n")
+  } 
+  else {
+    cat("\n")
+    cat(toJSON(x$output,pretty=TRUE,auto_unbox = TRUE))
+    cat("\n")
+  }
+  
+  process_graph = "Process graph:\n"
+  cat(process_graph)
+  cat(toJSON(x$process_graph,pretty = TRUE,auto_unbox = TRUE))
+  cat("\n")
+}
