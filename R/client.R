@@ -417,20 +417,15 @@ OpenEOClient <- R6Class(
       
     },
     
-    describeGraph = function(graph_id, user_id = NULL) {
+    describeGraph = function(graph_id) {
       tryCatch(
         {
           if (is.null(graph_id)) {
             stop("No graph id specified. Cannot fetch unknown graph.")
           }
           
-          if (is.null(user_id)) {
-            user_id = self$user_id #or "me"
-          }
-          
-          tag = "jobs_details"
-          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(user_id,graph_id)
-          
+          tag = "graph_details"
+          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
           return(graph)
@@ -537,21 +532,30 @@ OpenEOClient <- R6Class(
       })
     },
     
-    storeGraph = function(graph) {
+    storeGraph = function(graph,title = NULL, description = NULL) {
       tryCatch({
         tag = "new_graph"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
+        endpoint = private$getBackendEndpoint(tag)
         
         if (!is.list(graph) || is.null(graph)) {
           stop("The graph information is missing or not a list")
         }
         
-        okMessage = private$POST(endpoint=endpoint,
+        requestBody = list(
+          title=title,
+          description = description,
+          process_graph = graph
+        )
+        
+        response = private$POST(endpoint=endpoint,
                                  authorized = TRUE,
-                                 data=graph)
+                                 data=requestBody,
+                                 raw=TRUE)
         
         message("Graph was sucessfully stored on the backend.")
-        return(okMessage$process_graph_id)
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader,"/"))
+        return(split[length(split)])
       },error = .capturedErrorToMessage)
     },
     
@@ -923,8 +927,7 @@ OpenEOClient <- R6Class(
           body = data,
           encode = encodeType
         )
-        
-        success = response$status_code %in% c(200,202,204)
+        success = response$status_code %in% c(200,201,202,204)
         if (success) {
           if (raw) {
             return(response)

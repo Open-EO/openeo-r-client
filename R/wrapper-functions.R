@@ -266,12 +266,11 @@ listGraphs = function(con) {
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param graph_id The id of a process graph on the back-end
-#' @param user_id (optional) the user id from which user to fetch the process graph
 #' 
 #' @return the process graph as list
 #' @export
-describeGraph = function(con, graph_id, user_id=NULL) {
-  return(con$describeGraph(graph_id, user_id))
+describeGraph = function(con, graph_id) {
+  return(con$describeGraph(graph_id))
 }
 
 #' Deletes a previously stored process graph
@@ -293,9 +292,11 @@ deleteGraph = function(con, graph_id) {
 #' 
 #' @param con connected and authorized openeo client object
 #' @param graph a process graph definition
+#' @param title the title of the process graph (optional)
+#' @param description the description of a process graph (optional)
 #' @export
-storeGraph = function(con, graph) {
-  return(con$storeGraph(graph))
+storeGraph = function(con, graph, title = NULL, description = NULL) {
+  return(con$storeGraph(graph,title = title, description = description))
 }
 
 #' Replaces the current graph with a given

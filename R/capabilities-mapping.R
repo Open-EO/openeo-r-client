@@ -55,7 +55,6 @@ api.v0.3.0 = function() {
     add_row(endpoint="/process_graphs/{process_graph_id}",operation="GET",tag="graph_details") %>% 
     add_row(endpoint="/process_graphs/{process_graph_id}",operation="PATCH",tag="graph_replace") %>% 
     add_row(endpoint="/process_graphs/{process_graph_id}",operation="DELETE",tag="graph_delete") %>% 
-    add_row(endpoint="/process_graphs/{process_graph_id}",operation="GET",tag="graph_details") %>% 
     add_row(endpoint="/files/{user_id}",operation="GET",tag="user_files") %>% 
     add_row(endpoint="/files/{user_id}/{path}",operation="GET",tag="user_file_download") %>%
     add_row(endpoint="/files/{user_id}/{path}",operation="PUT",tag="user_file_upload") %>%
