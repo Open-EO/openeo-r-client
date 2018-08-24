@@ -605,13 +605,21 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    storeJob = function(task=NULL,graph_id=NULL,format, ...) {
+    storeJob = function(task=NULL,graph_id=NULL,
+                        title = NULL, description = NULL,
+                        plan = NULL, budget = NULL,
+                        format, ...) {
       tryCatch({
         tag = "jobs_define"
         endpoint = private$getBackendEndpoint(tag)
         
-        output = list(...)
-        output = append(output, list(format=format))
+        create_options = list(...)
+        output = list()
+        output$format = format
+        if (length(create_options) > 0) {
+          output$parameters = create_options
+        }
+        
         
         if (!is.null(task)) {
           if (is.list(task)) {
@@ -625,13 +633,21 @@ OpenEOClient <- R6Class(
           stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
         }
         
+        if (!is.null(title)) job$title = title
+        if (!is.null(description)) job$description = description
+        if (!is.null(plan)) job$plan = plan
+        if (!is.null(budget)) job$budget = budget
+        
         #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
-        okMessage = private$POST(endpoint=endpoint,
+        response = private$POST(endpoint=endpoint,
                                  authorized = TRUE,
-                                 data=job)
+                                 data=job,
+                                 raw=TRUE)
         
         message("Job was sucessfully registered on the backend.")
-        return(okMessage$job_id)
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader,"/"))
+        return(split[length(split)])
       },error=.capturedErrorToMessage)
     },
     
@@ -725,7 +741,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    queue = function(job_id) {
+    orderResults = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -819,6 +835,19 @@ OpenEOClient <- R6Class(
         success = private$DELETE(endpoint = endpoint, authorized = TRUE)
         if(success) {
           message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+        }
+        return(success)
+      },error=.capturedErrorToMessage)
+      
+    },
+    deleteJob = function(job_id) {
+      tryCatch({
+        tag = "jobs_delete"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        
+        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
+        if(success) {
+          message(paste("Job '",job_id,"' was successfully deleted from the back-end",sep=""))
         }
         return(success)
       },error=.capturedErrorToMessage)

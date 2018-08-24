@@ -509,44 +509,28 @@ preview = function(con,task,format=NULL,output_file=NULL, ...) {
 #' 
 #' @return the id of the job
 #' @export
-defineJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
-  return(con$storeJob(task=task,graph_id = graph_id, format = format, ...))
+defineJob = function(con,task=NULL, graph_id=NULL , 
+                     title = NULL, description = NULL,
+                     plan = NULL, budget = NULL,
+                     format=NULL, ...) {
+  return(con$storeJob(task=task,graph_id = graph_id,
+                      title = title, description = description,
+                      plan = plan, budget = budget,
+                      format = format, ...))
 }
 
-#' Queues a job on the back-end for evaluation
+#' Starts remote asynchronous evaluation of a job
 #' 
-#' The function will queue a job for evaluation that has been created before by 'createJob'. There will be
-#' a notification for success or failure, but no return value.
-#' 
-#' @param con connected and authenticated openeo client
-#' @param job_id the job id of a created job
-#' 
-#' @export
-queueJob = function(con, job_id) {
-  return(con$queue(job_id))
-}
-
-#' Defines a job and starts the evaluation
-#' 
-#' Function to execute two operations in one call. First define a job on the server, then call
-#' the endpoint to execute it immediately on the back-end.
+#' The function sends a start signal to the backend in order to start processing the results
+#' for a defined job.
 #' 
 #' @param con connected and authenticated openeo client
-#' @param task A Process or chained processes to a Task
-#' @param graph_id The id of an already stored process graph on the same back-end
-#' @param format The inteded format of the data to be returned
-#' @param ... additional configuration parameter for output generation
+#' @param job_id the id of the defined job
 #' 
 #' @return the job_id of the defined job
 #' @export 
-orderResult = function(con, task=NULL, graph_id=NULL, format, ...) {
-  job_id = con$storeJob(task=task,
-                        graph_id = graph_id,
-                        format = format,
-                        ...)
-  processing = con$queue(job_id)
-  
-  return(job_id)
+orderResults = function(con, job_id) {
+  con$orderResults(job_id)
 }
 
 #' Modifies a job with given parameter
@@ -599,18 +583,6 @@ downloadJob = function(con, job_id, format=NULL) {
   return(con$results(job_id=job_id,format=format))
 }
 
-#' Pauses a running batch job
-#'
-#' Sends a request to the server in order to pause a running batch job.
-#'
-#' @param con authenticated Connection
-#' @param job_id id of job that will be canceled
-#' @return a success / failure notification
-#' @export
-pauseJob = function(con, job_id) {
-  return(con$pause(job_id))
-}
-
 
 #' Terminates a running job
 #'
@@ -631,10 +603,23 @@ cancelJob = function(con, job_id) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of the job
-#' @return a detailed description about the job as tibble
+#' @return a detailed description about the job
 #' @export
 describeJob = function(con,job_id) {
   return(con$describeJob(job_id))
+}
+
+
+#' Delete a job
+#'
+#' Deletes a job from the backend.
+#'
+#' @param con authenticated Connection
+#' @param job_id id of the job
+#' @return logical with state of success
+#' @export
+deleteJob = function(con,job_id) {
+  return(con$deleteJob(job_id))
 }
 
 #
