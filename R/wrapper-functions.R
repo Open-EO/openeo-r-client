@@ -552,8 +552,16 @@ orderResults = function(con, job_id) {
 #' @param job_id the job id of a created job
 #' @param ... The parameter you want to change. See Details for more information
 #' @export
-modifyJob = function(con, job_id, ...) {
-  temp = con$modifyJob(job_id = job_id,...)
+modifyJob = function(con, job_id,
+                     title=NULL, description=NULL,
+                     process_graph = NULL, 
+                     plan = NULL, budget= NULL,
+                     format=NULL, ...) {
+  temp = con$modifyJob(job_id = job_id,
+                       title=title, description=description,
+                       process_graph = process_graph, 
+                       plan = plan, budget= budget,
+                       format=format, ...)
   invisible(temp)
 } 
 
@@ -571,16 +579,15 @@ followJob = function(con, job_id) {
 
 #' Creates a list of download paths
 #' 
-#' The function queries the back-end to receive the URLs to the downloadable files of a particular batch job.
+#' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param job_id the id of the job
-#' @param format optional format of the output result, in case it shall differ from the one stated in the job
 #' 
-#' @return vector of URLs
+#' @return result object containing of URLs for download
 #' @export
-downloadJob = function(con, job_id, format=NULL) {
-  return(con$results(job_id=job_id,format=format))
+listResults = function(con, job_id) {
+  return(con$listResults(job_id=job_id))
 }
 
 

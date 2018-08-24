@@ -391,6 +391,17 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
+    listResults = function(job_id) {
+      
+      tryCatch({
+        tag = "jobs_download"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        
+        listOfResults = private$GET(endpoint,authorized=TRUE,type="application/json")
+        return(listOfResults)
+      },error=.capturedErrorToMessage)
+    },
+    
     # describe functions ####
     describeProcess = function(pid) {
       tryCatch({
@@ -651,7 +662,11 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    modifyJob = function(job_id,...) {
+    modifyJob = function(job_id,
+                         title=NULL, description=NULL,
+                         process_graph = NULL, 
+                         plan = NULL, budget= NULL,
+                         format=NULL, ...) {
       tryCatch({
         if (is.null(job_id)) {
           stop("No job i was specified.")
@@ -660,26 +675,40 @@ OpenEOClient <- R6Class(
         tag = "jobs_update"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
-        updateables = list(...)
-        
         patch = list()
-        graph = NULL
-        if ("graph_id" %in% names(updateables)) {
-          graph = updateables$graph_id
-          updateables$graph_id = NULL
-        } else if ("task" %in% names(updateables)) {
-          graph = updateables$task
-          updateables$task = NULL
+        create_options = list(...)
+        output = list()
+        if (length(create_options) > 0) {
+          output$parameters = create_options
         }
-        if (!is.null(graph)) {
-          patch = append(patch,list(process_graph = graph))
+        if (!is.null(format)) output$format = format
+        
+        if (length(output) > 0) patch$output = output
+      
+        if (!is.null(process_graph)) {
+          patch$process_graph = process_graph
+        }
+
+        if (!is.null(title)) {
+          if (is.na(title)) patch$title = NULL
+          else patch$title = title
         }
         
-        if (length(updateables) > 0) {
-          patch = append(patch, list(output=updateables))
+        if (!is.null(description)){
+          if (is.na(description)) patch$description = NULL
+          else patch$description = description
+        } 
+        
+        if (!is.null(plan)) {
+          if (is.na(plan)) patch$plan = NULL
+          else patch$plan = plan
         }
         
-        #endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...
+        if (!is.null(budget)) {
+          if (is.na(budget)) patch$budget = NULL
+          else patch$budget = budget
+        }
+
         res = private$PATCH(endpoint = endpoint,
                             authorized = TRUE,
                             encodeType = "json",
@@ -757,45 +786,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
-    
-    results = function(job_id, format = NULL) {
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        
-        tag= "jobs_download"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
 
-        supportedFormats = names(self$output_formats()$formats)
-        if (!is.null(format) && format %in% supportedFormats) {
-          return(private$GET(endpoint = endpoint,
-                             authorized = TRUE,
-                             query=list(
-                               format=format
-                             )))
-        } else {
-          return(private$GET(endpoint = endpoint,
-                             authorized = TRUE))
-        }
-      },error=.capturedErrorToMessage)
-    },
-    
-    pause = function(job_id) {
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        
-        tag = "jobs_pause"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
-        message(paste("Job '",job_id,"' has been successfully paused.",sep=""))
-        return(success)
-      },error=.capturedErrorToMessage)
-    },
-    
     cancel = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
@@ -805,8 +796,11 @@ OpenEOClient <- R6Class(
         tag = "jobs_cancel"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
-        success = private$PATCH(endpoint = endpoint, authorized = TRUE)
-        message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
+        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
+        if (success) {
+          message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
+        }
+        
         return(success)
       },error=.capturedErrorToMessage)
       
