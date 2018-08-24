@@ -486,7 +486,7 @@ listJobs = function(con) {
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format=NULL,output_file=NULL, ...) {
+preview = function(con,task,format=NULL,output_file=NULL, ...) {
   con$execute(task=task,
               format=format,
               output_file=output_file, 
