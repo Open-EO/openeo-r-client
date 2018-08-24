@@ -463,27 +463,51 @@ OpenEOClient <- R6Class(
       
     },
     
-    replaceGraph = function(graph_id, graph) {
+    modifyGraph = function(graph_id, graph=NULL,title = NULL, description = NULL) {
       tryCatch({
         if (is.null(graph_id)) {
           stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
         }
-        if (is.null(graph)) {
-          stop("Cannot replace graph with 'NULL'")
+        
+        requestBody = list()
+        
+        if (!is.null(graph)) {
+          if (is.na(graph)) {
+            stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
+          }else if (!is.list(graph)) {
+            stop("The graph information is missing or not a list")
+          } else {
+            requestBody[["process_graph"]] = graph
+          }
         }
-        if (!is.list(graph) || is.null(graph)) {
-          stop("The graph information is missing or not a list")
+        
+        if (!is.null(title)) {
+          if (is.na(title)) {
+            requestBody[["title"]] = NULL
+          } else {
+            requestBody[["title"]] = title
+          }
+        }
+        if (!is.null(description)) {
+          if (is.na(description)) {
+            requestBody[["description"]] = NULL
+          } else {
+            requestBody[["description"]] = description
+          }
         }
         
         tag = "graph_replace"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
         
-        message = private$PUT(endpoint = endpoint, 
+        message = private$PATCH(endpoint = endpoint, 
                               authorized = TRUE, 
-                              data = graph,
+                              data = requestBody,
                               encodeType = "json")
         
-        return(message) #in principle a void function
+        if (is.null(message)) {
+          message(paste("Process graph '",graph_id,"' was successfully modified.",sep=""))
+          return(TRUE)
+        }
       },error=.capturedErrorToMessage)
     },
     
@@ -523,7 +547,7 @@ OpenEOClient <- R6Class(
         file_connection = file(dst,open="wb")
         writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
         
-        message("Successfully uploaded the udf script.")
+        message("Successfully downloaded the requested file.")
         
         return(dst)
       },error=.capturedErrorToMessage,

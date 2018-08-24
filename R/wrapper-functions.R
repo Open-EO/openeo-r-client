@@ -299,16 +299,18 @@ storeGraph = function(con, graph, title = NULL, description = NULL) {
   return(con$storeGraph(graph,title = title, description = description))
 }
 
-#' Replaces the current graph with a given
+#' Modify the current graph with a given
 #' 
 #' Upload a process graph to the back-end under a given (existing) process graph.
 #' 
 #' @param con connected and authorized openeo client object
 #' @param graph_id process graph id
 #' @param graph a process graph definition created by chaining "process()", "collection()" or using a ProcessGraphBuilder
+#' @param title title of the process graph (optional)
+#' @param description description of the process graph (optional)
 #' @export
-replaceGraph = function(con, graph_id, graph) {
-  return(con$replaceGraph(graph_id=graph_id, graph=graph))
+modifyGraph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
+  return(con$modifyGraph(graph_id=graph_id, graph=graph,title=title,description=description))
 }
 
 #
