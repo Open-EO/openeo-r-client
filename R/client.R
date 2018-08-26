@@ -348,28 +348,70 @@ OpenEOClient <- R6Class(
     
     listServices = function() {
       
-      tryCatch({
+      tryCatch(suppressWarnings({
         tag = "user_services"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
         table = tibble(service_id=character(),
-                       service_type=character(),
-                       service_args=list(),
-                       job_id=character(),
-                       service_url=character())
+                       title=character(),
+                       description=character(),
+                       url = character(),
+                       type = character(),
+                       enabled = logical(),
+                       submitted = .POSIXct(character(0)),
+                       plan = character(0),
+                       costs = numeric(0),
+                       budget = numeric(0))
         
         for (index in 1:length(listOfServices)) {
           service = listOfServices[[index]]
           
-          if (!is.null(service$service_args) && length(service$service_args) == 0) {
-            service$service_args <- NULL
-          }
-          table= do.call("add_row",append(list(.data=table),service))
+          service_id = NA
+          if (!is.null(service$service_id)) service_id = service$service_id
+          
+          title = NA
+          if (!is.null(service$title)) title = service$title
+          
+          description = NA
+          if (!is.null(service$description)) description = service$description
+          
+          url = NA
+          if (!is.null(service$url)) url = service$url
+          
+          type = NA
+          if (!is.null(service$type)) type = service$type
+
+          enabled = NA
+          if (!is.null(service$enabled)) enabled = service$enabled
+          
+          submitted = NA
+          if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
+          
+          plan = NA
+          if (!is.null(service$plan)) plan = service$plan
+          
+          costs = NA
+          if (!is.null(service$costs)) costs = as.numeric(service$costs)
+          
+          budget = NA
+          if (!is.null(service$budget)) budget = as.numeric(service$budget)
+          
+          table= add_row(table, 
+                         service_id=service_id,
+                         title=title,
+                         description=description,
+                         url = url,
+                         type = type,
+                         enabled=enabled,
+                         submitted=submitted,
+                         plan = plan,
+                         costs = costs,
+                         budget=budget)
         }
         
         return(table)
-      }, error = .capturedErrorToMessage)
+      }), error = .capturedErrorToMessage)
     },
     
     listUserFiles = function() {
