@@ -517,9 +517,12 @@ OpenEOClient <- R6Class(
         }
         
         tag = "services_details"
+        #TODO replace parseable attributes
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
         
-        return(private$GET(endpoint,authorized = TRUE))
+        service = private$GET(endpoint,authorized = TRUE)
+        class(service) = "ServiceInfo"
+        return(service)
       }, error=.capturedErrorToMessage)
     },
     

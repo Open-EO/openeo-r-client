@@ -134,3 +134,57 @@ print.JobInfo = function(x,...) {
   cat(toJSON(x$process_graph,pretty = TRUE,auto_unbox = TRUE))
   cat("\n")
 }
+
+print.ServiceInfo = function(x,...) {
+
+  service_id = paste("ID:\t\t",x$service_id,"\n",sep="")
+  
+  type = paste("Type:\t\t",x$type,"\n",sep="")
+  
+  enabled = paste("Enabled:\t",x$enabled,"\n",sep="")
+  
+  submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
+  
+  if (is.na(x$title))x$title = "---"
+  title = paste("Title:\t\t",x$title,"\n",sep="")
+  
+  if (is.na(x$description))x$description = "---"
+  description = paste("Description:\t",x$description,"\n",sep="")
+  
+  if (is.na(x$url)) x$url = "---"
+  url = paste("Endpoint:\t",x$url,"\n",sep="")
+  
+  plan = paste("Plan:\t\t",x$plan,"\n",sep="")
+  
+  costs = paste("Costs:\t\t",x$costs,"\n",sep="")
+  
+  if (is.na(x$budget)) x$budget ="---"
+  budget = paste("Budget:\t\t",x$budget,"\n",sep="")
+  
+  cat(service_id,type,enabled,title,submitted,description,url,plan,costs,budget,sep="")
+  
+  #parameters, attributes, process_graph
+  if (is.null(x$parameters)) {
+    x$parameters = "---"
+    cat(paste("Parameters:\t",x$parameters,"\n",sep=""))
+  } else {
+    x$parameters = toJSON(x$parameters,pretty=TRUE,auto_unbox = TRUE)
+    cat(paste("Parameters:\n",x$parameters,"\n",sep=""))
+  } 
+  
+  if (is.null(x$attributes)) {
+    x$attributes = "---"
+    cat(paste("Attributes:\t",x$attributes,"\n",sep=""))
+  } else {
+    x$attributes = toJSON(x$attributes,pretty=TRUE,auto_unbox = TRUE)
+    cat(paste("Attributes:\n",x$attributes,"\n",sep=""))
+  }
+  
+  if (is.null(x$process_graph)) {
+    x$process_graph = "---"
+    cat(paste("Process graph:\t",x$process_graph,"\n",sep=""))
+  } else {
+    x$process_graph = toJSON(x$process_graph,pretty=TRUE,auto_unbox = TRUE)
+    cat(paste("Process graph:\n",x$process_graph,"\n",sep=""))
+  }
+}
