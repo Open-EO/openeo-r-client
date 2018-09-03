@@ -450,16 +450,6 @@ deleteUserData = function(con, src) {
   con$deleteUserFile(src = src)
 }
 
-#' Returns the users available credits
-#' 
-#' Queries the server and returns the available credits of the current user.
-#' @param con connected and authenticated openeo client object
-#' @return the credits
-#' @export
-credits = function(con) {
-  return(con$getUserCredits())
-}
-
 #
 # jobs endpoint ----
 #

@@ -823,15 +823,6 @@ OpenEOClient <- R6Class(
       
     },
     
-    getUserCredits = function() {
-      tryCatch({
-        tag = "user_credits"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
-        
-        return(private$GET(endpoint,authorized = TRUE))
-      },error=.capturedErrorToMessage)
-    },
-    
     getProcessGraphBuilder = function() {
       tryCatch({
         if (is.null(private$graph_builder)) {
