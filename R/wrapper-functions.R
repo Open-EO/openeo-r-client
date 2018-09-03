@@ -336,13 +336,33 @@ listServices = function(con) {
 #' additional parameter.
 #' 
 #' @param con connected and authenticated openeo clien object
-#' @param job_id the job id to create the service from
-#' @param service_type one of the supported services (see services())
-#' @param ... additional parameter which are send as 'service_args'
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-defineService = function(con, job_id, service_type, ...) {
-  return(con$createService(job_id = job_id, service_type = service_type, ...))
+defineService = function(con, 
+                         type, 
+                         process_graph,
+                         title = NULL,
+                         description = NULL,
+                         enabled = NULL,
+                         parameters = NULL,
+                         plan = NULL,
+                         budget = NULL) {
+  return(con$createService(type = type, 
+                           process_graph = process_graph,
+                           title=title,
+                           description = description,
+                           enabled = enabled,
+                           parameters = parameters,
+                           plan = plan,
+                           budget = budget))
 }
 
 #' Modifies a service

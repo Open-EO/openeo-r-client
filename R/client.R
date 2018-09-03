@@ -615,24 +615,35 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    createService = function(job_id, service_type, ...) {
+    createService = function(type, 
+                             process_graph,
+                             title = NULL,
+                             description = NULL,
+                             enabled = NULL,
+                             parameters = NULL,
+                             plan = NULL,
+                             budget = NULL
+                             ) {
       tryCatch({
         if (is.null(job_id)) {
           stop("Cannot create service. job_id is missing.")
         }
-        if (is.null(service_type)) {
-          stop("No service_type specified.")
+        if (is.null(type)) {
+          stop("No type specified.")
         }
         
         tag = "service_publish"
         endpoint = private$getBackendEndpoint(tag)
         
-        service_args = list(...)
-        
         service_request_object = list(
-          job_id = job_id,
-          service_type = service_type,
-          service_args = service_args
+          type = type,
+          process_graph = process_graph,
+          title = title,
+          description = description,
+          enabled =enabled,
+          parameters = parameters,
+          plan = plan,
+          budget = budget
         )
         
         response = private$POST(endpoint,
@@ -641,7 +652,9 @@ OpenEOClient <- R6Class(
                                 encodeType = "json")
         
         message("Service was successfully created.")
-        return(response)
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader,"/"))
+        return(split[length(split)])
       },error=.capturedErrorToMessage)
     },
     uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
