@@ -135,6 +135,7 @@ print.JobInfo = function(x,...) {
   cat("\n")
 }
 
+#' @export
 print.ServiceInfo = function(x,...) {
 
   service_id = paste("ID:\t\t",x$service_id,"\n",sep="")

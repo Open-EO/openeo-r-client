@@ -2,6 +2,7 @@
 
 S3method(print,JobInfo)
 S3method(print,ProcessInfo)
+S3method(print,ServiceInfo)
 S3method(print,ServiceType)
 S3method(print,User)
 S3method(print,openeo_product)

@@ -540,6 +540,130 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
+    # publish functions ====
+    
+    storeGraph = function(graph,title = NULL, description = NULL) {
+      tryCatch({
+        tag = "new_graph"
+        endpoint = private$getBackendEndpoint(tag)
+        
+        if (!is.list(graph) || is.null(graph)) {
+          stop("The graph information is missing or not a list")
+        }
+        
+        requestBody = list(
+          title=title,
+          description = description,
+          process_graph = graph
+        )
+        
+        response = private$POST(endpoint=endpoint,
+                                authorized = TRUE,
+                                data=requestBody,
+                                raw=TRUE)
+        
+        message("Graph was sucessfully stored on the backend.")
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader,"/"))
+        return(split[length(split)])
+      },error = .capturedErrorToMessage)
+    },
+    
+    storeJob = function(task=NULL,graph_id=NULL,
+                        title = NULL, description = NULL,
+                        plan = NULL, budget = NULL,
+                        format, ...) {
+      tryCatch({
+        tag = "jobs_define"
+        endpoint = private$getBackendEndpoint(tag)
+        
+        create_options = list(...)
+        output = list()
+        output$format = format
+        if (length(create_options) > 0) {
+          output$parameters = create_options
+        }
+        
+        
+        if (!is.null(task)) {
+          if (is.list(task)) {
+            job = list(process_graph=task,output = output)
+          } else {
+            stop("Parameter task is not a task object. Awaiting a list.")
+          }
+        } else if (! is.null(graph_id)) {
+          job = list(process_graph=graph_id,output = output)
+        } else {
+          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+        }
+        
+        if (!is.null(title)) job$title = title
+        if (!is.null(description)) job$description = description
+        if (!is.null(plan)) job$plan = plan
+        if (!is.null(budget)) job$budget = budget
+        
+        #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
+        response = private$POST(endpoint=endpoint,
+                                authorized = TRUE,
+                                data=job,
+                                raw=TRUE)
+        
+        message("Job was sucessfully registered on the backend.")
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader,"/"))
+        return(split[length(split)])
+      },error=.capturedErrorToMessage)
+    },
+    
+    createService = function(job_id, service_type, ...) {
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("Cannot create service. job_id is missing.")
+        }
+        if (is.null(service_type)) {
+          stop("No service_type specified.")
+        }
+        
+        tag = "service_publish"
+        endpoint = private$getBackendEndpoint(tag)
+        
+        service_args = list(...)
+        
+        service_request_object = list(
+          job_id = job_id,
+          service_type = service_type,
+          service_args = service_args
+        )
+        
+        response = private$POST(endpoint,
+                                authorized = TRUE, 
+                                data = service_request_object, 
+                                encodeType = "json")
+        
+        message("Service was successfully created.")
+        return(response)
+      },error=.capturedErrorToMessage)
+    },
+    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
+      tryCatch({
+        target = URLencode(target,reserved = TRUE)
+        target = gsub("\\.","%2E",target)
+        
+        if (is.null(self$user_id)) {
+          stop("User id is not set. Either login or set the id manually.")
+        }
+        
+        tag = "user_file_upload"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
+        
+        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
+        message("Upload of user data was successful.")
+        return(message)
+      },error=.capturedErrorToMessage)
+      
+    },
+    
+    # Update functions ====
     
     modifyGraph = function(graph_id, graph=NULL,title = NULL, description = NULL) {
       tryCatch({
@@ -589,24 +713,70 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
+    modifyJob = function(job_id,
+                         title=NULL, description=NULL,
+                         process_graph = NULL, 
+                         plan = NULL, budget= NULL,
+                         format=NULL, ...) {
       tryCatch({
-        target = URLencode(target,reserved = TRUE)
-        target = gsub("\\.","%2E",target)
-        
-        if (is.null(self$user_id)) {
-          stop("User id is not set. Either login or set the id manually.")
+        if (is.null(job_id)) {
+          stop("No job i was specified.")
         }
         
-        tag = "user_file_upload"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
+        tag = "jobs_update"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
-        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
-        message("Upload of user data was successful.")
-        return(message)
+        patch = list()
+        create_options = list(...)
+        output = list()
+        if (length(create_options) > 0) {
+          output$parameters = create_options
+        }
+        if (!is.null(format)) output$format = format
+        
+        if (length(output) > 0) patch$output = output
+        
+        if (!is.null(process_graph)) {
+          patch$process_graph = process_graph
+        }
+        
+        if (!is.null(title)) {
+          if (is.na(title)) patch$title = NULL
+          else patch$title = title
+        }
+        
+        if (!is.null(description)){
+          if (is.na(description)) patch$description = NULL
+          else patch$description = description
+        } 
+        
+        if (!is.null(plan)) {
+          if (is.na(plan)) patch$plan = NULL
+          else patch$plan = plan
+        }
+        
+        if (!is.null(budget)) {
+          if (is.na(budget)) patch$budget = NULL
+          else patch$budget = budget
+        }
+        
+        res = private$PATCH(endpoint = endpoint,
+                            authorized = TRUE,
+                            encodeType = "json",
+                            data=patch)
+        message(paste("Job '",job_id,"' was successfully updated.",sep=""))
+        return(res)
       },error=.capturedErrorToMessage)
-      
     },
+    
+    modifyService = function(service_id) {
+      tag = "services_update"
+      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+      
+      .not_implemented_yet()
+    },
+    
+    # other getter / download functions ====
     downloadUserFile = function(src, dst=NULL) {
       tryCatch({
         if (!is.character(src)) {
@@ -634,135 +804,45 @@ OpenEOClient <- R6Class(
       })
     },
     
-    storeGraph = function(graph,title = NULL, description = NULL) {
-      tryCatch({
-        tag = "new_graph"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        if (!is.list(graph) || is.null(graph)) {
-          stop("The graph information is missing or not a list")
-        }
-        
-        requestBody = list(
-          title=title,
-          description = description,
-          process_graph = graph
-        )
-        
-        response = private$POST(endpoint=endpoint,
-                                 authorized = TRUE,
-                                 data=requestBody,
-                                 raw=TRUE)
-        
-        message("Graph was sucessfully stored on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader,"/"))
-        return(split[length(split)])
-      },error = .capturedErrorToMessage)
-    },
-    
-    storeJob = function(task=NULL,graph_id=NULL,
-                        title = NULL, description = NULL,
-                        plan = NULL, budget = NULL,
-                        format, ...) {
-      tryCatch({
-        tag = "jobs_define"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        create_options = list(...)
-        output = list()
-        output$format = format
-        if (length(create_options) > 0) {
-          output$parameters = create_options
-        }
-        
-        
-        if (!is.null(task)) {
-          if (is.list(task)) {
-            job = list(process_graph=task,output = output)
-          } else {
-            stop("Parameter task is not a task object. Awaiting a list.")
-          }
-        } else if (! is.null(graph_id)) {
-          job = list(process_graph=graph_id,output = output)
-        } else {
-          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-        }
-        
-        if (!is.null(title)) job$title = title
-        if (!is.null(description)) job$description = description
-        if (!is.null(plan)) job$plan = plan
-        if (!is.null(budget)) job$budget = budget
-        
-        #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
-        response = private$POST(endpoint=endpoint,
-                                 authorized = TRUE,
-                                 data=job,
-                                 raw=TRUE)
-        
-        message("Job was sucessfully registered on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader,"/"))
-        return(split[length(split)])
-      },error=.capturedErrorToMessage)
-    },
-    
-    modifyJob = function(job_id,
-                         title=NULL, description=NULL,
-                         process_graph = NULL, 
-                         plan = NULL, budget= NULL,
-                         format=NULL, ...) {
+    cancel = function(job_id) {
       tryCatch({
         if (is.null(job_id)) {
-          stop("No job i was specified.")
+          stop("No job id specified.")
         }
         
-        tag = "jobs_update"
+        tag = "jobs_cancel"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
         
-        patch = list()
-        create_options = list(...)
-        output = list()
-        if (length(create_options) > 0) {
-          output$parameters = create_options
+        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
+        if (success) {
+          message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
         }
-        if (!is.null(format)) output$format = format
         
-        if (length(output) > 0) patch$output = output
+        return(success)
+      },error=.capturedErrorToMessage)
       
-        if (!is.null(process_graph)) {
-          patch$process_graph = process_graph
-        }
-
-        if (!is.null(title)) {
-          if (is.na(title)) patch$title = NULL
-          else patch$title = title
-        }
+    },
+    
+    getUserCredits = function() {
+      tryCatch({
+        tag = "user_credits"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
-        if (!is.null(description)){
-          if (is.na(description)) patch$description = NULL
-          else patch$description = description
-        } 
-        
-        if (!is.null(plan)) {
-          if (is.na(plan)) patch$plan = NULL
-          else patch$plan = plan
-        }
-        
-        if (!is.null(budget)) {
-          if (is.na(budget)) patch$budget = NULL
-          else patch$budget = budget
-        }
-
-        res = private$PATCH(endpoint = endpoint,
-                            authorized = TRUE,
-                            encodeType = "json",
-                            data=patch)
-        message(paste("Job '",job_id,"' was successfully updated.",sep=""))
-        return(res)
+        return(private$GET(endpoint,authorized = TRUE))
       },error=.capturedErrorToMessage)
     },
     
+    getProcessGraphBuilder = function() {
+      tryCatch({
+        if (is.null(private$graph_builder)) {
+          private$graph_builder = ProcessGraphBuilder$new(self)
+        }
+        
+        return(private$graph_builder)
+      },error=.capturedErrorToMessage)
+      
+    }, 
+    # processing functions ====
     execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
       tryCatch({
         # former sync evaluation
@@ -831,26 +911,8 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
-
-    cancel = function(job_id) {
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        
-        tag = "jobs_cancel"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
-        if (success) {
-          message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
-        }
-        
-        return(success)
-      },error=.capturedErrorToMessage)
-      
-    },
     
+    #delete functions ====
     deleteUserFile = function (src) {
       tryCatch({
         if (is.character(src)) {
@@ -903,63 +965,6 @@ OpenEOClient <- R6Class(
         message("Service '",service_id,"' successfully deactivated")
         invisibile(msg)
       },error=.capturedErrorToMessage)
-    },
-    
-    getUserCredits = function() {
-      tryCatch({
-        tag = "user_credits"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
-        
-        return(private$GET(endpoint,authorized = TRUE))
-      },error=.capturedErrorToMessage)
-    },
-    
-    createService = function(job_id, service_type, ...) {
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("Cannot create service. job_id is missing.")
-        }
-        if (is.null(service_type)) {
-          stop("No service_type specified.")
-        }
-
-        tag = "service_publish"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        service_args = list(...)
-        
-        service_request_object = list(
-          job_id = job_id,
-          service_type = service_type,
-          service_args = service_args
-        )
-        
-        response = private$POST(endpoint,
-                                authorized = TRUE, 
-                                data = service_request_object, 
-                                encodeType = "json")
-        
-        message("Service was successfully created.")
-        return(response)
-      },error=.capturedErrorToMessage)
-    },
-    
-    modifyService = function(service_id) {
-      tag = "services_update"
-      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
-      
-      .not_implemented_yet()
-    },
-    
-    getProcessGraphBuilder = function() {
-      tryCatch({
-        if (is.null(private$graph_builder)) {
-          private$graph_builder = ProcessGraphBuilder$new(self)
-        }
-        
-        return(private$graph_builder)
-      },error=.capturedErrorToMessage)
-      
     }
 
   ),
