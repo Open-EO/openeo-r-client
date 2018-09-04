@@ -391,6 +391,7 @@ describeService = function(con, service_id) {
 #' 
 #' @param con connected and authorized openeo client object
 #' @param service_id the service id
+#' @export
 deleteService = function(con, service_id) {
   return(con$deleteService(service_id))
 }

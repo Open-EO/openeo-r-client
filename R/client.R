@@ -965,7 +965,7 @@ OpenEOClient <- R6Class(
         msg = private$DELETE(endpoint = endpoint,
                              authorized = TRUE)
         message("Service '",service_id,"' successfully deactivated")
-        invisibile(msg)
+        invisible(msg)
       },error=.capturedErrorToMessage)
     }
 
