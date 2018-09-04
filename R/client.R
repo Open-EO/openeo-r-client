@@ -913,6 +913,20 @@ OpenEOClient <- R6Class(
       
     },
     
+    estimateCosts = function(job_id) {
+      tryCatch({
+        if (is.null(job_id)) {
+          stop("No job id specified.")
+        }
+        tag = "jobs_cost_estimation"
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        
+        success = private$GET(endpoint = endpoint, authorized = TRUE)
+        class(success) = "JobCostsEstimation"
+        return(success)
+      },error=.capturedErrorToMessage)
+    },
+    
     getProcessGraphBuilder = function() {
       tryCatch({
         if (is.null(private$graph_builder)) {

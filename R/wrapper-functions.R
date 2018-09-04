@@ -671,6 +671,21 @@ deleteJob = function(con,job_id) {
   return(con$deleteJob(job_id))
 }
 
+
+#' Estimates job costs
+#'
+#' Calls the back-end and asks for an approximation about the costs in money and how much time
+#' will be required to finish the job and whether or not the job owners data download is already
+#' included in the monetary costs.
+#'
+#' @param con authenticated Connection
+#' @param job_id id of the job
+#' @return JobCostsEstimation containing information how much money and time will be spent
+#' @export
+estimateCosts = function(con,job_id) {
+  return(con$estimateCosts(job_id))
+}
+
 #
 # udf endpoint ----
 #

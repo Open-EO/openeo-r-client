@@ -189,3 +189,15 @@ print.ServiceInfo = function(x,...) {
     cat(paste("Process graph:\n",x$process_graph,"\n",sep=""))
   }
 }
+
+#' @export
+print.JobCostsEstimation = function(x,...){
+  header = "Job costs estimation\n"
+  line =   "====================\n"
+  costs = paste("Costs: \t\t\t\t",x$costs,"\n",sep="")
+  duration = paste("Duration: \t\t\t",x$duration,"\n", sep="")
+  downloads = paste("Downloads for owner included: \t")
+  yesno = if (x$downloads_included) "yes" else "no"
+  
+  cat(header,line,costs,duration,downloads,yesno,sep="")
+}
