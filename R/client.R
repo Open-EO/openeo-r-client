@@ -565,7 +565,7 @@ OpenEOClient <- R6Class(
         message("Graph was sucessfully stored on the backend.")
         locationHeader = headers(response)$location
         split = unlist(strsplit(locationHeader,"/"))
-        return(split[length(split)])
+        return(trimws(split[length(split)]))
       },error = .capturedErrorToMessage)
     },
     
@@ -625,9 +625,6 @@ OpenEOClient <- R6Class(
                              budget = NULL
                              ) {
       tryCatch({
-        if (is.null(job_id)) {
-          stop("Cannot create service. job_id is missing.")
-        }
         if (is.null(type)) {
           stop("No type specified.")
         }
@@ -649,12 +646,13 @@ OpenEOClient <- R6Class(
         response = private$POST(endpoint,
                                 authorized = TRUE, 
                                 data = service_request_object, 
-                                encodeType = "json")
+                                encodeType = "json",
+                                raw = TRUE)
         
         message("Service was successfully created.")
         locationHeader = headers(response)$location
         split = unlist(strsplit(locationHeader,"/"))
-        return(split[length(split)])
+        return(trimws(split[length(split)]))
       },error=.capturedErrorToMessage)
     },
     uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
