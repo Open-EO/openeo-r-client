@@ -719,7 +719,7 @@ OpenEOClient <- R6Class(
         
         if (is.null(message)) {
           message(paste("Process graph '",graph_id,"' was successfully modified.",sep=""))
-          return(TRUE)
+          invisible(TRUE)
         }
       },error=.capturedErrorToMessage)
     },
@@ -776,15 +776,94 @@ OpenEOClient <- R6Class(
                             encodeType = "json",
                             data=patch)
         message(paste("Job '",job_id,"' was successfully updated.",sep=""))
-        return(res)
+        invisible(TRUE)
       },error=.capturedErrorToMessage)
     },
     
-    modifyService = function(service_id) {
+    modifyService = function(service_id,
+                             type=NULL, 
+                             process_graph=NULL,
+                             title = NULL,
+                             description = NULL,
+                             enabled = NULL,
+                             parameters = NULL,
+                             plan = NULL,
+                             budget = NULL) {
       tag = "services_update"
       endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
-      
-      .not_implemented_yet()
+      tryCatch({
+        patch = list()
+        
+        if (!is.null(type)) {
+          patch[["type"]] = type
+        }
+        
+        if (!is.null(process_graph)) {
+          if (length(process_graph) > 0) {
+            patch[["process_graph"]] = process_graph
+          } else {
+            stop("Process graph cannot be set to be empty.")
+          }
+        }
+        
+        if (!is.null(title)) {
+          if (!is.na(title)) {
+            patch[["title"]] = title
+          } else {
+            patch[["title"]] = NULL
+          }
+        }
+        
+        if (!is.null(description)) {
+          if (!is.na(description)) {
+            patch[["description"]] = description
+          } else {
+            patch[["description"]] = NULL
+          }
+        }
+
+        if (!is.null(enabled)) {
+          if (!is.na(enabled) && is.logical(enabled)) {
+            patch[["enabled"]] = enabled
+          } else {
+            stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
+          }
+        }
+        
+        if (!is.null(parameters)) {
+          if (is.na(parameters)) {
+            patch[["parameters"]] = NULL
+          } else if (is.list(parameters)) {
+            patch[["parameters"]] = parameters
+          } else {
+            stop("No valid data for parameter 'parameters'. It has to be a list")
+          }
+        }
+        
+        if (!is.null(plan)) {
+          if (!is.na(plan)) {
+            patch[["plan"]] = plan
+          } else {
+            stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
+          }
+        }
+        
+        # budget = NULL
+        if (!is.null(budget)) {
+          if (!is.na(budget)) {
+            patch[["budget"]] = budget
+          } else {
+            patch[["budget"]] = NULL
+          }
+        }
+        
+        res = private$PATCH(endpoint = endpoint,
+                            authorized = TRUE,
+                            encodeType = "json",
+                            data=patch)
+        message(paste("Service '",service_id,"' was successfully updated.",sep=""))
+        invisible(TRUE)
+      },error=.capturedErrorToMessage)
     },
     
     # other getter / download functions ====
@@ -964,7 +1043,7 @@ OpenEOClient <- R6Class(
         
         msg = private$DELETE(endpoint = endpoint,
                              authorized = TRUE)
-        message("Service '",service_id,"' successfully deactivated")
+        message("Service '",service_id,"' successfully removed.")
         invisible(msg)
       },error=.capturedErrorToMessage)
     }

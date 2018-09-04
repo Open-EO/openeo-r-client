@@ -367,10 +367,41 @@ defineService = function(con,
 
 #' Modifies a service
 #' 
+#' The function updates a service with the given information. If a parameter is NULL then it will
+#' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
+#' will be deleted and also set to NULL.
+#' 
 #' @param con connected and authorized openeo client object
 #' @param service_id the service id
-modifyService = function(con, service_id, ...) {
-  .not_implemented_yet()
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
+#' @return service representation as list
+#' 
+#' @export
+modifyService = function(con, service_id, 
+                         type=NULL, 
+                         process_graph=NULL,
+                         title = NULL,
+                         description = NULL,
+                         enabled = NULL,
+                         parameters = NULL,
+                         plan = NULL,
+                         budget = NULL) {
+  con$modifyService(service_id = service_id,
+                    type=type,
+                    process_graph=process_graph,
+                    title=title,
+                    description=description,
+                    enabled=enabled,
+                    parameters=parameters,
+                    plan=plan,
+                    budget = budget)
 }
 
 #' Describes a service
