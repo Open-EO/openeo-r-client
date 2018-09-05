@@ -893,6 +893,28 @@ OpenEOClient <- R6Class(
         close(file_connection,type="wb")
       })
     },
+    validateProcessGraph = function(graph) {
+      tryCatch({
+        tag = "process_graph_validate"
+        endpoint = private$getBackendEndpoint(tag)
+        
+        if (!is.list(graph) || is.null(graph)) {
+          stop("The graph information is missing or not a list")
+        }
+        
+        requestBody = list(
+          process_graph = graph
+        )
+        
+        response = private$POST(endpoint=endpoint,
+                                authorized = TRUE,
+                                data=requestBody,
+                                encodeType = "json")
+        
+        message("Graph was sucessfully validated.")
+        invisible(response)
+      },error = .capturedErrorToMessage)
+    },
     
     cancel = function(job_id) {
       tryCatch({

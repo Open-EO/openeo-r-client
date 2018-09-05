@@ -313,6 +313,18 @@ modifyGraph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
   return(con$modifyGraph(graph_id=graph_id, graph=graph,title=title,description=description))
 }
 
+#' Validates a process graph
+#' 
+#' Sends the process graph to the back-end and validates it against the offered processes by the backend.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph the process graph that will be sent to the back-end and is being validated
+#' 
+#' @export
+validateProcessGraph = function(con, graph) {
+  return(con$validateProcessGraph(graph))
+}
+
 #
 # services endpoint ----
 #
