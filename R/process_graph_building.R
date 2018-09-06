@@ -32,15 +32,13 @@ process = function(process=NULL, process_id, prior.name="imagery", ...) {
 
 #' A collection object
 #'
-#' creates a list representation of a collection object
-#' @param product_id the id of the product
-#' @param id_name the name of the identifier for this collection, default "product_id"
-#' @return a list represenation for a collection / product
+#' Creates the get_collection process to load data into the process graph.
+#' 
+#' @param name the id of the product
+#' @param ... additional parameters that are passed on to get_collection process
+#' @return a list represenation for the get_data process
 #' @export
-collection = function(product_id,id_name = "product_id") {
-  result = list(product_id)
-  names(result) = id_name
-  
-  attr(result, "type") <- "collection"
-  return(result)
+collection = function(name, ...) {
+  #TODO change to get_collection
+  return(process(process_id = "get_collection", name=name, ...))
 }
