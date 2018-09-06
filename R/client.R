@@ -90,8 +90,24 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         formats = private$GET(endpoint,authorized = FALSE)
+        default = formats$default
+        message(paste("Host uses '",formats$default,"' as default output format",sep=""))
         
-        return(formats)
+        formats = formats$formats
+        names = names(formats)
+        datatypes = unname(lapply(formats, function(format){
+          return(format$gis_data_types)
+        }))
+        
+        parameters = unname(lapply(formats, function(format){
+          return(format$parameters)
+        }))
+        
+        library(tibble)
+        
+        table = tibble(format=names,type=datatypes,parameters = parameters)
+        
+        return(table)
       },
       error = .capturedErrorToMessage
       )

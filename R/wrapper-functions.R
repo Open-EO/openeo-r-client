@@ -87,10 +87,8 @@ listFormats = function(con) {
   if (api.version() == "0.0.1") {
     return(.not_implemented_yet())
   }
-  
-  formats = con$output_formats()
-  message(paste("Host uses '",formats$default,"' as default output format",sep=""))
-  return(formats$formats)
+
+  return(con$output_formats())
 }
 
 #' Returns the offered webservice types of the back-end
