@@ -1292,7 +1292,7 @@ OpenEOClient <- R6Class(
     
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
-        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% select(backend_endpoint) %>% unname() %>% unlist()
+        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% dplyr::select(backend_endpoint) %>% unname() %>% unlist()
         if (length(endpoint) > 0) {
           if (startsWith(endpoint,"/")) {
             return(substr(endpoint,2,nchar(endpoint)))
