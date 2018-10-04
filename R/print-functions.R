@@ -201,3 +201,8 @@ print.JobCostsEstimation = function(x,...){
   
   cat(header,line,costs,duration,downloads,yesno,sep="")
 }
+
+#' @export
+print.CollectionList = function(x, ...) {
+  print(as_tibble(x) %>% select(name,title,description))
+}

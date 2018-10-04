@@ -220,32 +220,8 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-        table = tibble(product_id = character(),
-                       description = character(),
-                       source = character())
-        for (index in 1: length(listOfProducts)) {
-          product = listOfProducts[[index]]
-          
-          product_id = product$data_id
-          if ("description" %in% names(product)) {
-            description = product$description
-          } else {
-            description = NA
-          }
-          
-          if ("source" %in% names(product)) {
-            source = product$source
-          } else {
-            source = NA
-          }
-          
-          
-          table = table %>% add_row(product_id = product_id,
-                                    description = description,
-                                    source = source)
-        }
-        
-        return(table)
+        class(listOfProducts) = "CollectionList"
+        return(listOfProducts)
       },
       error=.capturedErrorToMessage)
     },
@@ -257,16 +233,6 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfProcesses = private$GET(endpoint,type="application/json")
-        
-        # table = tibble(process_id = character(),
-        #                description = character())
-        # 
-        # for (index in 1:length(listOfProcesses)) {
-        #   process = listOfProcesses[[index]]
-        #   table = table %>% add_row(process_id = process$process_id,
-        #                             description = process$description)
-        # }
-        
         
         return(lapply(listOfProcesses,function(process) {
           class(process) = "ProcessInfo"

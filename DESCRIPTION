@@ -36,6 +36,7 @@ Collate:
     'ProcessGraphBuilder-class.R'
     'capabilities-mapping.R'
     'client.R'
+    'coerce-functions.R'
     'errors.R'
     'map-functions.R'
     'markdown_viewer.R'
