@@ -47,8 +47,8 @@ api.v0.3.0 = function() {
   api = api %>% 
     add_row(endpoint="/output_formats",operation="GET",tag="formats") %>% 
     add_row(endpoint="/service_types",operation="GET",tag="ogc_services") %>% 
-    add_row(endpoint="/data",operation="GET",tag="data_overview") %>% 
-    add_row(endpoint="/data/{data_id}",operation="GET",tag="data_details") %>% 
+    add_row(endpoint="/collections",operation="GET",tag="data_overview") %>% 
+    add_row(endpoint="/collections/{data_id}",operation="GET",tag="data_details") %>% 
     add_row(endpoint="/processes",operation="GET",tag="process_overview") %>% 
     add_row(endpoint="/process_graphs",operation="GET",tag="graph_overview") %>% 
     add_row(endpoint="/process_graphs",operation="POST",tag="new_graph") %>% 
