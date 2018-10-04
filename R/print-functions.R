@@ -68,36 +68,33 @@ print.ServiceType = function(x,...) {
 }
 
 #' @export
-print.openeo_product = function(x, ...) {
-  id = paste(x$product_id)
-  description = paste("Description:\t\t",x$description,sep="")
-  source = paste("Source:\t\t\t",x$source,sep="")
-  extent = paste("Spatial extent:\t\t",paste(x$spatial_extent,sep="",collapse=", "),sep="")
-  crs = paste("SRS:\t\t\t",x$crs@projargs,sep="")
-  time = paste("Temporal extent:\t",paste(sapply(x$temporal_extent,function(obj) {format(obj,format="%Y-%m-%dT%H:%M:%SZ")}),collapse="/"),sep="")
+print.CollectionInfo = function(x, ...) {
+  id = paste(x$name)
+  if (is.null(x$title)) x$title = "---"
+  title = paste("Title:\t\t\t\t",x$title,sep="")
   
-  cat(paste(id,description,source,extent,crs,time,"Bands:\n",sep="\n"))
-  print(bandlist_to_df(x$bands),row.names=FALSE)
-}
-
-bandlist_to_df = function(bands) {
-  u=sapply(bands,function(band){
-    c(band)
-  })
-  u = as.data.frame(t(u),stringsAsFactors = FALSE)
+  description = paste("Description:\t\t\t",x$description,sep="")
   
-  for (j in 1:ncol(u)) {
-    for (i in 1:nrow(u)) {
-      if (length(unlist(u[i,j])) == 0 ) {
-        u[i,j] = NA
-      }
-    }
-    if (length(unlist(u[,j])) == nrow(u)) {
-      u[,j] = unlist(u[,j])
-    }
-  }
+  if (is.null(x$provider)) x$provider = list(name="---")
+  source = paste("Source:\t\t\t\t",paste(sapply(x$provider, function(p) p$name),sep="",collapse = ", "),sep="")
   
-  return(u)
+  if (is.null(x$`eo:platform`))x$`eo:platform` = "---"
+  platform = paste("Platform:\t\t\t",x$`eo:platform`,sep="")
+  if (is.null(x$`eo:constellation`))x$`eo:constellation` = "---"
+  constellation = paste("Constellation:\t\t\t",x$`eo:constellation`,sep="")
+  if (is.null(x$`eo:instrument`))x$`eo:instrument` = "---"
+  instrument = paste("Instrument:\t\t\t",x$`eo:instrument`,sep="")
+  
+  
+  spatial.extent = paste("(",x$extent$spatial[1],", ",x$extent$spatial[2],"), (",x$extent$spatial[3],", ", x$extent$spatial[4],")",sep="")
+  extent = paste("Spatial extent (lon,lat):\t",spatial.extent,sep="")
+  crs = paste("Data SRS (EPSG-code):\t\t",x$`eo:epsg`,sep="")
+  time = paste("Temporal extent:\t\t",paste(sapply(x$extent$temporal,function(obj) {format(as_datetime(obj),format="%Y-%m-%dT%H:%M:%SZ")}),collapse="/"),sep="")
+  
+  cat(paste(id,title,description,source,
+            platform,constellation,instrument,
+            extent,crs,time,"Bands:\n",sep="\n"))
+  print(as.data.frame(as_tibble(x$`eo:bands`)))
 }
 
 #' @export

@@ -452,8 +452,9 @@ OpenEOClient <- R6Class(
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
-        info = private$modifyProductList(info)
-        class(info) = "openeo_product"
+        # info = private$modifyProductList(info)
+        class(info) = "CollectionInfo"
+        class(info$`eo:bands`) = "BandList"
         return(info)
       },
       error = .capturedErrorToMessage)
