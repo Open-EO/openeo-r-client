@@ -46,7 +46,7 @@ OIDCClient = R6Class(
       app = oauth_app("openeo_login",private$client_id)
       
       suppressWarnings(
-        mytoken <- oauth2.0_token(openeo_endpoints, app,cache=FALSE)
+        mytoken <- oauth2.0_token(openeo_endpoints, app,cache=FALSE,scope="openid")
       )
       
       
@@ -156,7 +156,8 @@ OIDCClient = R6Class(
           grant_type = "refresh_token",
           refresh_token = private$refresh_token,
           client_id = private$client_id,
-          redirect_uri = private$redirect_uri
+          redirect_uri = private$redirect_uri,
+          scope="openid"
         )
       )
     }
