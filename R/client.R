@@ -181,11 +181,16 @@ OpenEOClient <- R6Class(
           private$login_token = cont$access_token
           self$user_id = cont$user_id
           
-          cat("Login successful." )
+          tryCatch(
+            {
+              if (is.null(self$api.mapping)) {
+                self$api.mapping = endpoint_mapping(self)
+              }
+              cat("Login successful.")
+            },
+            error=.capturedErrorToMessage
+          )
           
-          if (is.null(self$api.mapping)) {
-            self$api.mapping = endpoint_mapping(self)
-          }
           
           invisible(self)
         } else {
