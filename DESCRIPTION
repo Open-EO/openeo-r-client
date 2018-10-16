@@ -40,6 +40,7 @@ Collate:
     'errors.R'
     'map-functions.R'
     'markdown_viewer.R'
+    'oidc-client.R'
     'print-functions.R'
     'process_graph_building.R'
     'wrapper-functions.R'
