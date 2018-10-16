@@ -225,6 +225,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfProducts = private$GET(endpoint=endpoint,type="application/json")
+        listOfProducts = listOfProducts$collections
         class(listOfProducts) = "CollectionList"
         return(listOfProducts)
       },
@@ -238,6 +239,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfProcesses = private$GET(endpoint,type="application/json")
+        listOfProcesses = listOfProcesses$processes
         
         return(lapply(listOfProcesses,function(process) {
           class(process) = "ProcessInfo"
@@ -254,6 +256,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
+        listOfJobs = listOfJobs$jobs
         # list to tibble
         table = tibble(job_id=character(),
                        title = character(),
@@ -310,6 +313,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfGraphShortInfos = private$GET(endpoint, authorized = TRUE)
+        listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
         
         table = tibble(process_graph_id=character(),
                        title=character(),
@@ -340,6 +344,8 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
+        listOfServices = listOfServices$services
+        
         table = tibble(service_id=character(),
                        title=character(),
                        description=character(),
@@ -408,6 +414,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
         
         files = private$GET(endpoint,TRUE,type="application/json")
+        files = files$files
         
         if (is.null(files) || length(files) == 0) {
           message("The user workspace at this host is empty.")
