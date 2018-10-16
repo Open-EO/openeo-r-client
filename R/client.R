@@ -225,7 +225,6 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-        listOfProducts = listOfProducts$collections
         class(listOfProducts) = "CollectionList"
         return(listOfProducts)
       },
