@@ -93,8 +93,13 @@ print.CollectionInfo = function(x, ...) {
   
   cat(paste(id,title,description,source,
             platform,constellation,instrument,
-            extent,crs,time,"Bands:\n",sep="\n"))
-  print(as.data.frame(as_tibble(x$`eo:bands`)))
+            extent,crs,time,sep="\n"))
+  
+  if (!is.null(x$`eo:bands`)) {
+    cat("Bands:\n")
+    print(as.data.frame(as_tibble(x$`eo:bands`)))
+  }
+  
 }
 
 #' @export
