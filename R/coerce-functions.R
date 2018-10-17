@@ -21,10 +21,15 @@ as_tibble.BandList = function(x, ...) {
   x = unname(x)
   
   table = .listObjectsToTibble(x)
-  return( table %>% 
-           add_column(band_id = band_ids) %>% 
-           select(unique(c("band_id",colnames(table))))
-         )
+  if (nrow(table) == length(band_ids)) {
+    return( table %>% 
+              add_column(band_id = band_ids) %>% 
+              select(unique(c("band_id",colnames(table))))
+    )
+  } else {
+    return(tibble(band_id=band_ids))
+  }
+  
 }
 
 # x has to be an unnamed list
@@ -45,21 +50,22 @@ as_tibble.BandList = function(x, ...) {
   }))
   template = template[unique(names(template))]
   
-  
   table = do.call("tibble",args=template)
-  
+
   for (index in seq_along(x)) {
     entry = x[[index]]
     
-    for (i in seq_along(entry)) {
-      val = entry[[i]]
-      if (is.list(val)) {
-        entry[[i]] = list(val)
+    if (length(entry) > 0) {
+      for (i in seq_along(entry)) {
+        val = entry[[i]]
+        if (is.list(val)) {
+          entry[[i]] = list(val)
+        }
       }
+      args = append(list(.data = table),entry)
+      table=do.call("add_row",args = args)
     }
     
-    args = append(list(.data = table),entry)
-    table=do.call("add_row",args = args)
   }
   return(table)
 }

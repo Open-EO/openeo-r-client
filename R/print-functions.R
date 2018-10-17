@@ -24,14 +24,22 @@ print.ProcessInfo <- function(x, ...) {
   description = paste("Description:\t",x$description,sep="")
   result = paste("Returns:\t",x$returns$description,sep="")
   
-  d = data.frame(Parameter = names(x$parameters), 
-                 Description=sapply(x$parameters,function(arg) arg$description),
-                 Required=sapply(x$parameters,function(arg) arg$required),
-                 stringsAsFactors = FALSE)
-  rownames(d) <- NULL
-  cat(paste(title,summary,description,result,"",sep="\n"))
-  cat("\n")
-  print(d)
+  if (length(x$parameters) > 0) {
+    d = data.frame(Parameter = names(x$parameters), 
+                   Description=sapply(x$parameters,function(arg) arg$description),
+                   Required=sapply(x$parameters,function(arg) {
+                     if(!is.null(arg$required)) {
+                      return(arg$required)
+                     } else {
+                       return(FALSE)
+                     }
+                   }),
+                   stringsAsFactors = FALSE)
+    rownames(d) <- NULL
+    cat(paste(title,summary,description,result,"",sep="\n"))
+    cat("\n")
+    print(d)
+  }
 }
 
 #' @export
