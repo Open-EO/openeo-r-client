@@ -111,9 +111,10 @@ services = function(con) {
 #' @param password the password (optional)
 #' @param disable_auth flag to specify if the back-end supports authorization on its endpoints
 #' @param auth_type the general authentication method used on all endpoints. Either "bearer" or "basic".
+#' @param login_type either "basic" or "oidc". This refers to the login mechanism that shall be used
 #'
 #' @export
-connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer") {
+connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer",login_type = "basic") {
   con = OpenEOClient$new()
   
   con$disableAuth = disable_auth
@@ -125,10 +126,14 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
     con$general_auth_type = auth_type
   }
   
-  if (is.null(user) && is.null(password)) {
-    con = con$connect(url=host)
-  } else if (!is.null(user) && !is.null(password)) {
-    con = con$connect(url=host)$login(user=user,password=password)  
+  if (is.null(user) && is.null(password) && disable_auth) {
+    con = con$connect(url=host,login_type=login_type)
+  } else if (login_type == "basic") {
+    if (!is.null(user) && !is.null(password)) {
+      con = con$connect(url=host,login_type=login_type)$login(user=user,password=password)  
+    }
+  } else if (login_type == "oidc") {
+    con = con$connect(url=host,login_type=login_type)$login() 
   } else {
     message("Incomplete credentials. Either username or password is missing")
     return()
@@ -148,7 +153,7 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
 #' @param password the password
 #' @return a connected and authenticated back-end connection
 #' @export
-login = function(con, user, password) {
+login = function(con, user=NULL, password=NULL) {
   return(con$login(user = user, password = password))
 }
 

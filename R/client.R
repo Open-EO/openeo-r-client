@@ -28,26 +28,33 @@ OpenEOClient <- R6Class(
 
     },
 
-    connect = function(url) {
-      if (!missing(url)) {
-        tryCatch({
-          if (endsWith(url,"/")) {
-            url = substr(url,1,nchar(url)-1)
-          }
-          private$host = url
-          # cat(paste("Registered '",url,"' as host","\n",sep=""))
-          cat("Registered host\n")
-        
-          self$api.mapping = endpoint_mapping(self)
-          invisible(self)
-        }, error = function(e){
-          invisible(self)
+    connect = function(url,login_type="basic",disable_auth=FALSE) {
+      tryCatch({
+        if (is.null(login_type) || !login_type %in% c("basic","oidc","none") ) {
+          stop("Cannot find the login mechanism type. Please use 'basic', 'oidc' or 'none'")
         }
-        )
         
-      } else {
-        stop("Host-URL is missing")
-      }
+        if (disable_auth) {
+          self$disableAuth = disable_auth
+        }
+        
+        if (!missing(url)) {
+          
+            if (endsWith(url,"/")) {
+              url = substr(url,1,nchar(url)-1)
+            }
+            private$host = url
+            private$login_type=login_type
+            
+            self$api.mapping = endpoint_mapping(self)
+            cat("Connected to host\n")
+            return(invisible(self))
+        } else {
+          stop("Host-URL is missing")
+        }
+      }, 
+      error = .capturedErrorToMessage
+      )
 
     },
     capabilities = function() {
@@ -149,60 +156,28 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage
       )
     },
-
-    login = function(user, password, auth_type="basic") {
-      tryCatch({
-        if (missing(user) || missing(password)) {
-          stop("Username or password is missing.")
-        }
-        
-        if (!is.null(self$api.mapping)) {
-          tag = "login"
-          endpoint = private$getBackendEndpoint(tag)
-        } else {
-          endpoint = "auth/login"
-        }
-
-        private$stopIfNotConnected()
-        
-        private$user = user
-        private$password = password
-        
-        url = paste(private$host, endpoint, sep="/")
-        res = GET(url=url,
-                  config = authenticate(user=user,
-                                        password = password,
-                                        type = auth_type)
-        )
-        
-        if (res$status_code == 200) {
-          cont = content(res,type="application/json")
-          
-          private$login_token = cont$access_token
-          self$user_id = cont$user_id
-          
-          tryCatch(
-            {
-              if (is.null(self$api.mapping)) {
-                self$api.mapping = endpoint_mapping(self)
-              }
-              cat("Login successful.")
-            },
-            error=.capturedErrorToMessage
-          )
-          
-          
-          invisible(self)
-        } else {
-          stop("Login failed.")
-        }
-      },
-      error = .capturedErrorToMessage,
-      finally = {
-        
+    login=function(user=NULL, password=NULL) {
+      if (private$login_type %>% is.null()) {
+        stop("Cannot login. Please connect to an OpenEO back-end first.")
       }
-      )
+      private$stopIfNotConnected()
       
+      if (private$login_type == "oidc") {
+        private$loginOIDC()
+      } else if (private$login_type == "basic") {
+        private$loginBasic(user=user, password = password)
+      } else {
+        if (self$disableAuth) {
+          return(self)
+        } else {
+          stop("Unsupported login mechanism")
+        }
+      }
+    },
+    logout = function() {
+      if (!is.null(private$oidc_client)){
+        private$oidc_client$logout()
+      }
     },
     user_info = function() {
       tryCatch({
@@ -1082,7 +1057,9 @@ OpenEOClient <- R6Class(
   # private ----
   private = list(
     # attributes ====
+    login_type = NULL, # basic or oidc
     login_token = NULL,
+    oidc_client= NULL,
     user = NULL,
     password = NULL,
     host = NULL,
@@ -1091,6 +1068,85 @@ OpenEOClient <- R6Class(
     # functions ====
     isConnected = function() {
       return(!is.null(private$host))
+    },
+    loginOIDC = function() {
+      if (!is.null(self$api.mapping)) {
+        tag = "oidc_login"
+        endpoint = private$getBackendEndpoint(tag)
+      } 
+      
+      
+      if (is.null(endpoint)) {
+        stop("Cannot find endpoint for OIDC login")
+      }
+      suppressWarnings({
+        tryCatch(
+          {
+            tryCatch({
+              discovery_doc = private$GET(endpoint)
+              private$oidc_client = OIDCClient$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
+              
+              if (is.null(private$oidc_client)) {
+                stop("OIDC client not initialized")
+              }
+              
+              private$oidc_client$login()
+              cat("Login successful.")
+              
+              return(invisible(self))
+            },error=function(e){
+              stop("Login failed.")
+            })
+            
+          },
+          error=.capturedErrorToMessage
+        )
+      })
+      
+    },
+    
+    loginBasic = function(user, password) {
+      tryCatch({
+        if (missing(user) || missing(password)) {
+          stop("Username or password is missing.")
+        }
+        
+        if (!is.null(self$api.mapping)) {
+          tag = "login"
+          endpoint = private$getBackendEndpoint(tag)
+        } else {
+          endpoint = "auth/login"
+        }
+        
+        private$user = user
+        private$password = password
+        
+        url = paste(private$host, endpoint, sep="/")
+        res = GET(url=url,
+                  config = authenticate(user=user,
+                                        password = password,
+                                        type = "basic")
+        )
+        
+        if (res$status_code == 200) {
+          cont = content(res,type="application/json")
+          
+          private$login_token = cont$access_token
+          self$user_id = cont$user_id
+          
+          if (is.null(self$api.mapping)) {
+            self$api.mapping = endpoint_mapping(self)
+          }
+          cat("Login successful.")
+
+          return(invisible(self))
+        } else {
+          stop("Login failed.")
+        }
+      },
+      error = .capturedErrorToMessage,
+      finally = {
+      })
     },
 
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
@@ -1293,10 +1349,17 @@ OpenEOClient <- R6Class(
       }
 
       if (self$general_auth_type == "bearer") {
-        header = append(header,add_headers(
-          Authorization=paste("Bearer",private$login_token, sep =" ")
-        ))
-      } else {
+        if (private$login_type == "basic") {
+          header = append(header,add_headers(
+            Authorization=paste("Bearer",private$login_token, sep =" ")
+          ))
+        } else if (private$login_type == "oidc") {
+          header = append(header,add_headers(
+            Authorization=paste("Bearer",private$oidc_client$access_token, sep =" ")
+          ))
+        }
+        
+      } else { # if all the endpoints require a basic encoded authorization header
         header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
       }
 

@@ -10,11 +10,15 @@ OIDCClient = R6Class(
     # attributes ====
     
     # functions ====
-    initialize = function(host=NULL){
-      if (!is.null(host)) {
-        private$setHost(host)
+    initialize = function(host,discovery_document = NULL){
+      private$setHost(host)
+      
+      if (is.null(discovery_document)) {
         private$getEndpoints()
+      } else {
+        private$endpoints = discovery_document
       }
+      
     },
     
     login = function() {
@@ -70,13 +74,13 @@ OIDCClient = R6Class(
           if (!private$isExpired(private$auth$credentials$refresh_token)) {
             private$auth$refresh()
           } else {
-            message("Cannot provide access_token. You have to login.")
+            stop("Cannot provide access_token. You have to login.")
             return(invisible(NULL))
           }
         }
         return(private$auth$credentials$access_token)
       } else {
-        message("Please login first, in order to obtain an access token")
+        stop("Please login first, in order to obtain an access token")
         return(invisible(NULL))
       }
     }
@@ -84,7 +88,7 @@ OIDCClient = R6Class(
   # private ----
   private=list(
     # attributes ====
-    host = NA,
+    host = NA, # the url of the endpoint in 
     # client_id = "openeo-r-client", # predefined in OpenID Provider configuration (should be cryptic :))
     # redirect_uri = "http://localhost:8764/auth/oidc/cb", # also registered
     client_id = "openeo-r-client_2",
