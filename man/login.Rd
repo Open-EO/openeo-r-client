@@ -4,7 +4,7 @@
 \alias{login}
 \title{Function to login to a specific backend}
 \usage{
-login(con, user, password)
+login(con, user = NULL, password = NULL)
 }
 \arguments{
 \item{con}{connected back-end connection}

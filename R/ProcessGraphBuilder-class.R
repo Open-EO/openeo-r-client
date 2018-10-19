@@ -44,7 +44,7 @@ ProcessGraphBuilder = R6Class(
           arguments = list()
           if (!missing(process) && !is.null(process)) {
             if (is.list(process)) {
-              if (attr(process, "type") %in% c("process", "udf", 
+              if (class(process) %in% c("process", "udf", 
                                                "collection")) {
                 arguments[[prior.name]] = process
               }
@@ -71,13 +71,23 @@ ProcessGraphBuilder = R6Class(
           res$process_id = process_id
           res = append(res, arguments)
           res = append(res, additionalParameter)
-          attr(res, "type") <- "process"
+          class(res) <- "process"
           return(res)
         })
         body(f) <- body
         
         self[[id]] = f
       }
+      
+      col = (con %>% listCollections())$collections
+      
+      self$collection = new.env()
+      
+      tmp = lapply(col, function(collection) {
+        makeActiveBinding(collection$name,function() {collection(name=collection$name)},self$collection)
+      })
+
+      return(self)
     }
   )
 )

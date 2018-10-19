@@ -13,7 +13,7 @@ process = function(process=NULL, process_id, prior.name="imagery", ...) {
     if (is.list(process)) {
       
 
-      if (attr(process,"type") %in% c("process","udf","collection")){
+      if (class(process) %in% c("process","udf","collection")){
         process_body[[prior.name]] = process
       } else {
         stop("Chain corrupted. Prior element is neither a process nor a collection")
@@ -23,7 +23,7 @@ process = function(process=NULL, process_id, prior.name="imagery", ...) {
   
   process_body$process_id=process_id
   process_body = append(process_body,list(...))
-  attr(process_body,"type") <- "process"
+  class(process_body) = "process"
   
   return(process_body)
   
@@ -39,6 +39,5 @@ process = function(process=NULL, process_id, prior.name="imagery", ...) {
 #' @return a list represenation for the get_data process
 #' @export
 collection = function(name, ...) {
-  #TODO change to get_collection
   return(process(process_id = "get_collection", name=name, ...))
 }

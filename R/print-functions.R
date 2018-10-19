@@ -83,8 +83,10 @@ print.CollectionInfo = function(x, ...) {
   
   description = paste("Description:\t\t\t",x$description,sep="")
   
-  if (is.null(x$provider)) x$provider = list(name="---")
-  source = paste("Source:\t\t\t\t",paste(sapply(x$provider, function(p) p$name),sep="",collapse = ", "),sep="")
+  if (is.null(x$provider)) x$provider = list(list(name="---"))
+  source = paste("Source:\t\t\t\t",paste(sapply(x$provider, function(p) {
+    p$name
+  }),sep="",collapse = ", "),sep="")
   
   if (is.null(x$`eo:platform`))x$`eo:platform` = "---"
   platform = paste("Platform:\t\t\t",x$`eo:platform`,sep="")
@@ -141,8 +143,7 @@ print.JobInfo = function(x,...) {
   
   process_graph = "Process graph:\n"
   cat(process_graph)
-  cat(toJSON(x$process_graph,pretty = TRUE,auto_unbox = TRUE))
-  cat("\n")
+  print(x$process_graph)
 }
 
 #' @export
@@ -215,4 +216,21 @@ print.JobCostsEstimation = function(x,...){
 #' @export
 print.CollectionList = function(x, ...) {
   print(as_tibble(x) %>% select(name,title,description))
+}
+
+#' @export
+print.process = function(x, ...) {
+  print(taskToJSON(x))
+}
+
+#' @export
+print.ProcessGraphInfo = function(x, ...) {
+  job_id = paste("Job ID:\t\t", x$process_graph_id,sep="")
+  if (is.null(x$title)) x$title = "---"
+  title = paste("Title:\t\t",x$title,sep="")
+  if (is.null(x$description)) x$description = "---"
+  description = paste("Description:\t",x$description,sep="")
+  graph = "Process graph:"
+  cat(job_id,title,description,graph,sep = "\n")
+  print(x$process_graph)
 }

@@ -157,22 +157,25 @@ OpenEOClient <- R6Class(
       )
     },
     login=function(user=NULL, password=NULL) {
-      if (private$login_type %>% is.null()) {
-        stop("Cannot login. Please connect to an OpenEO back-end first.")
-      }
-      private$stopIfNotConnected()
-      
-      if (private$login_type == "oidc") {
-        private$loginOIDC()
-      } else if (private$login_type == "basic") {
-        private$loginBasic(user=user, password = password)
-      } else {
-        if (self$disableAuth) {
-          return(self)
-        } else {
-          stop("Unsupported login mechanism")
+      tryCatch({
+        if (private$login_type %>% is.null()) {
+          stop("Cannot login. Please connect to an OpenEO back-end first.")
         }
-      }
+        private$stopIfNotConnected()
+        
+        if (private$login_type == "oidc") {
+          private$loginOIDC()
+        } else if (private$login_type == "basic") {
+          private$loginBasic(user=user, password = password)
+        } else {
+          if (self$disableAuth) {
+            return(self)
+          } else {
+            stop("Unsupported login mechanism")
+          }
+        }
+      },
+      error=.capturedErrorToMessage)
     },
     logout = function() {
       if (!is.null(private$oidc_client)){
@@ -438,9 +441,12 @@ OpenEOClient <- R6Class(
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
-        # info = private$modifyProductList(info)
         class(info) = "CollectionInfo"
-        class(info$`eo:bands`) = "BandList"
+        
+        if (!is.null(info$`eo:bands`)) {
+          class(info$`eo:bands`) = "BandList"
+        }
+        
         return(info)
       },
       error = .capturedErrorToMessage)
@@ -455,6 +461,7 @@ OpenEOClient <- R6Class(
         info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
         
         class(info) = "JobInfo"
+        class(info$process_graph) = "process"
         
         return(info)
       },error=.capturedErrorToMessage)
@@ -472,6 +479,8 @@ OpenEOClient <- R6Class(
           endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
+          class(graph) = "ProcessGraphInfo"
+          class(graph$process_graph) = "process"
           return(graph)
         },
         error=.capturedErrorToMessage
@@ -556,7 +565,7 @@ OpenEOClient <- R6Class(
         
         if (!is.null(task)) {
           if (is.list(task)) {
-            job = list(process_graph=task,output = output)
+            job = list(process_graph=toJSON(task,force=TRUE),output = output)
           } else {
             stop("Parameter task is not a task object. Awaiting a list.")
           }
@@ -943,7 +952,7 @@ OpenEOClient <- R6Class(
         output = append(output, list(format=format))
         if (!is.null(task)) {
           if (is.list(task)) {
-            job = list(process_graph=task,output = output)
+            job = toJSON(list(process_graph=task,output = output),force=TRUE,auto_unbox = TRUE)
           } else {
             stop("Parameter task is not a task object. Awaiting a list.")
           }
@@ -1199,6 +1208,10 @@ OpenEOClient <- R6Class(
         stop("Query parameters are no list of key-value-pairs")
       }
       
+      if (is.character(data)) {
+        data = fromJSON(data,simplifyDataFrame = FALSE)
+      }
+      
       if (is.list(data)) {
         
         header = list()
@@ -1283,47 +1296,6 @@ OpenEOClient <- R6Class(
         private$errorHandling(response,url)
       }
     },
-    modifyProductList = function(product) {
-      if (is.list(product) && any(c("collection_id","product_id","data_id") %in% names(product))) {
-        if ("spatial_extent" %in% names(product)) {
-          e = product$spatial_extent
-  
-          ext = sp::bbox(matrix(nrow=2,ncol=2,c(e$left,e$right,e$bottom,e$top)))
-          product$spatial_extent = ext
-          
-          if ("crs" %in% names(e)) {
-
-            if (grepl("EPSG",toupper(e$crs))) {
-              product$crs = sp::CRS(paste("+init=",e$crs,sep="")) # epsg code
-            } else if (startsWith(e$crs,"+")) {
-              product$crs = sp::CRS(e$crs) # proj4string (potentially)
-            } else {
-              product$crs = e$crs
-              warning("Cannot interprete SRS statement (no EPSG code or PROJ4 string).")
-            }
-            
-            
-           
-          }
-        }
-        
-        if ("temporal_extent" %in% names(product)) {
-          range = unlist(strsplit(product$temporal_extent, "/"))
-          
-          t_range = list(from = as_datetime(range[[1]]),
-                         to = as_datetime(range[[2]])
-                         )
-          
-          product$temporal_extent = t_range
-        }
-
-        return(product)
-
-      } else {
-        stop("Object that is modified is not the list result of product.")
-      }
-    },
-    
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
         endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% dplyr::select(backend_endpoint) %>% unname() %>% unlist()
