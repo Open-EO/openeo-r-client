@@ -18,9 +18,7 @@ ProcessGraphBuilder = R6Class(
   public=list(
     initialize = function(con) {
       processes = con %>% listProcesses()
-      ids = processes$name
       for (i in 1:length(processes)) {
-        # self$processes = append(self$processes,(con %>% describeProcess(id)))
         process = processes[[i]]
         id = process$name
         arguments =  sapply(names(process$parameters), function(arg){return(arg = NULL)})
@@ -82,7 +80,7 @@ ProcessGraphBuilder = R6Class(
       col = (con %>% listCollections())$collections
       
       self$collection = new.env()
-      
+    
       tmp = lapply(col, function(collection) {
         makeActiveBinding(collection$name,function() {collection(name=collection$name)},self$collection)
       })

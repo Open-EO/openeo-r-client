@@ -930,7 +930,7 @@ OpenEOClient <- R6Class(
     getProcessGraphBuilder = function() {
       tryCatch({
         if (is.null(private$graph_builder)) {
-          private$graph_builder = ProcessGraphBuilder$new(self)
+          private$graph_builder = ProcessGraphBuilder$new(con=self)
         }
         
         return(private$graph_builder)
