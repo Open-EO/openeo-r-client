@@ -99,11 +99,14 @@ print.CollectionInfo = function(x, ...) {
   spatial.extent = paste("(",x$extent$spatial[1],", ",x$extent$spatial[2],"), (",x$extent$spatial[3],", ", x$extent$spatial[4],")",sep="")
   extent = paste("Spatial extent (lon,lat):\t",spatial.extent,sep="")
   crs = paste("Data SRS (EPSG-code):\t\t",x$`eo:epsg`,sep="")
-  time = paste("Temporal extent:\t\t",paste(sapply(x$extent$temporal,function(obj) {format(as_datetime(obj),format="%Y-%m-%dT%H:%M:%SZ")}),collapse="/"),sep="")
+  time = paste("Temporal extent:\t\t",paste(sapply(x$extent$temporal,function(obj) {
+    if (is.null(obj) || is.na(obj) || length(obj) == 0) return(NA)
+    else return(format(as_datetime(obj),format="%Y-%m-%dT%H:%M:%SZ"))
+  }),collapse="/"),sep="")
   
-  cat(paste(id,title,description,source,
+  cat(c(id,title,description,source,
             platform,constellation,instrument,
-            extent,crs,time,sep="\n"))
+            extent,crs,time),sep="\n")
   
   if (!is.null(x$`eo:bands`)) {
     cat("Bands:\n")
