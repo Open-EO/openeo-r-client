@@ -160,10 +160,10 @@ print.ServiceInfo = function(x,...) {
   
   submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
   
-  if (is.na(x$title))x$title = "---"
+  if (is.na(x$title) || is.na(x$title))x$title = "---"
   title = paste("Title:\t\t",x$title,"\n",sep="")
   
-  if (is.na(x$description))x$description = "---"
+  if (is.null(x$description) || is.na(x$description))x$description = "---"
   description = paste("Description:\t",x$description,"\n",sep="")
   
   if (is.na(x$url)) x$url = "---"
