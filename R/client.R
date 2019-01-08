@@ -7,6 +7,7 @@
 #' @import magrittr
 #' @import jsonlite
 #' @importFrom lubridate as_datetime
+#' @import dplyr 
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
