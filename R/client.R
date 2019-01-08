@@ -246,42 +246,39 @@ OpenEOClient <- R6Class(
                        )
         # desription left out on purpose... it might be to much to visualize
         
-        if (length(listOfJobs < 1)) {
-          message("No Jobs created")
-          invisible(NULL)
-        }
-        
-        for (index in 1:length(listOfJobs)) {
-          job = listOfJobs[[index]]
-          
-          suppressWarnings({
-            job_id = NA
-            if (!is.null(job$job_id)) job_id = job$job_id
-            title = NA
-            if (!is.null(job$title)) title = job$title
-            status = NA
-            if (!is.null(job$status)) status = job$status
-            submitted = NA
-            if (!is.null(job$submitted)) submitted = as_datetime(job$submitted)
-            updated = NA
-            if (!is.null(job$updated)) updated = as_datetime(job$updated)
-            costs = NA
-            if (!is.null(job$costs)) costs = as.numeric(job$costs)
-            budget = NA
-            if (!is.null(job$budget)) budget = as.numeric(job$budget)
-            plan = NA
-            if (!is.null(job$plan)) plan = job$plan
+        if (length(listOfJobs) > 0) {
+          for (index in 1:length(listOfJobs)) {
+            job = listOfJobs[[index]]
             
-            table= add_row(table,
-                           job_id=job_id,
-                           title = title,
-                           status=status,
-                           submitted=submitted,
-                           updated=updated,
-                           costs=costs,
-                           budget=budget,
-                           plan=plan)
+            suppressWarnings({
+              job_id = NA
+              if (!is.null(job$job_id)) job_id = job$job_id
+              title = NA
+              if (!is.null(job$title)) title = job$title
+              status = NA
+              if (!is.null(job$status)) status = job$status
+              submitted = NA
+              if (!is.null(job$submitted)) submitted = as_datetime(job$submitted)
+              updated = NA
+              if (!is.null(job$updated)) updated = as_datetime(job$updated)
+              costs = NA
+              if (!is.null(job$costs)) costs = as.numeric(job$costs)
+              budget = NA
+              if (!is.null(job$budget)) budget = as.numeric(job$budget)
+              plan = NA
+              if (!is.null(job$plan)) plan = job$plan
+              
+              table= add_row(table,
+                             job_id=job_id,
+                             title = title,
+                             status=status,
+                             submitted=submitted,
+                             updated=updated,
+                             costs=costs,
+                             budget=budget,
+                             plan=plan)
             })
+          }
         }
         
         return(table)
@@ -1325,7 +1322,6 @@ OpenEOClient <- R6Class(
       
       if (response$status_code < 400) {
         if (response$status_code == 204) {
-          message("Object was successfully modified")
           return(TRUE)
         }
         
