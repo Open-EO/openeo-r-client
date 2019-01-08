@@ -246,6 +246,11 @@ OpenEOClient <- R6Class(
                        )
         # desription left out on purpose... it might be to much to visualize
         
+        if (length(listOfJobs < 1)) {
+          message("No Jobs created")
+          invisible(NULL)
+        }
+        
         for (index in 1:length(listOfJobs)) {
           job = listOfJobs[[index]]
           
@@ -296,18 +301,21 @@ OpenEOClient <- R6Class(
                        title=character(),
                        description=character())
         
-        for (index in 1:length(listOfGraphShortInfos)) {
-          graph_short = listOfGraphShortInfos[[index]]
-          id = graph_short$process_graph_id
-          title = NA
-          if (!is.null(graph_short$title)) title = graph_short$title
-          description = NA
-          if (!is.null(graph_short$description)) description = graph_short$description
-          
-          table= add_row(table,
-                         process_graph_id=id,
-                         title = title,
-                         description = description)
+        if (length(listOfGraphShortInfos) > 0) {
+        
+          for (index in 1:length(listOfGraphShortInfos)) {
+            graph_short = listOfGraphShortInfos[[index]]
+            id = graph_short$process_graph_id
+            title = NA
+            if (!is.null(graph_short$title)) title = graph_short$title
+            description = NA
+            if (!is.null(graph_short$description)) description = graph_short$description
+            
+            table= add_row(table,
+                           process_graph_id=id,
+                           title = title,
+                           description = description)
+          }
         }
         
         return(table)
@@ -334,51 +342,54 @@ OpenEOClient <- R6Class(
                        costs = numeric(0),
                        budget = numeric(0))
         
-        for (index in 1:length(listOfServices)) {
-          service = listOfServices[[index]]
-          
-          service_id = NA
-          if (!is.null(service$service_id)) service_id = service$service_id
-          
-          title = NA
-          if (!is.null(service$title)) title = service$title
-          
-          description = NA
-          if (!is.null(service$description)) description = service$description
-          
-          url = NA
-          if (!is.null(service$url)) url = service$url
-          
-          type = NA
-          if (!is.null(service$type)) type = service$type
-
-          enabled = NA
-          if (!is.null(service$enabled)) enabled = service$enabled
-          
-          submitted = NA
-          if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
-          
-          plan = NA
-          if (!is.null(service$plan)) plan = service$plan
-          
-          costs = NA
-          if (!is.null(service$costs)) costs = as.numeric(service$costs)
-          
-          budget = NA
-          if (!is.null(service$budget)) budget = as.numeric(service$budget)
-          
-          table= add_row(table, 
-                         service_id=service_id,
-                         title=title,
-                         description=description,
-                         url = url,
-                         type = type,
-                         enabled=enabled,
-                         submitted=submitted,
-                         plan = plan,
-                         costs = costs,
-                         budget=budget)
+        if (length(listOfServices) > 0) {
+          for (index in 1:length(listOfServices)) {
+            service = listOfServices[[index]]
+            
+            service_id = NA
+            if (!is.null(service$service_id)) service_id = service$service_id
+            
+            title = NA
+            if (!is.null(service$title)) title = service$title
+            
+            description = NA
+            if (!is.null(service$description)) description = service$description
+            
+            url = NA
+            if (!is.null(service$url)) url = service$url
+            
+            type = NA
+            if (!is.null(service$type)) type = service$type
+            
+            enabled = NA
+            if (!is.null(service$enabled)) enabled = service$enabled
+            
+            submitted = NA
+            if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
+            
+            plan = NA
+            if (!is.null(service$plan)) plan = service$plan
+            
+            costs = NA
+            if (!is.null(service$costs)) costs = as.numeric(service$costs)
+            
+            budget = NA
+            if (!is.null(service$budget)) budget = as.numeric(service$budget)
+            
+            table= add_row(table, 
+                           service_id=service_id,
+                           title=title,
+                           description=description,
+                           url = url,
+                           type = type,
+                           enabled=enabled,
+                           submitted=submitted,
+                           plan = plan,
+                           costs = costs,
+                           budget=budget)
+          }
         }
+        
         
         return(table)
       }), error = .capturedErrorToMessage)
