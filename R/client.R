@@ -20,9 +20,6 @@ OpenEOClient <- R6Class(
     
     api.version = "0.3.1",
     api.mapping = NULL,
-    
-    products = list(),
-    processes = list(),
 
     # functions ====
     initialize = function() {
@@ -175,6 +172,14 @@ OpenEOClient <- R6Class(
             stop("Unsupported login mechanism")
           }
         }
+        
+        processes = self$listProcesses()
+        pids = sapply(processes, function(x)x$name)
+        names(processes) = pids
+        private$processes = processes
+        
+        invisible(self)
+        
       },
       error=.capturedErrorToMessage)
     },
@@ -426,20 +431,15 @@ OpenEOClient <- R6Class(
     
     # describe functions ####
     describeProcess = function(pid) {
-      tryCatch({
-        stop("This is not provided anymore in API v0.3.0. Use listProcess to get a detailed overview over all processes")
-        
-        tag = "processes_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
-        
-        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
-        
-        # info is currently a list 
-        # make a class of it and define print
-        class(info) <- "ProcessInfo"
-        
-        return(info)
-      },error=.capturedErrorToMessage)
+      if (is.null(private$processes)) {
+        stop("No processes found or loaded from the back-end")
+      }
+      
+      if (! pid %in% names(private$processes)) {
+        stop(paste("Cannot describe process '",pid,"'. Process does not exist.",sep=""))
+      } else {
+        return(private$processes[[pid]])
+      }
     },
     
     describeProduct = function(pid) {
@@ -1082,6 +1082,7 @@ OpenEOClient <- R6Class(
     password = NULL,
     host = NULL,
     graph_builder=NULL,
+    processes = NULL,
     
     # functions ====
     isConnected = function() {
