@@ -17,7 +17,7 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     user_id = NULL,
     
-    api.version = "0.3.0",
+    api.version = "0.3.1",
     api.mapping = NULL,
     
     products = list(),
@@ -1137,6 +1137,10 @@ OpenEOClient <- R6Class(
                                         type = "basic")
         )
         
+        if (is.debugging()) {
+          print(res)
+        }
+        
         if (res$status_code == 200) {
           cont = content(res,type="application/json")
           
@@ -1167,6 +1171,9 @@ OpenEOClient <- R6Class(
         response = GET(url=url,query=query)
       }
 
+      if (is.debugging()) {
+        print(response)
+      }
 
       if (response$status_code %in% c(200)) {
         info = content(response, ...)
@@ -1185,6 +1192,10 @@ OpenEOClient <- R6Class(
       }
       
       response = DELETE(url=url, config = header, ...)
+      
+      if (is.debugging()) {
+        print(response)
+      }
       
       message = content(response)
       success = response$status_code %in% c(200,201,202,204)
@@ -1228,6 +1239,11 @@ OpenEOClient <- R6Class(
           body = data,
           encode = encodeType
         )
+        
+        if (is.debugging()) {
+          print(response)
+        }
+        
         success = response$status_code %in% c(200,201,202,204)
         if (success) {
           if (raw) {
@@ -1260,6 +1276,10 @@ OpenEOClient <- R6Class(
       }
       response = do.call("PUT", args = params)
       
+      if (is.debugging()) {
+        print(response)
+      }
+      
       success = response$status_code %in% c(200,202,204)
       if (success) {
         okMessage = content(response,"parsed","application/json")
@@ -1287,6 +1307,10 @@ OpenEOClient <- R6Class(
         params = append(params, list(encode = encodeType))
       }
       response = do.call("PATCH", args = params)
+      
+      if (is.debugging()) {
+        print(response)
+      }
       
       success = response$status_code %in% c(200,202,204)
       if (success) {
@@ -1375,6 +1399,3 @@ OpenEOClient <- R6Class(
   message(e)
   invisible(NULL)
 }
-
-
-
