@@ -38,7 +38,6 @@ Collate:
     'client.R'
     'coerce-functions.R'
     'debugging.R'
-    'errors.R'
     'map-functions.R'
     'markdown_viewer.R'
     'oidc-client.R'

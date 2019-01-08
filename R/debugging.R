@@ -22,7 +22,11 @@ print.response = function(x) {
   if (!is.null(headers["content-length",]) && unlist(headers["content-length",]) != "0") {
     cat("\nBody:",sep="\n")
     
-    if (!is.null(headers["content-type",]) && unlist(headers["content-type",]) == "application/json") {
+    if ("content-disposition" %in% rownames(headers)) {
+      cat(paste("File attachment:",unlist(strsplit(x = unlist(headers["content-disposition",]), split = "filename=")))[2],sep="\n")
+    }
+    
+    if ("content-type" %in% rownames(headers) && unlist(headers["content-type",]) == "application/json") {
       print(toJSON(content(x), auto_unbox = TRUE, pretty = TRUE))
     } else {
       print("Other formats not yet implemented.")

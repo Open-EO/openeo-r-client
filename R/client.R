@@ -867,7 +867,7 @@ OpenEOClient <- R6Class(
         
         return(dst)
       },error=.capturedErrorToMessage,
-      finally=function() {
+      finally= {
         close(file_connection,type="wb")
       })
     },
@@ -1170,12 +1170,12 @@ OpenEOClient <- R6Class(
       } else {
         response = GET(url=url,query=query)
       }
-
+  
       if (is.debugging()) {
         print(response)
       }
 
-      if (response$status_code %in% c(200)) {
+      if (response$status_code < 400) {
         info = content(response, ...)
         return(info)
 
@@ -1198,20 +1198,17 @@ OpenEOClient <- R6Class(
       }
       
       message = content(response)
-      success = response$status_code %in% c(200,201,202,204)
-      if (success) {
-        tmp = lapply(message, function(elem) {
-          message(elem)
-        })
-      } else {
-        if (!is.null(message) && is.list(message)) {
-          warning(message[["message"]])
-        } else {
-          warning(message)
+      
+      if (response$status_code < 400) {
+        if (response$status_code == 204) {
+          message("Object was successfully deleted.")
+          return(TRUE)
         }
+      } else {
+        private$errorHandling(response,url)
       }
       
-      return(success)
+      
     },
     POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
       url = paste(private$host,endpoint,sep="/")
@@ -1244,8 +1241,7 @@ OpenEOClient <- R6Class(
           print(response)
         }
         
-        success = response$status_code %in% c(200,201,202,204)
-        if (success) {
+        if (response$status_code < 400) {
           if (raw) {
             return(response)
           } else {
@@ -1280,8 +1276,12 @@ OpenEOClient <- R6Class(
         print(response)
       }
       
-      success = response$status_code %in% c(200,202,204)
-      if (success) {
+      if (response$status_code < 400) {
+        if (response$status_code == 204) {
+          return(TRUE)
+        }
+        
+        # TODO might be never reached
         okMessage = content(response,"parsed","application/json")
         return(okMessage)
       } else {
@@ -1312,8 +1312,12 @@ OpenEOClient <- R6Class(
         print(response)
       }
       
-      success = response$status_code %in% c(200,202,204)
-      if (success) {
+      if (response$status_code < 400) {
+        if (response$status_code == 204) {
+          message("Object was successfully modified")
+          return(TRUE)
+        }
+        
         okMessage = content(response,"parsed","application/json")
         return(okMessage)
       } else {
@@ -1363,24 +1367,21 @@ OpenEOClient <- R6Class(
     },
     stopIfNotConnected = function() {
       if (!private$isConnected()) {
-        stop(.notConnected())
+        stop("Not connected to a back-end. Please connect to one before proceeding")
       }
     },
     errorHandling = function(response,url) {
-      if (response$status_code %in% c(400,404)) {
-        stop(paste("REQUEST-ERROR: Cannot find or access endpoint ","'",url,"'.",sep=""))
-      } else if (response$status_code == 401) {
-        stop(.notLoggedInOrExpired())
-      } else if (response$status_code == 403) {
-        stop(.notAuthorized())
-      } else {
+      if (class(response) == "response") {
         errorMessage = content(response)
-        if (!is.null(errorMessage) && is.list(errorMessage)) {
-          stop(paste("SERVER-ERROR:",errorMessage[["message"]]))
+        if (!is.null(errorMessage[["message"]])) {
+          stop(errorMessage[["message"]])
         } else {
+          # if there is an uncaptured error from the server then just return it as is
           stop(paste("SERVER-ERROR:",errorMessage))
         }
-        
+      } else {
+        # never happens? it is something else than response object
+        stop(response)
       }
     }
   )
