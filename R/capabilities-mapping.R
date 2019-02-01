@@ -41,12 +41,13 @@ api.v0.0.2 = function() {
   return(api)
 }
 
-api.v0.3.0 = function() {
+api.v0.3.1 = function() {
   api = tibble(endpoint="/",operation="GET",tag="capabilities")
   
   api = api %>% 
     add_row(endpoint="/output_formats",operation="GET",tag="formats") %>% 
     add_row(endpoint="/service_types",operation="GET",tag="ogc_services") %>% 
+    add_row(endpoint="/udf_runtimes",operation="GET",tag="udf_runtimes") %>%
     add_row(endpoint="/collections",operation="GET",tag="data_overview") %>% 
     add_row(endpoint="/collections/{data_id}",operation="GET",tag="data_details") %>% 
     add_row(endpoint="/processes",operation="GET",tag="process_overview") %>% 
@@ -121,7 +122,7 @@ endpoints_compare = function(offering,e2,o2) {
 
 endpoint_mapping = function(con) {
   server_offering = con %>% listCapabilities()
-  api = api.v0.3.0()
+  api = api.v0.3.1()
   
   mapping = api %>% rowwise() %>% summarise(endpoint,operation,tag,available = tibble(endpoint,operation) %>% (function(row){
     evaluation = c()
