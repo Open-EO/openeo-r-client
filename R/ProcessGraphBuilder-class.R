@@ -18,11 +18,10 @@ ProcessGraphBuilder = R6Class(
   public=list(
     initialize = function(con) {
       processes = con %>% listProcesses()
-      ids = processes$process_id
-      for (id in ids) {
-        # self$processes = append(self$processes,(con %>% describeProcess(id)))
-        process = con %>% describeProcess(id)
-        arguments =  sapply(names(process$args), function(arg){return(arg = NULL)})
+      for (i in 1:length(processes)) {
+        process = processes[[i]]
+        id = process$name
+        arguments =  sapply(names(process$parameters), function(arg){return(arg = NULL)})
         
         f = openeo::process
         forms = formals(f)
@@ -30,6 +29,7 @@ ProcessGraphBuilder = R6Class(
         forms = append(forms,arguments)
         forms$process_id = id
         
+        # the paramter that contains the openeo data set -> change to interprete format
         if ("imagery" %in% names(arguments)) {
           forms$prior.name = "imagery"
         } else if ("collection" %in% names(arguments)) {
@@ -42,7 +42,7 @@ ProcessGraphBuilder = R6Class(
           arguments = list()
           if (!missing(process) && !is.null(process)) {
             if (is.list(process)) {
-              if (attr(process, "type") %in% c("process", "udf", 
+              if (class(process) %in% c("process", "udf", 
                                                "collection")) {
                 arguments[[prior.name]] = process
               }
@@ -67,14 +67,25 @@ ProcessGraphBuilder = R6Class(
           
           additionalParameter = call
           res$process_id = process_id
-          res$args = append(arguments, additionalParameter)
-          attr(res, "type") <- "process"
+          res = append(res, arguments)
+          res = append(res, additionalParameter)
+          class(res) <- "process"
           return(res)
         })
         body(f) <- body
         
         self[[id]] = f
       }
+      
+      col = (con %>% listCollections())$collections
+      
+      self$collection = new.env()
+    
+      tmp = lapply(col, function(collection) {
+        makeActiveBinding(collection$name,function() {collection(name=collection$name)},self$collection)
+      })
+
+      return(self)
     }
   )
 )

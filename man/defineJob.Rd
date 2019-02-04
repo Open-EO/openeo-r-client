@@ -4,7 +4,8 @@
 \alias{defineJob}
 \title{Creates a job on the back-end from a prepared task}
 \usage{
-defineJob(con, task = NULL, graph_id = NULL, format = NULL, ...)
+defineJob(con, task = NULL, graph_id = NULL, title = NULL,
+  description = NULL, plan = NULL, budget = NULL, format = NULL, ...)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}

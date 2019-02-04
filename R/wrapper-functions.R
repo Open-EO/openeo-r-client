@@ -18,7 +18,7 @@ NULL
 #' @export
 # dont't expose it later
 taskToJSON = function(task) {
-  return(toJSON(task,auto_unbox = T,pretty=T))
+  return(toJSON(task,auto_unbox = T,pretty=T,force=TRUE))
 }
 
 #' Get a process graph builder from the connection
@@ -55,9 +55,25 @@ api.version = function() {
 listCapabilities = function(con) {
   capabilities = con$capabilities()
   if (is.list(capabilities)) {
-    capabilities = unlist(capabilities)
+    version = capabilities$version
+    endpoints = capabilities$endpoints
+    billing = capabilities$billing
+    
+    # capabilities = unlist(capabilities)
+    
+    server_offering = tibble(path=character(),method=character())
+    for (i in 1:length(endpoints)) {
+      entry = endpoints[[i]]
+      path = entry$path
+      
+      for (j in 1:length(entry$method)) {
+        method = entry$method[[j]]
+        
+        server_offering = server_offering %>% add_row(path=path,method=method)
+      }
+    }
   }
-  return(data.frame(endpoints=capabilities,stringsAsFactors = FALSE))
+  return(server_offering)
 }
 
 #' Returns the output formats
@@ -71,10 +87,8 @@ listFormats = function(con) {
   if (api.version() == "0.0.1") {
     return(.not_implemented_yet())
   }
-  
-  formats = con$output_formats()
-  message(paste("Host uses '",formats$default,"' as default output format",sep=""))
-  return(formats$formats)
+
+  return(con$output_formats())
 }
 
 #' Returns the offered webservice types of the back-end
@@ -97,9 +111,10 @@ services = function(con) {
 #' @param password the password (optional)
 #' @param disable_auth flag to specify if the back-end supports authorization on its endpoints
 #' @param auth_type the general authentication method used on all endpoints. Either "bearer" or "basic".
+#' @param login_type either "basic" or "oidc". This refers to the login mechanism that shall be used
 #'
 #' @export
-connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer") {
+connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer",login_type = "basic") {
   con = OpenEOClient$new()
   
   con$disableAuth = disable_auth
@@ -111,10 +126,14 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
     con$general_auth_type = auth_type
   }
   
-  if (is.null(user) && is.null(password)) {
-    con = con$connect(url=host)
-  } else if (!is.null(user) && !is.null(password)) {
-    con = con$connect(url=host)$login(user=user,password=password)  
+  if (is.null(user) && is.null(password) && disable_auth) {
+    con = con$connect(url=host,login_type=login_type)
+  } else if (login_type == "basic") {
+    if (!is.null(user) && !is.null(password)) {
+      con = con$connect(url=host,login_type=login_type)$login(user=user,password=password)  
+    }
+  } else if (login_type == "oidc") {
+    con = con$connect(url=host,login_type=login_type)$login() 
   } else {
     message("Incomplete credentials. Either username or password is missing")
     return()
@@ -134,7 +153,7 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
 #' @param password the password
 #' @return a connected and authenticated back-end connection
 #' @export
-login = function(con, user, password) {
+login = function(con, user=NULL, password=NULL) {
   return(con$login(user = user, password = password))
 }
 
@@ -146,6 +165,17 @@ login = function(con, user, password) {
 #' @export
 openeo.auth = function (con, ...) {
   .not_implemented_yet()
+}
+
+#' Retrieves the current users account information
+#' 
+#' Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
+#' 
+#' @param con authenticated client object
+#' @return object of type user
+#' @export
+user.account = function(con) {
+  return(con$user_info())
 }
 
 # data endpoint ----
@@ -230,9 +260,7 @@ describeProcess = function(con,process_id=NA) {
 #' @return vector of process graph ids
 #' @export
 listGraphs = function(con) {
-  graphIds = con$listGraphs()
-  
-  return(unlist(graphIds))
+  return(con$listGraphs())
 }
 
 #' Fetches the representation of a stored graph
@@ -241,12 +269,11 @@ listGraphs = function(con) {
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param graph_id The id of a process graph on the back-end
-#' @param user_id (optional) the user id from which user to fetch the process graph
 #' 
 #' @return the process graph as list
 #' @export
-describeGraph = function(con, graph_id, user_id=NULL) {
-  return(con$describeGraph(graph_id, user_id))
+describeGraph = function(con, graph_id) {
+  return(con$describeGraph(graph_id))
 }
 
 #' Deletes a previously stored process graph
@@ -268,21 +295,37 @@ deleteGraph = function(con, graph_id) {
 #' 
 #' @param con connected and authorized openeo client object
 #' @param graph a process graph definition
+#' @param title the title of the process graph (optional)
+#' @param description the description of a process graph (optional)
 #' @export
-storeGraph = function(con, graph) {
-  return(con$storeGraph(graph))
+storeGraph = function(con, graph, title = NULL, description = NULL) {
+  return(con$storeGraph(graph,title = title, description = description))
 }
 
-#' Replaces the current graph with a given
+#' Modify the current graph with a given
 #' 
 #' Upload a process graph to the back-end under a given (existing) process graph.
 #' 
 #' @param con connected and authorized openeo client object
 #' @param graph_id process graph id
 #' @param graph a process graph definition created by chaining "process()", "collection()" or using a ProcessGraphBuilder
+#' @param title title of the process graph (optional)
+#' @param description description of the process graph (optional)
 #' @export
-replaceGraph = function(con, graph_id, graph) {
-  return(con$replaceGraph(graph_id=graph_id, graph=graph))
+modifyGraph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
+  return(con$modifyGraph(graph_id=graph_id, graph=graph,title=title,description=description))
+}
+
+#' Validates a process graph
+#' 
+#' Sends the process graph to the back-end and validates it against the offered processes by the backend.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param graph the process graph that will be sent to the back-end and is being validated
+#' 
+#' @export
+validateProcessGraph = function(con, graph) {
+  return(con$validateProcessGraph(graph))
 }
 
 #
@@ -308,21 +351,72 @@ listServices = function(con) {
 #' additional parameter.
 #' 
 #' @param con connected and authenticated openeo clien object
-#' @param job_id the job id to create the service from
-#' @param service_type one of the supported services (see services())
-#' @param ... additional parameter which are send as 'service_args'
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-defineService = function(con, job_id, service_type, ...) {
-  return(con$createService(job_id = job_id, service_type = service_type, ...))
+defineService = function(con, 
+                         type, 
+                         process_graph,
+                         title = NULL,
+                         description = NULL,
+                         enabled = NULL,
+                         parameters = NULL,
+                         plan = NULL,
+                         budget = NULL) {
+  return(con$createService(type = type, 
+                           process_graph = process_graph,
+                           title=title,
+                           description = description,
+                           enabled = enabled,
+                           parameters = parameters,
+                           plan = plan,
+                           budget = budget))
 }
 
 #' Modifies a service
 #' 
+#' The function updates a service with the given information. If a parameter is NULL then it will
+#' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
+#' will be deleted and also set to NULL.
+#' 
 #' @param con connected and authorized openeo client object
 #' @param service_id the service id
-modifyService = function(con, service_id, ...) {
-  .not_implemented_yet()
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
+#' @return service representation as list
+#' 
+#' @export
+modifyService = function(con, service_id, 
+                         type=NULL, 
+                         process_graph=NULL,
+                         title = NULL,
+                         description = NULL,
+                         enabled = NULL,
+                         parameters = NULL,
+                         plan = NULL,
+                         budget = NULL) {
+  con$modifyService(service_id = service_id,
+                    type=type,
+                    process_graph=process_graph,
+                    title=title,
+                    description=description,
+                    enabled=enabled,
+                    parameters=parameters,
+                    plan=plan,
+                    budget = budget)
 }
 
 #' Describes a service
@@ -343,6 +437,7 @@ describeService = function(con, service_id) {
 #' 
 #' @param con connected and authorized openeo client object
 #' @param service_id the service id
+#' @export
 deleteService = function(con, service_id) {
   return(con$deleteService(service_id))
 }
@@ -422,16 +517,6 @@ deleteUserData = function(con, src) {
   con$deleteUserFile(src = src)
 }
 
-#' Returns the users available credits
-#' 
-#' Queries the server and returns the available credits of the current user.
-#' @param con connected and authenticated openeo client object
-#' @return the credits
-#' @export
-credits = function(con) {
-  return(con$getUserCredits())
-}
-
 #
 # jobs endpoint ----
 #
@@ -458,7 +543,7 @@ listJobs = function(con) {
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-executeTask = function(con,task,format=NULL,output_file=NULL, ...) {
+preview = function(con,task,format=NULL,output_file=NULL, ...) {
   con$execute(task=task,
               format=format,
               output_file=output_file, 
@@ -481,44 +566,28 @@ executeTask = function(con,task,format=NULL,output_file=NULL, ...) {
 #' 
 #' @return the id of the job
 #' @export
-defineJob = function(con,task=NULL, graph_id=NULL , format=NULL, ...) {
-  return(con$storeJob(task=task,graph_id = graph_id, format = format, ...))
+defineJob = function(con,task=NULL, graph_id=NULL , 
+                     title = NULL, description = NULL,
+                     plan = NULL, budget = NULL,
+                     format=NULL, ...) {
+  return(con$storeJob(task=task,graph_id = graph_id,
+                      title = title, description = description,
+                      plan = plan, budget = budget,
+                      format = format, ...))
 }
 
-#' Queues a job on the back-end for evaluation
+#' Starts remote asynchronous evaluation of a job
 #' 
-#' The function will queue a job for evaluation that has been created before by 'createJob'. There will be
-#' a notification for success or failure, but no return value.
-#' 
-#' @param con connected and authenticated openeo client
-#' @param job_id the job id of a created job
-#' 
-#' @export
-queueJob = function(con, job_id) {
-  return(con$queue(job_id))
-}
-
-#' Defines a job and starts the evaluation
-#' 
-#' Function to execute two operations in one call. First define a job on the server, then call
-#' the endpoint to execute it immediately on the back-end.
+#' The function sends a start signal to the backend in order to start processing the results
+#' for a defined job.
 #' 
 #' @param con connected and authenticated openeo client
-#' @param task A Process or chained processes to a Task
-#' @param graph_id The id of an already stored process graph on the same back-end
-#' @param format The inteded format of the data to be returned
-#' @param ... additional configuration parameter for output generation
+#' @param job_id the id of the defined job
 #' 
 #' @return the job_id of the defined job
 #' @export 
-orderResult = function(con, task=NULL, graph_id=NULL, format, ...) {
-  job_id = con$storeJob(task=task,
-                        graph_id = graph_id,
-                        format = format,
-                        ...)
-  processing = con$queue(job_id)
-  
-  return(job_id)
+orderResults = function(con, job_id) {
+  con$orderResults(job_id)
 }
 
 #' Modifies a job with given parameter
@@ -540,8 +609,16 @@ orderResult = function(con, task=NULL, graph_id=NULL, format, ...) {
 #' @param job_id the job id of a created job
 #' @param ... The parameter you want to change. See Details for more information
 #' @export
-modifyJob = function(con, job_id, ...) {
-  temp = con$modifyJob(job_id = job_id,...)
+modifyJob = function(con, job_id,
+                     title=NULL, description=NULL,
+                     process_graph = NULL, 
+                     plan = NULL, budget= NULL,
+                     format=NULL, ...) {
+  temp = con$modifyJob(job_id = job_id,
+                       title=title, description=description,
+                       process_graph = process_graph, 
+                       plan = plan, budget= budget,
+                       format=format, ...)
   invisible(temp)
 } 
 
@@ -559,28 +636,15 @@ followJob = function(con, job_id) {
 
 #' Creates a list of download paths
 #' 
-#' The function queries the back-end to receive the URLs to the downloadable files of a particular batch job.
+#' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
 #' @param con connected and authenticated openeo client object
 #' @param job_id the id of the job
-#' @param format optional format of the output result, in case it shall differ from the one stated in the job
 #' 
-#' @return vector of URLs
+#' @return result object containing of URLs for download
 #' @export
-downloadJob = function(con, job_id, format=NULL) {
-  return(con$results(job_id=job_id,format=format))
-}
-
-#' Pauses a running batch job
-#'
-#' Sends a request to the server in order to pause a running batch job.
-#'
-#' @param con authenticated Connection
-#' @param job_id id of job that will be canceled
-#' @return a success / failure notification
-#' @export
-pauseJob = function(con, job_id) {
-  return(con$pause(job_id))
+listResults = function(con, job_id) {
+  return(con$listResults(job_id=job_id))
 }
 
 
@@ -603,10 +667,38 @@ cancelJob = function(con, job_id) {
 #'
 #' @param con authenticated Connection
 #' @param job_id id of the job
-#' @return a detailed description about the job as tibble
+#' @return a detailed description about the job
 #' @export
 describeJob = function(con,job_id) {
   return(con$describeJob(job_id))
+}
+
+
+#' Delete a job
+#'
+#' Deletes a job from the backend.
+#'
+#' @param con authenticated Connection
+#' @param job_id id of the job
+#' @return logical with state of success
+#' @export
+deleteJob = function(con,job_id) {
+  return(con$deleteJob(job_id))
+}
+
+
+#' Estimates job costs
+#'
+#' Calls the back-end and asks for an approximation about the costs in money and how much time
+#' will be required to finish the job and whether or not the job owners data download is already
+#' included in the monetary costs.
+#'
+#' @param con authenticated Connection
+#' @param job_id id of the job
+#' @return JobCostsEstimation containing information how much money and time will be spent
+#' @export
+estimateCosts = function(con,job_id) {
+  return(con$estimateCosts(job_id))
 }
 
 #
@@ -655,7 +747,7 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
 
-      if (attr(process,"type") %in% c("collection","process","udf")) {
+      if (class(process) %in% c("collection","process","udf")) {
         arguments[[prior.name]] = process
       } else {
         stop("Chain corrupted. Prior element is neither process, udf nor collection")
@@ -665,7 +757,7 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
 
   res$args = append(arguments,additionalArgs)
   
-  attr(res,"type") <- "udf"
+  class(res) = "udf"
 
   return(res)
 }

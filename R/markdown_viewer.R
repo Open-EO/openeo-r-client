@@ -16,6 +16,7 @@ htmlViewer = function(html) {
 #' @param mdtext markdown text
 #' @param isgithub logical parameter to state whether Github markdown was used or not. Default: FALSE
 #' 
+#' @importFrom commonmark markdown_html
 #' @export
 markdownViewer = function(mdtext,isgithub=FALSE) {
   htmlViewer(markdown_html(mdtext,extensions=isgithub))
