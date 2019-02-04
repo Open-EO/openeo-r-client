@@ -1,11 +1,21 @@
 pkgEnvironment = new.env()
 assign(x="DEBUG_MODE",value=FALSE,envir=pkgEnvironment)
 
+#' Triggers debugging mode
+#' 
+#' The debugging mode is created to investigate the communication between server and client. The modus can be
+#' turned on or off, depending on the selected status (TRUE, FALSE). It is stored as a dynamical variable in the
+#' package and other package functions can access it naturally.
+#' 
+#' @param status logical Turn on debugging on = TRUE, off = FALSE, default TRUE
+#' 
+#' @rdname debugging
 #' @export
 debug = function(status=TRUE) {
   assign(x = "DEBUG_MODE",value = status,envir = pkgEnvironment)
 }
 
+#' @rdname debugging
 #' @export
 is.debugging = function() {return(get(x="DEBUG_MODE",envir = pkgEnvironment))}
 
