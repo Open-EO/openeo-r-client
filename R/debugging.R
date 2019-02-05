@@ -4,15 +4,19 @@ assign(x="DEBUG_MODE",value=FALSE,envir=pkgEnvironment)
 #' Triggers debugging mode
 #' 
 #' The debugging mode is created to investigate the communication between server and client. The modus can be
-#' turned on or off, depending on the selected status (TRUE, FALSE). It is stored as a dynamical variable in the
-#' package and other package functions can access it naturally.
-#' 
-#' @param status logical Turn on debugging on = TRUE, off = FALSE, default TRUE
+#' turned on or off, depending on the selected function (debug, debug.off). It is stored as an package internal environment 
+#' and other package functions can access it naturally. By using the environment object, entries can be changed.
 #' 
 #' @rdname debugging
 #' @export
 debug = function(status=TRUE) {
-  assign(x = "DEBUG_MODE",value = status,envir = pkgEnvironment)
+  assign(x = "DEBUG_MODE",value = TRUE,envir = pkgEnvironment)
+}
+
+#' @rdname debugging
+#' @export
+debug.off = function () {
+  assign(x = "DEBUG_MODE",value = FALSE,envir = pkgEnvironment)
 }
 
 #' @rdname debugging

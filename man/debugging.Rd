@@ -2,18 +2,18 @@
 % Please edit documentation in R/debugging.R
 \name{debug}
 \alias{debug}
+\alias{debug.off}
 \alias{is.debugging}
 \title{Triggers debugging mode}
 \usage{
 debug(status = TRUE)
 
+debug.off()
+
 is.debugging()
-}
-\arguments{
-\item{status}{logical Turn on debugging on = TRUE, off = FALSE, default TRUE}
 }
 \description{
 The debugging mode is created to investigate the communication between server and client. The modus can be
-turned on or off, depending on the selected status (TRUE, FALSE). It is stored as a dynamical variable in the
-package and other package functions can access it naturally.
+turned on or off, depending on the selected function (debug, debug.off). It is stored as an package internal environment 
+and other package functions can access it naturally. By using the environment object, entries can be changed.
 }
