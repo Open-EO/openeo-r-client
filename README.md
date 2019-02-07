@@ -53,6 +53,14 @@ urls = sapply(result_obj$link,function(link)link$href)
 
 # download the urls as you like
 ```
+To get an overview which functions the packages offers and to access the function documentation you can either navigate in RStudio into the "Packages" tab and select the "openeo" package and click on the function you are interested in. Or you can use the following command line operations:
+
+```R
+library(help="openeo")
+
+# ?<function_name>, e.g.
+?connect
+```
 
 ## Additional Examples
 If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under [examples](https://github.com/Open-EO/openeo-r-client/tree/master/examples) to get a feeling, how to use the package.
