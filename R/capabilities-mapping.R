@@ -176,3 +176,17 @@ replace_endpoint_parameter = function(endpoint, ...) {
   }
   
 }
+
+#' Tag support lookup
+#' 
+#' Looks up the client tag for a particular endpoint on the back-end and returns whether it is available
+#' or not.
+#' 
+#' @param con backend connection
+#' @param tag the endpoints "tag" name as character
+#' @return logical - whether the back-end supports the endpoint or not
+#' 
+#' @export
+supports = function(con, tag_name) {
+  return(con$api.mapping %>% filter(tag == tag_name) %>% select(available) %>% unlist %>% unname)
+}

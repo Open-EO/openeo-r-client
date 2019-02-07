@@ -84,6 +84,16 @@ ProcessGraphBuilder = R6Class(
       tmp = lapply(col, function(collection) {
         makeActiveBinding(collection$name,function() {collection(name=collection$name)},self$collection)
       })
+      
+      if (con %>% supports(tag="udf_runtimes")) {
+        self$udf_runtime = new.env()
+        runtimes = con %>% udfRuntimes()
+        
+        for(udfruntime in names(runtimes)) {
+          makeActiveBinding(udfruntime, function() {udfruntime},self$udf_runtime)
+        }
+        
+      }
 
       return(self)
     }
