@@ -46,6 +46,18 @@ OpenEOClient <- R6Class(
             
             self$api.mapping = endpoint_mapping(self)
             cat("Connected to host\n")
+            
+            tryCatch({
+              if (is.null(private$processes)) {
+                processes = self$listProcesses()
+                pids = sapply(processes, function(x)x$name)
+                names(processes) = pids
+                private$processes = processes
+              }
+              
+            }, error = function(e){
+              private$processes = NULL
+            })
             return(invisible(self))
         } else {
           stop("Host-URL is missing")
@@ -173,10 +185,17 @@ OpenEOClient <- R6Class(
           }
         }
         
-        processes = self$listProcesses()
-        pids = sapply(processes, function(x)x$name)
-        names(processes) = pids
-        private$processes = processes
+        tryCatch({
+          if (is.null(private$processes)) {
+            processes = self$listProcesses()
+            pids = sapply(processes, function(x)x$name)
+            names(processes) = pids
+            private$processes = processes
+          }
+        }, error = function(e){
+          private$processes = NULL
+        })
+        
         
         invisible(self)
         
