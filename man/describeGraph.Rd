@@ -4,14 +4,12 @@
 \alias{describeGraph}
 \title{Fetches the representation of a stored graph}
 \usage{
-describeGraph(con, graph_id, user_id = NULL)
+describeGraph(con, graph_id)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client object}
 
 \item{graph_id}{The id of a process graph on the back-end}
-
-\item{user_id}{(optional) the user id from which user to fetch the process graph}
 }
 \value{
 the process graph as list

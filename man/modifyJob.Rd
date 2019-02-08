@@ -4,7 +4,8 @@
 \alias{modifyJob}
 \title{Modifies a job with given parameter}
 \usage{
-modifyJob(con, job_id, ...)
+modifyJob(con, job_id, title = NULL, description = NULL,
+  process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}

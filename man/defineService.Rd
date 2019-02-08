@@ -4,16 +4,27 @@
 \alias{defineService}
 \title{Prepares and publishes a service on the back-end}
 \usage{
-defineService(con, job_id, service_type, ...)
+defineService(con, type, process_graph, title = NULL, description = NULL,
+  enabled = NULL, parameters = NULL, plan = NULL, budget = NULL)
 }
 \arguments{
 \item{con}{connected and authenticated openeo clien object}
 
-\item{job_id}{the job id to create the service from}
+\item{type}{character the ogc web service type name to be created}
 
-\item{service_type}{one of the supported services (see services())}
+\item{process_graph}{list of processes composed as a process graph}
 
-\item{...}{additional parameter which are send as 'service_args'}
+\item{title}{character (optional) the title in human readabled form for the service}
+
+\item{description}{character (optional) the description for the service}
+
+\item{enabled}{logical}
+
+\item{parameters}{a list of service creation parameters}
+
+\item{plan}{character the billing plan}
+
+\item{budget}{numeric the amount of credits that can be spent for this service}
 }
 \value{
 service representation as list

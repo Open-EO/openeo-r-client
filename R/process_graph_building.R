@@ -8,41 +8,36 @@
 #' @export
 process = function(process=NULL, process_id, prior.name="imagery", ...) {
   # type check "process" either collection or process
-  res = list()
-  arguments = list()
+  process_body = list()
   if (!missing(process) && !is.null(process)) {
     if (is.list(process)) {
       
 
-      if (attr(process,"type") %in% c("process","udf","collection")){
-        arguments[[prior.name]] = process
+      if (class(process) %in% c("process","udf","collection")){
+        process_body[[prior.name]] = process
       } else {
-        stop("Chain corrupted. Prior element is neither a process or a collection")
+        stop("Chain corrupted. Prior element is neither a process nor a collection")
       }
     }
   }
-  additionalParameter = list(...)
   
-  res$process_id=process_id
-  res$args = append(arguments,additionalParameter)
-  attr(res,"type") <- "process"
+  process_body$process_id=process_id
+  process_body = append(process_body,list(...))
+  class(process_body) = "process"
   
-  return(res)
+  return(process_body)
   
 }
 
 
 #' A collection object
 #'
-#' creates a list representation of a collection object
-#' @param product_id the id of the product
-#' @param id_name the name of the identifier for this collection, default "product_id"
-#' @return a list represenation for a collection / product
+#' Creates the get_collection process to load data into the process graph.
+#' 
+#' @param name the id of the product
+#' @param ... additional parameters that are passed on to get_collection process
+#' @return a list represenation for the get_data process
 #' @export
-collection = function(product_id,id_name = "product_id") {
-  result = list(product_id)
-  names(result) = id_name
-  
-  attr(result, "type") <- "collection"
-  return(result)
+collection = function(name, ...) {
+  return(process(process_id = "get_collection", name=name, ...))
 }

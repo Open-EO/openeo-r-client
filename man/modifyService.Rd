@@ -4,13 +4,36 @@
 \alias{modifyService}
 \title{Modifies a service}
 \usage{
-modifyService(con, service_id, ...)
+modifyService(con, service_id, type = NULL, process_graph = NULL,
+  title = NULL, description = NULL, enabled = NULL, parameters = NULL,
+  plan = NULL, budget = NULL)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object}
 
 \item{service_id}{the service id}
+
+\item{type}{character the ogc web service type name to be created}
+
+\item{process_graph}{list of processes composed as a process graph}
+
+\item{title}{character (optional) the title in human readabled form for the service}
+
+\item{description}{character (optional) the description for the service}
+
+\item{enabled}{logical}
+
+\item{parameters}{a list of service creation parameters}
+
+\item{plan}{character the billing plan}
+
+\item{budget}{numeric the amount of credits that can be spent for this service}
+}
+\value{
+service representation as list
 }
 \description{
-Modifies a service
+The function updates a service with the given information. If a parameter is NULL then it will
+not be overwritten at the backend. If the parameter is set to NA then the value on the backend
+will be deleted and also set to NULL.
 }

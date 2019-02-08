@@ -26,31 +26,41 @@ After we defined the process graph, we send it as a task to the backend where it
 
 ```
 library(openeo)
-conn = connect(host="http://openeo.backend1.org/api/v0",user="test",password="test")
+conn = connect(host="http://backend1.openeo.org/",user="test",password="test")
 
 # list collection and processes
 conn %>% listCollections()
 conn %>% listProcesses()
 
 # get detailed descriptions
-conn %>% describeProduct(c("sentinel2","landsat7"))
-conn %>% describeProcess("filter_daterange")
+conn %>% describeCollection(c("sentinel2_subset","landsat7_ndvi"))
+conn %>% describeProcess("filter_bbox")
 
+describeCollection
 # create a process graph / task
-task = collection("sentinel2") 
-          %>% process("filter_daterange",from = "2017-07-21",to = "2017-07-28") 
-          %>% process("filter_bbox", left=7.5, right= 8.5, bottom=51.0, top=52.0, crs="EPSG:4326") 
-          %>% defineUDF(con = conn,
-                  language = "R",
-                  type = "apply_scene",
-                  content = file.path("C:/files/atmo_corr.R"),
-                  target = "udfs/atmospherical_correction.R")
-                                
-job_id = conn %>% defineJob(task)
-conn %>% downloadJob(job_id)
-```
+pgb = con %>% pgb()
 
-Notes: if you are running the openeo-r-backend as backend solution for testing, then please use the optional parameter `rbackend=TRUE`, when calling `connect`. The current openeo-r-backend differs from the strict openeo API in terms of some trailing slashes "/". This is adressed when setting `rbackend=TRUE`. Alternatively set `conn$is_rserver = TRUE` after `connect`.
+task = pgb$collection$sentinel2 %>%
+          pgb$filter_daterange(extent = c("2017-07-21","2017-07-28")) %>%
+          pgb$filter_bbox(extent = list(west=7.5, east= 8.5, south=51.0, north=52.0, crs="EPSG:4326")) %>%
+          pgb$NDVI(nir="B8",red = "B4") %>%
+          pgb$min_time()
+                                
+job_id = conn %>% defineJob(task=task, title="Example graph", description="This graph is just a general example",format="GTiff")
+
+result_obj = conn %>% listResults(job_id)
+urls = sapply(result_obj$link,function(link)link$href)
+
+# download the urls as you like
+```
+To get an overview which functions the packages offers and to access the function documentation you can either navigate in RStudio into the "Packages" tab and select the "openeo" package and click on the function you are interested in. Or you can use the following command line operations:
+
+```R
+library(help="openeo")
+
+# ?<function_name>, e.g.
+?connect
+```
 
 ## Additional Examples
 If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under [examples](https://github.com/Open-EO/openeo-r-client/tree/master/examples) to get a feeling, how to use the package.

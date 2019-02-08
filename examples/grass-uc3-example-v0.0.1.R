@@ -1,3 +1,8 @@
+#
+# IMPORTANT NOTE:
+# the code is only viable for R-client version 0.1.0
+#
+
 library(devtools)
 install_github(repo = "Open-EO/openeo-r-client", ref = "0.1.0")
 

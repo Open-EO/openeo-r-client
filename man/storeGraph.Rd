@@ -4,12 +4,16 @@
 \alias{storeGraph}
 \title{Stores a graph on the back-end}
 \usage{
-storeGraph(con, graph)
+storeGraph(con, graph, title = NULL, description = NULL)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object}
 
 \item{graph}{a process graph definition}
+
+\item{title}{the title of the process graph (optional)}
+
+\item{description}{the description of a process graph (optional)}
 }
 \description{
 Uploads the process graph information to the back-end and stores it for reuse.

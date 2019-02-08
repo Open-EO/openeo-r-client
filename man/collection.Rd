@@ -4,16 +4,16 @@
 \alias{collection}
 \title{A collection object}
 \usage{
-collection(product_id, id_name = "product_id")
+collection(name, ...)
 }
 \arguments{
-\item{product_id}{the id of the product}
+\item{name}{the id of the product}
 
-\item{id_name}{the name of the identifier for this collection, default "product_id"}
+\item{...}{additional parameters that are passed on to get_collection process}
 }
 \value{
-a list represenation for a collection / product
+a list represenation for the get_data process
 }
 \description{
-creates a list representation of a collection object
+Creates the get_collection process to load data into the process graph.
 }
