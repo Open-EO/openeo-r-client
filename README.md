@@ -18,6 +18,17 @@ library(openeo)
 
 If you want use a different version, then use for the parameter `ref` either "master", "develop" or another version specified under [releases](https://github.com/Open-EO/openeo-r-client/releases).
 
+Since the openEO project is under heavy development regarding the openeo API that connects clients and backends, all R client versions < 1.0.0 versions will only be compatible with a certain API version.
+
+| openeo R client version | openeo API version |
+| --- | --- |
+| v0.0.1 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| 0.1.0 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.3.1 (not yet released) | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
+
+
 ## Getting Started
 After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.
 An important part of the openEO infrastructure is the creation of process graphs that are executed on the openEO backends. Process graphs are created in a bottom up principal using the `magrittr` pipes `%>%`. Starting with the data (`collection`) we use multiple processes that are provided by this backend to form a process chain. You can use this technique if you are already familiar with the choosen backend. As an alternative you can use the Process Graph Builder `pgb()` [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building).
