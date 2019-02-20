@@ -116,6 +116,7 @@ Graph = R6Class(
     serialize = function() {
       # iterate over all nodes and serialize their process (not the node it self, since this serializes it as argument)
       # before clean the nodes, remove those that are not connected
+      self$clean()
       
       result = lapply(private$nodes, function(node) {
         return(node$getProcess()$serialize())
@@ -123,6 +124,16 @@ Graph = R6Class(
       names(result) = names(private$nodes)
       
       return(list(process_graph=result))
+    },
+    
+    validate = function() {
+      self$clean()
+      
+      # for each process node call their processes parameters validate function
+      return(unlist(lapply(private$nodes, function(node) {
+        node$getProcess()$validate(node_id=node$getNodeId())
+      })))
+      
     },
     
     getNode = function (node_id) {
@@ -227,6 +238,11 @@ Process = R6Class(
                                 function(arg)arg$serialize())
         )
       )
+    },
+    validate = function(node_id=NULL) {
+      return(unlist(lapply(private$parameters,function(arg, node_id){
+        arg$validate(node_id = node_id)
+      },node_id = node_id)))
     }
   ),
   private=list(
@@ -345,11 +361,47 @@ Argument = R6Class(
       private$value
     },
     serialize = function() {
-      # implemented by children
+      # implemented / overwrit by children
+    },
+    validate = function(node_id=NULL) {
+      tryCatch(
+        {
+          private$checkRequiredNotSet()
+          
+          if (!self$isRequired() && 
+              !is.environment(private$value) && 
+              (is.null(private$value) || 
+               is.na(private$value) || 
+               length(private$value) == 0)) invisible()
+          
+          private$typeCheck()
+          
+          invisible()
+        }, error = function(e) {
+          if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
+          
+          message = paste0(node_id,"Parameter '",private$name,"': ",e$message)
+          
+          return(message)
+        }
+      )
     }
   ),
   private = list(
-    value=character()
+    value=NULL,
+    
+    checkRequiredNotSet = function() {
+      if (private$required && 
+          !is.environment(private$value) &&
+          (is.null(private$value) || 
+           is.na(private$value) ||
+           length(private$value) == 0)) stop("Argument is required, but has not been set.")
+    },
+    
+    typeCheck = function() {
+      # implemented / overwritten by children
+    }
+    
   )
 )
 
@@ -367,7 +419,21 @@ Integer = R6Class(
       return(as.integer(private$value))
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      if (!is.integer(private$value)) {
+        suppressWarnings({
+          coerced = as.integer(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
 )
 # Number ====
 Number = R6Class(
@@ -383,7 +449,21 @@ Number = R6Class(
       return(as.numeric(private$value))
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      if (!is.numeric(private$value)) {
+        suppressWarnings({
+          coerced = as.numeric(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a number."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
 )
 
 # String ====
@@ -400,7 +480,21 @@ String = R6Class(
       return(as.character(private$value))
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
 )
 
 # Boolean ====
@@ -417,7 +511,21 @@ Boolean = R6Class(
       return(as.logical(private$value))
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      if (!is.logical(private$value)) {
+        suppressWarnings({
+          coerced = as.logical(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a boolean."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
 )
 
 # Date ====
@@ -432,10 +540,24 @@ Date = R6Class(
       private$schema$format = "date"
     },
     serialize = function() {
-      return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M:%SZ")))
+      return(as.character(format(private$value,format = "%Y-%m-%d")))
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      if (!is.Date(private$value)) {
+        suppressWarnings({
+          coerced = as_date(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a boolean."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
 )
 
 # RasterCube ====
@@ -460,7 +582,15 @@ RasterCube = R6Class(
       private$value = value
     }
   ),
-  private = list()
+  private = list(
+    typeCheck = function() {
+      # a raster data cube can only be derived by process, e.g. get_collection so this
+      # value should be a ProcessNode
+      if (! "ProcessNode" %in% class(private$value)) stop("RasterCube is not retreived by process.")
+      
+      if (! "raster-cube" %in% class(private$value$getProcess()$getReturns())) stop("The stated process does not return a RasterCube")
+    }
+  )
 )
 
 .randomNodeId = function(name,n = 1,...) {
