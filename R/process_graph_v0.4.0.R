@@ -72,14 +72,45 @@ Graph = R6Class(
     
     clean = function() {
       # run through the nodes and clean them
-      # copy the node ids into a temporary list
+      
       # start at the end -> if multiple end nodes throw an error
-      # traverse over all nested process nodes and list their id
-      # remove the found ids from a temporary list
+      endnode = self$getFinalNode()
+      
+      if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
+      
+      
+      # traverse over nested process nodes and extract their node ids from the final node
+      final_path = private$extractUsedNodeIds(endnode)
+      
+      
+      unvisitedNodes = setdiff(names(private$nodes),final_path)
+      map = lapply(unvisitedNodes, function(node_id) {
+        return(unname(private$extractUsedNodeIds(self$getNode(node_id))))
+      })
+      
       # now we need to check the remaining nodes if they connect in their downward traversion to an already visited node
       # therefore list also the ids again
       # remove found ids from temporary list
-      # now, the remaining nodes are not connected -> remove them from private$nodes
+      removeables = character()
+      if (length(map) > 0) {
+        for (index in 1:length(map)) {
+          if (any(map[[index]] %in% final_path)) {
+            # they are connected to the final_path -> add new elements to final_path
+            final_path = union(setdiff(map[[index]],final_path),final_path)
+          } else {
+            # add to removeables
+            removeables = union(map[[index]],removeables)
+          }
+        }
+        
+        removeables = unique(removeables)
+        
+        # now, the remaining nodes are not connected -> remove them from private$nodes
+        private$nodes[removeables] = NULL
+      }
+      
+      
+      invisible(self)
     },
     
     serialize = function() {
@@ -92,10 +123,65 @@ Graph = R6Class(
       names(result) = names(private$nodes)
       
       return(list(process_graph=result))
+    },
+    
+    getNode = function (node_id) {
+      private$assertNodeExists(node_id)
+      return(private$nodes[[node_id]])
+    },
+    
+    removeNode = function(node_id) {
+      private$assertNodeExists(node_id)
+      private$nodes[[node_id]] = NULL
+      
+      return(TRUE)
+    },
+    
+    getFinalNode = function() {
+      if (length(private$final_node_id) == 0) {
+        message("No final node set in this graph.")
+        invisible(NULL)
+      } else {
+        return(private$nodes[[private$final_node_id]])
+      }
+      
+      
+    },
+    setFinalNode = function(node) {
+      if ("ProcessNode" %in% class(node)) {
+        node = node$getNodeId()
+      }
+      if (is.null(node) || !is.character(node)) {
+        message("Node ID is not a character / string.")
+        return(FALSE)
+      }
+      private$assertNodeExists(node_id = node)
+      
+      private$final_node_id = node
+      return(TRUE)
     }
   ),
   private = list(
-    nodes = list()
+    nodes = list(),
+    final_node_id = character(),
+    
+    assertNodeExists = function(node_id) {
+      if (! node_id %in% names(private$nodes)) stop(paste0("Cannot find node with id '",node_id,"' in this graph."))
+    },
+    
+    extractUsedNodeIds = function(node) {
+      nodeParams = unlist(lapply(node$getProcess()$getParameters(), function (param) {
+        if ("ProcessNode" %in% class(param$getValue())) return(param$getValue())
+        
+        return(NULL)
+      }))
+      
+      if (is.null(nodeParams)) return(node$getNodeId())
+      if (length(nodeParams) == 0) return(node$getNodeId())
+      
+      return(c(node$getNodeId(),sapply(nodeParams,private$extractUsedNodeIds)))
+      
+    }
   )
 )
 
@@ -192,19 +278,9 @@ ProcessNode = R6Class(
     
     initialize = function(node_id=character(),process) {
       private$node_id = node_id
-      private$end = FALSE
       
       if (!"Process" %in% class(process)) stop("Process is not of type 'Process'")
       private$process = process
-    },
-    
-    finalize = function() {
-      private$end = TRUE
-      invisible(self)
-    },
-    
-    isFinal = function() {
-      return(private$end)
     },
     
     getProcess = function() {
@@ -223,8 +299,7 @@ ProcessNode = R6Class(
   
   private = list(
     node_id = character(),
-    process = NULL,
-    end = logical() # flag if this process is the endnode of the graph
+    process = NULL
   )
 )
 
