@@ -89,7 +89,7 @@ Argument = R6Class(
             private$typeCheck()
           }
           
-          invisible(TRUE)
+          invisible(NULL)
         }, error = function(e) {
           if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
           
@@ -261,6 +261,8 @@ CollectionId = R6Class(
         if (!is.null(private$schema$pattern)) {
           stop("Not yet implemented")
         }
+        
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
             is.na(coerced) ||
@@ -681,7 +683,14 @@ processFromJson=function(json) {
         pdef$name = name
       }
       
-      parameterFromJson(pdef)
+      # set param if it is contained in the schema
+      param = parameterFromJson(pdef)
+      pattern = pdef$schema$pattern
+      if (!is.null(pattern)) {
+        param$setPattern(pattern)
+      }
+      
+      return(param)
     }
   )
   
