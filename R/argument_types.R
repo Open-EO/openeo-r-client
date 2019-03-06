@@ -269,6 +269,32 @@ String = R6Class(
   )
 )
 
+# Null ====
+Null = R6Class(
+  "null",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "null"
+      private$value = NULL
+    },
+    serialize = function() {
+      return(private$value)
+    },
+    setValue = function(value) {
+      
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+
+    }
+  )
+)
+
 # Output Format ====
 OutputFormat = R6Class(
   "output-format",
@@ -1102,7 +1128,8 @@ findParameterGenerator = function(schema) {
                                DateTime,
                                TemporalInterval,
                                TemporalIntervals,
-                               Time)
+                               Time,
+                               Null)
   
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
@@ -1117,8 +1144,22 @@ parameterFromJson = function(param_def) {
   if (is.null(param_def$schema$format)) param_def$schema$format = character()
   if (is.null(param_def$required)) param_def$required = FALSE
   
-  gen=findParameterGenerator(param_def$schema)[[1]]
-  param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
+  if (is.null(param_def$schema$anyOf)) {
+    gen=findParameterGenerator(param_def$schema)[[1]]
+    param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
+  } else {
+    param = lapply(
+      #TODO create anyOf object
+      
+      param_def$schema$anyOf,
+      function(anyOf_schema) {
+        param_copy = param_def
+        param_copy$schema = anyOf_schema
+        return(parameterFromJson(param_copy))
+      }
+    )
+  }
+  
   
   if ("callback" %in% class(param)) {
     # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
