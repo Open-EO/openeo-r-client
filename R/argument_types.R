@@ -171,6 +171,40 @@ Integer = R6Class(
     }
   )
 )
+
+# EPSG-Code ====
+EPSGCode = R6Class(
+  "epsg-code",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "integer"
+      private$schema$format = "epsg-code"
+    },
+    serialize = function() {
+      return(as.integer(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.integer(private$value)) {
+        suppressWarnings({
+          coerced = as.integer(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
+)
+
 # Number ====
 Number = R6Class(
   "number",
@@ -235,6 +269,39 @@ String = R6Class(
   )
 )
 
+# Output Format ====
+OutputFormat = R6Class(
+  "output-format",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "output-format"
+    },
+    serialize = function() {
+      return(as.character(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
+)
+
 # CollectionId ====
 CollectionId = R6Class(
   "collection-id",
@@ -258,9 +325,42 @@ CollectionId = R6Class(
           coerced = as.character(private$value)
         })
         
-        if (!is.null(private$schema$pattern)) {
-          stop("Not yet implemented")
-        }
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+        # correct value if you can
+        private$value = coerced
+      } else {
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+      }
+    }
+  )
+)
+
+# JobId ====
+JobId = R6Class(
+  "job-id",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "job-id"
+    },
+    serialize = function() {
+      return(as.character(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
         
         if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
@@ -269,6 +369,165 @@ CollectionId = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
+      } else {
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+      }
+    }
+  )
+)
+
+# ProcessGraphId ====
+ProcessGraphId = R6Class(
+  "process-graph-id",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "process-graph-id"
+    },
+    serialize = function() {
+      return(as.character(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+        # correct value if you can
+        private$value = coerced
+      } else {
+        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+      }
+    }
+  )
+)
+
+# Proj-Definition ====
+ProjDefinition = R6Class(
+  "proj-definition",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "proj-definition"
+    },
+    serialize = function() {
+      return(as.character(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character proj definition."))
+        # correct value if you can
+        private$value = coerced
+      } 
+    }
+  )
+)
+
+# Bounding Box ====
+BoundingBox = R6Class(
+  "bounding-box",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$format = "bounding-box"
+    },
+    serialize = function() {
+      return(private$value)
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      # should be a list
+      if (!is.list(private$value)) {
+        tryCatch(
+          {
+            private$value = as.list(private$value)
+          },
+          error = function(e) {
+            stop("Cannot coerce values of bounding box into a list")
+          }
+        )
+      }
+      
+      obj_names = names(private$value)
+      
+      if (length(obj_names) == 0) stop("Bounding box parameter are unnamed. Cannot distinguish values.") 
+      
+      # check if west, south, east, north are set and all are numeric values or coercable as numeric
+      required_dir_params = c("west","south","east","north")
+      if (!all(required_dir_params %in% obj_names)) stop(paste0(
+        "Bounding box parameters are missing: ", paste(required_dir_params[!required_dir_params %in% obj_names],collapse = ", ")
+      ))
+      
+      suppressWarnings({
+        vals = lapply(private$value[required_dir_params],as.numeric)
+        nas = sapply(vals, is.na)
+        
+        if (any(nas)) {
+          stop("Not all bbox parameters are numeric or can be automatically coerced into numeric: ",paste0(obj_names[nas],collapse = ", "))
+        } else {
+          private$value[obj_names] = vals
+        }
+        
+      })
+      
+      # check if crs is set (either proj string or epsg code)
+      if ("crs" %in% obj_names) {
+        crs_value = private$value[["crs"]]
+        if (!is.integer(crs_value)) {
+          if (!is.character(crs_value)) stop("CRS is not an EPSG identifier or a PROJ string")
+          
+          # automatical conversion in this EPSG cases
+          if (grepl(pattern="epsg:", tolower(crs_value))) {
+            private$value[["crs"]] = as.integer(sub(pattern = "epsg:",replacement = "",tolower(crs_value)))
+          }
+        }
+      } # else nothing, since it is not required, but its assumed to be WGS84
+      
+      # check if base and height are set (both or none), also those have to be numeric
+      height_selector = c("base","height")
+      if (do.call(xor,as.list(height_selector %in% obj_names))) {
+        stop("Height was considered, but either 'base' or 'height' is missing.")
+      }
+      
+      if (all(height_selector %in% obj_names)) {
+        height_extent = private$value[height_selector]
+        suppressWarnings({
+          height_extent = sapply(height_extent,as.numeric)
+          
+          if (any(sapply(height_extent,is.na))) {
+            stop("'Base' or 'height' cannot be interpreted as numeric value")
+          } else {
+            private$value[height_selector] = height_extent
+          }
+        })
       }
     }
   )
@@ -331,10 +590,156 @@ Date = R6Class(
         
         if (is.null(coerced) || 
             is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a boolean."))
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a date"))
         # correct value if you can
         private$value = coerced
       }
+    }
+  )
+)
+
+# DateTime ====
+DateTime = R6Class(
+  "date-time",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "date-time"
+    },
+    serialize = function() {
+      return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M%SZ")))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.POSIXct(private$value)) {
+        suppressWarnings({
+          coerced = as_datetime(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a date time object"))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
+)
+
+# Time ====
+Time = R6Class(
+  "time",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "time"
+    },
+    serialize = function() {
+      return(as.character(format(private$value,format = "%H:%M:%SZ")))
+    },
+    setValue = function(value) {
+      # the value will be a posixct where we just return the time component
+      if (is.character(value)) {
+        private$value = strptime(value, format="%H:%M:%SZ")
+      } else {
+        private$value= value
+      }
+    },
+    getValue = function() {
+      return(self$serialize())
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.POSIXct(private$value)) {
+        suppressWarnings({
+          coerced = strptime(value, format="%H:%M:%SZ")
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a time representation"))
+        # correct value if you can
+        private$value = coerced
+      }
+    }
+  )
+)
+
+# GeoJson ====
+GeoJson = R6Class(
+  "geojson",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$format = "geojson"
+    },
+    serialize = function() {
+      return(as.list(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      #TODO implement! object == list in R
+    }
+  )
+)
+
+# OutputFormatOptions ====
+OutputFormatOptions = R6Class(
+  "output-format-options",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$format = "output-format-options"
+    },
+    serialize = function() {
+      return(as.list(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      #TODO implement! object == list in R
+    }
+  )
+)
+
+# ProcessGraphVariables ====
+ProcessGraphVariables = R6Class(
+  "process-graph-variables",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$format = "process-graph-variables"
+    },
+    serialize = function() {
+      return(as.list(private$value))
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      #TODO implement! object == list in R
     }
   )
 )
@@ -605,20 +1010,99 @@ Array = R6Class(
     })
 )
 
+# Kernel ====
+Kernel = R6Class(
+  "kernel",
+  inherit=Array,
+  public = list(
+    initialize=function(name=character(),
+                        description=character(),
+                        type=character(),
+                        format=character(),
+                        items=list(),
+                        required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "array"
+      private$schema$format = "kernel"
+      private$schema$items = items
+    }
+  )
+)
+
+#TemporalInterval ====
+TemporalInterval = R6Class(
+  "temporal-interval",
+  inherit=Array,
+  public = list(
+    initialize=function(name=character(),
+                        description=character(),
+                        type=character(),
+                        format=character(),
+                        items=list(),
+                        required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "array"
+      private$schema$format = "temporal-interval"
+      private$schema$items = items
+      private$schema$maxItems = 2
+      private$schema$minItems = 2
+    }
+  )
+)
+
+#TemporalIntervals ====
+TemporalIntervals = R6Class(
+  "temporal-intervals",
+  inherit=Array,
+  public = list(
+    initialize=function(name=character(),
+                        description=character(),
+                        type=character(),
+                        format=character(),
+                        items=list(),
+                        required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "array"
+      private$schema$format = "temporal-intervals"
+      private$schema$items = items
+    }
+  )
+)
+
 # parse functions ----
 findParameterGenerator = function(schema) {
   # TODO adapt this if I add some parameter/argument
   
-  parameter_constructor = list(Integer, 
+  parameter_constructor = list(Integer,
+                               EPSGCode,
                                Number, 
                                Boolean,
+                               BoundingBox,
+                               GeoJson,
                                RasterCube, 
                                VectorCube,
                                String,
                                CollectionId,
+                               JobId,
+                               ProcessGraphId,
+                               ProcessGraphVariables,
+                               ProjDefinition,
+                               OutputFormat,
+                               OutputFormatOptions,
                                Callback,
                                Array,
-                               Date)
+                               Kernel,
+                               Date,
+                               DateTime,
+                               TemporalInterval,
+                               TemporalIntervals,
+                               Time)
   
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
@@ -666,7 +1150,12 @@ parameterFromJson = function(param_def) {
   }
   
   if ("array" %in% class(param)) {
-    param$setItemSchema(param_def$schema$items)
+    if (!"kernel" %in% class(param)) {
+      param$setItemSchema(param_def$schema$items)
+    } else {
+      param$setItemSchema(param_def$schema$items)
+    }
+    
   }
   return(param)
 }
