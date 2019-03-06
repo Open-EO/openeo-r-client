@@ -134,9 +134,15 @@ Graph = R6Class(
         self$clean() # only test that what has to be used
         
         # for each process node call their processes parameters validate function
-        return(unlist(lapply(private$nodes, function(node) {
+        results = unname(unlist(lapply(private$nodes, function(node) {
           node$getProcess()$validate(node_id=node$getNodeId())
         })))
+        
+        if(is.null(results)) {
+          return(TRUE)
+        } else {
+          return(results)
+        }
         
       }, error = function(e){
         message(e$message)
@@ -253,23 +259,23 @@ Process = R6Class(
     
     getFormals = function() {
       #TODO set also default values
-      result = rep(NA,length(private$parameters))
-      names(result) = names(private$parameters)
+      result = rep(NA,length(self$parameters))
+      names(result) = names(self$parameters)
       
       return(result)
     },
     setParameter= function(name,value) {
-      if (!name %in% names(private$parameters)) stop("Cannot find parameter")
+      if (!name %in% names(private$.parameters)) stop("Cannot find parameter")
       
-      private$parameters[[name]]$setValue(value)
+      private$.parameters[[name]]$setValue(value)
     },
     getParameter = function(name) {
-      if (!name %in% names(private$parameters)) stop("Cannot find parameter")
+      if (!name %in% names(self$parameters)) stop("Cannot find parameter")
       
-      return(private$parameters[[name]])
+      return(self$parameters[[name]])
     },
     serialize = function() {
-      serializedArgList = lapply(private$parameters, 
+      serializedArgList = lapply(self$parameters, 
                                  function(arg){
                                    if(!arg$isEmpty()) arg$serialize()
                                  })
@@ -283,7 +289,7 @@ Process = R6Class(
       )
     },
     validate = function(node_id=NULL) {
-      return(unname(unlist(lapply(private$parameters,function(arg, node_id){
+      return(unname(unlist(lapply(self$parameters,function(arg, node_id){
         arg$validate(node_id = node_id)
       },node_id = node_id))))
     }
@@ -302,7 +308,6 @@ Process = R6Class(
   private=list(
     id = character(),
     returns = NULL, # the object that is returend Parameter or Argument
-    # parameters = list(), # named list! this is made sure of in constructor
     parameter_order = character(), # a vector of string corresponding to the parameter order
     summary = character(),
     description = character(),
