@@ -44,6 +44,8 @@ Graph = R6Class(
           
           lapply(names(this_arguments), function(param_name, arguments){
             call_arg = this_arguments[[param_name]]
+            
+            #TODO maybe check here for is.list and then try the assignable
             arguments[[param_name]]$setValue(call_arg)
           }, arguments = arguments)
           
@@ -237,7 +239,15 @@ Process = R6Class(
       
       if (! is.list(parameters)) stop("Parameters are not provided as list")
       
-      parameter_names = sapply(parameters, function(p)p$getName())
+      # iterate over all the parameter objects and extract their name
+      parameter_names = sapply(parameters, function(p) {
+        if (is.list(p)) {
+          # in case there was a any of parameter
+          p = p[[1]]
+        }
+        
+        p$getName()
+      })
       names(parameters) = parameter_names
       
       

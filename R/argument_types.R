@@ -35,8 +35,25 @@ Parameter = R6Class(
       return(private$schema)
     }
   ),
+  active = list(
+    isNullable = function(value) {
+      if (missing(value)) {
+        return(private$nullable)
+      } else {
+        value = as.logical(value)
+        
+        if (is.na(value)) {
+          warning("Cannot cast value to logical. Assume FALSE.")
+          value = FALSE
+        }
+        
+        private$nullable = value
+      }
+    }
+  ),
   private = list(
     name=character(),
+    nullable = FALSE,
     schema = list(
       type=character(),
       format = character(),
@@ -101,9 +118,10 @@ Argument = R6Class(
     },
     
     isEmpty = function() {
-      return(!is.environment(private$value) && (is.null(private$value) || 
-               is.na(private$value) ||
-               length(private$value) == 0))
+      return(!is.environment(private$value) && (
+                is.null(private$value) ||
+                is.na(private$value) ||
+                length(private$value) == 0))
     }
   ),
   private = list(
@@ -111,6 +129,7 @@ Argument = R6Class(
     
     checkRequiredNotSet = function() {
       if (private$required && 
+          !self$isNullable && 
           !is.environment(private$value) &&
           self$isEmpty()) stop("Argument is required, but has not been set.")
     },
@@ -265,32 +284,6 @@ String = R6Class(
         # correct value if you can
         private$value = coerced
       }
-    }
-  )
-)
-
-# Null ====
-Null = R6Class(
-  "null",
-  inherit=Argument,
-  public = list(
-    initialize=function(name=character(),description=character(),required=FALSE) {
-      private$name = name
-      private$description = description
-      private$required = required
-      private$schema$type = "null"
-      private$value = NULL
-    },
-    serialize = function() {
-      return(private$value)
-    },
-    setValue = function(value) {
-      
-    }
-  ),
-  private = list(
-    typeCheck = function() {
-
     }
   )
 )
@@ -851,7 +844,7 @@ Callback = R6Class(
     },
     
     setValue = function(value) {
-      if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
+      # if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
       
       private$value = value
     },
@@ -1101,6 +1094,74 @@ TemporalIntervals = R6Class(
   )
 )
 
+# AnyOf ====
+AnyOf = R6Class(
+  "anyOf",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(), parameter_list,required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "anyOf"
+      private$parameter_choice = parameter_list
+    },
+    serialize = function() {
+      return(as.integer(private$value))
+    },
+    setValue = function(value) {
+      # set to all sub parameters and run validate
+      validated = sapply(private$parameter_choice, function(param) {
+        
+        # if ("callback" %in% class(param)) browser()
+        param$setValue(value)
+        return(param$validate() == TRUE)
+      })
+      
+      private$value = private$paramter_choice[validated]
+    },
+    getValue = function() {
+      # best case only one had survived the selection, if not throw an error?
+      # or return the first result
+      if (is.null(private$value)) return(private$value)
+      
+      return(private$value[[1]]$getValue())
+    },
+    
+    getChoice = function() {
+      return(private$parameter_choice)
+    }
+  ),
+  active = list(
+    isNullable = function(value) {
+      
+      if (missing(value)) {
+        return(private$nullable)
+      } else {
+        value = as.logical(value)
+        
+        if (is.na(value)) {
+          warning("Cannot cast value to logical. Assume FALSE.")
+          value = FALSE
+        }
+        
+        lapply(private$parameter_choice, function(param) {
+          param$isNullable = value
+        })
+        
+        private$nullable = value
+      }
+    }
+  ),
+  private = list(
+    parameter_choice = list(),
+    
+    typeCheck = function() {
+      # TODO rework
+    }
+  )
+)
+
 # parse functions ----
 findParameterGenerator = function(schema) {
   # TODO adapt this if I add some parameter/argument
@@ -1128,8 +1189,7 @@ findParameterGenerator = function(schema) {
                                DateTime,
                                TemporalInterval,
                                TemporalIntervals,
-                               Time,
-                               Null)
+                               Time)
   
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
@@ -1140,16 +1200,25 @@ findParameterGenerator = function(schema) {
   return(matches)
 }
 
-parameterFromJson = function(param_def) {
+parameterFromJson = function(param_def, nullable = FALSE) {
   if (is.null(param_def$schema$format)) param_def$schema$format = character()
   if (is.null(param_def$required)) param_def$required = FALSE
   
-  if (is.null(param_def$schema$anyOf)) {
-    gen=findParameterGenerator(param_def$schema)[[1]]
-    param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
-  } else {
-    param = lapply(
-      #TODO create anyOf object
+  type = param_def$schema$type
+  
+  if (is.null(type) && !is.null(param_def$schema$anyOf)) {
+    #anyOf case
+    # scan list for type: null
+    types = sapply(param_def$schema$anyOf, function(schema)schema$type)
+    
+    # if present set nullable = TRUE and throw it out
+    if ("null" %in% types) {
+      nullable = TRUE
+      param_def$schema$anyOf[[which(types=="null")]] = NULL
+    }
+    
+    params = lapply(
+      #create anyOf object
       
       param_def$schema$anyOf,
       function(anyOf_schema) {
@@ -1158,8 +1227,50 @@ parameterFromJson = function(param_def) {
         return(parameterFromJson(param_copy))
       }
     )
+    # name=character(),description=character(), parameter_list,required=FALSE
+    choice = AnyOf$new(name=param_def$name, 
+                       description=param_def$description,
+                       required = param_def$required, 
+                       parameter_list = params)
+    
+    choice$isNullable = nullable
+    return(choice)
   }
   
+  if (is.list(type)) {
+    # if is array and we have only null and one other, then only use the one prior parameter and make it nullable
+    nullable = "null" %in% type
+    if (nullable) {
+      type[[which(type == "null")]] = NULL # remove this entry
+    }
+    
+    if (length(type) > 1) {
+      # create an anyOf
+      param_template = param_def$schema
+      types = param_template$type
+      param_template$type = NULL
+      
+      schemas = lapply(types, function(type_name) {
+        res = param_template
+        res$type = type_name
+        return(res)
+      })
+      
+      param_def$schema = list(anyOf=schemas) # create new anyOf element with the schemas
+      
+      # recursive call -> in the next iteration it will be an anyOf case (nullable is passed on)
+      return(parameterFromJson(param_def,nullable))
+    } else {
+      param_def$schema$type = unname(unlist(type))
+    }
+  }
+  
+  # this will be the normal case for simple schemas?
+  gen=findParameterGenerator(param_def$schema)[[1]]
+  param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
+  
+  # in general also reolve null cases
+  param$isNullable = nullable
   
   if ("callback" %in% class(param)) {
     # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
