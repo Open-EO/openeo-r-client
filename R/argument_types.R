@@ -140,7 +140,7 @@ Argument = R6Class(
     
     checkMultiResults = function() {
       if ("ProcessNode" %in% class(private$value)) {
-        returns = private$value$getProcess()$getReturns()
+        returns = private$value$getReturns()
         
         if (!is.null(returns$schema)) {
           if (!is.null(returns$schema$anyOf)) {
@@ -777,7 +777,7 @@ RasterCube = R6Class(
     },
     serialize = function() {
       if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serialize())
+        return(private$value$serializeAsReference())
       }
       
       return(as.character(private$value))
@@ -790,10 +790,6 @@ RasterCube = R6Class(
       if (! "ProcessNode" %in% class(private$value)) stop("RasterCube is not retreived by process.")
       
       private$checkMultiResults()
-      
-      # if (! "raster-cube" %in% class(private$value$getProcess()$getReturns())) {
-      #   stop("The stated process does not return a RasterCube")
-      # }
     }
   )
 )
@@ -812,7 +808,7 @@ VectorCube = R6Class(
     },
     serialize = function() {
       if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serialize())
+        return(private$value$serializeAsReferences())
       }
       
       return(as.character(private$value))

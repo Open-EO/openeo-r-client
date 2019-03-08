@@ -124,7 +124,7 @@ Graph = R6Class(
       self$clean()
       
       result = lapply(private$nodes, function(node) {
-        return(node$getProcess()$serialize())
+        return(node$serialize())
       })
       names(result) = names(private$nodes)
       
@@ -137,7 +137,7 @@ Graph = R6Class(
         
         # for each process node call their processes parameters validate function
         results = unname(unlist(lapply(private$nodes, function(node) {
-          node$getProcess()$validate(node_id=node$getNodeId())
+          node$validate(node_id=node$getNodeId())
         })))
         
         if(is.null(results)) {
@@ -195,7 +195,7 @@ Graph = R6Class(
       private$assertNodeExists(node_id)
       
       node = private$nodes[[node_id]]
-      params = node$getProcess()$parameters
+      params = node$parameters
       
       if (! parameter %in% names(params)) stop(paste0("Cannot find parameter '",parameter,"' for process '",node_id,"'"))
       
@@ -212,7 +212,7 @@ Graph = R6Class(
     },
     
     extractUsedNodeIds = function(node) {
-      nodeParams = unlist(lapply(node$getProcess()$parameters, function (param) {
+      nodeParams = unlist(lapply(node$parameters, function (param) {
         if ("ProcessNode" %in% class(param$getValue())) return(param$getValue())
         
         return(NULL)
@@ -302,6 +302,18 @@ Process = R6Class(
       return(unname(unlist(lapply(self$parameters,function(arg, node_id){
         arg$validate(node_id = node_id)
       },node_id = node_id))))
+    },
+    
+    getCharacteristics = function() {
+      # select all non functions of the private area, to be used when copying process information into a process node
+      fields = sapply(names(private),
+                            function(name){
+        if(!is.function(private[[name]])) {
+          return(name)
+        }
+      })
+      
+      return(mget(x=unname(unlist(fields)),envir=private))
     }
   ),
   active = list(
@@ -326,12 +338,8 @@ Process = R6Class(
     .parameters = list(),
     
     deep_clone = function(name, value) {
-      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
-        return(value$clone(deep = TRUE))
-      }
-      
       # also check if it is a list of R6 objects
-      if (name == "parameters") {
+      if (name == ".parameters") {
         
         new_list = list()
         
@@ -351,32 +359,35 @@ Process = R6Class(
         
       }
       
+      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+        return(value$clone(deep = TRUE))
+      }
       
       value
     }
+    
+    
   )
 )
 
 # ProcessNode ====
 ProcessNode = R6Class(
   "ProcessNode",
+  inherit = Process,
   public = list(
     
+    # initialized in the graph$<function> call  together with is argument values
     initialize = function(node_id=character(),process) {
       private$node_id = node_id
       
       if (!"Process" %in% class(process)) stop("Process is not of type 'Process'")
-      private$process = process
-    },
-    
-    getProcess = function() {
-      return(private$process)
+      private$copyAttributes(process)
     },
     
     getNodeId = function() {
       return(private$node_id)
     },
-    serialize = function() {
+    serializeAsReference = function() {
       return(list(
         from_node=private$node_id
       ))
@@ -385,7 +396,16 @@ ProcessNode = R6Class(
   
   private = list(
     node_id = character(),
-    process = NULL
+    
+    copyAttributes = function(process) {
+      #extract names that are no function
+      tobecopied = process$getCharacteristics()
+      
+      lapply(names(tobecopied), function(attr_name) {
+        assign(x = attr_name, value = tobecopied[[attr_name]],envir = private)
+      })
+      return()
+    }
   )
 )
 
