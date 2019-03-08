@@ -1107,18 +1107,32 @@ AnyOf = R6Class(
       private$parameter_choice = parameter_list
     },
     serialize = function() {
-      return(as.integer(private$value))
+      return(private$value[[1]]$serialize())
     },
     setValue = function(value) {
-      # set to all sub parameters and run validate
-      validated = sapply(private$parameter_choice, function(param) {
+      if ("Argument" %in% class(value)) {
+        # This is mostly for callbacks
+        arg_allowed = any(sapply(self$getChoice(), function(argument) {
+          all(length(setdiff(class(argument),class(value))) == 0,
+              length(setdiff(class(value),class(argument))) == 0
+          )
+        }))
         
-        # if ("callback" %in% class(param)) browser()
-        param$setValue(value)
-        return(param$validate() == TRUE)
-      })
+        if(!arg_allowed) stop("Cannot assign ",class(value)[[1]], " as value. Not allowed.")
+        
+        private$value = list(value)
+      } else {
+        # set to all sub parameters and run validate
+        validated = sapply(private$parameter_choice, function(param) {
+          
+          # if ("callback" %in% class(param)) browser()
+          param$setValue(value)
+          return(param$validate() == TRUE)
+        })
+      }
       
       private$value = private$paramter_choice[validated]
+      
     },
     getValue = function() {
       # best case only one had survived the selection, if not throw an error?
@@ -1129,7 +1143,9 @@ AnyOf = R6Class(
     },
     
     getChoice = function() {
-      return(private$parameter_choice)
+      return(lapply(private$parameter_choice,function(choice){
+        choice$copy(deep=TRUE)
+      }))
     }
   ),
   active = list(
@@ -1158,6 +1174,35 @@ AnyOf = R6Class(
     
     typeCheck = function() {
       # TODO rework
+    },
+    deep_clone = function(name, value) {
+      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+        return(value$clone(deep = TRUE))
+      }
+      
+      # also check if it is a list of R6 objects
+      if (name == "parameter_choice") {
+        
+        new_list = list()
+        
+        for (list_name in names(value)) {
+          list_elem = value[[list_name]]
+          
+          if ("R6" %in% class(list_elem)) {
+            list_elem = list_elem$clone(deep=TRUE)
+          }
+          
+          entry = list(list_elem)
+          names(entry) = list_name
+          new_list = append(new_list,entry)
+        }
+        
+        return(new_list)
+        
+      }
+      
+      
+      value
     }
   )
 )
