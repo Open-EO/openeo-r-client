@@ -344,7 +344,7 @@ CollectionId = R6Class(
           coerced = as.character(private$value)
         })
         
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
             is.na(coerced) ||
@@ -352,7 +352,7 @@ CollectionId = R6Class(
         # correct value if you can
         private$value = coerced
       } else {
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
     }
   )
@@ -381,7 +381,7 @@ JobId = R6Class(
           coerced = as.character(private$value)
         })
         
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value, perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
             is.na(coerced) ||
@@ -389,7 +389,7 @@ JobId = R6Class(
         # correct value if you can
         private$value = coerced
       } else {
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
     }
   )
@@ -418,7 +418,7 @@ ProcessGraphId = R6Class(
           coerced = as.character(private$value)
         })
         
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
             is.na(coerced) ||
@@ -426,7 +426,7 @@ ProcessGraphId = R6Class(
         # correct value if you can
         private$value = coerced
       } else {
-        if (!grepl(pattern=private$schema$pattern,x=private$value)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
     }
   )
@@ -879,8 +879,12 @@ CallbackValue = R6Class(
     },
     
     serialize = function() {
-      res = list(from_argument=private$value)
+      res = list(from_argument=private$name)
       return(res)
+    },
+    print = function() {
+      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      invisible(self)
     }
   ),
   private = list()
@@ -1106,6 +1110,7 @@ AnyOf = R6Class(
       return(private$value[[1]]$serialize())
     },
     setValue = function(value) {
+      
       if ("Argument" %in% class(value)) {
         # This is mostly for callbacks
         arg_allowed = any(sapply(self$getChoice(), function(argument) {
@@ -1121,7 +1126,6 @@ AnyOf = R6Class(
         # set to all sub parameters and run validate
         validated = sapply(private$parameter_choice, function(param) {
           
-          # if ("callback" %in% class(param)) browser()
           param$setValue(value)
           return(param$validate() == TRUE)
         })
@@ -1140,7 +1144,7 @@ AnyOf = R6Class(
     
     getChoice = function() {
       return(lapply(private$parameter_choice,function(choice){
-        choice$copy(deep=TRUE)
+        choice$clone(deep=TRUE)
       }))
     }
   ),
@@ -1172,16 +1176,17 @@ AnyOf = R6Class(
       # TODO rework
     },
     deep_clone = function(name, value) {
-      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
-        return(value$clone(deep = TRUE))
-      }
       
       # also check if it is a list of R6 objects
       if (name == "parameter_choice") {
-        
         new_list = list()
+        if (is.null(names(value))) {
+          iterable = 1:length(value)
+        } else {
+          iterable = names(value)
+        }
         
-        for (list_name in names(value)) {
+        for (list_name in iterable) {
           list_elem = value[[list_name]]
           
           if ("R6" %in% class(list_elem)) {
@@ -1197,6 +1202,9 @@ AnyOf = R6Class(
         
       }
       
+      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+        return(value$clone(deep = TRUE))
+      }
       
       value
     }
@@ -1325,7 +1333,7 @@ parameterFromJson = function(param_def, nullable = FALSE) {
       
       
       
-      cb = CallbackValue$new(name = param_json$name,
+      cb = CallbackValue$new(name = param_name,
                              description = param_json$description,
                              type = param_json[["type"]],
                              format = param_json[["format"]],

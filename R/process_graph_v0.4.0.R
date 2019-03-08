@@ -128,6 +128,8 @@ Graph = R6Class(
       })
       names(result) = names(private$nodes)
       
+      result[[self$getFinalNode()$getNodeId()]]$result = TRUE
+      
       return(result)
     },
     
@@ -274,6 +276,10 @@ Process = R6Class(
       
       return(result)
     },
+    setDescription = function(value) {
+      if (is.null(value) || is.na(value)) value = character()
+      private$description = value
+    },
     setParameter= function(name,value) {
       if (!name %in% names(private$.parameters)) stop("Cannot find parameter")
       
@@ -292,11 +298,13 @@ Process = R6Class(
       
       serializedArgList[sapply(serializedArgList,is.null)] = NULL
       
-      return(
-        list(process_id=private$id,
-             arguments = serializedArgList
-        )
+      results = list(process_id=private$id,
+                     arguments = serializedArgList
       )
+      
+      if (length(private$description)>0) results$description = private$description
+      
+      return(results)
     },
     validate = function(node_id=NULL) {
       return(unname(unlist(lapply(self$parameters,function(arg, node_id){
@@ -400,6 +408,8 @@ ProcessNode = R6Class(
     copyAttributes = function(process) {
       #extract names that are no function
       tobecopied = process$getCharacteristics()
+      
+      tobecopied[["description"]] = character()
       
       lapply(names(tobecopied), function(attr_name) {
         assign(x = attr_name, value = tobecopied[[attr_name]],envir = private)
