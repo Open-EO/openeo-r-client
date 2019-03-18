@@ -945,7 +945,7 @@ Array = R6Class(
     },
     
     setItemSchema = function(value) {
-      tryCatch({
+      
       if (!"type" %in% names(value)) {
         value[["type"]]="any"
       } else if (any(value$type == "null")) {
@@ -954,7 +954,6 @@ Array = R6Class(
         value$nullable = TRUE
       }
       },
-      error=function(e)browser())
       
       if (is.null(value[["minItems"]])) value[["minItems"]] = integer()
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
