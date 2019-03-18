@@ -953,7 +953,6 @@ Array = R6Class(
         value$type = unlist(value$type)
         value$nullable = TRUE
       }
-      },
       
       if (is.null(value[["minItems"]])) value[["minItems"]] = integer()
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
