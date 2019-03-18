@@ -912,7 +912,12 @@ Array = R6Class(
     serialize = function() {
       return(
         lapply(private$value, function(value) {
-          value
+          
+          if ("Process" %in% class(value)) return(value$serializeAsReference())
+          
+          if ("Argument" %in% class(value)) return(value$serialize())
+          
+          return(value)
         })
       )
     },
@@ -1127,11 +1132,23 @@ AnyOf = R6Class(
         validated = sapply(private$parameter_choice, function(param) {
           
           param$setValue(value)
-          return(param$validate() == TRUE)
+          
+          tryCatch(
+            {
+              validation = param$validate()
+              
+              return(is.null(validation))
+            },
+            error = function(e) {
+              return(FALSE)
+            }
+          )
+          
+          
         })
       }
       
-      private$value = private$paramter_choice[validated]
+      private$value = private$parameter_choice[validated]
       
     },
     getValue = function() {
