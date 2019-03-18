@@ -254,6 +254,14 @@ Process = R6Class(
       
       
       self$parameters = parameters
+      
+      if (any(returns$schema$type=="null")) {
+        returns$schema$type[returns$schema$type=="null"] = NULL
+        returns$schema$type = unlist(returns$schema$type)
+        
+        returns$nullable = TRUE
+      }
+      
       private$returns = returns
     },
     
@@ -266,6 +274,7 @@ Process = R6Class(
     },
     
     getReturns = function() {
+      
       return(private$returns)
     },
     

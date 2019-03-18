@@ -29,6 +29,10 @@ Parameter = R6Class(
     },
     matchesSchema = function(schema) {
       sel = c("type","format")
+      
+      if (is.null(schema$type)) schema$type = character()
+      if (is.null(schema$format)) schema$format = character()
+      
       return(setequal(private$schema[sel], schema[sel]))
     },
     getSchema = function() {
@@ -906,6 +910,7 @@ Array = R6Class(
       private$required = required
       private$schema$type = "array"
       private$schema$format = format
+      
       private$schema$items = items
     },
     
@@ -940,7 +945,16 @@ Array = R6Class(
     },
     
     setItemSchema = function(value) {
-      if (!"type" %in% names(value)) value[["type"]]="any"
+      tryCatch({
+      if (!"type" %in% names(value)) {
+        value[["type"]]="any"
+      } else if (any(value$type == "null")) {
+        value$type[value$type == "null"] = NULL
+        value$type = unlist(value$type)
+        value$nullable = TRUE
+      }
+      },
+      error=function(e)browser())
       
       if (is.null(value[["minItems"]])) value[["minItems"]] = integer()
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
@@ -1001,9 +1015,18 @@ Array = R6Class(
         if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
         
       } else {
+        #findParameterGenerator(list(type=itemType,format=character()))
         allOK = switch(itemType,
                        string = all(sapply(private$value,is.character)),
-                       number = all(sapply(private$value,is.numeric)),
+                       number = all(sapply(private$value,function(val){
+                         if ("Process" %in% class(val)) {
+                           returnSchema = val$getReturns()$schema
+                           
+                           return(Number$new()$matchesSchema(returnSchema))
+                         } else {
+                           return(is.numeric(val))
+                         }
+                       })),
                        integer = all(sapply(private$value,is.integer)),
                        boolean = all(sapply(private$value,is.logical))
         )
