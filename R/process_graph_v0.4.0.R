@@ -83,9 +83,8 @@ Graph = R6Class(
       
       if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
       
-      
       # traverse over nested process nodes and extract their node ids from the final node
-      final_path = private$extractUsedNodeIds(endnode)
+      final_path = unname(unlist(private$extractUsedNodeIds(endnode)))
       
       
       unvisitedNodes = setdiff(names(private$nodes),final_path)
@@ -215,8 +214,21 @@ Graph = R6Class(
     
     extractUsedNodeIds = function(node) {
       nodeParams = unlist(lapply(node$parameters, function (param) {
+        #check if the argument contains a ProcessNode in a list
+        if (class(param$getValue()) == "list") {
+          nodesInList = lapply(param$getValue(), function(listArg) {
+            
+            if ("ProcessNode" %in% class(listArg)) return(listArg)
+            
+            return(NULL)
+          })
+          return(nodesInList)
+        }
+        
+        # check if the argument contains a ProcessNode in itself
         if ("ProcessNode" %in% class(param$getValue())) return(param$getValue())
         
+        # if no node return NULL which will be removed with unlist()
         return(NULL)
       }))
       
