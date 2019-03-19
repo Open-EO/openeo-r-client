@@ -215,7 +215,7 @@ Graph = R6Class(
     extractUsedNodeIds = function(node) {
       nodeParams = unlist(lapply(node$parameters, function (param) {
         #check if the argument contains a ProcessNode in a list
-        if (class(param$getValue()) == "list") {
+        if (all("list" %in% class(param$getValue()))) {
           nodesInList = lapply(param$getValue(), function(listArg) {
             
             if ("ProcessNode" %in% class(listArg)) return(listArg)

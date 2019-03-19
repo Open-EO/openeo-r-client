@@ -94,8 +94,16 @@ Argument = R6Class(
       return(private$parameter_order)
     },
     serialize = function() {
+      if ("Graph" %in% class(private$value)) {
+        return(private$value$serialize())
+      }
+      
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serializeAsReference())
+      }
+      
       # for format specific conversion overwrite this by children
-      return(private$value)
+      return(private$typeSerialization())
     },
     validate = function(node_id=NULL) {
       tryCatch(
@@ -142,6 +150,13 @@ Argument = R6Class(
       # implemented / overwritten by children
     },
     
+    typeSerialization = function() {
+      # implemented / overwritten by children
+      
+      #if nothing is done, then simply return the object
+      return(private$value)
+    },
+    
     checkMultiResults = function() {
       if ("ProcessNode" %in% class(private$value)) {
         returns = private$value$getReturns()
@@ -173,9 +188,6 @@ Integer = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "integer"
-    },
-    serialize = function() {
-      return(as.integer(private$value))
     }
   ),
   private = list(
@@ -191,6 +203,9 @@ Integer = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.integer(private$value))
     }
   )
 )
@@ -206,9 +221,6 @@ EPSGCode = R6Class(
       private$required = required
       private$schema$type = "integer"
       private$schema$format = "epsg-code"
-    },
-    serialize = function() {
-      return(as.integer(private$value))
     }
   ),
   private = list(
@@ -224,6 +236,9 @@ EPSGCode = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.integer(private$value))
     }
   )
 )
@@ -238,9 +253,6 @@ Number = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "number"
-    },
-    serialize = function() {
-      return(as.numeric(private$value))
     }
   ),
   private = list(
@@ -256,6 +268,9 @@ Number = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.numeric(private$value))
     }
   )
 )
@@ -270,9 +285,6 @@ String = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -288,6 +300,9 @@ String = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -303,9 +318,6 @@ OutputFormat = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "output-format"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -321,6 +333,9 @@ OutputFormat = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -336,9 +351,6 @@ CollectionId = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "collection-id"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -358,6 +370,9 @@ CollectionId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -373,9 +388,6 @@ JobId = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "job-id"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -395,6 +407,9 @@ JobId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -410,9 +425,6 @@ ProcessGraphId = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "process-graph-id"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -432,6 +444,9 @@ ProcessGraphId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -447,9 +462,6 @@ ProjDefinition = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "proj-definition"
-    },
-    serialize = function() {
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -465,6 +477,9 @@ ProjDefinition = R6Class(
         # correct value if you can
         private$value = coerced
       } 
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
     }
   )
 )
@@ -480,9 +495,6 @@ BoundingBox = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "bounding-box"
-    },
-    serialize = function() {
-      return(private$value)
     }
   ),
   private = list(
@@ -552,6 +564,9 @@ BoundingBox = R6Class(
           }
         })
       }
+    },
+    typeSerialization = function() {
+      return(private$value)
     }
   )
 )
@@ -566,9 +581,6 @@ Boolean = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "boolean"
-    },
-    serialize = function() {
-      return(as.logical(private$value))
     }
   ),
   private = list(
@@ -584,6 +596,9 @@ Boolean = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.logical(private$value))
     }
   )
 )
@@ -599,9 +614,6 @@ Date = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "date"
-    },
-    serialize = function() {
-      return(as.character(format(private$value,format = "%Y-%m-%d")))
     }
   ),
   private = list(
@@ -617,6 +629,9 @@ Date = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.character(format(private$value,format = "%Y-%m-%d")))
     }
   )
 )
@@ -632,9 +647,6 @@ DateTime = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "date-time"
-    },
-    serialize = function() {
-      return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M%SZ")))
     }
   ),
   private = list(
@@ -650,6 +662,9 @@ DateTime = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M%SZ")))
     }
   )
 )
@@ -665,9 +680,6 @@ Time = R6Class(
       private$required = required
       private$schema$type = "string"
       private$schema$format = "time"
-    },
-    serialize = function() {
-      return(as.character(format(private$value,format = "%H:%M:%SZ")))
     },
     setValue = function(value) {
       # the value will be a posixct where we just return the time component
@@ -694,6 +706,9 @@ Time = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(as.character(format(private$value,format = "%H:%M:%SZ")))
     }
   )
 )
@@ -709,14 +724,14 @@ GeoJson = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "geojson"
-    },
-    serialize = function() {
-      return(as.list(private$value))
     }
   ),
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+    },
+    typeSerialization = function() {
+      return(as.list(private$value))
     }
   )
 )
@@ -732,14 +747,14 @@ OutputFormatOptions = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "output-format-options"
-    },
-    serialize = function() {
-      return(as.list(private$value))
     }
   ),
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+    },
+    typeSerialization = function() {
+      return(as.list(private$value))
     }
   )
 )
@@ -755,14 +770,14 @@ ProcessGraphVariables = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "process-graph-variables"
-    },
-    serialize = function() {
-      return(as.list(private$value))
     }
   ),
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+    },
+    typeSerialization = function() {
+      return(as.list(private$value))
     }
   )
 )
@@ -778,13 +793,6 @@ RasterCube = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "raster-cube"
-    },
-    serialize = function() {
-      if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serializeAsReference())
-      }
-      
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -794,6 +802,13 @@ RasterCube = R6Class(
       if (! "ProcessNode" %in% class(private$value)) stop("RasterCube is not retreived by process.")
       
       private$checkMultiResults()
+    },
+    typeSerialization = function() {
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serializeAsReference())
+      }
+      
+      return(as.character(private$value))
     }
   )
 )
@@ -809,13 +824,6 @@ VectorCube = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$format = "vector-cube"
-    },
-    serialize = function() {
-      if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serializeAsReferences())
-      }
-      
-      return(as.character(private$value))
     }
   ),
   private = list(
@@ -826,6 +834,13 @@ VectorCube = R6Class(
       
       private$checkMultiResults()
       # if (! "vector-cube" %in% class(private$value$getProcess()$getReturns())) stop("The stated process does not return a VectorCube")
+    },
+    typeSerialization = function() {
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serializeAsReferences())
+      }
+      
+      return(as.character(private$value))
     }
   )
 )
@@ -859,7 +874,17 @@ Callback = R6Class(
     
   ),
   private = list(
-    parameters = list()
+    parameters = list(),
+    
+    typeCheck = function() {
+      # check the value (graph) for the same callback parameters (CallbackValues)
+    },
+    
+    typeSerialization = function() {
+      if(!is.null(private$value)) {
+        private$value$serialize()
+      }
+    }
   )
 )
 
@@ -881,17 +906,17 @@ CallbackValue = R6Class(
       private$schema$type = type
       private$schema$format = format
     },
-    
-    serialize = function() {
-      res = list(from_argument=private$name)
-      return(res)
-    },
     print = function() {
       cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
       invisible(self)
     }
   ),
-  private = list()
+  private = list(
+    typeSerialization = function() {
+      res = list(from_argument=private$name)
+      return(res)
+    }
+  )
 )
 
 # Array ====
@@ -913,20 +938,7 @@ Array = R6Class(
       
       private$schema$items = items
     },
-    
-    serialize = function() {
-      return(
-        lapply(private$value, function(value) {
-          
-          if ("Process" %in% class(value)) return(value$serializeAsReference())
-          
-          if ("Argument" %in% class(value)) return(value$serialize())
-          
-          return(value)
-        })
-      )
-    },
-    
+
     getMinItems = function() {
       return(private$schema[["minItems"]])
     },
@@ -1052,6 +1064,18 @@ Array = R6Class(
         # correct value if you can
         private$value = coerced
       }
+    },
+    typeSerialization = function() {
+      return(
+        lapply(private$value, function(value) {
+          
+          if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
+          
+          if ("Argument" %in% class(value)) return(value$serialize())
+          
+          return(value)
+        })
+      )
     })
 )
 
@@ -1132,9 +1156,6 @@ AnyOf = R6Class(
       private$schema$type = "anyOf"
       private$parameter_choice = parameter_list
     },
-    serialize = function() {
-      return(private$value[[1]]$serialize())
-    },
     setValue = function(value) {
       
       if ("Argument" %in% class(value)) {
@@ -1212,6 +1233,9 @@ AnyOf = R6Class(
     
     typeCheck = function() {
       # TODO rework
+    },
+    typeSerialization = function() {
+      return(private$value[[1]]$serialize())
     },
     deep_clone = function(name, value) {
       
