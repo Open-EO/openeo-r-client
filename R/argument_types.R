@@ -1027,7 +1027,15 @@ Array = R6Class(
       } else {
         #findParameterGenerator(list(type=itemType,format=character()))
         allOK = switch(itemType,
-                       string = all(sapply(private$value,is.character)),
+                       string = all(sapply(private$value,function(val){
+                         if ("Process" %in% class(val)) {
+                           returnSchema = val$getReturns()$schema
+                           
+                           return(String$new()$matchesSchema(returnSchema))
+                         } else {
+                           return(is.character(val))
+                         }
+                       })),
                        number = all(sapply(private$value,function(val){
                          if ("Process" %in% class(val)) {
                            returnSchema = val$getReturns()$schema
@@ -1037,8 +1045,24 @@ Array = R6Class(
                            return(is.numeric(val))
                          }
                        })),
-                       integer = all(sapply(private$value,is.integer)),
-                       boolean = all(sapply(private$value,is.logical))
+                       integer = all(sapply(private$value,function(val){
+                         if ("Process" %in% class(val)) {
+                           returnSchema = val$getReturns()$schema
+                           
+                           return(Integer$new()$matchesSchema(returnSchema))
+                         } else {
+                           return(is.integer(val))
+                         }
+                       })),
+                       boolean = all(sapply(private$value,function(val){
+                         if ("Process" %in% class(val)) {
+                           returnSchema = val$getReturns()$schema
+                           
+                           return(Boolean$new()$matchesSchema(returnSchema))
+                         } else {
+                           return(is.logical(val))
+                         }
+                       }))
         )
         # if allOK == null then it was not checked
         if (!is.null(allOK) && !allOK) {
