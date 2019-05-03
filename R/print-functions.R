@@ -77,7 +77,7 @@ print.ServiceType = function(x,...) {
 
 #' @export
 print.CollectionInfo = function(x, ...) {
-  id = paste(x$name)
+  id = paste(x$id)
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t\t\t",x$title,sep="")
   
