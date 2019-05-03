@@ -218,7 +218,7 @@ print.JobCostsEstimation = function(x,...){
 
 #' @export
 print.CollectionList = function(x, ...) {
-  print(as_tibble(x) %>% select(name,title,description))
+  print(as_tibble(x) %>% select(id,title,description))
 }
 
 #' @export
