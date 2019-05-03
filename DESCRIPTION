@@ -44,3 +44,5 @@ Collate:
     'print-functions.R'
     'process_graph_building.R'
     'wrapper-functions.R'
+    'argument_types.R'
+    'process_graph_v0.4.0.R'
