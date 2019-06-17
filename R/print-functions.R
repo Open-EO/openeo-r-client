@@ -242,3 +242,36 @@ print.ProcessGraphInfo = function(x, ...) {
   cat(id,title,description,graph,sep = "\n")
   print(x$process_graph)
 }
+
+#' @export
+print.OpenEOCapabilities = function(x, ...) {
+  capabilities = x
+
+  title = capabilities$title
+  backend_version = capabilities$backend_version
+  description=capabilities$description
+  
+  version = capabilities$api_version
+  endpoints = capabilities$endpoints
+  billing = capabilities$billing #not used right now
+  
+  cat(paste0("Back-end:\t\t",title),
+      paste0("Back-end version: \t",backend_version),
+      paste0("Description:\t\t",description),
+      paste0("API-version:\t\t",version),
+      sep = "\n") 
+       
+  
+  server_offering = tibble(path=character(),method=character())
+  for (i in 1:length(endpoints)) {
+    entry = endpoints[[i]]
+    path = entry$path
+    
+    for (j in 1:length(entry$method)) {
+      method = entry$method[[j]]
+      
+      server_offering = server_offering %>% add_row(path=path,method=method)
+    }
+  }
+  print(server_offering)
+}

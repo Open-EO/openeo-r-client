@@ -164,7 +164,20 @@ endpoints_compare = function(offering,e2,o2) {
 }
 
 endpoint_mapping = function(con) {
-  server_offering = con %>% listCapabilities()
+  endpoints = (con %>% listCapabilities())$endpoints
+  
+  server_offering = tibble(path=character(),method=character())
+  for (i in 1:length(endpoints)) {
+    entry = endpoints[[i]]
+    path = entry$path
+    
+    for (j in 1:length(entry$method)) {
+      method = entry$method[[j]]
+      
+      server_offering = server_offering %>% add_row(path=path,method=method)
+    }
+  }
+  
   api = api.v0.4.1()
   
   mapping = api %>% rowwise() %>% summarise(endpoint,operation,tag,available = tibble(endpoint,operation) %>% (function(row){

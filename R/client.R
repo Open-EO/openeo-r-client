@@ -88,7 +88,7 @@ OpenEOClient <- R6Class(
         private$stopIfNotConnected()
         
         capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
-        
+        class(capabilities) = "OpenEOCapabilities"
         return(capabilities)
       },
       error = .capturedErrorToMessage)
