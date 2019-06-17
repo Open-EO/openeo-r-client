@@ -105,8 +105,11 @@ services = function(con) {
 # login ----
 #' Connect to a openeEO back-end
 #'
-#' connects to openEO back-end
+#' Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
+#' specific versions, then you should provide the versions parameter.
+#' 
 #' @param host URL pointing to the openEO server back-end host
+#' @param version the version number as string
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param disable_auth flag to specify if the back-end supports authorization on its endpoints
@@ -114,7 +117,7 @@ services = function(con) {
 #' @param login_type either "basic" or "oidc". This refers to the login mechanism that shall be used
 #'
 #' @export
-connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer",login_type = "basic") {
+connect = function(host, version=NULL, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer",login_type = "basic") {
   con = OpenEOClient$new()
   
   con$disableAuth = disable_auth
@@ -127,13 +130,13 @@ connect = function(host, user=NULL, password=NULL, disable_auth=FALSE, auth_type
   }
   
   if (is.null(user) && is.null(password) && disable_auth) {
-    con = con$connect(url=host,login_type=login_type)
+    con = con$connect(url=host,version=version,login_type=login_type)
   } else if (login_type == "basic") {
     if (!is.null(user) && !is.null(password)) {
-      con = con$connect(url=host,login_type=login_type)$login(user=user,password=password)  
+      con = con$connect(url=host,version=version,login_type=login_type)$login(user=user,password=password)  
     }
   } else if (login_type == "oidc") {
-    con = con$connect(url=host,login_type=login_type)$login() 
+    con = con$connect(url=host,version=version,login_type=login_type)$login() 
   } else {
     message("Incomplete credentials. Either username or password is missing")
     return()

@@ -4,11 +4,13 @@
 \alias{connect}
 \title{Connect to a openeEO back-end}
 \usage{
-connect(host, user = NULL, password = NULL, disable_auth = FALSE,
-  auth_type = "bearer", login_type = "basic")
+connect(host, version = NULL, user = NULL, password = NULL,
+  disable_auth = FALSE, auth_type = "bearer", login_type = "basic")
 }
 \arguments{
 \item{host}{URL pointing to the openEO server back-end host}
+
+\item{version}{the version number as string}
 
 \item{user}{the user name (optional)}
 
@@ -21,5 +23,6 @@ connect(host, user = NULL, password = NULL, disable_auth = FALSE,
 \item{login_type}{either "basic" or "oidc". This refers to the login mechanism that shall be used}
 }
 \description{
-connects to openEO back-end
+Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
+specific versions, then you should provide the versions parameter.
 }

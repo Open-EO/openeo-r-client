@@ -34,6 +34,7 @@ VignetteBuilder: knitr
 License: Apache License
 Collate: 
     'ProcessGraphBuilder-class.R'
+    'argument_types.R'
     'capabilities-mapping.R'
     'client.R'
     'coerce-functions.R'
@@ -43,6 +44,5 @@ Collate:
     'oidc-client.R'
     'print-functions.R'
     'process_graph_building.R'
-    'wrapper-functions.R'
-    'argument_types.R'
     'process_graph_v0.4.0.R'
+    'wrapper-functions.R'

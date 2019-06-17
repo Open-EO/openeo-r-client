@@ -18,7 +18,7 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     user_id = NULL,
     
-    api.version = "0.3.1",
+    api.version = "0.4.1",
     api.mapping = NULL,
 
     # functions ====
@@ -26,7 +26,7 @@ OpenEOClient <- R6Class(
 
     },
 
-    connect = function(url,login_type="basic",disable_auth=FALSE) {
+    connect = function(url,version, login_type="basic",disable_auth=FALSE) {
       tryCatch({
         if (is.null(login_type) || !login_type %in% c("basic","oidc","none") ) {
           stop("Cannot find the login mechanism type. Please use 'basic', 'oidc' or 'none'")
@@ -43,6 +43,21 @@ OpenEOClient <- R6Class(
             }
             private$host = url
             private$login_type=login_type
+            
+            if (!is.null(version)) {
+              # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
+              hostInfo=self$openeoVersions()$versions
+              versionLabels = sapply(hostInfo,function(x)x$api_version)
+              names(hostInfo) = versionLabels
+              
+              if (!version %in% versionLabels) {
+                # print the available versions
+                message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
+                              paste(versionLabels,collapse=",")))
+              } else {
+                private$host = hostInfo[[version]]$url
+              }
+            }
             
             self$api.mapping = endpoint_mapping(self)
             cat("Connected to host\n")
@@ -107,10 +122,7 @@ OpenEOClient <- R6Class(
         endpoint = private$getBackendEndpoint(tag)
         
         formats = private$GET(endpoint,authorized = FALSE)
-        default = formats$default
-        message(paste("Host uses '",formats$default,"' as default output format",sep=""))
         
-        formats = formats$formats
         names = names(formats)
         datatypes = unname(lapply(formats, function(format){
           return(format$gis_data_types)
@@ -220,6 +232,19 @@ OpenEOClient <- R6Class(
       },
       error = .capturedErrorToMessage)
     },
+    openeoVersions = function(url) {
+      
+      tryCatch({
+        endpoint = "/.well-known/openeo"
+        
+        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+
+        return(info)
+      },error=.capturedErrorToMessage)
+      
+    },
+    
+    
     # list functions ####
     listData = function() {
 
