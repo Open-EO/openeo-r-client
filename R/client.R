@@ -46,7 +46,7 @@ OpenEOClient <- R6Class(
             
             if (!is.null(version)) {
               # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
-              hostInfo=self$openeoVersions()$versions
+              hostInfo=self$backendVersions()$versions
               versionLabels = sapply(hostInfo,function(x)x$api_version)
               names(hostInfo) = versionLabels
               
@@ -232,7 +232,7 @@ OpenEOClient <- R6Class(
       },
       error = .capturedErrorToMessage)
     },
-    openeoVersions = function(url) {
+    backendVersions = function(url) {
       
       tryCatch({
         endpoint = "/.well-known/openeo"
@@ -496,8 +496,8 @@ OpenEOClient <- R6Class(
 
         class(info) = "CollectionInfo"
         
-        if (!is.null(info$`eo:bands`)) {
-          class(info$`eo:bands`) = "BandList"
+        if (!is.null(info$properties$`eo:bands`)) {
+          class(info$properties$`eo:bands`) = "BandList"
         }
         
         return(info)

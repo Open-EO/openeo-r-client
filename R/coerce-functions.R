@@ -17,19 +17,10 @@ as_tibble.CollectionList = function(x, ...) {
 
 #'@export
 as_tibble.BandList = function(x, ...) {
-  band_ids = names(x)
   x = unname(x)
   
   table = .listObjectsToTibble(x)
-  if (nrow(table) == length(band_ids)) {
-    return( table %>% 
-              add_column(band_id = band_ids) %>% 
-              select(unique(c("band_id",colnames(table))))
-    )
-  } else {
-    return(tibble(band_id=band_ids))
-  }
-  
+  return( table )
 }
 
 # x has to be an unnamed list

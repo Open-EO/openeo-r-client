@@ -88,17 +88,22 @@ print.CollectionInfo = function(x, ...) {
     p$name
   }),sep="",collapse = ", "),sep="")
   
-  if (is.null(x$`eo:platform`))x$`eo:platform` = "---"
-  platform = paste("Platform:\t\t\t",x$`eo:platform`,sep="")
-  if (is.null(x$`eo:constellation`))x$`eo:constellation` = "---"
-  constellation = paste("Constellation:\t\t\t",x$`eo:constellation`,sep="")
-  if (is.null(x$`eo:instrument`))x$`eo:instrument` = "---"
-  instrument = paste("Instrument:\t\t\t",x$`eo:instrument`,sep="")
+  if (!is.null(x$properties)) {
+    if (is.null(x$properties$`eo:platform`))x$properties$`eo:platform` = "---"
+    platform = paste("Platform:\t\t\t",x$properties$`eo:platform`,sep="")
+    if (is.null(x$properties$`eo:constellation`))x$properties$`eo:constellation` = "---"
+    constellation = paste("Constellation:\t\t\t",x$properties$`eo:constellation`,sep="")
+    if (is.null(x$properties$`eo:instrument`))x$properties$`eo:instrument` = "---"
+    instrument = paste("Instrument:\t\t\t",x$properties$`eo:instrument`,sep="")
+    
+    crs = paste("Data SRS (EPSG-code):\t\t",x$properties$`eo:epsg`,sep="")
+  }
+  
   
   
   spatial.extent = paste("(",x$extent$spatial[1],", ",x$extent$spatial[2],"), (",x$extent$spatial[3],", ", x$extent$spatial[4],")",sep="")
   extent = paste("Spatial extent (lon,lat):\t",spatial.extent,sep="")
-  crs = paste("Data SRS (EPSG-code):\t\t",x$`eo:epsg`,sep="")
+  
   time = paste("Temporal extent:\t\t",paste(sapply(x$extent$temporal,function(obj) {
     if (is.null(obj) || is.na(obj) || length(obj) == 0) return(NA)
     else return(format(as_datetime(obj),format="%Y-%m-%dT%H:%M:%SZ"))
@@ -108,9 +113,9 @@ print.CollectionInfo = function(x, ...) {
             platform,constellation,instrument,
             extent,crs,time),sep="\n")
   
-  if (!is.null(x$`eo:bands`)) {
+  if (!is.null(x$properties$`eo:bands`)) {
     cat("Bands:\n")
-    print(as.data.frame(as_tibble(x$`eo:bands`)))
+    print(as.data.frame(as_tibble(x$properties$`eo:bands`)))
   }
   
 }
