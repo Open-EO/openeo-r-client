@@ -262,13 +262,17 @@ OpenEOClient <- R6Class(
     listProcesses = function() {
 
       tryCatch({
-        tag = "process_overview"
-        endpoint = private$getBackendEndpoint(tag)
+        if (is.null(private$processes)) {
+          tag = "process_overview"
+          endpoint = private$getBackendEndpoint(tag)
+          
+          listOfProcesses = private$GET(endpoint,type="application/json")
+          private$processes = listOfProcesses$processes
+          
+          names(private$processes) = sapply(private$processes,function(p)p$id)
+        }
         
-        listOfProcesses = private$GET(endpoint,type="application/json")
-        listOfProcesses = listOfProcesses$processes
-        
-        return(lapply(listOfProcesses,function(process) {
+        return(lapply(private$processes,function(process) {
           class(process) = "ProcessInfo"
           return(process)
         }))
@@ -982,11 +986,21 @@ OpenEOClient <- R6Class(
     
     getProcessGraphBuilder = function() {
       tryCatch({
-        if (is.null(private$graph_builder)) {
-          private$graph_builder = ProcessGraphBuilder$new(con=self)
+        if (is.null(private$processes)) {
+          tag = "process_overview"
+          endpoint = private$getBackendEndpoint(tag)
+          
+          listOfProcesses = private$GET(endpoint,type="application/json")
+          private$processes = listOfProcesses$processes
         }
+        # json processes -> process objects
         
-        return(private$graph_builder)
+        names(private$processes) = sapply(private$processes,function(p)p$id)
+        
+        
+        plist = lapply(private$processes,processFromJson)
+        
+        return(Graph$new(plist))
       },error=.capturedErrorToMessage)
       
     }, 
