@@ -65,7 +65,7 @@ OpenEOClient <- R6Class(
             tryCatch({
               if (is.null(private$processes)) {
                 processes = self$listProcesses()
-                pids = sapply(processes, function(x)x$name)
+                pids = sapply(processes, function(x)x$id)
                 names(processes) = pids
                 private$processes = processes
               }
@@ -200,7 +200,7 @@ OpenEOClient <- R6Class(
         tryCatch({
           if (is.null(private$processes)) {
             processes = self$listProcesses()
-            pids = sapply(processes, function(x)x$name)
+            pids = sapply(processes, function(x)x$id)
             names(processes) = pids
             private$processes = processes
           }
@@ -289,7 +289,7 @@ OpenEOClient <- R6Class(
         listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
         listOfJobs = listOfJobs$jobs
         # list to tibble
-        table = tibble(job_id=character(),
+        table = tibble(id=character(),
                        title = character(),
                        status=character(),
                        submitted=.POSIXct(integer(0)),
@@ -305,8 +305,8 @@ OpenEOClient <- R6Class(
             job = listOfJobs[[index]]
             
             suppressWarnings({
-              job_id = NA
-              if (!is.null(job$job_id)) job_id = job$job_id
+              id = NA
+              if (!is.null(job$id)) id = job$id
               title = NA
               if (!is.null(job$title)) title = job$title
               status = NA
@@ -323,7 +323,7 @@ OpenEOClient <- R6Class(
               if (!is.null(job$plan)) plan = job$plan
               
               table= add_row(table,
-                             job_id=job_id,
+                             id=id,
                              title = title,
                              status=status,
                              submitted=submitted,
@@ -348,7 +348,7 @@ OpenEOClient <- R6Class(
         listOfGraphShortInfos = private$GET(endpoint, authorized = TRUE)
         listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
         
-        table = tibble(process_graph_id=character(),
+        table = tibble(id=character(),
                        title=character(),
                        description=character())
         
@@ -356,14 +356,14 @@ OpenEOClient <- R6Class(
         
           for (index in 1:length(listOfGraphShortInfos)) {
             graph_short = listOfGraphShortInfos[[index]]
-            id = graph_short$process_graph_id
+            id = graph_short$id
             title = NA
             if (!is.null(graph_short$title)) title = graph_short$title
             description = NA
             if (!is.null(graph_short$description)) description = graph_short$description
             
             table= add_row(table,
-                           process_graph_id=id,
+                           id=id,
                            title = title,
                            description = description)
           }
@@ -382,7 +382,7 @@ OpenEOClient <- R6Class(
         listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
         listOfServices = listOfServices$services
         
-        table = tibble(service_id=character(),
+        table = tibble(id=character(),
                        title=character(),
                        description=character(),
                        url = character(),
@@ -397,8 +397,8 @@ OpenEOClient <- R6Class(
           for (index in 1:length(listOfServices)) {
             service = listOfServices[[index]]
             
-            service_id = NA
-            if (!is.null(service$service_id)) service_id = service$service_id
+            id = NA
+            if (!is.null(service$id)) id = service$id
             
             title = NA
             if (!is.null(service$title)) title = service$title
@@ -428,7 +428,7 @@ OpenEOClient <- R6Class(
             if (!is.null(service$budget)) budget = as.numeric(service$budget)
             
             table= add_row(table, 
-                           service_id=service_id,
+                           id=id,
                            title=title,
                            description=description,
                            url = url,

@@ -19,7 +19,7 @@ print.User = function(x, ...) {
 #' Print function to visualize relevant information about an openeo process
 #' @export
 print.ProcessInfo <- function(x, ...) {
-  title = paste("Process:\t",x$name,sep="")
+  title = paste("Process:\t",x$id,sep="")
   summary = paste("Summary:\t",x$summary,sep="")
   description = paste("Description:\t",x$description,sep="")
   result = paste("Returns:\t",x$returns$description,sep="")
@@ -122,7 +122,7 @@ print.CollectionInfo = function(x, ...) {
 
 #' @export
 print.JobInfo = function(x,...) {
-  job_id = paste("Job ID:\t\t", x$job_id, "\n",sep="")
+  id = paste("Job ID:\t\t", x$id, "\n",sep="")
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t",x$title,"\n",sep="")
   if (is.null(x$description)) x$description = "---"
@@ -136,7 +136,7 @@ print.JobInfo = function(x,...) {
   if (is.null(x$budget)) x$budget = "---"
   budget = paste("Budget:\t\t",x$budget,"\n",sep="")
   
-  cat(job_id,title,description,status,submitted,updated,plan,costs,budget,sep = "")
+  cat(id,title,description,status,submitted,updated,plan,costs,budget,sep = "")
   
   output = "Output:"
   cat(output)
@@ -157,7 +157,7 @@ print.JobInfo = function(x,...) {
 #' @export
 print.ServiceInfo = function(x,...) {
 
-  service_id = paste("ID:\t\t",x$service_id,"\n",sep="")
+  id = paste("ID:\t\t",x$id,"\n",sep="")
   
   type = paste("Type:\t\t",x$type,"\n",sep="")
   
@@ -178,10 +178,10 @@ print.ServiceInfo = function(x,...) {
   
   costs = paste("Costs:\t\t",x$costs,"\n",sep="")
   
-  if (is.na(x$budget)) x$budget ="---"
+  if (length(x$budget) == 0 || is.na(x$budget)) x$budget ="---"
   budget = paste("Budget:\t\t",x$budget,"\n",sep="")
   
-  cat(service_id,type,enabled,title,submitted,description,url,plan,costs,budget,sep="")
+  cat(id,type,enabled,title,submitted,description,url,plan,costs,budget,sep="")
   
   #parameters, attributes, process_graph
   if (is.null(x$parameters)) {
@@ -233,12 +233,12 @@ print.process = function(x, ...) {
 
 #' @export
 print.ProcessGraphInfo = function(x, ...) {
-  job_id = paste("Job ID:\t\t", x$process_graph_id,sep="")
+  id = paste("Job ID:\t\t", x$id,sep="")
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t",x$title,sep="")
   if (is.null(x$description)) x$description = "---"
   description = paste("Description:\t",x$description,sep="")
   graph = "Process graph:"
-  cat(job_id,title,description,graph,sep = "\n")
+  cat(id,title,description,graph,sep = "\n")
   print(x$process_graph)
 }
