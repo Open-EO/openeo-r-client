@@ -504,6 +504,8 @@ OpenEOClient <- R6Class(
           class(info$properties$`eo:bands`) = "BandList"
         }
         
+        class(info$properties$`cube:dimensions`) = "CubeDimensions"
+        
         return(info)
       },
       error = .capturedErrorToMessage)

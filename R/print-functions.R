@@ -130,13 +130,22 @@ print.JobInfo = function(x,...) {
   status = paste("Status:\t\t",x$status,"\n",sep="")
   submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
   updated = paste("Updated:\t",x$updated,"\n",sep="")
+  
+  if (is.null(x$progress)) x$progress = "---"
+  progress = paste("Progress:\t",x$progress,"\n",sep="")
+  
+  if (is.null(x$error)) x$error$message = "---"
+  error = paste("Error:\t\t",x$error$message,"\n",sep="")
+    
   if (is.null(x$plan)) x$plan = "---"
   plan = paste("Plan:\t\t",x$plan,"\n",sep="")
   costs = paste("Costs:\t\t",x$costs,"\n",sep="")
   if (is.null(x$budget)) x$budget = "---"
   budget = paste("Budget:\t\t",x$budget,"\n",sep="")
   
-  cat(id,title,description,status,submitted,updated,plan,costs,budget,sep = "")
+  cat(id,title,description,status,submitted,updated,
+      progress, error,
+      plan,costs,budget,sep = "")
   
   output = "Output:"
   cat(output)

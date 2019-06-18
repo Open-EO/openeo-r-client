@@ -61,5 +61,3 @@ as_tibble.BandList = function(x, ...) {
   return(table)
 }
 
-asJSON = jsonlite:::asJSON
-setMethod("asJSON", "process", function(x, ...) jsonlite:::asJSON(unclass(x), ...))

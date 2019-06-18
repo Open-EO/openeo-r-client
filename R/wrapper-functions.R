@@ -18,7 +18,15 @@ NULL
 #' @export
 # dont't expose it later
 taskToJSON = function(task) {
-  return(toJSON(task,auto_unbox = T,pretty=T,force=TRUE))
+  #task is a Graph object
+  
+  if ("Graph" %in% class(task)) {
+    return(toJSON(task$serialize,auto_unbox = T,pretty=T,force=TRUE))
+  } else {
+    stop("Task is no Graph object.")
+    invisible(NULL)
+  }
+  
 }
 
 #' Get a process graph builder from the connection
