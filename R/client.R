@@ -520,7 +520,7 @@ OpenEOClient <- R6Class(
         info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
         
         class(info) = "JobInfo"
-        class(info$process_graph) = "process"
+        class(info$process_graph) = "Json_Graph"
         
         return(info)
       },error=.capturedErrorToMessage)
@@ -539,7 +539,7 @@ OpenEOClient <- R6Class(
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
           class(graph) = "ProcessGraphInfo"
-          class(graph$process_graph) = "process"
+          class(graph$process_graph) = "Json_Graph"
           return(graph)
         },
         error=.capturedErrorToMessage

@@ -21,7 +21,7 @@ taskToJSON = function(task) {
   #task is a Graph object
   
   if ("Graph" %in% class(task)) {
-    return(toJSON(task$serialize,auto_unbox = T,pretty=T,force=TRUE))
+    return(toJSON(task$serialize(),auto_unbox = T,pretty=T,force=TRUE))
   } else {
     stop("Task is no Graph object.")
     invisible(NULL)

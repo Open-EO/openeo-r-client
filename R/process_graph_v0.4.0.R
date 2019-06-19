@@ -241,6 +241,9 @@ Graph = R6Class(
   )
 )
 
+#'@export
+setOldClass(c("Graph","R6"))
+
 # Process ====
 Process = R6Class(
   "Process",

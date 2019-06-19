@@ -878,6 +878,8 @@ Callback = R6Class(
     
     typeCheck = function() {
       # check the value (graph) for the same callback parameters (CallbackValues)
+      if (!"Graph" %in% class(private$value)) stop("The value of a callback argument is usually a graph.")
+      
     },
     
     typeSerialization = function() {

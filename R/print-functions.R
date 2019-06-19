@@ -236,8 +236,13 @@ print.CollectionList = function(x, ...) {
 }
 
 #' @export
-print.process = function(x, ...) {
+print.Graph = function(x, ...) {
   print(taskToJSON(x))
+}
+
+#' @export
+print.Json_Graph = function(x, ...) {
+  print(toJSON(x,auto_unbox = TRUE,force=TRUE,pretty=TRUE))
 }
 
 #' @export
