@@ -95,7 +95,10 @@ Argument = R6Class(
     },
     serialize = function() {
       if ("Graph" %in% class(private$value)) {
-        return(private$value$serialize())
+        if (!"callback" %in% class(self)) {
+          return(private$value$serialize())
+        }
+        
       }
       
       if ("ProcessNode" %in% class(private$value)) {
@@ -884,7 +887,8 @@ Callback = R6Class(
     
     typeSerialization = function() {
       if(!is.null(private$value)) {
-        private$value$serialize()
+        # serialize the graph
+        return(list(callback=private$value$serialize()))
       }
     }
   )

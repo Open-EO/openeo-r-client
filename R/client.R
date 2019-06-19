@@ -466,7 +466,12 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    listResults = function(job_id) {
+    listResults = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
       
       tryCatch({
         tag = "jobs_download"
@@ -511,7 +516,12 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage)
     },
     
-    describeJob = function(job_id) {
+    describeJob = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
       
       tryCatch({
         tag = "jobs_details"
@@ -623,7 +633,9 @@ OpenEOClient <- R6Class(
         
         
         if (!is.null(task)) {
-          if (is.list(task)) {
+          if ("Graph" %in% class(task)) {
+            job = list(process_graph=task$serialize(),output = output)
+          } else if (is.list(task)) {
             job = list(process_graph=toJSON(task,force=TRUE),output = output)
           } else {
             stop("Parameter task is not a task object. Awaiting a list.")
@@ -935,6 +947,8 @@ OpenEOClient <- R6Class(
         tag = "process_graph_validate"
         endpoint = private$getBackendEndpoint(tag)
         
+        if ("Graph" %in% class(graph)) graph = graph$serialize()
+        
         if (!is.list(graph) || is.null(graph)) {
           stop("The graph information is missing or not a list")
         }
@@ -953,7 +967,13 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    cancel = function(job_id) {
+    cancel = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -972,7 +992,13 @@ OpenEOClient <- R6Class(
       
     },
     
-    estimateCosts = function(job_id) {
+    estimateCosts = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -1059,7 +1085,13 @@ OpenEOClient <- R6Class(
       
     },
     
-    orderResults = function(job_id) {
+    orderResults = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -1105,7 +1137,13 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
       
     },
-    deleteJob = function(job_id) {
+    deleteJob = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         tag = "jobs_delete"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)

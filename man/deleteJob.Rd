@@ -4,12 +4,12 @@
 \alias{deleteJob}
 \title{Delete a job}
 \usage{
-deleteJob(con, job_id)
+deleteJob(con, job)
 }
 \arguments{
 \item{con}{authenticated Connection}
 
-\item{job_id}{id of the job}
+\item{job}{the job or the id of the job}
 }
 \value{
 logical with state of success

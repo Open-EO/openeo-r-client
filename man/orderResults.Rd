@@ -4,12 +4,12 @@
 \alias{orderResults}
 \title{Starts remote asynchronous evaluation of a job}
 \usage{
-orderResults(con, job_id)
+orderResults(con, job)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}
 
-\item{job_id}{the id of the defined job}
+\item{job}{the job object or the job id of the defined job}
 }
 \value{
 the job_id of the defined job

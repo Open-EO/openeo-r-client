@@ -4,12 +4,12 @@
 \alias{listResults}
 \title{Creates a list of download paths}
 \usage{
-listResults(con, job_id)
+listResults(con, job)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client object}
 
-\item{job_id}{the id of the job}
+\item{job}{the job object or the id of the job}
 }
 \value{
 result object containing of URLs for download

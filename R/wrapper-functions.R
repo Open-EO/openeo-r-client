@@ -575,12 +575,12 @@ defineJob = function(con,task=NULL, graph_id=NULL ,
 #' for a defined job.
 #' 
 #' @param con connected and authenticated openeo client
-#' @param job_id the id of the defined job
+#' @param job the job object or the job id of the defined job
 #' 
 #' @return the job_id of the defined job
 #' @export 
-orderResults = function(con, job_id) {
-  con$orderResults(job_id)
+orderResults = function(con, job) {
+  con$orderResults(job)
 }
 
 #' Modifies a job with given parameter
@@ -632,12 +632,12 @@ followJob = function(con, job_id) {
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
 #' @param con connected and authenticated openeo client object
-#' @param job_id the id of the job
+#' @param job the job object or the id of the job
 #' 
 #' @return result object containing of URLs for download
 #' @export
-listResults = function(con, job_id) {
-  return(con$listResults(job_id=job_id))
+listResults = function(con, job) {
+  return(con$listResults(job=job))
 }
 
 
@@ -647,11 +647,11 @@ listResults = function(con, job_id) {
 #' further executions and related costs.
 #'
 #' @param con authenticated Connection
-#' @param job_id id of job that will be canceled
+#' @param job the job object or the id of job that will be canceled
 #' @return a success / failure notification
 #' @export
-cancelJob = function(con, job_id) {
-    return(con$cancel(job_id))
+cancelJob = function(con, job) {
+    return(con$cancel(job))
 }
 
 #' Fetches information about a job
@@ -672,11 +672,11 @@ describeJob = function(con,job_id) {
 #' Deletes a job from the backend.
 #'
 #' @param con authenticated Connection
-#' @param job_id id of the job
+#' @param job the job or the id of the job
 #' @return logical with state of success
 #' @export
-deleteJob = function(con,job_id) {
-  return(con$deleteJob(job_id))
+deleteJob = function(con,job) {
+  return(con$deleteJob(job))
 }
 
 
@@ -687,11 +687,11 @@ deleteJob = function(con,job_id) {
 #' included in the monetary costs.
 #'
 #' @param con authenticated Connection
-#' @param job_id id of the job
+#' @param job the job or the id of the job
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
-estimateCosts = function(con,job_id) {
-  return(con$estimateCosts(job_id))
+estimateCosts = function(con,job) {
+  return(con$estimateCosts(job))
 }
 
 #
