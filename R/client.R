@@ -243,10 +243,16 @@ OpenEOClient <- R6Class(
         listOfProcesses = private$GET(endpoint,type="application/json")
         listOfProcesses = listOfProcesses$processes
         
-        return(lapply(listOfProcesses,function(process) {
+        pids = sapply(listOfProcesses, function(x)x$name)
+        
+        listOfProcesses=lapply(listOfProcesses,function(process) {
           class(process) = "ProcessInfo"
           return(process)
-        }))
+        })
+        
+        names(listOfProcesses) = pids
+        
+        return(listOfProcesses)
       },
       error=.capturedErrorToMessage)
       
@@ -593,7 +599,7 @@ OpenEOClient <- R6Class(
         
         if (!is.null(task)) {
           if (is.list(task)) {
-            job = list(process_graph=toJSON(task,force=TRUE),output = output)
+            job = list(process_graph=task,output = output)
           } else {
             stop("Parameter task is not a task object. Awaiting a list.")
           }
@@ -612,6 +618,7 @@ OpenEOClient <- R6Class(
         response = private$POST(endpoint=endpoint,
                                 authorized = TRUE,
                                 data=job,
+                                encodeType = "json",
                                 raw=TRUE)
         
         message("Job was sucessfully registered on the backend.")
