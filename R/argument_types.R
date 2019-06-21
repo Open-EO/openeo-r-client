@@ -883,6 +883,13 @@ Callback = R6Class(
       # check the value (graph) for the same callback parameters (CallbackValues)
       if (!"Graph" %in% class(private$value)) stop("The value of a callback argument is usually a graph.")
       
+      errors = private$value$validate()
+      
+      if (any(errors != TRUE)) {
+        stop(paste("Errors in subgraph:",paste(errors,collapse=";")))
+      }
+
+      
     },
     
     typeSerialization = function() {
@@ -981,7 +988,6 @@ Array = R6Class(
   private = list(
     typeCheck = function() {
       itemType = private$schema$items$type
-      
       if (itemType == "any") {
         # this can be anything so we shift the responsibility to the back-end
         #TODO maybe give a warning that it is unchecked
@@ -996,7 +1002,7 @@ Array = R6Class(
           length(private$value) > private$schema$maxItems) {
         stop(paste0("More items than are maximal required. Found ",length(private$value)," items of maximal ",private$schema$maxItems," items."))
       }
-      
+
       if (itemType == "array") {
         # just check the first layer, everything else would be nice, but is no more in our responsibility
         allOK = all(sapply(private$value, function(item) {
@@ -1031,48 +1037,49 @@ Array = R6Class(
         if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
         
       } else {
-        #findParameterGenerator(list(type=itemType,format=character()))
-        allOK = switch(itemType,
-                       string = all(sapply(private$value,function(val){
-                         if ("Process" %in% class(val)) {
-                           returnSchema = val$getReturns()$schema
-                           
-                           return(String$new()$matchesSchema(returnSchema))
-                         } else {
-                           return(is.character(val))
-                         }
-                       })),
-                       number = all(sapply(private$value,function(val){
-                         if ("Process" %in% class(val)) {
-                           returnSchema = val$getReturns()$schema
-                           
-                           return(Number$new()$matchesSchema(returnSchema))
-                         } else {
-                           return(is.numeric(val))
-                         }
-                       })),
-                       integer = all(sapply(private$value,function(val){
-                         if ("Process" %in% class(val)) {
-                           returnSchema = val$getReturns()$schema
-                           
-                           return(Integer$new()$matchesSchema(returnSchema))
-                         } else {
-                           return(is.integer(val))
-                         }
-                       })),
-                       boolean = all(sapply(private$value,function(val){
-                         if ("Process" %in% class(val)) {
-                           returnSchema = val$getReturns()$schema
-                           
-                           return(Boolean$new()$matchesSchema(returnSchema))
-                         } else {
-                           return(is.logical(val))
-                         }
-                       }))
-        )
-        # if allOK == null then it was not checked
-        if (!is.null(allOK) && !allOK) {
-          stop(paste0("At least one element in the array is not of type: ",itemType))
+        if (!"callback-value" %in% class(private$value)) {
+          allOK = switch(itemType,
+                         string = all(sapply(private$value,function(val){
+                           if ("Process" %in% class(val)) {
+                             returnSchema = val$getReturns()$schema
+                             
+                             return(String$new()$matchesSchema(returnSchema))
+                           } else {
+                             return(is.character(val))
+                           }
+                         })),
+                         number = all(sapply(private$value,function(val){
+                           if ("Process" %in% class(val)) {
+                             returnSchema = val$getReturns()$schema
+                             
+                             return(Number$new()$matchesSchema(returnSchema))
+                           } else {
+                             return(is.numeric(val))
+                           }
+                         })),
+                         integer = all(sapply(private$value,function(val){
+                           if ("Process" %in% class(val)) {
+                             returnSchema = val$getReturns()$schema
+                             
+                             return(Integer$new()$matchesSchema(returnSchema))
+                           } else {
+                             return(is.integer(val))
+                           }
+                         })),
+                         boolean = all(sapply(private$value,function(val){
+                           if ("Process" %in% class(val)) {
+                             returnSchema = val$getReturns()$schema
+                             
+                             return(Boolean$new()$matchesSchema(returnSchema))
+                           } else {
+                             return(is.logical(val))
+                           }
+                         }))
+          )
+          # if allOK == null then it was not checked
+          if (!is.null(allOK) && !allOK) {
+            stop(paste0("At least one element in the array is not of type: ",itemType))
+          } 
         } 
         
       }
