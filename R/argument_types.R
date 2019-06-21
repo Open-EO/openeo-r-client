@@ -1096,6 +1096,8 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
+      if ("callback-value" %in% class(private$value)) return(private$value$serialize())
+      
       return(
         lapply(private$value, function(value) {
           
