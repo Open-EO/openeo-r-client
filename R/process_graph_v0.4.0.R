@@ -218,16 +218,10 @@ Graph = R6Class(
     },
     
     extractUsedNodeIds = function(node) {
-      cat("********************",sep="\n")
-      cat(node$getNodeId(),sep = "\n")
       
       nodeParams = unlist(lapply(node$parameters, function (param) {
         #check if the argument contains a ProcessNode in a list
-        cat("--> ")
-        cat(param$getName(),sep="\n")
-        cat(class(param),sep="\n")
-        
-        
+      
         if (!is.null(param$getValue()) && all("list" %in% class(param$getValue()))) {
           nodesInList = lapply(param$getValue(), function(listArg) {
             
