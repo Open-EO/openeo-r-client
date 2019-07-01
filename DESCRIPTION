@@ -34,6 +34,7 @@ VignetteBuilder: knitr
 License: Apache License
 Collate: 
     'argument_types.R'
+    'callback-functions.R'
     'capabilities-mapping.R'
     'client.R'
     'coerce-functions.R'

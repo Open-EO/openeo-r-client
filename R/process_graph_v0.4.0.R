@@ -8,8 +8,12 @@ Graph = R6Class(
   "Graph",
   lock_objects = FALSE,
   public = list(
-    initialize = function(processes) {
+    data = list(),
+    
+    initialize = function(processes, data = list()) {
       if (!is.list(processes)) stop("Processes are not provided as list")
+      
+      self$data = data
       
       for (index in 1:length(processes)) {
         
@@ -141,6 +145,7 @@ Graph = R6Class(
           node$validate(node_id=node$getNodeId())
         })))
         
+        
         if(is.null(results)) {
           return(TRUE)
         } else {
@@ -213,9 +218,17 @@ Graph = R6Class(
     },
     
     extractUsedNodeIds = function(node) {
+      cat("********************",sep="\n")
+      cat(node$getNodeId(),sep = "\n")
+      
       nodeParams = unlist(lapply(node$parameters, function (param) {
         #check if the argument contains a ProcessNode in a list
-        if (all("list" %in% class(param$getValue()))) {
+        cat("--> ")
+        cat(param$getName(),sep="\n")
+        cat(class(param),sep="\n")
+        
+        
+        if (!is.null(param$getValue()) && all("list" %in% class(param$getValue()))) {
           nodesInList = lapply(param$getValue(), function(listArg) {
             
             if ("ProcessNode" %in% class(listArg)) return(listArg)

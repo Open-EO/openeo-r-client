@@ -97,8 +97,7 @@ Argument = R6Class(
       if ("Graph" %in% class(private$value)) {
         if (!"callback" %in% class(self)) {
           return(private$value$serialize())
-        }
-        
+        } 
       }
       
       if ("ProcessNode" %in% class(private$value)) {
@@ -1103,10 +1102,10 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
-      if ("callback-value" %in% class(private$value)) return(private$value$serialize())
+      if ("callback-value" %in% class(self$getValue())) return(self$getValue()$serialize())
       
       return(
-        lapply(private$value, function(value) {
+        lapply(self$getValue(), function(value) {
           
           if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
           
@@ -1233,10 +1232,14 @@ AnyOf = R6Class(
       
     },
     getValue = function() {
+
       # best case only one had survived the selection, if not throw an error?
       # or return the first result
       if (is.null(private$value)) return(private$value)
       
+      if (class(private$value)=="list" && length(private$value)==1) {
+        return(private$value[[1]]$getValue())
+      }
       return(private$value[[1]]$getValue())
     },
     

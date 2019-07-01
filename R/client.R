@@ -1025,10 +1025,15 @@ OpenEOClient <- R6Class(
         
         names(private$processes) = sapply(private$processes,function(p)p$id)
         
+        collections = self$listData()$collections
+        cids = sapply(collections,function(coll)coll$id)
+        collections = as.list(cids)
+        names(collections) = cids
+        
         
         plist = lapply(private$processes,processFromJson)
         
-        return(Graph$new(plist))
+        return(Graph$new(plist,collections))
       },error=.capturedErrorToMessage)
       
     }, 
