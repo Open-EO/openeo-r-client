@@ -104,6 +104,10 @@ Argument = R6Class(
         return(private$value$serializeAsReference())
       }
       
+      if ("callback-value" %in% class(self$getValue())) {
+        return(self$getValue()$serialize())
+      }
+      
       # for format specific conversion overwrite this by children
       return(private$typeSerialization())
     },
@@ -117,7 +121,7 @@ Argument = R6Class(
               self$isEmpty()) {
             
           } else {
-            private$typeCheck()
+            if (!"callback-value" %in% class(self$getValue())) private$typeCheck()
           }
           
           invisible(NULL)

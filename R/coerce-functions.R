@@ -61,3 +61,7 @@ as_tibble.BandList = function(x, ...) {
   return(table)
 }
 
+#' @export
+asJSON.Graph = function(x) {
+  taskToJSON(x)
+}

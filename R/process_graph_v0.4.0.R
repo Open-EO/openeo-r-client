@@ -455,3 +455,5 @@ ProcessNode = R6Class(
   paste(name,paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE)),...)
 }
 
+#' @export
+setOldClass(c("Graph","R6"))

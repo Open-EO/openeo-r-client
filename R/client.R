@@ -631,7 +631,6 @@ OpenEOClient <- R6Class(
           output$parameters = create_options
         }
         
-        
         if (!is.null(task)) {
           if ("Graph" %in% class(task)) {
             job = list(process_graph=task$serialize(),output = output)
