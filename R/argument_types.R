@@ -1226,9 +1226,11 @@ AnyOf = R6Class(
           
           
         })
+        
+        private$value = private$parameter_choice[validated]
       }
       
-      private$value = private$parameter_choice[validated]
+      
       
     },
     getValue = function() {
