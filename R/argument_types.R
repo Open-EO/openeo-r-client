@@ -1382,13 +1382,20 @@ parameterFromJson = function(param_def, nullable = FALSE) {
         return(parameterFromJson(param_copy))
       }
     )
-    # name=character(),description=character(), parameter_list,required=FALSE
-    choice = AnyOf$new(name=param_def$name, 
-                       description=param_def$description,
-                       required = param_def$required, 
-                       parameter_list = params)
     
-    choice$isNullable = nullable
+    if (length(params) > 1) {
+      choice = AnyOf$new(name=param_def$name, 
+                         description=param_def$description,
+                         required = param_def$required, 
+                         parameter_list = params)
+      
+      choice$isNullable = nullable
+    } else {
+      nullableParameter = params[[1]]
+      nullableParameter$isNullable = nullable
+      return(nullableParameter)
+    }
+    
     return(choice)
   }
   
