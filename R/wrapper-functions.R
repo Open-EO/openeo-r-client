@@ -551,14 +551,14 @@ listJobs = function(con) {
 #' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 #'
 #' @param con connected and authenticated openeo client
-#' @param task A Process or chained processes to a Task
+#' @param graph A process graph
 #' @param format The inteded format of the data to be returned
 #' @param output_file Where to store the retrieved data under
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-preview = function(con,task,format=NULL,output_file=NULL, ...) {
-  con$execute(task=task,
+compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
+  con$compute_result(graph=graph,
               format=format,
               output_file=output_file, 
               ...)

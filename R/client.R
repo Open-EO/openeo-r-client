@@ -1040,23 +1040,22 @@ OpenEOClient <- R6Class(
       
     }, 
     # processing functions ====
-    execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
+    compute_result = function (graph=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
       tryCatch({
         # former sync evaluation
         tag = "execute_sync"
         endpoint = private$getBackendEndpoint(tag)
-        
         if (is.null(format)) {
           format = self$output_formats()$default
         }
         
         output = list(...)
         output = append(output, list(format=format))
-        if (!is.null(task)) {
-          if (is.list(task)) {
-            job = toJSON(list(process_graph=task,output = output),force=TRUE,auto_unbox = TRUE)
+        if (!is.null(graph)) {
+          if (is.list(graph)) {
+            job = toJSON(list(process_graph=graph,output = output),force=TRUE,auto_unbox = TRUE)
           } else {
-            stop("Parameter task is not a task object. Awaiting a list.")
+            stop("Parameter graph is not a Graph object. Awaiting a list.")
           }
         } else if (! is.null(graph_id)) {
           job = list(process_graph=graph_id,output = output)
