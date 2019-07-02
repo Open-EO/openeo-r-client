@@ -207,25 +207,25 @@ list_collections = function(con) {
 #' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 #' 
 #' @param con Authentication object
-#' @param collection_id id of a product/collection to be described
+#' @param id id of a product/collection to be described
 #' 
 #' @return a list of detailed information about a product/collection
 #' @export
-describeCollection = function(con, collection_id=NA) {
-  describeProduct = !missing(collection_id) && !is.na(collection_id)
+describe_collection = function(con, id=NA) {
+  missing_id = !missing(id) && !is.na(id)
   
-  if (!describeProduct) {
+  if (!missing_id) {
     message("No or invalid collection id(s)")
     return()
   }
-  if (length(collection_id) > 1) {
-    return(lapply(collection_id,
-                  function(pid) {
-                    con$describeProduct(pid)
+  if (length(id) > 1) {
+    return(lapply(id,
+                  function(cid) {
+                    con$describe_collection(cid)
                   }
     ))
   } else {
-    return(con$describeProduct(collection_id))
+    return(con$describe_collection(id))
   }
 }
 

@@ -498,11 +498,11 @@ OpenEOClient <- R6Class(
       }
     },
     
-    describeProduct = function(pid) {
+    describe_collection = function(id) {
       
       tryCatch({
         tag = "data_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
