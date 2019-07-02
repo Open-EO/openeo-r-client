@@ -592,7 +592,7 @@ OpenEOClient <- R6Class(
     },
     # publish functions ====
     
-    storeGraph = function(graph,title = NULL, description = NULL) {
+    create_process_graph = function(graph,title = NULL, description = NULL) {
       tryCatch({
         tag = "new_graph"
         endpoint = private$getBackendEndpoint(tag)
@@ -730,7 +730,7 @@ OpenEOClient <- R6Class(
     modifyGraph = function(graph_id, graph=NULL,title = NULL, description = NULL) {
       tryCatch({
         if (is.null(graph_id)) {
-          stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
+          stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
         }
         
         requestBody = list()

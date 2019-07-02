@@ -312,8 +312,8 @@ deleteGraph = function(con, graph_id) {
 #' @param title the title of the process graph (optional)
 #' @param description the description of a process graph (optional)
 #' @export
-storeGraph = function(con, graph, title = NULL, description = NULL) {
-  return(con$storeGraph(graph,title = title, description = description))
+create_process_graph = function(con, graph, title = NULL, description = NULL) {
+  return(con$create_process_graph(graph,title = title, description = description))
 }
 
 #' Modify the current graph with a given
