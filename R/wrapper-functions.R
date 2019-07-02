@@ -273,8 +273,8 @@ describe_process = function(con,id=NA) {
 #' @param con connected and authenticated openeo client object
 #' @return vector of process graph ids
 #' @export
-listGraphs = function(con) {
-  return(con$listGraphs())
+list_process_graphs = function(con) {
+  return(con$list_process_graphs())
 }
 
 #' Fetches the representation of a stored graph

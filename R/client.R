@@ -343,7 +343,7 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
     },
     
-    listGraphs = function() {
+    list_process_graphs = function() {
       tryCatch({
         tag = "graph_overview"
         endpoint = private$getBackendEndpoint(tag)
