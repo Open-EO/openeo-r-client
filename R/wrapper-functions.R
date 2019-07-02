@@ -45,8 +45,8 @@ taskToJSON = function(task) {
 #' @param con a connection to an openeo back-end
 #' @return a ProcessGraphBuilder class with the offered processes of the backend
 #' @export
-pgb = function(con) {
-  con$getProcessGraphBuilder()
+process_graph_builder = function(con) {
+  con$process_graph_builder()
 }
 
 # server endpoint ----
@@ -59,7 +59,7 @@ pgb = function(con) {
 #' 
 #' @return a tibble containing all supported API versions of the back-end
 #' @export
-api.versions = function(url) {
+api_versions = function(url) {
   tryCatch({
       if (endsWith(url,"/")) url = substr(url, 1, nchar(url)-1)
       endpoint = "/.well-known/openeo"
@@ -299,8 +299,8 @@ list_process_graphs = function(con) {
 #' 
 #' @return the process graph as list
 #' @export
-get_process_graph_by_id = function(con, id) {
-  return(con$get_process_graph_by_id(id))
+describe_process_graph = function(con, id) {
+  return(con$describe_process_graph(id))
 }
 
 #' Deletes a previously stored process graph
@@ -312,8 +312,8 @@ get_process_graph_by_id = function(con, id) {
 #' @param graph_id the id of the graph
 #' 
 #' @export
-deleteGraph = function(con, graph_id) {
-  con$deleteGraph(graph_id)
+delete_process_graph = function(con, graph_id) {
+  con$delete_process_graph(graph_id)
 }
 
 #' Stores a graph on the back-end
@@ -339,8 +339,8 @@ create_process_graph = function(con, graph, title = NULL, description = NULL) {
 #' @param title title of the process graph (optional)
 #' @param description description of the process graph (optional)
 #' @export
-modifyGraph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
-  return(con$modifyGraph(graph_id=graph_id, graph=graph,title=title,description=description))
+update_process_graph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
+  return(con$update_process_graph(graph_id=graph_id, graph=graph,title=title,description=description))
 }
 
 #' Validates a process graph
@@ -414,7 +414,7 @@ create_service = function(con,
 #' will be deleted and also set to NULL.
 #' 
 #' @param con connected and authorized openeo client object
-#' @param service_id the service id
+#' @param id the service id
 #' @param type character the ogc web service type name to be created
 #' @param process_graph list of processes composed as a process graph
 #' @param title character (optional) the title in human readabled form for the service
@@ -426,7 +426,7 @@ create_service = function(con,
 #' @return service representation as list
 #' 
 #' @export
-modifyService = function(con, service_id, 
+update_service = function(con, id, 
                          type=NULL, 
                          process_graph=NULL,
                          title = NULL,
@@ -435,7 +435,7 @@ modifyService = function(con, service_id,
                          parameters = NULL,
                          plan = NULL,
                          budget = NULL) {
-  con$modifyService(service_id = service_id,
+  con$update_service(service_id = id,
                     type=type,
                     process_graph=process_graph,
                     title=title,
@@ -454,8 +454,8 @@ modifyService = function(con, service_id,
 #' @param service_id the service id
 #' @return service as a list
 #' @export
-get_service_by_id = function(con, id) {
-  return(con$get_service_by_id(id))
+describe_service = function(con, id) {
+  return(con$describe_service(id))
 }
 
 #' Deletes a service function for a job
@@ -463,10 +463,10 @@ get_service_by_id = function(con, id) {
 #' Queries the back-end and removes the current set service function of job.
 #' 
 #' @param con connected and authorized openeo client object
-#' @param service_id the service id
+#' @param id the service id
 #' @export
-deleteService = function(con, service_id) {
-  return(con$deleteService(service_id))
+delete_service = function(con, id) {
+  return(con$delete_service(id))
 }
 
 #
@@ -709,8 +709,8 @@ describe_job = function(con,id) {
 #' @param job the job or the id of the job
 #' @return logical with state of success
 #' @export
-deleteJob = function(con,job) {
-  return(con$deleteJob(job))
+delete_job = function(con,job) {
+  return(con$delete_job(job))
 }
 
 

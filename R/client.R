@@ -491,7 +491,7 @@ OpenEOClient <- R6Class(
         stop("No processes found or loaded from the back-end")
       }
       
-      if (! pid %in% names(private$processes)) {
+      if (! id %in% names(private$processes)) {
         stop(paste("Cannot describe process '",id,"'. Process does not exist.",sep=""))
       } else {
         return(private$processes[[id]])
@@ -540,7 +540,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    get_process_graph_by_id = function(id) {
+    describe_process_graph = function(id) {
       tryCatch(
         {
           if (is.null(id)) {
@@ -560,7 +560,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    get_service_by_id = function(id) {
+    describe_service = function(id) {
       tryCatch({
         if (is.null(id)) {
           stop("No service id specified.")
@@ -726,9 +726,9 @@ OpenEOClient <- R6Class(
     
     # Update functions ====
     
-    modifyGraph = function(graph_id, graph=NULL,title = NULL, description = NULL) {
+    update_process_graph = function(id, graph=NULL,title = NULL, description = NULL) {
       tryCatch({
-        if (is.null(graph_id)) {
+        if (is.null(id)) {
           stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
         }
         
@@ -760,7 +760,7 @@ OpenEOClient <- R6Class(
         }
         
         tag = "graph_replace"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         message = private$PATCH(endpoint = endpoint, 
                               authorized = TRUE, 
@@ -774,18 +774,18 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    update_job = function(job_id,
+    update_job = function(id,
                          title=NULL, description=NULL,
                          process_graph = NULL, 
                          plan = NULL, budget= NULL,
                          format=NULL, ...) {
       tryCatch({
-        if (is.null(job_id)) {
+        if (is.null(id)) {
           stop("No job i was specified.")
         }
         
         tag = "jobs_update"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         patch = list()
         create_options = list(...)
@@ -830,7 +830,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    modifyService = function(service_id,
+    update_service = function(id,
                              type=NULL, 
                              process_graph=NULL,
                              title = NULL,
@@ -840,7 +840,7 @@ OpenEOClient <- R6Class(
                              plan = NULL,
                              budget = NULL) {
       tag = "services_update"
-      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
       tryCatch({
         patch = list()
         
@@ -1013,7 +1013,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    getProcessGraphBuilder = function() {
+    process_graph_builder = function() {
       tryCatch({
         if (is.null(private$processes)) {
           tag = "process_overview"
@@ -1129,20 +1129,20 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     }, 
     
-    deleteGraph = function(graph_id) {
+    delete_process_graph = function(id) {
       tryCatch({
         tag = "graph_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         success = private$DELETE(endpoint = endpoint, authorized = TRUE)
         if(success) {
-          message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+          message(paste("Graph '",id,"' was successfully deleted from the back-end",sep=""))
         }
         return(success)
       },error=.capturedErrorToMessage)
       
     },
-    deleteJob = function(job) {
+    delete_job = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
@@ -1162,14 +1162,14 @@ OpenEOClient <- R6Class(
       
     },
     
-    deleteService = function(service_id) {
+    delete_service = function(id) {
       tryCatch({
         tag = "services_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         msg = private$DELETE(endpoint = endpoint,
                              authorized = TRUE)
-        message("Service '",service_id,"' successfully removed.")
+        message("Service '",id,"' successfully removed.")
         invisible(msg)
       },error=.capturedErrorToMessage)
     }
