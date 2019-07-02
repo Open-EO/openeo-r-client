@@ -573,18 +573,18 @@ compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
 #' job asynchronous or they can create a service from it.
 #' 
 #' @param con connected and authenticated openeo client
-#' @param task A Process or chained processes to a Task
+#' @param graph A Graph object
 #' @param graph_id The id of an already stored process graph on the same back-end
 #' @param format The inteded format of the data to be returned
 #' @param ... additional configuration parameter for output generation
 #' 
 #' @return the id of the job
 #' @export
-defineJob = function(con,task=NULL, graph_id=NULL , 
+create_job = function(con,graph=NULL, graph_id=NULL , 
                      title = NULL, description = NULL,
                      plan = NULL, budget = NULL,
                      format=NULL, ...) {
-  return(con$storeJob(task=task,graph_id = graph_id,
+  return(con$create_job(graph=graph,graph_id = graph_id,
                       title = title, description = description,
                       plan = plan, budget = budget,
                       format = format, ...))

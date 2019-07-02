@@ -619,7 +619,7 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    storeJob = function(task=NULL,graph_id=NULL,
+    create_job = function(graph=NULL,graph_id=NULL,
                         title = NULL, description = NULL,
                         plan = NULL, budget = NULL,
                         format, ...) {
