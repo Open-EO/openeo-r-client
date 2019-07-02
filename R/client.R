@@ -917,7 +917,7 @@ OpenEOClient <- R6Class(
     },
     
     # other getter / download functions ====
-    downloadUserFile = function(src, dst=NULL) {
+    download_file = function(src, dst=NULL) {
       tryCatch({
         if (!is.character(src)) {
           stop("Cannot download file with a source statement that is no character")
@@ -1114,7 +1114,7 @@ OpenEOClient <- R6Class(
     },
     
     #delete functions ====
-    deleteUserFile = function (src) {
+    delete_file = function (src) {
       tryCatch({
         if (is.character(src)) {
           src = .urlHardEncode(src)

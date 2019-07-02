@@ -527,8 +527,8 @@ upload_file = function (con, content, target,encode="raw",mime="application/octe
 #' 
 #' @return The file path of the stored file
 #' @export
-downloadUserData = function(con, src, dst=NULL) {
-  return(con$downloadUserFile(src,dst))
+download_file = function(con, src, dst=NULL) {
+  return(con$download_file(src,dst))
 }
 
 #' Deletes a file from the users workspace
@@ -540,8 +540,8 @@ downloadUserData = function(con, src, dst=NULL) {
 #' 
 #' @return logical
 #' @export
-deleteUserData = function(con, src) {
-  con$deleteUserFile(src = src)
+delete_file = function(con, src) {
+  con$delete_file(src = src)
 }
 
 #
