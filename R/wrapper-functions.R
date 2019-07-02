@@ -468,8 +468,8 @@ deleteService = function(con, service_id) {
 #' 
 #' @return a tibble of for filenames and their sizes
 #' @export
-listFiles = function(con) {
-  return(con$listUserFiles())
+list_files = function(con) {
+  return(con$list_filesF())
 }
 
 

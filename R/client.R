@@ -449,7 +449,7 @@ OpenEOClient <- R6Class(
       }), error = .capturedErrorToMessage)
     },
     
-    listUserFiles = function() {
+    list_files = function() {
       
       tryCatch({
         tag = "user_files"
