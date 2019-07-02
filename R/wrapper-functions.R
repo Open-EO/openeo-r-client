@@ -78,6 +78,19 @@ api.versions = function(url) {
 
 #' Shows an overview about the capabilities of an OpenEO back-end
 #' 
+#' Queries the back-end for its general capabilities.
+#' 
+#' @param con A connected OpenEO client
+#' 
+#' @return capabilities object
+#' 
+#' @export
+capabilities = function(con) {
+  return(con$capabilities())
+}
+
+#' List the openeo endpoints
+#' 
 #' The client queries the version resolved back-end for its endpoint capabilities and returns it as
 #' a tibble.
 #' 
@@ -86,7 +99,7 @@ api.versions = function(url) {
 #' @return tibble
 #' 
 #' @export
-capabilities = function(con) {
+list_features = function(con) {
   return(con$api.mapping[c("endpoint","operation","available")])
 }
 
@@ -486,7 +499,7 @@ list_files = function(con) {
 #' 
 #' @return the relative file path on the server
 #' @export
-uploadUserData = function (con, content, target,encode="raw",mime="application/octet-stream") {
+upload_file = function (con, content, target,encode="raw",mime="application/octet-stream") {
 
     if (missing(content)) {
       stop("Content data is missing")
@@ -498,7 +511,7 @@ uploadUserData = function (con, content, target,encode="raw",mime="application/o
       stop(paste("Cannot find file at ",content))
     }
     
-    response = con$uploadUserFile(content,target,encode=encode,mime=mime)
+    response = con$upload_file(content,target,encode=encode,mime=mime)
     invisible(response)
 
 

@@ -10,9 +10,8 @@ capabilities(con)
 \item{con}{A connected OpenEO client}
 }
 \value{
-tibble
+capabilities object
 }
 \description{
-The client queries the version resolved back-end for its endpoint capabilities and returns it as
-a tibble.
+Queries the back-end for its general capabilities.
 }

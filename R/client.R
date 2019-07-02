@@ -705,7 +705,7 @@ OpenEOClient <- R6Class(
         return(trimws(split[length(split)]))
       },error=.capturedErrorToMessage)
     },
-    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
+    upload_file = function(source,target,encode="raw",mime="application/octet-stream") {
       tryCatch({
         target = URLencode(target,reserved = TRUE)
         target = gsub("\\.","%2E",target)
@@ -717,7 +717,7 @@ OpenEOClient <- R6Class(
         tag = "user_file_upload"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
         
-        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
+        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=httr::upload_file(source,type=mime),encodeType = encode)
         message("Upload of user data was successful.")
         return(message)
       },error=.capturedErrorToMessage)
