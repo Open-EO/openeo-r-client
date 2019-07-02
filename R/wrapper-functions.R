@@ -239,27 +239,27 @@ describe_collection = function(con, id=NA) {
 #' @param con Connection object
 #' @return a list of lists with process_id and description
 #' @export
-listProcesses = function(con) {
-  return(con$listProcesses())
+list_processes = function(con) {
+  return(con$list_processes())
 }
 
 #' Describe a process
 #'
 #' Queries an openeo back-end and retrieves more detailed information about offered processes
 #' @param con Authentication object
-#' @param process_id id of a process to be described
+#' @param id id of a process to be described
 #'
 #' @return a list of detailed information
 #' @export
-describeProcess = function(con,process_id=NA) {
-  describeProcess = !missing(process_id) && !is.na(process_id)
+describe_process = function(con,id=NA) {
+  describeProcess = !missing(id) && !is.na(id)
   
   if (!describeProcess) {
     message("No or invalid process_id(s)")
     return()
   }
   
-  return(con$describeProcess(process_id))
+  return(con$describe_process(id))
 }
 
 #

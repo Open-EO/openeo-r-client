@@ -62,7 +62,7 @@ OpenEOClient <- R6Class(
             
             tryCatch({
               if (is.null(private$processes)) {
-                processes = self$listProcesses()
+                processes = self$list_processes()
                 pids = sapply(processes, function(x)x$id)
                 names(processes) = pids
                 private$processes = processes
@@ -202,7 +202,7 @@ OpenEOClient <- R6Class(
         
         tryCatch({
           if (is.null(private$processes)) {
-            processes = self$listProcesses()
+            processes = self$list_processes()
             pids = sapply(processes, function(x)x$id)
             names(processes) = pids
             private$processes = processes
@@ -262,7 +262,7 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
     },
     
-    listProcesses = function() {
+    list_processes = function() {
 
       tryCatch({
         if (is.null(private$processes)) {
@@ -486,15 +486,15 @@ OpenEOClient <- R6Class(
     },
     
     # describe functions ####
-    describeProcess = function(pid) {
+    describe_process = function(id) {
       if (is.null(private$processes)) {
         stop("No processes found or loaded from the back-end")
       }
       
       if (! pid %in% names(private$processes)) {
-        stop(paste("Cannot describe process '",pid,"'. Process does not exist.",sep=""))
+        stop(paste("Cannot describe process '",id,"'. Process does not exist.",sep=""))
       } else {
-        return(private$processes[[pid]])
+        return(private$processes[[id]])
       }
     },
     

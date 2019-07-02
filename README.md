@@ -37,15 +37,15 @@ After we defined the process graph, we send it as a task to the backend where it
 
 ```
 library(openeo)
-conn = connect(host="http://backend1.openeo.org/",user="test",password="test")
+conn = connect(host="http://backend1.openeo.org/",user="test",password="test",login_type="basic")
 
 # list collection and processes
-conn %>% listCollections()
-conn %>% listProcesses()
+conn %>% list_collections()
+conn %>% list_processes()
 
 # get detailed descriptions
-conn %>% describeCollection(c("sentinel2_subset","landsat7_ndvi"))
-conn %>% describeProcess("filter_bbox")
+conn %>% describe_collection(c("sentinel2_subset","landsat7_ndvi"))
+conn %>% describe_process("filter_bbox")
 
 describeCollection
 # create a process graph / task

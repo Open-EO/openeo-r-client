@@ -15,7 +15,7 @@ callback = function(con,process, parameter=NULL) {
       
       cb_parameters=callback_arg$getCallbackParameters() # all the possible data exports offered by the argument
       
-      processes = con$listProcesses()
+      processes = con$list_processes()
       # json processes -> process objects
       
       names(processes) = sapply(processes,function(p)p$id)
