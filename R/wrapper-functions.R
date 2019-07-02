@@ -680,11 +680,11 @@ cancelJob = function(con, job) {
 #' Returns a detailed description about a specified job. For example to check the status of a job.
 #'
 #' @param con authenticated Connection
-#' @param job_id id of the job
+#' @param id id of the job
 #' @return a detailed description about the job
 #' @export
-describeJob = function(con,job_id) {
-  return(con$describeJob(job_id))
+get_job_by_id = function(con,id) {
+  return(con$get_job_by_id(id))
 }
 
 

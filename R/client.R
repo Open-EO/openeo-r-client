@@ -519,7 +519,7 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage)
     },
     
-    describeJob = function(job) {
+    get_job_by_id = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
