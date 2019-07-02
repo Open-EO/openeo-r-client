@@ -355,8 +355,8 @@ validate_process_graph = function(con, graph) {
 #' 
 #' @return list of services lists
 #' @export
-listServices = function(con) {
-  return(con$listServices())
+list_services = function(con) {
+  return(con$list_services())
 }
 
 #' Prepares and publishes a service on the back-end

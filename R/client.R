@@ -376,7 +376,7 @@ OpenEOClient <- R6Class(
       }, error = .capturedErrorToMessage)
     },
     
-    listServices = function() {
+    list_services = function() {
       
       tryCatch(suppressWarnings({
         tag = "user_services"
