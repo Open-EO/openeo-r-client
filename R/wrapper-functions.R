@@ -97,12 +97,12 @@ capabilities = function(con) {
 #' @param connected openeo client object
 #' @return list of formats with optional configuration parameter
 #' @export
-listFormats = function(con) {
+list_file_types = function(con) {
   if (con$client_version() == "0.0.1") {
     return(.not_implemented_yet())
   }
 
-  return(con$output_formats())
+  return(con$list_file_types())
 }
 
 #' Returns the offered webservice types of the back-end

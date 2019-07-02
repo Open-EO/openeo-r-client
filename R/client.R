@@ -119,7 +119,7 @@ OpenEOClient <- R6Class(
         }))
       },error=.capturedErrorToMessage)
     },
-    output_formats = function() {
+    list_file_types = function() {
       tryCatch({
         tag = "formats"
         endpoint = private$getBackendEndpoint(tag)
