@@ -198,8 +198,8 @@ user.account = function(con) {
 #' List available collections stored on a openEO server
 #' @param con Connection object
 #' @export
-listCollections = function(con) {
-  return(con$listData())
+list_collections = function(con) {
+  return(con$list_collections())
 }
 
 #' Describe a product

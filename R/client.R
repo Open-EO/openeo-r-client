@@ -249,7 +249,7 @@ OpenEOClient <- R6Class(
     
     
     # list functions ####
-    listData = function() {
+    list_collections = function() {
 
       tryCatch({
         tag = "data_overview"
@@ -1027,7 +1027,7 @@ OpenEOClient <- R6Class(
         
         names(private$processes) = sapply(private$processes,function(p)p$id)
         
-        collections = self$listData()$collections
+        collections = self$list_collections()$collections
         cids = sapply(collections,function(coll)coll$id)
         collections = as.list(cids)
         names(collections) = cids
