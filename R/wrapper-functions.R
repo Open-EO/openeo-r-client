@@ -188,8 +188,8 @@ client_version = function() {
 #' @param con authenticated client object
 #' @return object of type user
 #' @export
-user.account = function(con) {
-  return(con$user_info())
+describe_account = function(con) {
+  return(con$describe_account())
 }
 
 # data endpoint ----

@@ -222,7 +222,7 @@ OpenEOClient <- R6Class(
         private$oidc_client$logout()
       }
     },
-    user_info = function() {
+    describe_account = function() {
       tryCatch({
         tag = "user_info"
         endpoint = private$getBackendEndpoint(tag)
