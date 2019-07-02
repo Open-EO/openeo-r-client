@@ -441,8 +441,8 @@ modifyService = function(con, service_id,
 #' @param service_id the service id
 #' @return service as a list
 #' @export
-describeService = function(con, service_id) {
-  return(con$describeService(service_id))
+get_service_by_id = function(con, id) {
+  return(con$get_service_by_id(id))
 }
 
 #' Deletes a service function for a job

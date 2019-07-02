@@ -560,15 +560,14 @@ OpenEOClient <- R6Class(
       
     },
     
-    describeService = function(service_id) {
+    get_service_by_id = function(id) {
       tryCatch({
-        if (is.null(service_id)) {
+        if (is.null(id)) {
           stop("No service id specified.")
         }
         
         tag = "services_details"
-        #TODO replace parseable attributes
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         service = private$GET(endpoint,authorized = TRUE)
         class(service) = "ServiceInfo"
