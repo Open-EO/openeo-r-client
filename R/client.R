@@ -97,7 +97,7 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage)
       
     },
-    services = function() {
+    list_service_types = function() {
       tryCatch({
         private$stopIfNotConnected()
         

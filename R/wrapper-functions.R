@@ -112,8 +112,8 @@ list_file_types = function(con) {
 #' @param con a connected openeo client object
 #' @return vector of identifier of supported webservice
 #' @export
-services = function(con) {
-  return(con$services())
+list_service_types = function(con) {
+  return(con$list_service_types())
 }
 
 # login ----
