@@ -17,19 +17,17 @@ as_tibble.CollectionList = function(x, ...) {
 
 #'@export
 as_tibble.BandList = function(x, ...) {
-  band_ids = names(x)
   x = unname(x)
   
   table = .listObjectsToTibble(x)
-  if (nrow(table) == length(band_ids)) {
-    return( table %>% 
-              add_column(band_id = band_ids) %>% 
-              select(unique(c("band_id",colnames(table))))
-    )
-  } else {
-    return(tibble(band_id=band_ids))
-  }
-  
+  return( table )
+}
+
+#' @export
+as_tibble.VersionsList = function(x, ...) {
+  versions = x$versions
+  table = .listObjectsToTibble(versions)
+  return(table[c("api_version","production","url")])
 }
 
 # x has to be an unnamed list
@@ -70,5 +68,7 @@ as_tibble.BandList = function(x, ...) {
   return(table)
 }
 
-asJSON = jsonlite:::asJSON
-setMethod("asJSON", "process", function(x, ...) jsonlite:::asJSON(unclass(x), ...))
+#' @export
+asJSON.Graph = function(x) {
+  taskToJSON(x)
+}

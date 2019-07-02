@@ -4,7 +4,7 @@
 \alias{supports}
 \title{Tag support lookup}
 \usage{
-supports(con, tag)
+supports(con, tag_name)
 }
 \arguments{
 \item{con}{backend connection}

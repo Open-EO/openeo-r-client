@@ -19,7 +19,7 @@ print.User = function(x, ...) {
 #' Print function to visualize relevant information about an openeo process
 #' @export
 print.ProcessInfo <- function(x, ...) {
-  title = paste("Process:\t",x$name,sep="")
+  title = paste("Process:\t",x$id,sep="")
   summary = paste("Summary:\t",x$summary,sep="")
   description = paste("Description:\t",x$description,sep="")
   result = paste("Returns:\t",x$returns$description,sep="")
@@ -77,7 +77,7 @@ print.ServiceType = function(x,...) {
 
 #' @export
 print.CollectionInfo = function(x, ...) {
-  id = paste(x$name)
+  id = paste(x$id)
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t\t\t",x$title,sep="")
   
@@ -88,17 +88,22 @@ print.CollectionInfo = function(x, ...) {
     p$name
   }),sep="",collapse = ", "),sep="")
   
-  if (is.null(x$`eo:platform`))x$`eo:platform` = "---"
-  platform = paste("Platform:\t\t\t",x$`eo:platform`,sep="")
-  if (is.null(x$`eo:constellation`))x$`eo:constellation` = "---"
-  constellation = paste("Constellation:\t\t\t",x$`eo:constellation`,sep="")
-  if (is.null(x$`eo:instrument`))x$`eo:instrument` = "---"
-  instrument = paste("Instrument:\t\t\t",x$`eo:instrument`,sep="")
+  if (!is.null(x$properties)) {
+    if (is.null(x$properties$`eo:platform`))x$properties$`eo:platform` = "---"
+    platform = paste("Platform:\t\t\t",x$properties$`eo:platform`,sep="")
+    if (is.null(x$properties$`eo:constellation`))x$properties$`eo:constellation` = "---"
+    constellation = paste("Constellation:\t\t\t",x$properties$`eo:constellation`,sep="")
+    if (is.null(x$properties$`eo:instrument`))x$properties$`eo:instrument` = "---"
+    instrument = paste("Instrument:\t\t\t",x$properties$`eo:instrument`,sep="")
+    
+    crs = paste("Data SRS (EPSG-code):\t\t",x$properties$`eo:epsg`,sep="")
+  }
+  
   
   
   spatial.extent = paste("(",x$extent$spatial[1],", ",x$extent$spatial[2],"), (",x$extent$spatial[3],", ", x$extent$spatial[4],")",sep="")
   extent = paste("Spatial extent (lon,lat):\t",spatial.extent,sep="")
-  crs = paste("Data SRS (EPSG-code):\t\t",x$`eo:epsg`,sep="")
+  
   time = paste("Temporal extent:\t\t",paste(sapply(x$extent$temporal,function(obj) {
     if (is.null(obj) || is.na(obj) || length(obj) == 0) return(NA)
     else return(format(as_datetime(obj),format="%Y-%m-%dT%H:%M:%SZ"))
@@ -108,16 +113,16 @@ print.CollectionInfo = function(x, ...) {
             platform,constellation,instrument,
             extent,crs,time),sep="\n")
   
-  if (!is.null(x$`eo:bands`)) {
+  if (!is.null(x$properties$`eo:bands`)) {
     cat("Bands:\n")
-    print(as.data.frame(as_tibble(x$`eo:bands`)))
+    print(as.data.frame(as_tibble(x$properties$`eo:bands`)))
   }
   
 }
 
 #' @export
 print.JobInfo = function(x,...) {
-  job_id = paste("Job ID:\t\t", x$job_id, "\n",sep="")
+  id = paste("Job ID:\t\t", x$id, "\n",sep="")
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t",x$title,"\n",sep="")
   if (is.null(x$description)) x$description = "---"
@@ -125,13 +130,22 @@ print.JobInfo = function(x,...) {
   status = paste("Status:\t\t",x$status,"\n",sep="")
   submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
   updated = paste("Updated:\t",x$updated,"\n",sep="")
+  
+  if (is.null(x$progress)) x$progress = "---"
+  progress = paste("Progress:\t",x$progress,"\n",sep="")
+  
+  if (is.null(x$error)) x$error$message = "---"
+  error = paste("Error:\t\t",x$error$message,"\n",sep="")
+    
   if (is.null(x$plan)) x$plan = "---"
   plan = paste("Plan:\t\t",x$plan,"\n",sep="")
   costs = paste("Costs:\t\t",x$costs,"\n",sep="")
   if (is.null(x$budget)) x$budget = "---"
   budget = paste("Budget:\t\t",x$budget,"\n",sep="")
   
-  cat(job_id,title,description,status,submitted,updated,plan,costs,budget,sep = "")
+  cat(id,title,description,status,submitted,updated,
+      progress, error,
+      plan,costs,budget,sep = "")
   
   output = "Output:"
   cat(output)
@@ -152,7 +166,7 @@ print.JobInfo = function(x,...) {
 #' @export
 print.ServiceInfo = function(x,...) {
 
-  service_id = paste("ID:\t\t",x$service_id,"\n",sep="")
+  id = paste("ID:\t\t",x$id,"\n",sep="")
   
   type = paste("Type:\t\t",x$type,"\n",sep="")
   
@@ -173,10 +187,10 @@ print.ServiceInfo = function(x,...) {
   
   costs = paste("Costs:\t\t",x$costs,"\n",sep="")
   
-  if (is.na(x$budget)) x$budget ="---"
+  if (length(x$budget) == 0 || is.na(x$budget)) x$budget ="---"
   budget = paste("Budget:\t\t",x$budget,"\n",sep="")
   
-  cat(service_id,type,enabled,title,submitted,description,url,plan,costs,budget,sep="")
+  cat(id,type,enabled,title,submitted,description,url,plan,costs,budget,sep="")
   
   #parameters, attributes, process_graph
   if (is.null(x$parameters)) {
@@ -218,22 +232,60 @@ print.JobCostsEstimation = function(x,...){
 
 #' @export
 print.CollectionList = function(x, ...) {
-  print(as_tibble(x) %>% select(name,title,description))
+  print(as_tibble(x) %>% select(id,title,description))
 }
 
 #' @export
-print.process = function(x, ...) {
+print.Graph = function(x, ...) {
   print(taskToJSON(x))
 }
 
 #' @export
+print.Json_Graph = function(x, ...) {
+  print(toJSON(x,auto_unbox = TRUE,force=TRUE,pretty=TRUE))
+}
+
+#' @export
 print.ProcessGraphInfo = function(x, ...) {
-  job_id = paste("Job ID:\t\t", x$process_graph_id,sep="")
+  id = paste("Job ID:\t\t", x$id,sep="")
   if (is.null(x$title)) x$title = "---"
   title = paste("Title:\t\t",x$title,sep="")
   if (is.null(x$description)) x$description = "---"
   description = paste("Description:\t",x$description,sep="")
   graph = "Process graph:"
-  cat(job_id,title,description,graph,sep = "\n")
+  cat(id,title,description,graph,sep = "\n")
   print(x$process_graph)
+}
+
+#' @export
+print.OpenEOCapabilities = function(x, ...) {
+  capabilities = x
+
+  title = capabilities$title
+  backend_version = capabilities$backend_version
+  description=capabilities$description
+  
+  version = capabilities$api_version
+  endpoints = capabilities$endpoints
+  billing = capabilities$billing #not used right now
+  
+  cat(paste0("Back-end:\t\t",title),
+      paste0("Back-end version: \t",backend_version),
+      paste0("Description:\t\t",description),
+      paste0("API-version:\t\t",version),
+      sep = "\n") 
+       
+  
+  server_offering = tibble(path=character(),method=character())
+  for (i in 1:length(endpoints)) {
+    entry = endpoints[[i]]
+    path = entry$path
+    
+    for (j in 1:length(entry$method)) {
+      method = entry$method[[j]]
+      
+      server_offering = server_offering %>% add_row(path=path,method=method)
+    }
+  }
+  print(server_offering)
 }

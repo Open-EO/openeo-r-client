@@ -4,22 +4,27 @@
 \alias{connect}
 \title{Connect to a openeEO back-end}
 \usage{
-connect(host, user = NULL, password = NULL, disable_auth = FALSE,
-  auth_type = "bearer", login_type = "basic")
+connect(host, version = NULL, user = NULL, password = NULL,
+  login_type = NULL)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server back-end host}
+
+\item{version}{the version number as string}
 
 \item{user}{the user name (optional)}
 
 \item{password}{the password (optional)}
 
-\item{disable_auth}{flag to specify if the back-end supports authorization on its endpoints}
-
-\item{auth_type}{the general authentication method used on all endpoints. Either "bearer" or "basic".}
-
-\item{login_type}{either "basic" or "oidc". This refers to the login mechanism that shall be used}
+\item{login_type}{either NULL, "basic" or "oidc". This refers to the login mechanism that shall be used. NULL disables authentication.}
 }
 \description{
-connects to openEO back-end
+Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
+specific versions, then you should provide the versions parameter.
+}
+\details{
+Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
+just with considered login. Meaning "basic" allows you to use username and password directly in the call, whereas "oidc" will
+open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
+use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
 }

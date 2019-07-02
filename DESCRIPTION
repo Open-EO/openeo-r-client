@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 0.3.1
+Version: 0.4.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.3.0
 Depends: 
@@ -33,14 +33,16 @@ RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 License: Apache License
 Collate: 
-    'ProcessGraphBuilder-class.R'
+    'argument_types.R'
+    'callback-functions.R'
     'capabilities-mapping.R'
     'client.R'
     'coerce-functions.R'
+    'collection-functions.R'
     'debugging.R'
     'map-functions.R'
     'markdown_viewer.R'
     'oidc-client.R'
     'print-functions.R'
-    'process_graph_building.R'
+    'process_graph_v0.4.0.R'
     'wrapper-functions.R'

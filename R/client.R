@@ -14,11 +14,8 @@ OpenEOClient <- R6Class(
   # public ----
   public = list(
     # attributes ====
-    disableAuth = TRUE,
-    general_auth_type = "bearer",
     user_id = NULL,
     
-    api.version = "0.3.1",
     api.mapping = NULL,
 
     # functions ====
@@ -26,14 +23,15 @@ OpenEOClient <- R6Class(
 
     },
 
-    connect = function(url,login_type="basic",disable_auth=FALSE) {
+    connect = function(url,version, login_type=NULL) {
+      if (!is.null(login_type)) {
+        private$disableAuth = FALSE
+        login_type = tolower(login_type)
+      }
+      
       tryCatch({
-        if (is.null(login_type) || !login_type %in% c("basic","oidc","none") ) {
-          stop("Cannot find the login mechanism type. Please use 'basic', 'oidc' or 'none'")
-        }
-        
-        if (disable_auth) {
-          self$disableAuth = disable_auth
+        if (!is.null(login_type) && !login_type %in% c("basic","oidc") ) {
+          stop("Cannot find the login mechanism type. Please use 'basic' or 'oidc'")
         }
         
         if (!missing(url)) {
@@ -44,13 +42,28 @@ OpenEOClient <- R6Class(
             private$host = url
             private$login_type=login_type
             
+            if (!is.null(version)) {
+              # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
+              hostInfo=self$backendVersions()$versions
+              versionLabels = sapply(hostInfo,function(x)x$api_version)
+              names(hostInfo) = versionLabels
+              
+              if (!version %in% versionLabels) {
+                # print the available versions
+                message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
+                              paste(versionLabels,collapse=",")))
+              } else {
+                private$host = hostInfo[[version]]$url
+              }
+            }
+            
             self$api.mapping = endpoint_mapping(self)
             cat("Connected to host\n")
             
             tryCatch({
               if (is.null(private$processes)) {
-                processes = self$listProcesses()
-                pids = sapply(processes, function(x)x$name)
+                processes = self$list_processes()
+                pids = sapply(processes, function(x)x$id)
                 names(processes) = pids
                 private$processes = processes
               }
@@ -60,26 +73,31 @@ OpenEOClient <- R6Class(
             })
             return(invisible(self))
         } else {
-          stop("Host-URL is missing")
+          message("Note: Host-URL is missing")
+          return(self)
         }
       }, 
       error = .capturedErrorToMessage
       )
 
     },
+    client_version = function () {
+      return(private$version)
+    },
     capabilities = function() {
-      endpoint = ""
+      if (endsWith(private$host,"/")) endpoint = ""
+      else endpoint = "/"
       tryCatch({
         private$stopIfNotConnected()
         
         capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
-        
+        class(capabilities) = "OpenEOCapabilities"
         return(capabilities)
       },
       error = .capturedErrorToMessage)
       
     },
-    services = function() {
+    list_service_types = function() {
       tryCatch({
         private$stopIfNotConnected()
         
@@ -101,16 +119,13 @@ OpenEOClient <- R6Class(
         }))
       },error=.capturedErrorToMessage)
     },
-    output_formats = function() {
+    list_file_types = function() {
       tryCatch({
         tag = "formats"
         endpoint = private$getBackendEndpoint(tag)
         
         formats = private$GET(endpoint,authorized = FALSE)
-        default = formats$default
-        message(paste("Host uses '",formats$default,"' as default output format",sep=""))
         
-        formats = formats$formats
         names = names(formats)
         datatypes = unname(lapply(formats, function(format){
           return(format$gis_data_types)
@@ -130,7 +145,7 @@ OpenEOClient <- R6Class(
       )
       
     },
-    udf_runtimes = function() {
+    list_udf_runtimes = function() {
       tryCatch(
         {
           tag = "udf_runtimes"
@@ -168,7 +183,7 @@ OpenEOClient <- R6Class(
     },
     login=function(user=NULL, password=NULL) {
       tryCatch({
-        if (private$login_type %>% is.null()) {
+        if (private$host %>% is.null()) {
           stop("Cannot login. Please connect to an OpenEO back-end first.")
         }
         private$stopIfNotConnected()
@@ -178,7 +193,7 @@ OpenEOClient <- R6Class(
         } else if (private$login_type == "basic") {
           private$loginBasic(user=user, password = password)
         } else {
-          if (self$disableAuth) {
+          if (private$disableAuth) {
             return(self)
           } else {
             stop("Unsupported login mechanism")
@@ -187,8 +202,8 @@ OpenEOClient <- R6Class(
         
         tryCatch({
           if (is.null(private$processes)) {
-            processes = self$listProcesses()
-            pids = sapply(processes, function(x)x$name)
+            processes = self$list_processes()
+            pids = sapply(processes, function(x)x$id)
             names(processes) = pids
             private$processes = processes
           }
@@ -207,7 +222,7 @@ OpenEOClient <- R6Class(
         private$oidc_client$logout()
       }
     },
-    user_info = function() {
+    describe_account = function() {
       tryCatch({
         tag = "user_info"
         endpoint = private$getBackendEndpoint(tag)
@@ -220,8 +235,21 @@ OpenEOClient <- R6Class(
       },
       error = .capturedErrorToMessage)
     },
+    backendVersions = function(url) {
+      
+      tryCatch({
+        endpoint = "/.well-known/openeo"
+        
+        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+
+        return(info)
+      },error=.capturedErrorToMessage)
+      
+    },
+    
+    
     # list functions ####
-    listData = function() {
+    list_collections = function() {
 
       tryCatch({
         tag = "data_overview"
@@ -234,30 +262,28 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
     },
     
-    listProcesses = function() {
+    list_processes = function() {
 
       tryCatch({
-        tag = "process_overview"
-        endpoint = private$getBackendEndpoint(tag)
+        if (is.null(private$processes)) {
+          tag = "process_overview"
+          endpoint = private$getBackendEndpoint(tag)
+          
+          listOfProcesses = private$GET(endpoint,type="application/json")
+          private$processes = listOfProcesses$processes
+          
+          names(private$processes) = sapply(private$processes,function(p)p$id)
+        }
         
-        listOfProcesses = private$GET(endpoint,type="application/json")
-        listOfProcesses = listOfProcesses$processes
-        
-        pids = sapply(listOfProcesses, function(x)x$name)
-        
-        listOfProcesses=lapply(listOfProcesses,function(process) {
+        return(lapply(private$processes,function(process) {
           class(process) = "ProcessInfo"
           return(process)
-        })
-        
-        names(listOfProcesses) = pids
-        
-        return(listOfProcesses)
+        }))
       },
       error=.capturedErrorToMessage)
       
     },
-    listJobs = function() {
+    list_jobs = function() {
       
       tryCatch({
         tag = "user_jobs"
@@ -266,7 +292,7 @@ OpenEOClient <- R6Class(
         listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
         listOfJobs = listOfJobs$jobs
         # list to tibble
-        table = tibble(job_id=character(),
+        table = tibble(id=character(),
                        title = character(),
                        status=character(),
                        submitted=.POSIXct(integer(0)),
@@ -282,8 +308,8 @@ OpenEOClient <- R6Class(
             job = listOfJobs[[index]]
             
             suppressWarnings({
-              job_id = NA
-              if (!is.null(job$job_id)) job_id = job$job_id
+              id = NA
+              if (!is.null(job$id)) id = job$id
               title = NA
               if (!is.null(job$title)) title = job$title
               status = NA
@@ -300,7 +326,7 @@ OpenEOClient <- R6Class(
               if (!is.null(job$plan)) plan = job$plan
               
               table= add_row(table,
-                             job_id=job_id,
+                             id=id,
                              title = title,
                              status=status,
                              submitted=submitted,
@@ -317,7 +343,7 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
     },
     
-    listGraphs = function() {
+    list_process_graphs = function() {
       tryCatch({
         tag = "graph_overview"
         endpoint = private$getBackendEndpoint(tag)
@@ -325,7 +351,7 @@ OpenEOClient <- R6Class(
         listOfGraphShortInfos = private$GET(endpoint, authorized = TRUE)
         listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
         
-        table = tibble(process_graph_id=character(),
+        table = tibble(id=character(),
                        title=character(),
                        description=character())
         
@@ -333,14 +359,14 @@ OpenEOClient <- R6Class(
         
           for (index in 1:length(listOfGraphShortInfos)) {
             graph_short = listOfGraphShortInfos[[index]]
-            id = graph_short$process_graph_id
+            id = graph_short$id
             title = NA
             if (!is.null(graph_short$title)) title = graph_short$title
             description = NA
             if (!is.null(graph_short$description)) description = graph_short$description
             
             table= add_row(table,
-                           process_graph_id=id,
+                           id=id,
                            title = title,
                            description = description)
           }
@@ -350,7 +376,7 @@ OpenEOClient <- R6Class(
       }, error = .capturedErrorToMessage)
     },
     
-    listServices = function() {
+    list_services = function() {
       
       tryCatch(suppressWarnings({
         tag = "user_services"
@@ -359,7 +385,7 @@ OpenEOClient <- R6Class(
         listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
         listOfServices = listOfServices$services
         
-        table = tibble(service_id=character(),
+        table = tibble(id=character(),
                        title=character(),
                        description=character(),
                        url = character(),
@@ -374,8 +400,8 @@ OpenEOClient <- R6Class(
           for (index in 1:length(listOfServices)) {
             service = listOfServices[[index]]
             
-            service_id = NA
-            if (!is.null(service$service_id)) service_id = service$service_id
+            id = NA
+            if (!is.null(service$id)) id = service$id
             
             title = NA
             if (!is.null(service$title)) title = service$title
@@ -405,7 +431,7 @@ OpenEOClient <- R6Class(
             if (!is.null(service$budget)) budget = as.numeric(service$budget)
             
             table= add_row(table, 
-                           service_id=service_id,
+                           id=id,
                            title=title,
                            description=description,
                            url = url,
@@ -423,7 +449,7 @@ OpenEOClient <- R6Class(
       }), error = .capturedErrorToMessage)
     },
     
-    listUserFiles = function() {
+    list_files = function() {
       
       tryCatch({
         tag = "user_files"
@@ -443,7 +469,12 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    listResults = function(job_id) {
+    list_results = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
       
       tryCatch({
         tag = "jobs_download"
@@ -455,38 +486,45 @@ OpenEOClient <- R6Class(
     },
     
     # describe functions ####
-    describeProcess = function(pid) {
+    describe_process = function(id) {
       if (is.null(private$processes)) {
         stop("No processes found or loaded from the back-end")
       }
       
-      if (! pid %in% names(private$processes)) {
-        stop(paste("Cannot describe process '",pid,"'. Process does not exist.",sep=""))
+      if (! id %in% names(private$processes)) {
+        stop(paste("Cannot describe process '",id,"'. Process does not exist.",sep=""))
       } else {
-        return(private$processes[[pid]])
+        return(private$processes[[id]])
       }
     },
     
-    describeProduct = function(pid) {
+    describe_collection = function(id) {
       
       tryCatch({
         tag = "data_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(pid)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
 
         class(info) = "CollectionInfo"
         
-        if (!is.null(info$`eo:bands`)) {
-          class(info$`eo:bands`) = "BandList"
+        if (!is.null(info$properties$`eo:bands`)) {
+          class(info$properties$`eo:bands`) = "BandList"
         }
+        
+        class(info$properties$`cube:dimensions`) = "CubeDimensions"
         
         return(info)
       },
       error = .capturedErrorToMessage)
     },
     
-    describeJob = function(job_id) {
+    describe_job = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
       
       tryCatch({
         tag = "jobs_details"
@@ -495,26 +533,26 @@ OpenEOClient <- R6Class(
         info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
         
         class(info) = "JobInfo"
-        class(info$process_graph) = "process"
+        class(info$process_graph) = "Json_Graph"
         
         return(info)
       },error=.capturedErrorToMessage)
       
     },
     
-    describeGraph = function(graph_id) {
+    describe_process_graph = function(id) {
       tryCatch(
         {
-          if (is.null(graph_id)) {
+          if (is.null(id)) {
             stop("No graph id specified. Cannot fetch unknown graph.")
           }
           
           tag = "graph_details"
-          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
           class(graph) = "ProcessGraphInfo"
-          class(graph$process_graph) = "process"
+          class(graph$process_graph) = "Json_Graph"
           return(graph)
         },
         error=.capturedErrorToMessage
@@ -522,15 +560,14 @@ OpenEOClient <- R6Class(
       
     },
     
-    describeService = function(service_id) {
+    describe_service = function(id) {
       tryCatch({
-        if (is.null(service_id)) {
+        if (is.null(id)) {
           stop("No service id specified.")
         }
         
         tag = "services_details"
-        #TODO replace parseable attributes
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         service = private$GET(endpoint,authorized = TRUE)
         class(service) = "ServiceInfo"
@@ -554,7 +591,7 @@ OpenEOClient <- R6Class(
     },
     # publish functions ====
     
-    storeGraph = function(graph,title = NULL, description = NULL) {
+    create_process_graph = function(graph,title = NULL, description = NULL) {
       tryCatch({
         tag = "new_graph"
         endpoint = private$getBackendEndpoint(tag)
@@ -581,7 +618,7 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    storeJob = function(task=NULL,graph_id=NULL,
+    create_job = function(graph=NULL,graph_id=NULL,
                         title = NULL, description = NULL,
                         plan = NULL, budget = NULL,
                         format, ...) {
@@ -596,10 +633,11 @@ OpenEOClient <- R6Class(
           output$parameters = create_options
         }
         
-        
         if (!is.null(task)) {
-          if (is.list(task)) {
-            job = list(process_graph=task,output = output)
+          if ("Graph" %in% class(task)) {
+            job = list(process_graph=task$serialize(),output = output)
+          } else if (is.list(task)) {
+            job = list(process_graph=toJSON(task,force=TRUE),output = output)
           } else {
             stop("Parameter task is not a task object. Awaiting a list.")
           }
@@ -618,7 +656,6 @@ OpenEOClient <- R6Class(
         response = private$POST(endpoint=endpoint,
                                 authorized = TRUE,
                                 data=job,
-                                encodeType = "json",
                                 raw=TRUE)
         
         message("Job was sucessfully registered on the backend.")
@@ -628,8 +665,8 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    createService = function(type, 
-                             process_graph,
+    create_service = function(type, 
+                             graph,
                              title = NULL,
                              description = NULL,
                              enabled = NULL,
@@ -647,7 +684,7 @@ OpenEOClient <- R6Class(
         
         service_request_object = list(
           type = type,
-          process_graph = process_graph,
+          process_graph = graph,
           title = title,
           description = description,
           enabled =enabled,
@@ -668,7 +705,7 @@ OpenEOClient <- R6Class(
         return(trimws(split[length(split)]))
       },error=.capturedErrorToMessage)
     },
-    uploadUserFile = function(file.path,target,encode="raw",mime="application/octet-stream") {
+    upload_file = function(source,target,encode="raw",mime="application/octet-stream") {
       tryCatch({
         target = URLencode(target,reserved = TRUE)
         target = gsub("\\.","%2E",target)
@@ -680,7 +717,7 @@ OpenEOClient <- R6Class(
         tag = "user_file_upload"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
         
-        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=upload_file(file.path,type=mime),encodeType = encode)
+        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=httr::upload_file(source,type=mime),encodeType = encode)
         message("Upload of user data was successful.")
         return(message)
       },error=.capturedErrorToMessage)
@@ -689,10 +726,10 @@ OpenEOClient <- R6Class(
     
     # Update functions ====
     
-    modifyGraph = function(graph_id, graph=NULL,title = NULL, description = NULL) {
+    update_process_graph = function(id, graph=NULL,title = NULL, description = NULL) {
       tryCatch({
-        if (is.null(graph_id)) {
-          stop("Cannot replace unknown graph. If you want to store the graph, use 'storeGraph' instead")
+        if (is.null(id)) {
+          stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
         }
         
         requestBody = list()
@@ -723,7 +760,7 @@ OpenEOClient <- R6Class(
         }
         
         tag = "graph_replace"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         message = private$PATCH(endpoint = endpoint, 
                               authorized = TRUE, 
@@ -737,18 +774,18 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    modifyJob = function(job_id,
+    update_job = function(id,
                          title=NULL, description=NULL,
                          process_graph = NULL, 
                          plan = NULL, budget= NULL,
                          format=NULL, ...) {
       tryCatch({
-        if (is.null(job_id)) {
+        if (is.null(id)) {
           stop("No job i was specified.")
         }
         
         tag = "jobs_update"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         patch = list()
         create_options = list(...)
@@ -793,7 +830,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    modifyService = function(service_id,
+    update_service = function(id,
                              type=NULL, 
                              process_graph=NULL,
                              title = NULL,
@@ -803,7 +840,7 @@ OpenEOClient <- R6Class(
                              plan = NULL,
                              budget = NULL) {
       tag = "services_update"
-      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
       tryCatch({
         patch = list()
         
@@ -880,7 +917,7 @@ OpenEOClient <- R6Class(
     },
     
     # other getter / download functions ====
-    downloadUserFile = function(src, dst=NULL) {
+    download_file = function(src, dst=NULL) {
       tryCatch({
         if (!is.character(src)) {
           stop("Cannot download file with a source statement that is no character")
@@ -906,10 +943,12 @@ OpenEOClient <- R6Class(
         close(file_connection,type="wb")
       })
     },
-    validateProcessGraph = function(graph) {
+    validate_process_graph = function(graph) {
       tryCatch({
         tag = "process_graph_validate"
         endpoint = private$getBackendEndpoint(tag)
+        
+        if ("Graph" %in% class(graph)) graph = graph$serialize()
         
         if (!is.list(graph) || is.null(graph)) {
           stop("The graph information is missing or not a list")
@@ -929,7 +968,13 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    cancel = function(job_id) {
+    stop_job = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -948,7 +993,13 @@ OpenEOClient <- R6Class(
       
     },
     
-    estimateCosts = function(job_id) {
+    estimate_job = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -962,34 +1013,48 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    getProcessGraphBuilder = function() {
+    process_graph_builder = function() {
       tryCatch({
-        if (is.null(private$graph_builder)) {
-          private$graph_builder = ProcessGraphBuilder$new(con=self)
+        if (is.null(private$processes)) {
+          tag = "process_overview"
+          endpoint = private$getBackendEndpoint(tag)
+          
+          listOfProcesses = private$GET(endpoint,type="application/json")
+          private$processes = listOfProcesses$processes
         }
+        # json processes -> process objects
         
-        return(private$graph_builder)
+        names(private$processes) = sapply(private$processes,function(p)p$id)
+        
+        collections = self$list_collections()$collections
+        cids = sapply(collections,function(coll)coll$id)
+        collections = as.list(cids)
+        names(collections) = cids
+        
+        
+        plist = lapply(private$processes,processFromJson)
+        
+        return(Graph$new(plist,collections))
       },error=.capturedErrorToMessage)
       
     }, 
     # processing functions ====
-    execute = function (task=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
+    compute_result = function (graph=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
       tryCatch({
         # former sync evaluation
         tag = "execute_sync"
         endpoint = private$getBackendEndpoint(tag)
-        
         if (is.null(format)) {
           format = self$output_formats()$default
         }
         
         output = list(...)
         output = append(output, list(format=format))
-        if (!is.null(task)) {
-          if (is.list(task)) {
-            job = toJSON(list(process_graph=task,output = output),force=TRUE,auto_unbox = TRUE)
+        if (!is.null(graph)) {
+          if (is.list(graph)) {
+            job = toJSON(list(process_graph=graph,output = output),force=TRUE,auto_unbox = TRUE)
           } else {
-            stop("Parameter task is not a task object. Awaiting a list.")
+            stop("Parameter graph is not a Graph object. Awaiting a list.")
           }
         } else if (! is.null(graph_id)) {
           job = list(process_graph=graph_id,output = output)
@@ -1025,7 +1090,13 @@ OpenEOClient <- R6Class(
       
     },
     
-    orderResults = function(job_id) {
+    start_job = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         if (is.null(job_id)) {
           stop("No job id specified.")
@@ -1043,7 +1114,7 @@ OpenEOClient <- R6Class(
     },
     
     #delete functions ====
-    deleteUserFile = function (src) {
+    delete_file = function (src) {
       tryCatch({
         if (is.character(src)) {
           src = .urlHardEncode(src)
@@ -1058,20 +1129,26 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     }, 
     
-    deleteGraph = function(graph_id) {
+    delete_process_graph = function(id) {
       tryCatch({
         tag = "graph_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         success = private$DELETE(endpoint = endpoint, authorized = TRUE)
         if(success) {
-          message(paste("Graph '",graph_id,"' was successfully deleted from the back-end",sep=""))
+          message(paste("Graph '",id,"' was successfully deleted from the back-end",sep=""))
         }
         return(success)
       },error=.capturedErrorToMessage)
       
     },
-    deleteJob = function(job_id) {
+    delete_job = function(job) {
+      if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+      } else {
+        job_id = job
+      }
+      
       tryCatch({
         tag = "jobs_delete"
         endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
@@ -1085,14 +1162,14 @@ OpenEOClient <- R6Class(
       
     },
     
-    deleteService = function(service_id) {
+    delete_service = function(id) {
       tryCatch({
         tag = "services_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(service_id)
+        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
         
         msg = private$DELETE(endpoint = endpoint,
                              authorized = TRUE)
-        message("Service '",service_id,"' successfully removed.")
+        message("Service '",id,"' successfully removed.")
         invisible(msg)
       },error=.capturedErrorToMessage)
     }
@@ -1109,6 +1186,9 @@ OpenEOClient <- R6Class(
     host = NULL,
     graph_builder=NULL,
     processes = NULL,
+    version = "0.4.1",
+    general_auth_type = "bearer",
+    disableAuth = TRUE,
     
     # functions ====
     isConnected = function() {
@@ -1201,7 +1281,7 @@ OpenEOClient <- R6Class(
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
       url = paste(private$host,endpoint, sep ="/")
 
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         response = GET(url=url, config=private$addAuthorization(),query=query)
       } else {
         response = GET(url=url,query=query)
@@ -1223,7 +1303,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1259,7 +1339,7 @@ OpenEOClient <- R6Class(
       if (is.list(data)) {
         
         header = list()
-        if (authorized && !self$disableAuth) {
+        if (authorized && !private$disableAuth) {
           header = private$addAuthorization(header)
         }
         
@@ -1296,7 +1376,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1328,7 +1408,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1383,7 +1463,7 @@ OpenEOClient <- R6Class(
         header = list()
       }
 
-      if (self$general_auth_type == "bearer") {
+      if (private$general_auth_type == "bearer") {
         if (private$login_type == "basic") {
           header = append(header,add_headers(
             Authorization=paste("Bearer",private$login_token, sep =" ")
@@ -1395,7 +1475,7 @@ OpenEOClient <- R6Class(
         }
         
       } else { # if all the endpoints require a basic encoded authorization header
-        header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
+        header = append(header,authenticate(private$user,private$password,type = private$general_auth_type))
       }
 
       return(header)
