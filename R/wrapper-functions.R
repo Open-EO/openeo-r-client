@@ -613,8 +613,8 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
 #' 
 #' @return the job_id of the defined job
 #' @export 
-orderResults = function(con, job) {
-  con$orderResults(job)
+start_job = function(con, job) {
+  con$start_job(job)
 }
 
 #' Modifies a job with given parameter
@@ -636,12 +636,12 @@ orderResults = function(con, job) {
 #' @param job_id the job id of a created job
 #' @param ... The parameter you want to change. See Details for more information
 #' @export
-modifyJob = function(con, job_id,
+update_job = function(con, job_id,
                      title=NULL, description=NULL,
                      process_graph = NULL, 
                      plan = NULL, budget= NULL,
                      format=NULL, ...) {
-  temp = con$modifyJob(job_id = job_id,
+  temp = con$update_job(job_id = job_id,
                        title=title, description=description,
                        process_graph = process_graph, 
                        plan = plan, budget= budget,
@@ -670,8 +670,8 @@ followJob = function(con, job_id) {
 #' 
 #' @return result object containing of URLs for download
 #' @export
-listResults = function(con, job) {
-  return(con$listResults(job=job))
+list_results = function(con, job) {
+  return(con$list_results(job=job))
 }
 
 
@@ -684,8 +684,8 @@ listResults = function(con, job) {
 #' @param job the job object or the id of job that will be canceled
 #' @return a success / failure notification
 #' @export
-cancelJob = function(con, job) {
-    return(con$cancel(job))
+stop_job = function(con, job) {
+    return(con$stop_job(job))
 }
 
 #' Fetches information about a job
@@ -696,8 +696,8 @@ cancelJob = function(con, job) {
 #' @param id id of the job
 #' @return a detailed description about the job
 #' @export
-get_job_by_id = function(con,id) {
-  return(con$get_job_by_id(id))
+describe_job = function(con,id) {
+  return(con$describe_job(id))
 }
 
 
@@ -724,8 +724,8 @@ deleteJob = function(con,job) {
 #' @param job the job or the id of the job
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
-estimateCosts = function(con,job) {
-  return(con$estimateCosts(job))
+estimate_job = function(con,job) {
+  return(con$estimate_job(job))
 }
 
 #

@@ -469,7 +469,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    listResults = function(job) {
+    list_results = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
@@ -519,7 +519,7 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage)
     },
     
-    get_job_by_id = function(job) {
+    describe_job = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
@@ -774,7 +774,7 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    modifyJob = function(job_id,
+    update_job = function(job_id,
                          title=NULL, description=NULL,
                          process_graph = NULL, 
                          plan = NULL, budget= NULL,
@@ -968,7 +968,7 @@ OpenEOClient <- R6Class(
       },error = .capturedErrorToMessage)
     },
     
-    cancel = function(job) {
+    stop_job = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
@@ -993,7 +993,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    estimateCosts = function(job) {
+    estimate_job = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
@@ -1090,7 +1090,7 @@ OpenEOClient <- R6Class(
       
     },
     
-    orderResults = function(job) {
+    start_job = function(job) {
       if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
       } else {
