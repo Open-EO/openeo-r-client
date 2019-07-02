@@ -282,12 +282,12 @@ list_process_graphs = function(con) {
 #' The function queries the back-end for a specific user defined process graph
 #' 
 #' @param con connected and authenticated openeo client object
-#' @param graph_id The id of a process graph on the back-end
+#' @param id The id of a process graph on the back-end
 #' 
 #' @return the process graph as list
 #' @export
-describeGraph = function(con, graph_id) {
-  return(con$describeGraph(graph_id))
+get_process_graph_by_id = function(con, id) {
+  return(con$get_process_graph_by_id(id))
 }
 
 #' Deletes a previously stored process graph

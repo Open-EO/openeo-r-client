@@ -540,15 +540,15 @@ OpenEOClient <- R6Class(
       
     },
     
-    describeGraph = function(graph_id) {
+    get_process_graph_by_id = function(id) {
       tryCatch(
         {
-          if (is.null(graph_id)) {
+          if (is.null(id)) {
             stop("No graph id specified. Cannot fetch unknown graph.")
           }
           
           tag = "graph_details"
-          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(graph_id)
+          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
           graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
           
           class(graph) = "ProcessGraphInfo"
