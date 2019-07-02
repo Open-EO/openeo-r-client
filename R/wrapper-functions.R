@@ -156,6 +156,8 @@ connect = function(host, version=NULL, user=NULL, password=NULL,login_type = NUL
   } else if (login_type == "basic") {
     if (!is.null(user) && !is.null(password)) {
       con = con$connect(url=host,version=version,login_type=login_type)$login(user=user,password=password)  
+    } else {
+      con = con$connect(url=host,version=version,login_type=login_type)
     }
   } else if (login_type == "oidc") {
     con = con$connect(url=host,version=version,login_type=login_type)$login() 
