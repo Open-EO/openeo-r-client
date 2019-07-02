@@ -23,6 +23,13 @@ as_tibble.BandList = function(x, ...) {
   return( table )
 }
 
+#' @export
+as_tibble.VersionsList = function(x, ...) {
+  versions = x$versions
+  table = .listObjectsToTibble(versions)
+  return(table[c("api_version","production","url")])
+}
+
 # x has to be an unnamed list
 .listObjectsToTibble = function(x) {
   # extract types

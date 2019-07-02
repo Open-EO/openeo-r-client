@@ -75,7 +75,8 @@ OpenEOClient <- R6Class(
             })
             return(invisible(self))
         } else {
-          stop("Host-URL is missing")
+          message("Note: Host-URL is missing")
+          return(self)
         }
       }, 
       error = .capturedErrorToMessage

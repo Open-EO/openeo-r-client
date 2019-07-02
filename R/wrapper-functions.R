@@ -42,14 +42,44 @@ pgb = function(con) {
 }
 
 # server endpoint ----
-#' Returns the API version
+#' Returns the suppported OpenEO API versions
 #' 
-#' This function returns information against which was developed in this R-client version.
+#' The function queries the back-end for its supported versions. The endpoint \link[https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get]{/.well-known/openeo} 
+#' is called and the JSON result is coerced into a tibble.
 #' 
-#' @return character describing the API version
+#' @param url the url as String pointing to the base host of the back-end
+#' 
+#' @return a tibble containing all supported API versions of the back-end
 #' @export
-api.version = function() {
-  return("0.0.2")
+api.versions = function(url) {
+  tryCatch({
+      if (endsWith(url,"/")) url = substr(url, 1, nchar(url)-1)
+      endpoint = "/.well-known/openeo"
+
+      info = GET(url=paste(url,endpoint,sep="/"))
+      if (info$status == 200) {
+        vlist = content(info)
+        class(vlist) = "VersionsList"
+        return(as_tibble(vlist))
+      } else {
+        stop("Host is not reachable. Please check the stated URL.")
+      }
+      
+  },error=.capturedErrorToMessage)
+}
+
+#' Shows an overview about the capabilities of an OpenEO back-end
+#' 
+#' The client queries the version resolved back-end for its endpoint capabilities and returns it as
+#' a tibble.
+#' 
+#' @param con A connected OpenEO client
+#' 
+#' @return tibble
+#' 
+#' @export
+listEndpoints = function(con) {
+  return(con$api.mapping[c("endpoint","operation","available")])
 }
 
 #' Returns the offered enpoints of the openEO API
