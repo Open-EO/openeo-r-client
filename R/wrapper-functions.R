@@ -86,22 +86,8 @@ api.versions = function(url) {
 #' @return tibble
 #' 
 #' @export
-listEndpoints = function(con) {
+capabilities = function(con) {
   return(con$api.mapping[c("endpoint","operation","available")])
-}
-
-#' Returns the offered enpoints of the openEO API
-#' 
-#' The function queries the back-end for its capabilities. The offered enpoints that are specified in the openeo
-#' API are then returned.
-#' 
-#' @param con A connected openeo client
-#' @return data.frame containing the supported / implemented endpoints of the back-end
-#' @export
-listCapabilities = function(con) {
-  capabilities = con$capabilities()
-  
-  return(capabilities)
 }
 
 #' Returns the output formats

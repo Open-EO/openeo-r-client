@@ -85,7 +85,8 @@ OpenEOClient <- R6Class(
       return(private$version)
     },
     capabilities = function() {
-      endpoint = ""
+      if (endsWith(private$host,"/")) endpoint = ""
+      else endpoint = "/"
       tryCatch({
         private$stopIfNotConnected()
         

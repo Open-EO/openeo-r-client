@@ -13,7 +13,7 @@ gee = connect(host = gee_host_url, version="0.4.1",user = user,password = pwd,lo
 # gee = connect(host = "https://earthengine.openeo.org/v0.4",user = user,password = pwd)
 
 # 2. Requesting the capabilities of the back-end
-gee %>% listEndpoints()
+gee %>% capabilities()
 
 # 3. Check which collections are available at the back-end
 gee %>% listCollections()
