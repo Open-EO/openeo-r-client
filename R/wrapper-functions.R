@@ -657,7 +657,7 @@ update_job = function(con, job_id,
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return a WebSocket connection
 #' @export
-followJob = function(con, job_id) {
+follow_job = function(con, job_id) {
  .not_implemented_yet()
 }
 
@@ -674,6 +674,31 @@ list_results = function(con, job) {
   return(con$list_results(job=job))
 }
 
+#' Downloads the results of a job into a specific folder
+#' 
+#' The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
+#' 'folder' will be the target location on the local computer.
+#' 
+#' @param con a connected and authenticated OpenEO connection
+#' @param job job object or the job_id for which the results are fetched
+#' @param folder a character string that is the target path on the local computer
+#' 
+#' @export
+download_results = function(con, job, folder) {
+  
+  if (!dir.exists(folder)) dir.create(folder,recursive = TRUE)
+  results = con %>% list_results(job)
+  
+  lapply(results$links, function(link){
+    href = link$href
+    type = link$type
+    
+    if (!folder %>% endsWith(suffix = "/")) folder = paste0(folder,"/")
+    filename = basename(href)
+    download.file(href,paste0(folder,filename),mode = "wb")
+  })
+  invisible(TRUE)
+}
 
 #' Terminates a running job
 #'
