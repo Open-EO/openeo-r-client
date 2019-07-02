@@ -145,7 +145,7 @@ OpenEOClient <- R6Class(
       )
       
     },
-    udf_runtimes = function() {
+    list_udf_runtimes = function() {
       tryCatch(
         {
           tag = "udf_runtimes"

@@ -784,8 +784,8 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
 #' @param con connected and authenticated openeo client object
 #' @return list of udf runtimes with supported udf types, versions and installed packages
 #' @export
-udfRuntimes = function(con) {
-  return(con$udf_runtimes())
+list_udf_runtimes = function(con) {
+  return(con$list_udf_runtimes())
 }
 
 #' Gets detailed information about a particular udf type
