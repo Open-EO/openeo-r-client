@@ -6,6 +6,14 @@ NULL
   warning("Not implemented yet.")
 }
 
+.not_supported_by_client = function() {
+  warning("Not supported by the current client version.")
+}
+
+.not_supported_by_backend = function() {
+  warning("The function is not supported by the current back-end version.")
+}
+
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
@@ -104,7 +112,7 @@ listCapabilities = function(con) {
 #' @return list of formats with optional configuration parameter
 #' @export
 listFormats = function(con) {
-  if (api.version() == "0.0.1") {
+  if (con$client_version() == "0.0.1") {
     return(.not_implemented_yet())
   }
 
@@ -128,28 +136,22 @@ services = function(con) {
 #' Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
 #' specific versions, then you should provide the versions parameter.
 #' 
+#' @details Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
+#' just with considered login. Meaning "basic" allows you to use username and password directly in the call, whereas "oidc" will
+#' open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
+#' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
+#' 
 #' @param host URL pointing to the openEO server back-end host
 #' @param version the version number as string
 #' @param user the user name (optional)
 #' @param password the password (optional)
-#' @param disable_auth flag to specify if the back-end supports authorization on its endpoints
-#' @param auth_type the general authentication method used on all endpoints. Either "bearer" or "basic".
-#' @param login_type either "basic" or "oidc". This refers to the login mechanism that shall be used
+#' @param login_type either NULL, "basic" or "oidc". This refers to the login mechanism that shall be used. NULL disables authentication.
 #'
 #' @export
-connect = function(host, version=NULL, user=NULL, password=NULL, disable_auth=FALSE, auth_type="bearer",login_type = "basic") {
+connect = function(host, version=NULL, user=NULL, password=NULL,login_type = NULL) {
   con = OpenEOClient$new()
   
-  con$disableAuth = disable_auth
-  
-  if (!disable_auth && !auth_type %in% c("basic","bearer")) {
-    message("Unsupported authentication type. Use 'bearer' or 'basic' or disable the authentication")
-    return()
-  } else {
-    con$general_auth_type = auth_type
-  }
-  
-  if (is.null(user) && is.null(password) && disable_auth) {
+  if (is.null(user) && is.null(password) && is.null(login_type)) {
     con = con$connect(url=host,version=version,login_type=login_type)
   } else if (login_type == "basic") {
     if (!is.null(user) && !is.null(password)) {
@@ -180,14 +182,15 @@ login = function(con, user=NULL, password=NULL) {
   return(con$login(user = user, password = password))
 }
 
-
-#' Authenticate
-#'
-#' @param con Connection object
-#' @return authenticated Connection
-#' @export
-openeo.auth = function (con, ...) {
-  .not_implemented_yet()
+#' Returns the client version
+#' 
+#' The function returns the client version.
+#' 
+#' @param con an OpenEO client
+#' 
+#' @return the client version
+client_version = function() {
+  return("0.4.1")
 }
 
 #' Retrieves the current users account information

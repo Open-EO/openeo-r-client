@@ -14,11 +14,8 @@ OpenEOClient <- R6Class(
   # public ----
   public = list(
     # attributes ====
-    disableAuth = TRUE,
-    general_auth_type = "bearer",
     user_id = NULL,
     
-    api.version = "0.4.1",
     api.mapping = NULL,
 
     # functions ====
@@ -26,14 +23,15 @@ OpenEOClient <- R6Class(
 
     },
 
-    connect = function(url,version, login_type="basic",disable_auth=FALSE) {
+    connect = function(url,version, login_type=NULL) {
+      if (!is.null(login_type)) {
+        private$disableAuth = FALSE
+        login_type = tolower(login_type)
+      }
+      
       tryCatch({
-        if (is.null(login_type) || !login_type %in% c("basic","oidc","none") ) {
-          stop("Cannot find the login mechanism type. Please use 'basic', 'oidc' or 'none'")
-        }
-        
-        if (disable_auth) {
-          self$disableAuth = disable_auth
+        if (!is.null(login_type) && !login_type %in% c("basic","oidc") ) {
+          stop("Cannot find the login mechanism type. Please use 'basic' or 'oidc'")
         }
         
         if (!missing(url)) {
@@ -82,6 +80,9 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage
       )
 
+    },
+    client_version = function () {
+      return(private$version)
     },
     capabilities = function() {
       endpoint = ""
@@ -181,7 +182,7 @@ OpenEOClient <- R6Class(
     },
     login=function(user=NULL, password=NULL) {
       tryCatch({
-        if (private$login_type %>% is.null()) {
+        if (private$host %>% is.null()) {
           stop("Cannot login. Please connect to an OpenEO back-end first.")
         }
         private$stopIfNotConnected()
@@ -191,7 +192,7 @@ OpenEOClient <- R6Class(
         } else if (private$login_type == "basic") {
           private$loginBasic(user=user, password = password)
         } else {
-          if (self$disableAuth) {
+          if (private$disableAuth) {
             return(self)
           } else {
             stop("Unsupported login mechanism")
@@ -1186,6 +1187,9 @@ OpenEOClient <- R6Class(
     host = NULL,
     graph_builder=NULL,
     processes = NULL,
+    version = "0.4.1",
+    general_auth_type = "bearer",
+    disableAuth = TRUE,
     
     # functions ====
     isConnected = function() {
@@ -1278,7 +1282,7 @@ OpenEOClient <- R6Class(
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
       url = paste(private$host,endpoint, sep ="/")
 
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         response = GET(url=url, config=private$addAuthorization(),query=query)
       } else {
         response = GET(url=url,query=query)
@@ -1300,7 +1304,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1336,7 +1340,7 @@ OpenEOClient <- R6Class(
       if (is.list(data)) {
         
         header = list()
-        if (authorized && !self$disableAuth) {
+        if (authorized && !private$disableAuth) {
           header = private$addAuthorization(header)
         }
         
@@ -1373,7 +1377,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1405,7 +1409,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !self$disableAuth) {
+      if (authorized && !private$disableAuth) {
         header = private$addAuthorization(header)
       }
       
@@ -1460,7 +1464,7 @@ OpenEOClient <- R6Class(
         header = list()
       }
 
-      if (self$general_auth_type == "bearer") {
+      if (private$general_auth_type == "bearer") {
         if (private$login_type == "basic") {
           header = append(header,add_headers(
             Authorization=paste("Bearer",private$login_token, sep =" ")
@@ -1472,7 +1476,7 @@ OpenEOClient <- R6Class(
         }
         
       } else { # if all the endpoints require a basic encoded authorization header
-        header = append(header,authenticate(private$user,private$password,type = self$general_auth_type))
+        header = append(header,authenticate(private$user,private$password,type = private$general_auth_type))
       }
 
       return(header)
