@@ -666,8 +666,8 @@ OpenEOClient <- R6Class(
       },error=.capturedErrorToMessage)
     },
     
-    createService = function(type, 
-                             process_graph,
+    create_service = function(type, 
+                             graph,
                              title = NULL,
                              description = NULL,
                              enabled = NULL,
@@ -685,7 +685,7 @@ OpenEOClient <- R6Class(
         
         service_request_object = list(
           type = type,
-          process_graph = process_graph,
+          process_graph = graph,
           title = title,
           description = description,
           enabled =enabled,

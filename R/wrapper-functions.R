@@ -375,17 +375,17 @@ list_services = function(con) {
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-defineService = function(con, 
+create_service = function(con, 
                          type, 
-                         process_graph,
+                         graph,
                          title = NULL,
                          description = NULL,
                          enabled = NULL,
                          parameters = NULL,
                          plan = NULL,
                          budget = NULL) {
-  return(con$createService(type = type, 
-                           process_graph = process_graph,
+  return(con$create_service(type = type, 
+                           graph = graph,
                            title=title,
                            description = description,
                            enabled = enabled,
