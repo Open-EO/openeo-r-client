@@ -16,7 +16,7 @@ gee = connect(host = gee_host_url, version="0.4.1",user = user,password = pwd,lo
 gee %>% capabilities()
 
 # 3. Check which collections are available at the back-end
-gee %>% listCollections()
+gee %>% list_collections()
 
 graph = gee %>% pgb()
 data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
@@ -32,8 +32,7 @@ reducer = graph$reduce(data = ndvi,dimension = "temporal")
 # gee %>% callback(reducer)
 cb_graph = gee %>% callback(reducer,parameter = "reducer")
 
-min_cb=cb_graph$min(data = cb_graph$data$data)
-cb_graph$setFinalNode(min_cb)
+cb_graph$min(data = cb_graph$data$data) %>% setFinalNode()
 
 
 apply_linear_transform = gee %>% graph$apply(data = reducer)
@@ -50,7 +49,7 @@ graph
 
 graph$validate()
 
-gee %>% validateProcessGraph(graph=graph)
+gee %>% validate_process_graph(graph=graph)
 
 job_id = gee %>% defineJob(task=graph,title="Job build in R-Client")
 

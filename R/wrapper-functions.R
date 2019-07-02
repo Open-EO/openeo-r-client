@@ -338,8 +338,8 @@ modifyGraph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
 #' @param graph the process graph that will be sent to the back-end and is being validated
 #' 
 #' @export
-validateProcessGraph = function(con, graph) {
-  return(con$validateProcessGraph(graph))
+validate_process_graph = function(con, graph) {
+  return(con$validate_process_graph(graph))
 }
 
 #

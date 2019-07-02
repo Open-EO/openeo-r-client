@@ -944,7 +944,7 @@ OpenEOClient <- R6Class(
         close(file_connection,type="wb")
       })
     },
-    validateProcessGraph = function(graph) {
+    validate_process_graph = function(graph) {
       tryCatch({
         tag = "process_graph_validate"
         endpoint = private$getBackendEndpoint(tag)
