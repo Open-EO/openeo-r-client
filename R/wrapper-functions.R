@@ -541,8 +541,8 @@ deleteUserData = function(con, src) {
 #'
 #' @param con the authenticated Connection
 #' @export
-listJobs = function(con) {
-  return(con$listJobs())
+list_jobs = function(con) {
+  return(con$list_jobs())
 }
 
 #' Executes a job directly and returns the data immediately

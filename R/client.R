@@ -283,7 +283,7 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
       
     },
-    listJobs = function() {
+    list_jobs = function() {
       
       tryCatch({
         tag = "user_jobs"
