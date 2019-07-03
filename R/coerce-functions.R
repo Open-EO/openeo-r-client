@@ -67,8 +67,3 @@ as_tibble.VersionsList = function(x, ...) {
   }
   return(table)
 }
-
-#' @export
-asJSON.Graph = function(x) {
-  taskToJSON(x)
-}

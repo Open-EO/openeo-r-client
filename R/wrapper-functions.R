@@ -25,13 +25,13 @@ NULL
 #' 
 #' @export
 # dont't expose it later
-taskToJSON = function(task) {
+graphToJSON = function(graph) {
   #task is a Graph object
   
-  if ("Graph" %in% class(task)) {
-    return(toJSON(task$serialize(),auto_unbox = T,pretty=T,force=TRUE))
+  if ("Graph" %in% class(graph)) {
+    return(toJSON(graph$serialize(),auto_unbox = T,pretty=T,force=TRUE))
   } else {
-    stop("Task is no Graph object.")
+    stop("Parameter is no Graph object.")
     invisible(NULL)
   }
   
@@ -294,18 +294,35 @@ describe_collection = function(con, id=NA) {
   
   if (!missing_id) {
     message("No or invalid collection id(s)")
-    return()
+    invisible(NULL)
   }
   if (length(id) > 1) {
     return(lapply(id,
                   function(cid) {
-                    con$describe_collection(cid)
+                    describe_collection(con,cid)
                   }
     ))
   } else {
-    return(con$describe_collection(id))
+    tryCatch({
+      tag = "data_details"
+      endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+      
+      info = con$request(operation="GET",endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      
+      class(info) = "CollectionInfo"
+      
+      if (!is.null(info$properties$`eo:bands`)) {
+        class(info$properties$`eo:bands`) = "BandList"
+      }
+      
+      class(info$properties$`cube:dimensions`) = "CubeDimensions"
+      
+      return(info)
+    },
+    error = .capturedErrorToMessage)
   }
 }
+
 
 #
 # processes endpoint ----
@@ -350,10 +367,20 @@ describe_process = function(con,id=NA) {
   
   if (!describeProcess) {
     message("No or invalid process_id(s)")
-    return()
+    invisible(NULL)
   }
   
-  return(con$describe_process(id))
+  if (is.null(con$processes)) {
+    message("No processes found or loaded from the back-end")
+    invisible(NULL)
+  }
+  
+  if (! id %in% names(con$processes)) {
+    message(paste("Cannot describe process '",id,"'. Process does not exist.",sep=""))
+    invisible(NULL)
+  } else {
+    return(con$processes[[id]])
+  }
 }
 
 #
@@ -410,7 +437,22 @@ list_process_graphs = function(con) {
 #' @return the process graph as list
 #' @export
 describe_process_graph = function(con, id) {
-  return(con$describe_process_graph(id))
+  tryCatch(
+    {
+      if (is.null(id)) {
+        stop("No graph id specified. Cannot fetch unknown graph.")
+      }
+      
+      tag = "graph_details"
+      endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+      graph = con$request(operation="GET",endpoint=endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
+      
+      class(graph) = "ProcessGraphInfo"
+      class(graph$process_graph) = "Json_Graph"
+      return(graph)
+    },
+    error=.capturedErrorToMessage
+  )
 }
 
 #' Deletes a previously stored process graph
@@ -436,7 +478,31 @@ delete_process_graph = function(con, graph_id) {
 #' @param description the description of a process graph (optional)
 #' @export
 create_process_graph = function(con, graph, title = NULL, description = NULL) {
-  return(con$create_process_graph(graph,title = title, description = description))
+  tryCatch({
+    tag = "new_graph"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    if (!"Graph" %in% class(graph) || is.null(graph)) {
+      stop("The graph information is missing or not a list")
+    }
+    
+    requestBody = list(
+      title=title,
+      description = description,
+      process_graph = graph$serialize()
+    )
+    
+    response = con$request(operation="POST",
+                           endpoint=endpoint,
+                            authorized = TRUE,
+                            data=requestBody,
+                            raw=TRUE)
+    
+    message("Graph was sucessfully stored on the backend.")
+    locationHeader = headers(response)$location
+    split = unlist(strsplit(locationHeader,"/"))
+    return(trimws(split[length(split)]))
+  },error = .capturedErrorToMessage)
 }
 
 #' Modify the current graph with a given
@@ -575,14 +641,37 @@ create_service = function(con,
                          parameters = NULL,
                          plan = NULL,
                          budget = NULL) {
-  return(con$create_service(type = type, 
-                           graph = graph,
-                           title=title,
-                           description = description,
-                           enabled = enabled,
-                           parameters = parameters,
-                           plan = plan,
-                           budget = budget))
+  tryCatch({
+    if (is.null(type)) {
+      stop("No type specified.")
+    }
+    
+    tag = "service_publish"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    service_request_object = list(
+      type = type,
+      process_graph = graph$serialize(),
+      title = title,
+      description = description,
+      enabled =enabled,
+      parameters = parameters,
+      plan = plan,
+      budget = budget
+    )
+    
+    response = con$request(operation="POST",
+                           endpoint=endpoint,
+                            authorized = TRUE, 
+                            data = service_request_object, 
+                            encodeType = "json",
+                            raw = TRUE)
+    
+    message("Service was successfully created.")
+    locationHeader = headers(response)$location
+    split = unlist(strsplit(locationHeader,"/"))
+    return(trimws(split[length(split)]))
+  },error=.capturedErrorToMessage)
 }
 
 #' Modifies a service
@@ -633,7 +722,18 @@ update_service = function(con, id,
 #' @return service as a list
 #' @export
 describe_service = function(con, id) {
-  return(con$describe_service(id))
+  tryCatch({
+    if (is.null(id)) {
+      stop("No service id specified.")
+    }
+    
+    tag = "services_details"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    service = con$request(operation="GET",endpoint=endpoint,authorized = TRUE)
+    class(service) = "ServiceInfo"
+    return(service)
+  }, error=.capturedErrorToMessage)
 }
 
 #' Deletes a service function for a job
@@ -672,7 +772,7 @@ list_files = function(con) {
       return(invisible(files))
     }
     
-    files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
+    files = tibble(files) %>% rowwise() %>% summarise(path=files$path, size=files$size, modified=files$modified)
     
     return(files)
   },error=.capturedErrorToMessage)
@@ -704,8 +804,25 @@ upload_file = function (con, content, target,encode="raw",mime="application/octe
       stop(paste("Cannot find file at ",content))
     }
     
-    response = con$upload_file(content,target,encode=encode,mime=mime)
-    invisible(response)
+  tryCatch({
+    target = URLencode(target,reserved = TRUE)
+    target = gsub("\\.","%2E",target)
+    
+    if (is.null(con$user_id)) {
+      stop("User id is not set. Either login or set the id manually.")
+    }
+    
+    tag = "user_file_upload"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id,target)
+    
+    m = con$request(operation="PUT",
+                    endpoint= endpoint,
+                    authorized = TRUE, 
+                    data=httr::upload_file(content,type=mime),
+                    encodeType = encode)
+    message("Upload of user data was successful.")
+    return(m)
+  },error=.capturedErrorToMessage)
 
 
 }
@@ -845,10 +962,48 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
                      title = NULL, description = NULL,
                      plan = NULL, budget = NULL,
                      format=NULL, ...) {
-  return(con$create_job(graph=graph,graph_id = graph_id,
-                      title = title, description = description,
-                      plan = plan, budget = budget,
-                      format = format, ...))
+  tryCatch({
+    tag = "jobs_define"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    create_options = list(...)
+    output = list()
+    output$format = format
+    if (length(create_options) > 0) {
+      output$parameters = create_options
+    }
+    
+    if (!is.null(graph)) {
+      if ("Graph" %in% class(graph)) {
+        job = list(process_graph=graph$serialize(),output = output)
+      } else if (is.list(graph)) {
+        job = list(process_graph=toJSON(graph,force=TRUE),output = output)
+      } else {
+        stop("Parameter task is not a task object. Awaiting a list.")
+      }
+    } else if (! is.null(graph_id)) {
+      job = list(process_graph=graph_id,output = output)
+    } else {
+      stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+    }
+    
+    if (!is.null(title)) job$title = title
+    if (!is.null(description)) job$description = description
+    if (!is.null(plan)) job$plan = plan
+    if (!is.null(budget)) job$budget = budget
+    
+    #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
+    response = con$request(operation="POST",
+                           endpoint=endpoint,
+                            authorized = TRUE,
+                            data=job,
+                            raw=TRUE)
+    
+    message("Job was sucessfully registered on the backend.")
+    locationHeader = headers(response)$location
+    split = unlist(strsplit(locationHeader,"/"))
+    return(split[length(split)])
+  },error=.capturedErrorToMessage)
 }
 
 #' Starts remote asynchronous evaluation of a job
@@ -978,11 +1133,27 @@ stop_job = function(con, job) {
 #' Returns a detailed description about a specified job. For example to check the status of a job.
 #'
 #' @param con authenticated Connection
-#' @param id id of the job
+#' @param job the job object or the id of the job
 #' @return a detailed description about the job
 #' @export
-describe_job = function(con,id) {
-  return(con$describe_job(id))
+describe_job = function(con,job) {
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    tag = "jobs_details"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    info = con$request(operation="GET",endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
+    
+    class(info) = "JobInfo"
+    class(info$process_graph) = "Json_Graph"
+    
+    return(info)
+  },error=.capturedErrorToMessage)
 }
 
 
@@ -1104,8 +1275,18 @@ list_udf_runtimes = function(con) {
 #' @param type the udf type
 #' @return list with udf runtime type information
 #' @export
-describeUdfType = function(con, language, type) {
-  return(con$describeUdfRuntime)
+describe_udf_type = function(con, language, type) {
+  tryCatch({
+    if (is.null(language) || is.null(type)) {
+      stop("Missing parameter language or udf_type")
+    }
+    tag = "udf_functions"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(language,type)
+    
+    msg = con$request(operation="GET",endpoint = endpoint,
+                      authorized = FALSE)
+    return(msg)
+  },error=.capturedErrorToMessage)
 }
 
 #
