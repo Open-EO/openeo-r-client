@@ -104,7 +104,7 @@ Argument = R6Class(
         return(private$value$serializeAsReference())
       }
       
-      if ("callback-value" %in% class(self$getValue())) {
+      if (any(c("callback-value","variable") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
       }
       
@@ -192,19 +192,25 @@ Variable = R6Class(
     initialize=function(id=character(),description=character(),type="string",default=NULL) {
       private$name = id
       private$description = description
-      private$required = required
+      private$schema$default = default
       private$schema$type = type
     }
   ),
   private = list(
     typeSerialization = function() {
-      res = list(variable_id = private$name)
+      # if we want to bulk set a variable with setValue, e.g. an often used collection replace the variable with the set value
+      if (is.null(private$value)) {
+        res = list(variable_id = private$name)
+        
+        if (length(private$description) > 0 && !is.na(private$description)) res = append(res,list(description=private$description))
+        if (length(private$schema$type) > 0 && ! is.na(private$schema$type)) res= append(res, list(type=private$schema$type))
+        if (length(private$schema$default) > 0 && !is.na(private$schema$default)) res = append(res, list(default=private$schema$default))
+        
+        return(res)
+      } else {
+        return(private$value)
+      }
       
-      if (length(private$description) > 0 && !is.na(private$description)) res = append(res,list(description=private$description))
-      if (length(private$type) > 0 && ! is.na(private$type)) res= append(res, list(type=private$type))
-      if (!is.null(private$default)) res = append(res, list(default=private$default))
-      
-      return(res)
     }
   )
 )
