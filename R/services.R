@@ -1,0 +1,289 @@
+#
+# services endpoint ----
+#
+
+#' Lists the current users services
+#' 
+#' Queries the back-end to retrieve a list of services that the current user owns. Services are 
+#' webservices like WCS, WFS, etc.
+#' 
+#' @param con connected and authenticated openeo client object
+#' 
+#' @return list of services lists
+#' @export
+list_services = function(con) {
+  tryCatch(suppressWarnings({
+    tag = "user_services"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
+    
+    listOfServices = con$request(operation="GET",endpoint=endpoint,authorized = TRUE ,type="application/json")
+    listOfServices = listOfServices$services
+    
+    table = tibble(id=character(),
+                   title=character(),
+                   description=character(),
+                   url = character(),
+                   type = character(),
+                   enabled = logical(),
+                   submitted = .POSIXct(character(0)),
+                   plan = character(0),
+                   costs = numeric(0),
+                   budget = numeric(0))
+    
+    if (length(listOfServices) > 0) {
+      for (index in 1:length(listOfServices)) {
+        service = listOfServices[[index]]
+        
+        id = NA
+        if (!is.null(service$id)) id = service$id
+        
+        title = NA
+        if (!is.null(service$title)) title = service$title
+        
+        description = NA
+        if (!is.null(service$description)) description = service$description
+        
+        url = NA
+        if (!is.null(service$url)) url = service$url
+        
+        type = NA
+        if (!is.null(service$type)) type = service$type
+        
+        enabled = NA
+        if (!is.null(service$enabled)) enabled = service$enabled
+        
+        submitted = NA
+        if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
+        
+        plan = NA
+        if (!is.null(service$plan)) plan = service$plan
+        
+        costs = NA
+        if (!is.null(service$costs)) costs = as.numeric(service$costs)
+        
+        budget = NA
+        if (!is.null(service$budget)) budget = as.numeric(service$budget)
+        
+        table= add_row(table, 
+                       id=id,
+                       title=title,
+                       description=description,
+                       url = url,
+                       type = type,
+                       enabled=enabled,
+                       submitted=submitted,
+                       plan = plan,
+                       costs = costs,
+                       budget=budget)
+      }
+    }
+    
+    
+    return(table)
+  }), error = .capturedErrorToMessage)
+}
+
+#' Prepares and publishes a service on the back-end
+#' 
+#' The function will send a configuration object to the back-end to create a webservice from a job considering
+#' additional parameter.
+#' 
+#' @param con connected and authenticated openeo clien object
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
+#' @return service representation as list
+#' @export
+create_service = function(con, 
+                          type, 
+                          graph,
+                          title = NULL,
+                          description = NULL,
+                          enabled = NULL,
+                          parameters = NULL,
+                          plan = NULL,
+                          budget = NULL) {
+  tryCatch({
+    if (is.null(type)) {
+      stop("No type specified.")
+    }
+    
+    tag = "service_publish"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    service_request_object = list(
+      type = type,
+      process_graph = graph$serialize(),
+      title = title,
+      description = description,
+      enabled =enabled,
+      parameters = parameters,
+      plan = plan,
+      budget = budget
+    )
+    
+    response = con$request(operation="POST",
+                           endpoint=endpoint,
+                           authorized = TRUE, 
+                           data = service_request_object, 
+                           encodeType = "json",
+                           raw = TRUE)
+    
+    message("Service was successfully created.")
+    locationHeader = headers(response)$location
+    split = unlist(strsplit(locationHeader,"/"))
+    return(trimws(split[length(split)]))
+  },error=.capturedErrorToMessage)
+}
+
+#' Modifies a service
+#' 
+#' The function updates a service with the given information. If a parameter is NULL then it will
+#' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
+#' will be deleted and also set to NULL.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param id the service id
+#' @param type character the ogc web service type name to be created
+#' @param process_graph list of processes composed as a process graph
+#' @param title character (optional) the title in human readabled form for the service
+#' @param description character (optional) the description for the service
+#' @param enabled logical 
+#' @param parameters a list of service creation parameters
+#' @param plan character the billing plan
+#' @param budget numeric the amount of credits that can be spent for this service
+#' @return service representation as list
+#' 
+#' @export
+update_service = function(con, id, 
+                          type=NULL, 
+                          process_graph=NULL,
+                          title = NULL,
+                          description = NULL,
+                          enabled = NULL,
+                          parameters = NULL,
+                          plan = NULL,
+                          budget = NULL) {
+  tag = "services_update"
+  endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+  tryCatch({
+    patch = list()
+    
+    if (!is.null(type)) {
+      patch[["type"]] = type
+    }
+    
+    if (!is.null(process_graph)) {
+      if (length(process_graph) > 0) {
+        patch[["process_graph"]] = process_graph
+      } else {
+        stop("Process graph cannot be set to be empty.")
+      }
+    }
+    
+    if (!is.null(title)) {
+      if (!is.na(title)) {
+        patch[["title"]] = title
+      } else {
+        patch[["title"]] = NULL
+      }
+    }
+    
+    if (!is.null(description)) {
+      if (!is.na(description)) {
+        patch[["description"]] = description
+      } else {
+        patch[["description"]] = NULL
+      }
+    }
+    
+    if (!is.null(enabled)) {
+      if (!is.na(enabled) && is.logical(enabled)) {
+        patch[["enabled"]] = enabled
+      } else {
+        stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
+      }
+    }
+    
+    if (!is.null(parameters)) {
+      if (is.na(parameters)) {
+        patch[["parameters"]] = NULL
+      } else if (is.list(parameters)) {
+        patch[["parameters"]] = parameters
+      } else {
+        stop("No valid data for parameter 'parameters'. It has to be a list")
+      }
+    }
+    
+    if (!is.null(plan)) {
+      if (!is.na(plan)) {
+        patch[["plan"]] = plan
+      } else {
+        stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
+      }
+    }
+    
+    # budget = NULL
+    if (!is.null(budget)) {
+      if (!is.na(budget)) {
+        patch[["budget"]] = budget
+      } else {
+        patch[["budget"]] = NULL
+      }
+    }
+    
+    res = con$request(operation="PATCH",endpoint = endpoint,
+                      authorized = TRUE,
+                      encodeType = "json",
+                      data=patch)
+    message(paste("Service '",service_id,"' was successfully updated.",sep=""))
+    invisible(TRUE)
+  },error=.capturedErrorToMessage)
+}
+
+#' Describes a service
+#' 
+#' Queries the server and returns information about a particular service
+#' 
+#' @param con connected and authorized openeo client object
+#' @param service_id the service id
+#' @return service as a list
+#' @export
+describe_service = function(con, id) {
+  tryCatch({
+    if (is.null(id)) {
+      stop("No service id specified.")
+    }
+    
+    tag = "services_details"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    service = con$request(operation="GET",endpoint=endpoint,authorized = TRUE)
+    class(service) = "ServiceInfo"
+    return(service)
+  }, error=.capturedErrorToMessage)
+}
+
+#' Deletes a service function for a job
+#' 
+#' Queries the back-end and removes the current set service function of job.
+#' 
+#' @param con connected and authorized openeo client object
+#' @param id the service id
+#' @export
+delete_service = function(con, id) {
+  tryCatch({
+    tag = "services_delete"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    msg = con$request(operation="DELETE",endpoint = endpoint,
+                      authorized = TRUE)
+    message("Service '",id,"' successfully removed.")
+    invisible(msg)
+  },error=.capturedErrorToMessage)
+}

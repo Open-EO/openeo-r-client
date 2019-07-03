@@ -1,6 +1,8 @@
 # POC: Use Case 1
 # RClient -> GEE back-end
 # v0.4.1
+library(magrittr)
+
 user = "group8"
 pwd = "test123"
 
@@ -16,7 +18,24 @@ gee = connect(host = gee_host_url, version="0.4.1",user = user,password = pwd,lo
 gee %>% capabilities()
 
 # 3. Check which collections are available at the back-end
-gee %>% list_collections()
+collections = gee %>% list_collections()
+collections
+
+# 4. Request details about a specific collection 
+collection_ids = lapply(collections$collections, function(coll) coll$id)
+names(collection_ids) = collection_ids
+
+gee %>% describe_collection(collection_ids$`COPERNICUS/S2`)
+
+# 5. Check that needed processes are available
+gee %>% list_processes()
+gee %>% describe_process("reduce")
+
+# 6. Request the supported secondary web service types
+gee %>% list_service_types()
+
+# 7. Create a WMS service (XYZ in this case)
+
 
 graph = gee %>% process_graph_builder()
 data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
@@ -46,9 +65,13 @@ graph$save_result(data = apply_linear_transform,format = "png") %>% graph$setFin
 
 graph
 
+# client-sided validation
 graph$validate()
 
+# server-sided validation
 gee %>% validate_process_graph(graph=graph)
+
+service_id = gee %>% create_service(type = "xyz",graph = graph,title = "UC1 service with R", description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
 
 job_id = gee %>% create_job(task=graph,title="Job build in R-Client")
 

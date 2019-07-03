@@ -1,3 +1,6 @@
+#'@include utilities.R
+NULL
+
 #' OpenEO client class
 #'
 #' A R6Class that interacts with an openEO-conformant backend.
@@ -501,15 +504,15 @@ OpenEOClient <- R6Class(
 
 )
 
-# statics -----
-.urlHardEncode=function(text) {
-  text = URLencode(text)
-  text = gsub("\\/","%2F",text)
-  text = gsub("\\.","%2E",text)
-  return(text)
-}
+# client functions ----
 
-.capturedErrorToMessage = function(e) {
-  message(e)
-  invisible(NULL)
+#' Returns the client version
+#' 
+#' The function returns the client version.
+#' 
+#' @param con an OpenEO client
+#' 
+#' @return the client version
+client_version = function() {
+  return("0.4.1")
 }
