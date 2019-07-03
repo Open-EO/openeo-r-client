@@ -164,7 +164,7 @@ endpoints_compare = function(offering,e2,o2) {
 }
 
 endpoint_mapping = function(con) {
-  endpoints = (con$capabilities())$endpoints
+  endpoints = (capabilities(con))$endpoints
   
   server_offering = tibble(path=character(),method=character())
   for (i in 1:length(endpoints)) {

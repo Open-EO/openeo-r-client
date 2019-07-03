@@ -3,8 +3,8 @@
 #' @importFrom base64enc base64decode
 #' @importFrom jsonlite fromJSON
 #' @import lubridate
-OIDCClient = R6Class(
-  "OIDCClient",
+OIDCAuth = R6Class(
+  "OIDCAuth",
   # public ----
   public=list(
     # attributes ====

@@ -61,6 +61,7 @@ process_graph_builder = function(con) {
 #' @export
 api_versions = function(url) {
   tryCatch({
+    
       if (endsWith(url,"/")) url = substr(url, 1, nchar(url)-1)
       endpoint = "/.well-known/openeo"
 
@@ -86,7 +87,15 @@ api_versions = function(url) {
 #' 
 #' @export
 capabilities = function(con) {
-  return(con$capabilities())
+  endpoint = "/"
+  tryCatch({
+    con$stopIfNotConnected()
+    
+    capabilities = con$request(operation="GET",endpoint = endpoint,authorized = FALSE)
+    class(capabilities) = "OpenEOCapabilities"
+    return(capabilities)
+  },
+  error = .capturedErrorToMessage)
 }
 
 #' List the openeo endpoints
@@ -111,11 +120,26 @@ list_features = function(con) {
 #' @return list of formats with optional configuration parameter
 #' @export
 list_file_types = function(con) {
-  if (con$client_version() == "0.0.1") {
-    return(.not_implemented_yet())
-  }
-
-  return(con$list_file_types())
+  tryCatch({
+    tag = "formats"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    formats = con$request(operation="GET",endpoint=endpoint,authorized= FALSE)
+    
+    names = names(formats)
+    datatypes = unname(lapply(formats, function(format){
+      return(format$gis_data_types)
+    }))
+    
+    parameters = unname(lapply(formats, function(format){
+      return(format$parameters)
+    }))
+    
+    table = tibble(format=names,type=datatypes,parameters = parameters)
+    
+    return(table)
+  },
+  error = .capturedErrorToMessage)
 }
 
 #' Returns the offered webservice types of the back-end
@@ -126,6 +150,27 @@ list_file_types = function(con) {
 #' @return vector of identifier of supported webservice
 #' @export
 list_service_types = function(con) {
+  tryCatch({
+    con$stopIfNotConnected()
+    
+    tag = "ogc_services"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    services = con$request(operation="GET",endpoint, authorized = FALSE)
+    
+    updated_services = list()
+    for (key in names(services)) {
+      service = services[[key]]
+      service$service = key
+      
+      updated_services = c(updated_services,list(service))
+    }
+    return(lapply(updated_services, function(service) {
+      class(service) = "ServiceType"
+      return(service)
+    }))
+  },error=.capturedErrorToMessage)
+  
   return(con$list_service_types())
 }
 
@@ -202,7 +247,17 @@ client_version = function() {
 #' @return object of type user
 #' @export
 describe_account = function(con) {
-  return(con$describe_account())
+  tryCatch({
+    tag = "user_info"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    user_info = con$request(operation="GET",endpoint=endpoint,authorized = TRUE,type="application/json")
+    
+    class(user_info) = "User"
+    return(user_info)
+    
+  },
+  error = .capturedErrorToMessage)
 }
 
 # data endpoint ----
@@ -212,7 +267,17 @@ describe_account = function(con) {
 #' @param con Connection object
 #' @export
 list_collections = function(con) {
-  return(con$list_collections())
+  
+  tryCatch({
+    tag = "data_overview"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    listOfProducts = con$request(operation="GET",endpoint=endpoint,type="application/json")
+    class(listOfProducts) = "CollectionList"
+    return(listOfProducts)
+  },
+  error=.capturedErrorToMessage)
+  
 }
 
 #' Describe a product
@@ -253,7 +318,23 @@ describe_collection = function(con, id=NA) {
 #' @return a list of lists with process_id and description
 #' @export
 list_processes = function(con) {
-  return(con$list_processes())
+  tryCatch({
+    if (is.null(con$processes)) {
+      tag = "process_overview"
+      endpoint = con$getBackendEndpoint(tag)
+      
+      listOfProcesses = con$request(operation="GET",endpoint=endpoint,type="application/json")
+      con$processes = listOfProcesses$processes
+      
+      names(con$processes) = sapply(con$processes,function(p)p$id)
+    }
+    
+    return(lapply(con$processes,function(process) {
+      class(process) = "ProcessInfo"
+      return(process)
+    }))
+  },
+  error=.capturedErrorToMessage)
 }
 
 #' Describe a process
@@ -287,7 +368,36 @@ describe_process = function(con,id=NA) {
 #' @return vector of process graph ids
 #' @export
 list_process_graphs = function(con) {
-  return(con$list_process_graphs())
+  tryCatch({
+    tag = "graph_overview"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    listOfGraphShortInfos = con$request(operation="GET",endpoint=endpoint, authorized = TRUE)
+    listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
+    
+    table = tibble(id=character(),
+                   title=character(),
+                   description=character())
+    
+    if (length(listOfGraphShortInfos) > 0) {
+      
+      for (index in 1:length(listOfGraphShortInfos)) {
+        graph_short = listOfGraphShortInfos[[index]]
+        id = graph_short$id
+        title = NA
+        if (!is.null(graph_short$title)) title = graph_short$title
+        description = NA
+        if (!is.null(graph_short$description)) description = graph_short$description
+        
+        table= add_row(table,
+                       id=id,
+                       title = title,
+                       description = description)
+      }
+    }
+    
+    return(table)
+  }, error = .capturedErrorToMessage)
 }
 
 #' Fetches the representation of a stored graph
@@ -369,7 +479,75 @@ validate_process_graph = function(con, graph) {
 #' @return list of services lists
 #' @export
 list_services = function(con) {
-  return(con$list_services())
+  tryCatch(suppressWarnings({
+    tag = "user_services"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
+    
+    listOfServices = con$request(operation="GET",endpoint=endpoint,authorized = TRUE ,type="application/json")
+    listOfServices = listOfServices$services
+    
+    table = tibble(id=character(),
+                   title=character(),
+                   description=character(),
+                   url = character(),
+                   type = character(),
+                   enabled = logical(),
+                   submitted = .POSIXct(character(0)),
+                   plan = character(0),
+                   costs = numeric(0),
+                   budget = numeric(0))
+    
+    if (length(listOfServices) > 0) {
+      for (index in 1:length(listOfServices)) {
+        service = listOfServices[[index]]
+        
+        id = NA
+        if (!is.null(service$id)) id = service$id
+        
+        title = NA
+        if (!is.null(service$title)) title = service$title
+        
+        description = NA
+        if (!is.null(service$description)) description = service$description
+        
+        url = NA
+        if (!is.null(service$url)) url = service$url
+        
+        type = NA
+        if (!is.null(service$type)) type = service$type
+        
+        enabled = NA
+        if (!is.null(service$enabled)) enabled = service$enabled
+        
+        submitted = NA
+        if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
+        
+        plan = NA
+        if (!is.null(service$plan)) plan = service$plan
+        
+        costs = NA
+        if (!is.null(service$costs)) costs = as.numeric(service$costs)
+        
+        budget = NA
+        if (!is.null(service$budget)) budget = as.numeric(service$budget)
+        
+        table= add_row(table, 
+                       id=id,
+                       title=title,
+                       description=description,
+                       url = url,
+                       type = type,
+                       enabled=enabled,
+                       submitted=submitted,
+                       plan = plan,
+                       costs = costs,
+                       budget=budget)
+      }
+    }
+    
+    
+    return(table)
+  }), error = .capturedErrorToMessage)
 }
 
 #' Prepares and publishes a service on the back-end
@@ -482,7 +660,22 @@ delete_service = function(con, id) {
 #' @return a tibble of for filenames and their sizes
 #' @export
 list_files = function(con) {
-  return(con$list_filesF())
+  tryCatch({
+    tag = "user_files"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
+    
+    files = con$request(operation="GET",endpoint,TRUE,type="application/json")
+    files = files$files
+    
+    if (is.null(files) || length(files) == 0) {
+      message("The user workspace at this host is empty.")
+      return(invisible(files))
+    }
+    
+    files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
+    
+    return(files)
+  },error=.capturedErrorToMessage)
 }
 
 
@@ -555,7 +748,62 @@ delete_file = function(con, src) {
 #' @param con the authenticated Connection
 #' @export
 list_jobs = function(con) {
-  return(con$list_jobs())
+  tryCatch({
+    tag = "user_jobs"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
+    
+    listOfJobs = con$request(operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
+    listOfJobs = listOfJobs$jobs
+    # list to tibble
+    table = tibble(id=character(),
+                   title = character(),
+                   status=character(),
+                   submitted=.POSIXct(integer(0)),
+                   updated=.POSIXct(integer(0)),
+                   costs=integer(0),
+                   budget=integer(0),
+                   plan=character()
+    )
+    # desription left out on purpose... it might be to much to visualize
+    
+    if (length(listOfJobs) > 0) {
+      for (index in 1:length(listOfJobs)) {
+        job = listOfJobs[[index]]
+        
+        suppressWarnings({
+          id = NA
+          if (!is.null(job$id)) id = job$id
+          title = NA
+          if (!is.null(job$title)) title = job$title
+          status = NA
+          if (!is.null(job$status)) status = job$status
+          submitted = NA
+          if (!is.null(job$submitted)) submitted = as_datetime(job$submitted)
+          updated = NA
+          if (!is.null(job$updated)) updated = as_datetime(job$updated)
+          costs = NA
+          if (!is.null(job$costs)) costs = as.numeric(job$costs)
+          budget = NA
+          if (!is.null(job$budget)) budget = as.numeric(job$budget)
+          plan = NA
+          if (!is.null(job$plan)) plan = job$plan
+          
+          table= add_row(table,
+                         id=id,
+                         title = title,
+                         status=status,
+                         submitted=submitted,
+                         updated=updated,
+                         costs=costs,
+                         budget=budget,
+                         plan=plan)
+        })
+      }
+    }
+    
+    return(table)
+  },
+  error=.capturedErrorToMessage)
 }
 
 #' Executes a job directly and returns the data immediately
@@ -671,7 +919,19 @@ follow_job = function(con, job_id) {
 #' @return result object containing of URLs for download
 #' @export
 list_results = function(con, job) {
-  return(con$list_results(job=job))
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    tag = "jobs_download"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    listOfResults = con$request(operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
+    return(listOfResults)
+  },error=.capturedErrorToMessage)
 }
 
 #' Downloads the results of a job into a specific folder
@@ -823,7 +1083,16 @@ defineUDF = function(process,con, prior.name="collections", language, type, cont
 #' @return list of udf runtimes with supported udf types, versions and installed packages
 #' @export
 list_udf_runtimes = function(con) {
-  return(con$list_udf_runtimes())
+  tryCatch(
+    {
+      tag = "udf_runtimes"
+      endpoint = con$getBackendEndpoint(tag)
+      
+      return(con$request(operation="GET",endpoint = endpoint,
+                         authorized = FALSE))
+    }, 
+    error = .capturedErrorToMessage
+  )
 }
 
 #' Gets detailed information about a particular udf type
