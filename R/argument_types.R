@@ -121,7 +121,7 @@ Argument = R6Class(
               self$isEmpty()) {
             
           } else {
-            if (!"callback-value" %in% class(self$getValue())) private$typeCheck()
+            if (!any(c("callback-value","variable") %in% class(self$getValue()))) private$typeCheck()
           }
           
           invisible(NULL)
@@ -181,6 +181,31 @@ Argument = R6Class(
       
     }
     
+  )
+)
+
+# Variable ====
+Variable = R6Class(
+  "variable",
+  inherit=Argument,
+  public = list(
+    initialize=function(id=character(),description=character(),type="string",default=NULL) {
+      private$name = id
+      private$description = description
+      private$required = required
+      private$schema$type = type
+    }
+  ),
+  private = list(
+    typeSerialization = function() {
+      res = list(variable_id = private$name)
+      
+      if (length(private$description) > 0 && !is.na(private$description)) res = append(res,list(description=private$description))
+      if (length(private$type) > 0 && ! is.na(private$type)) res= append(res, list(type=private$type))
+      if (!is.null(private$default)) res = append(res, list(default=private$default))
+      
+      return(res)
+    }
   )
 )
 
