@@ -10,9 +10,9 @@ process_graph_builder(con)
 \item{con}{a connection to an openeo back-end}
 }
 \value{
-a ProcessGraphBuilder class with the offered processes of the backend
+a Graph object with the offered processes of the backend
 }
 \description{
-Queries the connected back-end for all available processes and registers them as R functions on
-a process builder class to build up the process graph.
+Queries the connected back-end for all available processes and collection names and registers them via R functions on
+a Graph object to model a process graph in R.
 }

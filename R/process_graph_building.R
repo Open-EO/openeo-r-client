@@ -207,10 +207,29 @@ Graph = R6Class(
       
       params[[parameter]]$setValue(value)
       return(params[[parameter]]$validate()) # TODO decide if this is useful
+    },
+    
+    getVariables = function() {
+      return(private$variables)
+    },
+    
+    createVariable = function(id,description=NULL,type="string",default=NULL) {
+      var = Variable$new(id=id, description=description,type=type,default=default)
+      
+      temp_list= list(var)
+      names(temp_list) = var$getName()
+      private$variables = append(private$variables, var)
+      
+      return(var)
+    },
+    
+    removeVariable = function(variable_id) {
+      private$variables[[variable_id]] = NULL
     }
   ),
   private = list(
     nodes = list(),
+    variables = list(),
     final_node_id = character(),
     
     assertNodeExists = function(node_id) {

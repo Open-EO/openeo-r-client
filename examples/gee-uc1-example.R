@@ -48,7 +48,6 @@ ndvi = graph$normalized_difference(band1 = b4,band2 = b8)
 
 reducer = graph$reduce(data = ndvi,dimension = "temporal")
 
-# gee %>% callback(reducer)
 cb_graph = gee %>% callback(reducer,parameter = "reducer")
 
 cb_graph$min(data = cb_graph$data$data) %>% cb_graph$setFinalNode()
@@ -71,18 +70,12 @@ graph$validate()
 # server-sided validation
 gee %>% validate_process_graph(graph=graph)
 
-service_id = gee %>% create_service(type = "xyz",graph = graph,title = "UC1 service with R", description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
+service_id = gee %>% create_service(type = "xyz",graph = graph,
+                                    title = "UC1 service with R", 
+                                    description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
+service_id
 
-job_id = gee %>% create_job(task=graph,title="Job build in R-Client")
+# 8. Requesting the service information
+gee %>% list_services()
 
-gee %>% list_jobs()
-
-gee %>% start_job(job = job_id)
-
-gee %>% describe_job(job_id)
-
-results = gee %>% list_results(job_id)
-results = gee %>% list_results("VrZwXc1IsCcY1OeU")
-
-
-download.file(results$links[[1]]$href, "test.png",mode = "wb")
+gee %>% describe_service(service_id)

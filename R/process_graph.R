@@ -222,11 +222,11 @@ validate_process_graph = function(con, graph) {
 
 #' Get a process graph builder from the connection
 #' 
-#' Queries the connected back-end for all available processes and registers them as R functions on
-#' a process builder class to build up the process graph.
+#' Queries the connected back-end for all available processes and collection names and registers them via R functions on
+#' a Graph object to model a process graph in R.
 #' 
 #' @param con a connection to an openeo back-end
-#' @return a ProcessGraphBuilder class with the offered processes of the backend
+#' @return a Graph object with the offered processes of the backend
 #' @export
 process_graph_builder = function(con) {
   tryCatch({
@@ -234,13 +234,13 @@ process_graph_builder = function(con) {
       temp=list_processes(con)
     }
     
-    collections = list_collections(self)$collections
+    collections = list_collections(con)$collections
     cids = sapply(collections,function(coll)coll$id)
     collections = as.list(cids)
     names(collections) = cids
     
     
-    plist = lapply(self$processes,processFromJson)
+    plist = lapply(con$processes,processFromJson)
     
     return(Graph$new(plist,collections))
   },error=.capturedErrorToMessage)
