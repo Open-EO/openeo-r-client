@@ -4,7 +4,7 @@ Title: openEO client interface
 Version: 0.4.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.3.0
-Depends: 
+Depends:
     R (>= 3.3),
     magrittr (>= 1.5),
     jsonlite(>= 1.5),
@@ -15,7 +15,8 @@ Depends:
 Suggests:
     leaflet (== 2.0.0),
     mapview (== 2.4.0),
-    commonmark (== 1.5)
+    commonmark (== 1.5),
+    testthat
 Imports:
     jsonlite,
     httr,
@@ -32,17 +33,26 @@ LazyData: true
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 License: Apache License
-Collate: 
+Collate:
     'argument_types.R'
+    'basic-auth.R'
     'callback-functions.R'
     'capabilities-mapping.R'
+    'utilities.R'
     'client.R'
     'coerce-functions.R'
     'collection-functions.R'
+    'collections.R'
     'debugging.R'
+    'jobs.R'
     'map-functions.R'
     'markdown_viewer.R'
-    'oidc-client.R'
+    'oidc-auth.R'
     'print-functions.R'
-    'process_graph_v0.4.0.R'
-    'wrapper-functions.R'
+    'process_graph.R'
+    'process_graph_building.R'
+    'processes.R'
+    'server_metadata.R'
+    'services.R'
+    'udf.R'
+    'user.R'

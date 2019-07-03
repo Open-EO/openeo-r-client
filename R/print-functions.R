@@ -174,7 +174,7 @@ print.ServiceInfo = function(x,...) {
   
   submitted = paste("Submitted:\t",x$submitted,"\n",sep="")
   
-  if (is.na(x$title) || is.na(x$title))x$title = "---"
+  if (is.null(x$title) || is.na(x$title))x$title = "---"
   title = paste("Title:\t\t",x$title,"\n",sep="")
   
   if (is.null(x$description) || is.na(x$description))x$description = "---"
@@ -237,7 +237,7 @@ print.CollectionList = function(x, ...) {
 
 #' @export
 print.Graph = function(x, ...) {
-  print(taskToJSON(x))
+  print(graphToJSON(x))
 }
 
 #' @export

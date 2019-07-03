@@ -1,3 +1,6 @@
+#'@include utilities.R
+NULL
+
 #' OpenEO client class
 #'
 #' A R6Class that interacts with an openEO-conformant backend.
@@ -17,10 +20,42 @@ OpenEOClient <- R6Class(
     user_id = NULL,
     
     api.mapping = NULL,
+    processes = NULL,
 
     # functions ====
     initialize = function() {
 
+    },
+    getBackendEndpoint = function(endpoint_name) {
+      if (!is.null(self$api.mapping)) {
+        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% dplyr::select(backend_endpoint) %>% unname() %>% unlist()
+        if (length(endpoint) > 0) {
+          if (startsWith(endpoint,"/")) {
+            return(substr(endpoint,2,nchar(endpoint)))
+          } else {
+            return(endpoint)
+          }
+        } else {
+          stop("Endpoint for this function is not supported by the current back-end.")
+        }
+        
+      } else {
+        stop("Not connected / loggedin. You need to connect or login to a back-end.")
+      }
+    },
+    
+    request = function(operation,endpoint, authorized=FALSE, ...) {
+      http_operation = private[[toupper(operation)]]
+      
+      return(do.call(http_operation, append(list(endpoint=endpoint,authorized=authorized),list(...))))
+    },
+    isConnected = function() {
+      return(!is.null(private$host))
+    },
+    stopIfNotConnected = function() {
+      if (!self$isConnected()) {
+        stop("Not connected to a back-end. Please connect to one before proceeding")
+      }
     },
 
     connect = function(url,version, login_type=NULL) {
@@ -44,7 +79,7 @@ OpenEOClient <- R6Class(
             
             if (!is.null(version)) {
               # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
-              hostInfo=self$backendVersions()$versions
+              hostInfo=private$backendVersions()$versions
               versionLabels = sapply(hostInfo,function(x)x$api_version)
               names(hostInfo) = versionLabels
               
@@ -53,7 +88,12 @@ OpenEOClient <- R6Class(
                 message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
                               paste(versionLabels,collapse=",")))
               } else {
-                private$host = hostInfo[[version]]$url
+                url = hostInfo[[version]]$url
+                
+                if (endsWith(url,"/")) {
+                  url = substr(url,1,nchar(url)-1)
+                }
+                private$host = url
               }
             }
             
@@ -61,15 +101,15 @@ OpenEOClient <- R6Class(
             cat("Connected to host\n")
             
             tryCatch({
-              if (is.null(private$processes)) {
-                processes = self$list_processes()
+              if (is.null(self$processes)) {
+                processes = list_processes(self)
                 pids = sapply(processes, function(x)x$id)
                 names(processes) = pids
-                private$processes = processes
+                self$processes = processes
               }
               
             }, error = function(e){
-              private$processes = NULL
+              self$processes = NULL
             })
             return(invisible(self))
         } else {
@@ -84,89 +124,16 @@ OpenEOClient <- R6Class(
     client_version = function () {
       return(private$version)
     },
-    capabilities = function() {
-      if (endsWith(private$host,"/")) endpoint = ""
-      else endpoint = "/"
-      tryCatch({
-        private$stopIfNotConnected()
-        
-        capabilities = private$GET(endpoint = endpoint,authorized = FALSE)
-        class(capabilities) = "OpenEOCapabilities"
-        return(capabilities)
-      },
-      error = .capturedErrorToMessage)
-      
-    },
-    list_service_types = function() {
-      tryCatch({
-        private$stopIfNotConnected()
-        
-        tag = "ogc_services"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        services = private$GET(endpoint, authorized = FALSE)
-        
-        updated_services = list()
-        for (key in names(services)) {
-          service = services[[key]]
-          service$service = key
-          
-          updated_services = c(updated_services,list(service))
-        }
-        return(lapply(updated_services, function(service) {
-          class(service) = "ServiceType"
-          return(service)
-        }))
-      },error=.capturedErrorToMessage)
-    },
-    list_file_types = function() {
-      tryCatch({
-        tag = "formats"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        formats = private$GET(endpoint,authorized = FALSE)
-        
-        names = names(formats)
-        datatypes = unname(lapply(formats, function(format){
-          return(format$gis_data_types)
-        }))
-        
-        parameters = unname(lapply(formats, function(format){
-          return(format$parameters)
-        }))
-        
-        library(tibble)
-        
-        table = tibble(format=names,type=datatypes,parameters = parameters)
-        
-        return(table)
-      },
-      error = .capturedErrorToMessage
-      )
-      
-    },
-    list_udf_runtimes = function() {
-      tryCatch(
-        {
-          tag = "udf_runtimes"
-          endpoint = private$getBackendEndpoint(tag)
-          
-          return(private$GET(endpoint = endpoint,
-                             authorized = FALSE))
-        }, 
-        error = .capturedErrorToMessage
-      )
-    },
     
     register = function(user=NULL,password) {
       #currently this will be used for GEE only
       tryCatch({
-        if (!private$isConnected()) {
+        if (!self$isConnected()) {
           stop("No host selected")
         }
         
         tag = "registration"
-        endpoint = private$getBackendEndpoint(tag)
+        endpoint = self$getBackendEndpoint(tag)
         
         private$password = password
         
@@ -186,7 +153,7 @@ OpenEOClient <- R6Class(
         if (private$host %>% is.null()) {
           stop("Cannot login. Please connect to an OpenEO back-end first.")
         }
-        private$stopIfNotConnected()
+        self$stopIfNotConnected()
         
         if (private$login_type == "oidc") {
           private$loginOIDC()
@@ -201,14 +168,14 @@ OpenEOClient <- R6Class(
         }
         
         tryCatch({
-          if (is.null(private$processes)) {
-            processes = self$list_processes()
+          if (is.null(self$processes)) {
+            processes = list_processes(self)
             pids = sapply(processes, function(x)x$id)
             names(processes) = pids
-            private$processes = processes
+            self$processes = processes
           }
         }, error = function(e){
-          private$processes = NULL
+          self$processes = NULL
         })
         
         
@@ -221,957 +188,6 @@ OpenEOClient <- R6Class(
       if (!is.null(private$oidc_client)){
         private$oidc_client$logout()
       }
-    },
-    describe_account = function() {
-      tryCatch({
-        tag = "user_info"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        user_info = private$GET(endpoint=endpoint,authorized = TRUE,type="application/json")
-        
-        class(user_info) = "User"
-        return(user_info)
-        
-      },
-      error = .capturedErrorToMessage)
-    },
-    backendVersions = function(url) {
-      
-      tryCatch({
-        endpoint = "/.well-known/openeo"
-        
-        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
-
-        return(info)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    
-    # list functions ####
-    list_collections = function() {
-
-      tryCatch({
-        tag = "data_overview"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        listOfProducts = private$GET(endpoint=endpoint,type="application/json")
-        class(listOfProducts) = "CollectionList"
-        return(listOfProducts)
-      },
-      error=.capturedErrorToMessage)
-    },
-    
-    list_processes = function() {
-
-      tryCatch({
-        if (is.null(private$processes)) {
-          tag = "process_overview"
-          endpoint = private$getBackendEndpoint(tag)
-          
-          listOfProcesses = private$GET(endpoint,type="application/json")
-          private$processes = listOfProcesses$processes
-          
-          names(private$processes) = sapply(private$processes,function(p)p$id)
-        }
-        
-        return(lapply(private$processes,function(process) {
-          class(process) = "ProcessInfo"
-          return(process)
-        }))
-      },
-      error=.capturedErrorToMessage)
-      
-    },
-    list_jobs = function() {
-      
-      tryCatch({
-        tag = "user_jobs"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
-        
-        listOfJobs = private$GET(endpoint,authorized=TRUE,type="application/json")
-        listOfJobs = listOfJobs$jobs
-        # list to tibble
-        table = tibble(id=character(),
-                       title = character(),
-                       status=character(),
-                       submitted=.POSIXct(integer(0)),
-                       updated=.POSIXct(integer(0)),
-                       costs=integer(0),
-                       budget=integer(0),
-                       plan=character()
-                       )
-        # desription left out on purpose... it might be to much to visualize
-        
-        if (length(listOfJobs) > 0) {
-          for (index in 1:length(listOfJobs)) {
-            job = listOfJobs[[index]]
-            
-            suppressWarnings({
-              id = NA
-              if (!is.null(job$id)) id = job$id
-              title = NA
-              if (!is.null(job$title)) title = job$title
-              status = NA
-              if (!is.null(job$status)) status = job$status
-              submitted = NA
-              if (!is.null(job$submitted)) submitted = as_datetime(job$submitted)
-              updated = NA
-              if (!is.null(job$updated)) updated = as_datetime(job$updated)
-              costs = NA
-              if (!is.null(job$costs)) costs = as.numeric(job$costs)
-              budget = NA
-              if (!is.null(job$budget)) budget = as.numeric(job$budget)
-              plan = NA
-              if (!is.null(job$plan)) plan = job$plan
-              
-              table= add_row(table,
-                             id=id,
-                             title = title,
-                             status=status,
-                             submitted=submitted,
-                             updated=updated,
-                             costs=costs,
-                             budget=budget,
-                             plan=plan)
-            })
-          }
-        }
-        
-        return(table)
-      },
-      error=.capturedErrorToMessage)
-    },
-    
-    list_process_graphs = function() {
-      tryCatch({
-        tag = "graph_overview"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        listOfGraphShortInfos = private$GET(endpoint, authorized = TRUE)
-        listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
-        
-        table = tibble(id=character(),
-                       title=character(),
-                       description=character())
-        
-        if (length(listOfGraphShortInfos) > 0) {
-        
-          for (index in 1:length(listOfGraphShortInfos)) {
-            graph_short = listOfGraphShortInfos[[index]]
-            id = graph_short$id
-            title = NA
-            if (!is.null(graph_short$title)) title = graph_short$title
-            description = NA
-            if (!is.null(graph_short$description)) description = graph_short$description
-            
-            table= add_row(table,
-                           id=id,
-                           title = title,
-                           description = description)
-          }
-        }
-        
-        return(table)
-      }, error = .capturedErrorToMessage)
-    },
-    
-    list_services = function() {
-      
-      tryCatch(suppressWarnings({
-        tag = "user_services"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
-        
-        listOfServices = private$GET(endpoint,authorized = TRUE ,type="application/json")
-        listOfServices = listOfServices$services
-        
-        table = tibble(id=character(),
-                       title=character(),
-                       description=character(),
-                       url = character(),
-                       type = character(),
-                       enabled = logical(),
-                       submitted = .POSIXct(character(0)),
-                       plan = character(0),
-                       costs = numeric(0),
-                       budget = numeric(0))
-        
-        if (length(listOfServices) > 0) {
-          for (index in 1:length(listOfServices)) {
-            service = listOfServices[[index]]
-            
-            id = NA
-            if (!is.null(service$id)) id = service$id
-            
-            title = NA
-            if (!is.null(service$title)) title = service$title
-            
-            description = NA
-            if (!is.null(service$description)) description = service$description
-            
-            url = NA
-            if (!is.null(service$url)) url = service$url
-            
-            type = NA
-            if (!is.null(service$type)) type = service$type
-            
-            enabled = NA
-            if (!is.null(service$enabled)) enabled = service$enabled
-            
-            submitted = NA
-            if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
-            
-            plan = NA
-            if (!is.null(service$plan)) plan = service$plan
-            
-            costs = NA
-            if (!is.null(service$costs)) costs = as.numeric(service$costs)
-            
-            budget = NA
-            if (!is.null(service$budget)) budget = as.numeric(service$budget)
-            
-            table= add_row(table, 
-                           id=id,
-                           title=title,
-                           description=description,
-                           url = url,
-                           type = type,
-                           enabled=enabled,
-                           submitted=submitted,
-                           plan = plan,
-                           costs = costs,
-                           budget=budget)
-          }
-        }
-        
-        
-        return(table)
-      }), error = .capturedErrorToMessage)
-    },
-    
-    list_files = function() {
-      
-      tryCatch({
-        tag = "user_files"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id)
-        
-        files = private$GET(endpoint,TRUE,type="application/json")
-        files = files$files
-        
-        if (is.null(files) || length(files) == 0) {
-          message("The user workspace at this host is empty.")
-          return(invisible(files))
-        }
-        
-        files = tibble(files) %>% rowwise() %>% summarise(name=files$name, size=files$size)
-        
-        return(files)
-      },error=.capturedErrorToMessage)
-    },
-    
-    list_results = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        tag = "jobs_download"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        listOfResults = private$GET(endpoint,authorized=TRUE,type="application/json")
-        return(listOfResults)
-      },error=.capturedErrorToMessage)
-    },
-    
-    # describe functions ####
-    describe_process = function(id) {
-      if (is.null(private$processes)) {
-        stop("No processes found or loaded from the back-end")
-      }
-      
-      if (! id %in% names(private$processes)) {
-        stop(paste("Cannot describe process '",id,"'. Process does not exist.",sep=""))
-      } else {
-        return(private$processes[[id]])
-      }
-    },
-    
-    describe_collection = function(id) {
-      
-      tryCatch({
-        tag = "data_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
-
-        class(info) = "CollectionInfo"
-        
-        if (!is.null(info$properties$`eo:bands`)) {
-          class(info$properties$`eo:bands`) = "BandList"
-        }
-        
-        class(info$properties$`cube:dimensions`) = "CubeDimensions"
-        
-        return(info)
-      },
-      error = .capturedErrorToMessage)
-    },
-    
-    describe_job = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        tag = "jobs_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        info = private$GET(endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
-        
-        class(info) = "JobInfo"
-        class(info$process_graph) = "Json_Graph"
-        
-        return(info)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    describe_process_graph = function(id) {
-      tryCatch(
-        {
-          if (is.null(id)) {
-            stop("No graph id specified. Cannot fetch unknown graph.")
-          }
-          
-          tag = "graph_details"
-          endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-          graph = private$GET(endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
-          
-          class(graph) = "ProcessGraphInfo"
-          class(graph$process_graph) = "Json_Graph"
-          return(graph)
-        },
-        error=.capturedErrorToMessage
-      )
-      
-    },
-    
-    describe_service = function(id) {
-      tryCatch({
-        if (is.null(id)) {
-          stop("No service id specified.")
-        }
-        
-        tag = "services_details"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        service = private$GET(endpoint,authorized = TRUE)
-        class(service) = "ServiceInfo"
-        return(service)
-      }, error=.capturedErrorToMessage)
-    },
-    
-    describeUdfType = function(language, udf_type) {
-      tryCatch({
-        if (is.null(language) || is.null(udf_type)) {
-          stop("Missing parameter language or udf_type")
-        }
-        tag = "udf_functions"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(language,udf_type)
-        
-        msg = private$GET(endpoint = endpoint,
-                          authorized = FALSE)
-        return(msg)
-      },error=.capturedErrorToMessage)
-      
-    },
-    # publish functions ====
-    
-    create_process_graph = function(graph,title = NULL, description = NULL) {
-      tryCatch({
-        tag = "new_graph"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        if (!is.list(graph) || is.null(graph)) {
-          stop("The graph information is missing or not a list")
-        }
-        
-        requestBody = list(
-          title=title,
-          description = description,
-          process_graph = graph
-        )
-        
-        response = private$POST(endpoint=endpoint,
-                                authorized = TRUE,
-                                data=requestBody,
-                                raw=TRUE)
-        
-        message("Graph was sucessfully stored on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader,"/"))
-        return(trimws(split[length(split)]))
-      },error = .capturedErrorToMessage)
-    },
-    
-    create_job = function(graph=NULL,graph_id=NULL,
-                        title = NULL, description = NULL,
-                        plan = NULL, budget = NULL,
-                        format, ...) {
-      tryCatch({
-        tag = "jobs_define"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        create_options = list(...)
-        output = list()
-        output$format = format
-        if (length(create_options) > 0) {
-          output$parameters = create_options
-        }
-        
-        if (!is.null(task)) {
-          if ("Graph" %in% class(task)) {
-            job = list(process_graph=task$serialize(),output = output)
-          } else if (is.list(task)) {
-            job = list(process_graph=toJSON(task,force=TRUE),output = output)
-          } else {
-            stop("Parameter task is not a task object. Awaiting a list.")
-          }
-        } else if (! is.null(graph_id)) {
-          job = list(process_graph=graph_id,output = output)
-        } else {
-          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-        }
-        
-        if (!is.null(title)) job$title = title
-        if (!is.null(description)) job$description = description
-        if (!is.null(plan)) job$plan = plan
-        if (!is.null(budget)) job$budget = budget
-        
-        #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
-        response = private$POST(endpoint=endpoint,
-                                authorized = TRUE,
-                                data=job,
-                                raw=TRUE)
-        
-        message("Job was sucessfully registered on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader,"/"))
-        return(split[length(split)])
-      },error=.capturedErrorToMessage)
-    },
-    
-    create_service = function(type, 
-                             graph,
-                             title = NULL,
-                             description = NULL,
-                             enabled = NULL,
-                             parameters = NULL,
-                             plan = NULL,
-                             budget = NULL
-                             ) {
-      tryCatch({
-        if (is.null(type)) {
-          stop("No type specified.")
-        }
-        
-        tag = "service_publish"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        service_request_object = list(
-          type = type,
-          process_graph = graph,
-          title = title,
-          description = description,
-          enabled =enabled,
-          parameters = parameters,
-          plan = plan,
-          budget = budget
-        )
-        
-        response = private$POST(endpoint,
-                                authorized = TRUE, 
-                                data = service_request_object, 
-                                encodeType = "json",
-                                raw = TRUE)
-        
-        message("Service was successfully created.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader,"/"))
-        return(trimws(split[length(split)]))
-      },error=.capturedErrorToMessage)
-    },
-    upload_file = function(source,target,encode="raw",mime="application/octet-stream") {
-      tryCatch({
-        target = URLencode(target,reserved = TRUE)
-        target = gsub("\\.","%2E",target)
-        
-        if (is.null(self$user_id)) {
-          stop("User id is not set. Either login or set the id manually.")
-        }
-        
-        tag = "user_file_upload"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,target)
-        
-        message = private$PUT(endpoint= endpoint,authorized = TRUE, data=httr::upload_file(source,type=mime),encodeType = encode)
-        message("Upload of user data was successful.")
-        return(message)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    # Update functions ====
-    
-    update_process_graph = function(id, graph=NULL,title = NULL, description = NULL) {
-      tryCatch({
-        if (is.null(id)) {
-          stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
-        }
-        
-        requestBody = list()
-        
-        if (!is.null(graph)) {
-          if (is.na(graph)) {
-            stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
-          }else if (!is.list(graph)) {
-            stop("The graph information is missing or not a list")
-          } else {
-            requestBody[["process_graph"]] = graph
-          }
-        }
-        
-        if (!is.null(title)) {
-          if (is.na(title)) {
-            requestBody[["title"]] = NULL
-          } else {
-            requestBody[["title"]] = title
-          }
-        }
-        if (!is.null(description)) {
-          if (is.na(description)) {
-            requestBody[["description"]] = NULL
-          } else {
-            requestBody[["description"]] = description
-          }
-        }
-        
-        tag = "graph_replace"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        message = private$PATCH(endpoint = endpoint, 
-                              authorized = TRUE, 
-                              data = requestBody,
-                              encodeType = "json")
-        
-        if (is.null(message)) {
-          message(paste("Process graph '",graph_id,"' was successfully modified.",sep=""))
-          invisible(TRUE)
-        }
-      },error=.capturedErrorToMessage)
-    },
-    
-    update_job = function(id,
-                         title=NULL, description=NULL,
-                         process_graph = NULL, 
-                         plan = NULL, budget= NULL,
-                         format=NULL, ...) {
-      tryCatch({
-        if (is.null(id)) {
-          stop("No job i was specified.")
-        }
-        
-        tag = "jobs_update"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        patch = list()
-        create_options = list(...)
-        output = list()
-        if (length(create_options) > 0) {
-          output$parameters = create_options
-        }
-        if (!is.null(format)) output$format = format
-        
-        if (length(output) > 0) patch$output = output
-        
-        if (!is.null(process_graph)) {
-          patch$process_graph = process_graph
-        }
-        
-        if (!is.null(title)) {
-          if (is.na(title)) patch$title = NULL
-          else patch$title = title
-        }
-        
-        if (!is.null(description)){
-          if (is.na(description)) patch$description = NULL
-          else patch$description = description
-        } 
-        
-        if (!is.null(plan)) {
-          if (is.na(plan)) patch$plan = NULL
-          else patch$plan = plan
-        }
-        
-        if (!is.null(budget)) {
-          if (is.na(budget)) patch$budget = NULL
-          else patch$budget = budget
-        }
-        
-        res = private$PATCH(endpoint = endpoint,
-                            authorized = TRUE,
-                            encodeType = "json",
-                            data=patch)
-        message(paste("Job '",job_id,"' was successfully updated.",sep=""))
-        invisible(TRUE)
-      },error=.capturedErrorToMessage)
-    },
-    
-    update_service = function(id,
-                             type=NULL, 
-                             process_graph=NULL,
-                             title = NULL,
-                             description = NULL,
-                             enabled = NULL,
-                             parameters = NULL,
-                             plan = NULL,
-                             budget = NULL) {
-      tag = "services_update"
-      endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-      tryCatch({
-        patch = list()
-        
-        if (!is.null(type)) {
-          patch[["type"]] = type
-        }
-        
-        if (!is.null(process_graph)) {
-          if (length(process_graph) > 0) {
-            patch[["process_graph"]] = process_graph
-          } else {
-            stop("Process graph cannot be set to be empty.")
-          }
-        }
-        
-        if (!is.null(title)) {
-          if (!is.na(title)) {
-            patch[["title"]] = title
-          } else {
-            patch[["title"]] = NULL
-          }
-        }
-        
-        if (!is.null(description)) {
-          if (!is.na(description)) {
-            patch[["description"]] = description
-          } else {
-            patch[["description"]] = NULL
-          }
-        }
-
-        if (!is.null(enabled)) {
-          if (!is.na(enabled) && is.logical(enabled)) {
-            patch[["enabled"]] = enabled
-          } else {
-            stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
-          }
-        }
-        
-        if (!is.null(parameters)) {
-          if (is.na(parameters)) {
-            patch[["parameters"]] = NULL
-          } else if (is.list(parameters)) {
-            patch[["parameters"]] = parameters
-          } else {
-            stop("No valid data for parameter 'parameters'. It has to be a list")
-          }
-        }
-        
-        if (!is.null(plan)) {
-          if (!is.na(plan)) {
-            patch[["plan"]] = plan
-          } else {
-            stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
-          }
-        }
-        
-        # budget = NULL
-        if (!is.null(budget)) {
-          if (!is.na(budget)) {
-            patch[["budget"]] = budget
-          } else {
-            patch[["budget"]] = NULL
-          }
-        }
-        
-        res = private$PATCH(endpoint = endpoint,
-                            authorized = TRUE,
-                            encodeType = "json",
-                            data=patch)
-        message(paste("Service '",service_id,"' was successfully updated.",sep=""))
-        invisible(TRUE)
-      },error=.capturedErrorToMessage)
-    },
-    
-    # other getter / download functions ====
-    download_file = function(src, dst=NULL) {
-      tryCatch({
-        if (!is.character(src)) {
-          stop("Cannot download file with a source statement that is no character")
-        } else {
-          src = .urlHardEncode(src)
-        }
-        
-        if (is.null(dst)) {
-          dst = tempfile()
-        }
-        
-        tag = "user_file_download"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id,src)
-        
-        file_connection = file(dst,open="wb")
-        writeBin(object=private$GET(endpoint,authorized = TRUE,as = "raw"),con = file_connection)
-        
-        message("Successfully downloaded the requested file.")
-        
-        return(dst)
-      },error=.capturedErrorToMessage,
-      finally= {
-        close(file_connection,type="wb")
-      })
-    },
-    validate_process_graph = function(graph) {
-      tryCatch({
-        tag = "process_graph_validate"
-        endpoint = private$getBackendEndpoint(tag)
-        
-        if ("Graph" %in% class(graph)) graph = graph$serialize()
-        
-        if (!is.list(graph) || is.null(graph)) {
-          stop("The graph information is missing or not a list")
-        }
-        
-        requestBody = list(
-          process_graph = graph
-        )
-        
-        response = private$POST(endpoint=endpoint,
-                                authorized = TRUE,
-                                data=requestBody,
-                                encodeType = "json")
-        
-        message("Graph was sucessfully validated.")
-        invisible(response)
-      },error = .capturedErrorToMessage)
-    },
-    
-    stop_job = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        
-        tag = "jobs_cancel"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
-        if (success) {
-          message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
-        }
-        
-        return(success)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    estimate_job = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        tag = "jobs_cost_estimation"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$GET(endpoint = endpoint, authorized = TRUE)
-        class(success) = "JobCostsEstimation"
-        return(success)
-      },error=.capturedErrorToMessage)
-    },
-    
-    process_graph_builder = function() {
-      tryCatch({
-        if (is.null(private$processes)) {
-          tag = "process_overview"
-          endpoint = private$getBackendEndpoint(tag)
-          
-          listOfProcesses = private$GET(endpoint,type="application/json")
-          private$processes = listOfProcesses$processes
-        }
-        # json processes -> process objects
-        
-        names(private$processes) = sapply(private$processes,function(p)p$id)
-        
-        collections = self$list_collections()$collections
-        cids = sapply(collections,function(coll)coll$id)
-        collections = as.list(cids)
-        names(collections) = cids
-        
-        
-        plist = lapply(private$processes,processFromJson)
-        
-        return(Graph$new(plist,collections))
-      },error=.capturedErrorToMessage)
-      
-    }, 
-    # processing functions ====
-    compute_result = function (graph=NULL,graph_id=NULL,output_file=NULL,format=NULL, ...) {
-      tryCatch({
-        # former sync evaluation
-        tag = "execute_sync"
-        endpoint = private$getBackendEndpoint(tag)
-        if (is.null(format)) {
-          format = self$output_formats()$default
-        }
-        
-        output = list(...)
-        output = append(output, list(format=format))
-        if (!is.null(graph)) {
-          if (is.list(graph)) {
-            job = toJSON(list(process_graph=graph,output = output),force=TRUE,auto_unbox = TRUE)
-          } else {
-            stop("Parameter graph is not a Graph object. Awaiting a list.")
-          }
-        } else if (! is.null(graph_id)) {
-          job = list(process_graph=graph_id,output = output)
-        } else {
-          stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-        }
-        
-        header = list()
-        header = private$addAuthorization(header)
-        
-        res = private$POST(endpoint,
-                           authorized = TRUE, 
-                           data=job,
-                           encodeType = "json",
-                           raw=TRUE)
-        
-        if (!is.null(output_file)) {
-          tryCatch(
-            {
-              message("Task result was sucessfully stored.")
-              writeBin(content(res,"raw"),output_file)
-            },
-            error = function(err) {
-              stop(err)
-            }
-          )
-          
-          return(output_file)
-        } else {
-          return(content(res,"raw"))
-        }
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    start_job = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        if (is.null(job_id)) {
-          stop("No job id specified.")
-        }
-        
-        tag = "execute_async"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$POST(endpoint = endpoint, authorized = TRUE)
-        message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
-        
-        invisible(self)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    #delete functions ====
-    delete_file = function (src) {
-      tryCatch({
-        if (is.character(src)) {
-          src = .urlHardEncode(src)
-        } else {
-          stop("Cannot interprete parameter 'src' during delete request")
-        }
-        
-        tag = "user_file_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(self$user_id, src)
-        
-        return(private$DELETE(endpoint = endpoint, authorized = TRUE))
-      },error=.capturedErrorToMessage)
-    }, 
-    
-    delete_process_graph = function(id) {
-      tryCatch({
-        tag = "graph_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
-        if(success) {
-          message(paste("Graph '",id,"' was successfully deleted from the back-end",sep=""))
-        }
-        return(success)
-      },error=.capturedErrorToMessage)
-      
-    },
-    delete_job = function(job) {
-      if (!is.null(job) && "JobInfo" %in% class(job)) {
-        job_id = job$id
-      } else {
-        job_id = job
-      }
-      
-      tryCatch({
-        tag = "jobs_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-        
-        success = private$DELETE(endpoint = endpoint, authorized = TRUE)
-        if(success) {
-          message(paste("Job '",job_id,"' was successfully deleted from the back-end",sep=""))
-        }
-        return(success)
-      },error=.capturedErrorToMessage)
-      
-    },
-    
-    delete_service = function(id) {
-      tryCatch({
-        tag = "services_delete"
-        endpoint = private$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-        
-        msg = private$DELETE(endpoint = endpoint,
-                             authorized = TRUE)
-        message("Service '",id,"' successfully removed.")
-        invisible(msg)
-      },error=.capturedErrorToMessage)
     }
 
   ),
@@ -1185,19 +201,15 @@ OpenEOClient <- R6Class(
     password = NULL,
     host = NULL,
     graph_builder=NULL,
-    processes = NULL,
     version = "0.4.1",
     general_auth_type = "bearer",
     disableAuth = TRUE,
     
     # functions ====
-    isConnected = function() {
-      return(!is.null(private$host))
-    },
     loginOIDC = function() {
       if (!is.null(self$api.mapping)) {
         tag = "oidc_login"
-        endpoint = private$getBackendEndpoint(tag)
+        endpoint = self$getBackendEndpoint(tag)
       } 
       
       
@@ -1209,7 +221,7 @@ OpenEOClient <- R6Class(
           {
             tryCatch({
               discovery_doc = private$GET(endpoint)
-              private$oidc_client = OIDCClient$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
+              private$oidc_client = OIDCAuth$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
               
               if (is.null(private$oidc_client)) {
                 stop("OIDC client not initialized")
@@ -1238,7 +250,7 @@ OpenEOClient <- R6Class(
         
         if (!is.null(self$api.mapping)) {
           tag = "login"
-          endpoint = private$getBackendEndpoint(tag)
+          endpoint = self$getBackendEndpoint(tag)
         } else {
           endpoint = "auth/login"
         }
@@ -1276,6 +288,17 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage,
       finally = {
       })
+    },
+    backendVersions = function(url) {
+      
+      tryCatch({
+        endpoint = "/.well-known/openeo"
+        
+        info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+        
+        return(info)
+      },error=.capturedErrorToMessage)
+      
     },
 
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
@@ -1439,24 +462,7 @@ OpenEOClient <- R6Class(
         private$errorHandling(response,url)
       }
     },
-    getBackendEndpoint = function(endpoint_name) {
-      if (!is.null(self$api.mapping)) {
-        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% dplyr::select(backend_endpoint) %>% unname() %>% unlist()
-        if (length(endpoint) > 0) {
-          if (startsWith(endpoint,"/")) {
-            return(substr(endpoint,2,nchar(endpoint)))
-          } else {
-            return(endpoint)
-          }
-        } else {
-          stop("Endpoint for this function is not supported by the current back-end.")
-        }
-        
-      } else {
-        stop("Not connected / loggedin. You need to connect or login to a back-end.")
-      }
-    },
-    
+
     # returns the header list and adds Authorization
     addAuthorization = function (header) {
       if (missing(header)) {
@@ -1480,11 +486,6 @@ OpenEOClient <- R6Class(
 
       return(header)
     },
-    stopIfNotConnected = function() {
-      if (!private$isConnected()) {
-        stop("Not connected to a back-end. Please connect to one before proceeding")
-      }
-    },
     errorHandling = function(response,url) {
       if (class(response) == "response") {
         errorMessage = content(response)
@@ -1503,15 +504,15 @@ OpenEOClient <- R6Class(
 
 )
 
-# statics -----
-.urlHardEncode=function(text) {
-  text = URLencode(text)
-  text = gsub("\\/","%2F",text)
-  text = gsub("\\.","%2E",text)
-  return(text)
-}
+# client functions ----
 
-.capturedErrorToMessage = function(e) {
-  message(e)
-  invisible(NULL)
+#' Returns the client version
+#' 
+#' The function returns the client version.
+#' 
+#' @param con an OpenEO client
+#' 
+#' @return the client version
+client_version = function() {
+  return("0.4.1")
 }
