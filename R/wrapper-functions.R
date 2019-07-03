@@ -46,7 +46,21 @@ graphToJSON = function(graph) {
 #' @return a ProcessGraphBuilder class with the offered processes of the backend
 #' @export
 process_graph_builder = function(con) {
-  con$process_graph_builder()
+  tryCatch({
+    if (is.null(con$processes)) {
+      temp=list_processes(con)
+    }
+    
+    collections = list_collections(self)$collections
+    cids = sapply(collections,function(coll)coll$id)
+    collections = as.list(cids)
+    names(collections) = cids
+    
+    
+    plist = lapply(self$processes,processFromJson)
+    
+    return(Graph$new(plist,collections))
+  },error=.capturedErrorToMessage)
 }
 
 # server endpoint ----
@@ -465,7 +479,16 @@ describe_process_graph = function(con, id) {
 #' 
 #' @export
 delete_process_graph = function(con, graph_id) {
-  con$delete_process_graph(graph_id)
+  tryCatch({
+    tag = "graph_delete"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    if(success) {
+      message(paste("Graph '",id,"' was successfully deleted from the back-end",sep=""))
+    }
+    return(success)
+  },error=.capturedErrorToMessage)
 }
 
 #' Stores a graph on the back-end
@@ -516,7 +539,51 @@ create_process_graph = function(con, graph, title = NULL, description = NULL) {
 #' @param description description of the process graph (optional)
 #' @export
 update_process_graph = function(con, graph_id, graph=NULL,title=NULL,description=NULL) {
-  return(con$update_process_graph(graph_id=graph_id, graph=graph,title=title,description=description))
+  tryCatch({
+    if (is.null(id)) {
+      stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
+    }
+    
+    requestBody = list()
+    
+    if (!is.null(graph)) {
+      if (is.na(graph)) {
+        stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
+      }else if (!is.list(graph)) {
+        stop("The graph information is missing or not a list")
+      } else {
+        requestBody[["process_graph"]] = graph
+      }
+    }
+    
+    if (!is.null(title)) {
+      if (is.na(title)) {
+        requestBody[["title"]] = NULL
+      } else {
+        requestBody[["title"]] = title
+      }
+    }
+    if (!is.null(description)) {
+      if (is.na(description)) {
+        requestBody[["description"]] = NULL
+      } else {
+        requestBody[["description"]] = description
+      }
+    }
+    
+    tag = "graph_replace"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    message = con$request(operation="PATCH",endpoint = endpoint, 
+                            authorized = TRUE, 
+                            data = requestBody,
+                            encodeType = "json")
+    
+    if (is.null(message)) {
+      message(paste("Process graph '",graph_id,"' was successfully modified.",sep=""))
+      invisible(TRUE)
+    }
+  },error=.capturedErrorToMessage)
 }
 
 #' Validates a process graph
@@ -528,7 +595,28 @@ update_process_graph = function(con, graph_id, graph=NULL,title=NULL,description
 #' 
 #' @export
 validate_process_graph = function(con, graph) {
-  return(con$validate_process_graph(graph))
+  tryCatch({
+    tag = "process_graph_validate"
+    endpoint = con$getBackendEndpoint(tag)
+    
+    if ("Graph" %in% class(graph)) graph = graph$serialize()
+    
+    if (!is.list(graph) || is.null(graph)) {
+      stop("The graph information is missing or not a list")
+    }
+    
+    requestBody = list(
+      process_graph = graph
+    )
+    
+    response = con$request(operation="POST",endpoint=endpoint,
+                            authorized = TRUE,
+                            data=requestBody,
+                            encodeType = "json")
+    
+    message("Graph was sucessfully validated.")
+    invisible(response)
+  },error = .capturedErrorToMessage)
 }
 
 #
@@ -702,15 +790,81 @@ update_service = function(con, id,
                          parameters = NULL,
                          plan = NULL,
                          budget = NULL) {
-  con$update_service(service_id = id,
-                    type=type,
-                    process_graph=process_graph,
-                    title=title,
-                    description=description,
-                    enabled=enabled,
-                    parameters=parameters,
-                    plan=plan,
-                    budget = budget)
+  tag = "services_update"
+  endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+  tryCatch({
+    patch = list()
+    
+    if (!is.null(type)) {
+      patch[["type"]] = type
+    }
+    
+    if (!is.null(process_graph)) {
+      if (length(process_graph) > 0) {
+        patch[["process_graph"]] = process_graph
+      } else {
+        stop("Process graph cannot be set to be empty.")
+      }
+    }
+    
+    if (!is.null(title)) {
+      if (!is.na(title)) {
+        patch[["title"]] = title
+      } else {
+        patch[["title"]] = NULL
+      }
+    }
+    
+    if (!is.null(description)) {
+      if (!is.na(description)) {
+        patch[["description"]] = description
+      } else {
+        patch[["description"]] = NULL
+      }
+    }
+    
+    if (!is.null(enabled)) {
+      if (!is.na(enabled) && is.logical(enabled)) {
+        patch[["enabled"]] = enabled
+      } else {
+        stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
+      }
+    }
+    
+    if (!is.null(parameters)) {
+      if (is.na(parameters)) {
+        patch[["parameters"]] = NULL
+      } else if (is.list(parameters)) {
+        patch[["parameters"]] = parameters
+      } else {
+        stop("No valid data for parameter 'parameters'. It has to be a list")
+      }
+    }
+    
+    if (!is.null(plan)) {
+      if (!is.na(plan)) {
+        patch[["plan"]] = plan
+      } else {
+        stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
+      }
+    }
+    
+    # budget = NULL
+    if (!is.null(budget)) {
+      if (!is.na(budget)) {
+        patch[["budget"]] = budget
+      } else {
+        patch[["budget"]] = NULL
+      }
+    }
+    
+    res = con$request(operation="PATCH",endpoint = endpoint,
+                        authorized = TRUE,
+                        encodeType = "json",
+                        data=patch)
+    message(paste("Service '",service_id,"' was successfully updated.",sep=""))
+    invisible(TRUE)
+  },error=.capturedErrorToMessage)
 }
 
 #' Describes a service
@@ -744,7 +898,15 @@ describe_service = function(con, id) {
 #' @param id the service id
 #' @export
 delete_service = function(con, id) {
-  return(con$delete_service(id))
+  tryCatch({
+    tag = "services_delete"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    msg = con$request(operation="DELETE",endpoint = endpoint,
+                         authorized = TRUE)
+    message("Service '",id,"' successfully removed.")
+    invisible(msg)
+  },error=.capturedErrorToMessage)
 }
 
 #
@@ -838,7 +1000,31 @@ upload_file = function (con, content, target,encode="raw",mime="application/octe
 #' @return The file path of the stored file
 #' @export
 download_file = function(con, src, dst=NULL) {
-  return(con$download_file(src,dst))
+  tryCatch({
+    if (!is.character(src)) {
+      stop("Cannot download file with a source statement that is no character")
+    } else {
+      src = .urlHardEncode(src)
+    }
+    
+    if (is.null(dst)) {
+      dst = tempfile()
+    }
+    
+    tag = "user_file_download"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id,src)
+    
+    file_connection = file(dst,open="wb")
+    writeBin(object=con$request(operation="GET",endpoint=endpoint,
+                                authorized = TRUE,as = "raw"),con = file_connection)
+    
+    message("Successfully downloaded the requested file.")
+    
+    return(dst)
+  },error=.capturedErrorToMessage,
+  finally= {
+    close(file_connection,type="wb")
+  })
 }
 
 #' Deletes a file from the users workspace
@@ -851,7 +1037,18 @@ download_file = function(con, src, dst=NULL) {
 #' @return logical
 #' @export
 delete_file = function(con, src) {
-  con$delete_file(src = src)
+  tryCatch({
+    if (is.character(src)) {
+      src = .urlHardEncode(src)
+    } else {
+      stop("Cannot interprete parameter 'src' during delete request")
+    }
+    
+    tag = "user_file_delete"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id, src)
+    
+    return(con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE))
+  },error=.capturedErrorToMessage)
 }
 
 #
@@ -936,10 +1133,50 @@ list_jobs = function(con) {
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
 compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
-  con$compute_result(graph=graph,
-              format=format,
-              output_file=output_file, 
-              ...)
+  tryCatch({
+    # former sync evaluation
+    tag = "execute_sync"
+    endpoint = con$getBackendEndpoint(tag)
+    if (is.null(format)) {
+      stop("Parameter \"format\" is not set. Please provide a valid format.")
+    }
+    
+    output = list(...)
+    output = append(output, list(format=format))
+    
+    if (is.null(graph)) stop("No process graph was defined. Please provide a process graph.")
+    
+    if ("Graph" %in% class(graph)) graph = graph$serialize()
+    
+    if (is.list(graph)) {
+      job = toJSON(list(process_graph=graph,output = output),force=TRUE,auto_unbox = TRUE)
+    } else {
+      stop("Parameter graph is not a Graph object. Awaiting a list.")
+    }
+    
+    res = con$request(operation="POST",
+                      endpoint=endpoint,
+                       authorized = TRUE, 
+                       data=job,
+                       encodeType = "json",
+                       raw=TRUE)
+    
+    if (!is.null(output_file)) {
+      tryCatch(
+        {
+          message("Task result was sucessfully stored.")
+          writeBin(content(res,"raw"),output_file)
+        },
+        error = function(err) {
+          stop(err)
+        }
+      )
+      
+      return(output_file)
+    } else {
+      return(content(res,"raw"))
+    }
+  },error=.capturedErrorToMessage)
 }
 
 
@@ -1017,7 +1254,25 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
 #' @return the job_id of the defined job
 #' @export 
 start_job = function(con, job) {
-  con$start_job(job)
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    if (is.null(job_id)) {
+      stop("No job id specified.")
+    }
+    
+    tag = "execute_async"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    success = con$request(operation="POST",endpoint = endpoint, authorized = TRUE)
+    message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
+    
+    invisible(success)
+  },error=.capturedErrorToMessage)
 }
 
 #' Modifies a job with given parameter
@@ -1027,29 +1282,76 @@ start_job = function(con, job) {
 #' 
 #' @details The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
 #' keys. 
-#' 'task' will replace the process graph with a newly defined one, therefore the task needs to be a list like in
-#' createJob.
-#' 'graph_id' will replace the process graph with the stated process graph id.
+#' 'process_graph' will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
 #' 'format' will change the desired output format.
-#' All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a task or graph_id,
+#' All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 #' e.g. if you just want to update the output format. 
 #' To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
 #' 
 #' @param con connected and authenticated openeo client
 #' @param job_id the job id of a created job
-#' @param ... The parameter you want to change. See Details for more information
+#' @param title update title for the job
+#' @param description update description
+#' @param process_graph a Graph object created with the process_graph_builder
+#' @param plan replaces plan with the set value
+#' @param budget replaces or sets the credits that can be spent at maximum
+#' @param format the output format
+#' @param ... The create options parameter you want to change. See Details for more information
 #' @export
 update_job = function(con, job_id,
                      title=NULL, description=NULL,
                      process_graph = NULL, 
                      plan = NULL, budget= NULL,
                      format=NULL, ...) {
-  temp = con$update_job(job_id = job_id,
-                       title=title, description=description,
-                       process_graph = process_graph, 
-                       plan = plan, budget= budget,
-                       format=format, ...)
-  invisible(temp)
+  tryCatch({
+    if (is.null(id)) {
+      stop("No job i was specified.")
+    }
+    
+    tag = "jobs_update"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+    
+    patch = list()
+    create_options = list(...)
+    output = list()
+    if (length(create_options) > 0) {
+      output$parameters = create_options
+    }
+    if (!is.null(format)) output$format = format
+    
+    if (length(output) > 0) patch$output = output
+    
+    if (!is.null(process_graph)) {
+      patch$process_graph = process_graph
+    }
+    
+    if (!is.null(title)) {
+      if (is.na(title)) patch$title = NULL
+      else patch$title = title
+    }
+    
+    if (!is.null(description)){
+      if (is.na(description)) patch$description = NULL
+      else patch$description = description
+    } 
+    
+    if (!is.null(plan)) {
+      if (is.na(plan)) patch$plan = NULL
+      else patch$plan = plan
+    }
+    
+    if (!is.null(budget)) {
+      if (is.na(budget)) patch$budget = NULL
+      else patch$budget = budget
+    }
+    
+    res = con$request(operation="PATCH",endpoint = endpoint,
+                        authorized = TRUE,
+                        encodeType = "json",
+                        data=patch)
+    message(paste("Job '",job_id,"' was successfully updated.",sep=""))
+    invisible(TRUE)
+  },error=.capturedErrorToMessage)
 } 
 
 #' Follow an executed Job
@@ -1125,7 +1427,27 @@ download_results = function(con, job, folder) {
 #' @return a success / failure notification
 #' @export
 stop_job = function(con, job) {
-    return(con$stop_job(job))
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    if (is.null(job_id)) {
+      stop("No job id specified.")
+    }
+    
+    tag = "jobs_cancel"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    if (success) {
+      message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
+    }
+    
+    return(success)
+  },error=.capturedErrorToMessage)
 }
 
 #' Fetches information about a job
@@ -1166,7 +1488,22 @@ describe_job = function(con,job) {
 #' @return logical with state of success
 #' @export
 delete_job = function(con,job) {
-  return(con$delete_job(job))
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    tag = "jobs_delete"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    if(success) {
+      message(paste("Job '",job_id,"' was successfully deleted from the back-end",sep=""))
+    }
+    return(success)
+  },error=.capturedErrorToMessage)
 }
 
 
@@ -1181,7 +1518,23 @@ delete_job = function(con,job) {
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
 estimate_job = function(con,job) {
-  return(con$estimate_job(job))
+  if (!is.null(job) && "JobInfo" %in% class(job)) {
+    job_id = job$id
+  } else {
+    job_id = job
+  }
+  
+  tryCatch({
+    if (is.null(job_id)) {
+      stop("No job id specified.")
+    }
+    tag = "jobs_cost_estimation"
+    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
+    
+    success = con$request(operation="GET",endpoint = endpoint, authorized = TRUE)
+    class(success) = "JobCostsEstimation"
+    return(success)
+  },error=.capturedErrorToMessage)
 }
 
 #
