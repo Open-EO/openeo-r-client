@@ -8,10 +8,12 @@
 #' @param layers A character string containing the layers that shall be shown
 #' @param transparent logical if the "free" area shall be transparent
 #' 
-#' @return a leaflet map
+#' @return a leaflet map 
+#' 
+#' @importFrom leaflet addWMSTiles addTiles leaflet WMSTileOptions
 #' @export
-mapService = function(con, service_id, layers,transparent=TRUE) {
-  service = describeService(con,service_id)
+map_service = function(con, service_id, layers,transparent=TRUE) {
+  service = describe_service(con = con,id = service_id)
   url = service$service_url
   
   map = addWMSTiles(addTiles(leaflet()),baseUrl = url, 
@@ -33,10 +35,12 @@ mapService = function(con, service_id, layers,transparent=TRUE) {
 #' @param collection character one string or a vector of strings with valid collection ids
 #' @return a mapview object containing footprints and baselayers
 #' 
+#' @importFrom sp CRS spTransform
+#' @importFrom mapview mapview addFeatures
 #' @export
-mapCollection = function(con, collection) {
+map_collection = function(con, collection) {
   suppressWarnings({
-    if (!require(mapview)) {
+    if (!requireNamespace(mapview)) {
       message("Library 'mapview' was not installed.")
       return(invisible())
     }
@@ -44,11 +48,11 @@ mapCollection = function(con, collection) {
   
   
   collections = lapply(collection, function(coll_name,con) {
-    col = describeCollection(con,coll_name)
+    col = describe_collection(con=con,id = coll_name)
     return(col)
   }, con=con)
   
-  P4S.latlon <- sp::CRS("+proj=longlat +datum=WGS84")
+  P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
   sps = lapply(collections, function(coll_desc,crs) {
 
     polygon = .bboxToSpatialPolygon(coll_desc$extent,coll_desc$crs)
@@ -67,6 +71,8 @@ mapCollection = function(con, collection) {
 }
 
 #' @importFrom sp SpatialPolygons
+#' @importFrom sp Polygon
+#' @importFrom sp Polygons
 .bboxToSpatialPolygon = function(bbox,crs) {
   
   coordinates= rbind(

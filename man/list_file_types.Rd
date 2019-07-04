@@ -7,7 +7,7 @@
 list_file_types(con)
 }
 \arguments{
-\item{connected}{openeo client object}
+\item{con}{openeo client object}
 }
 \value{
 list of formats with optional configuration parameter

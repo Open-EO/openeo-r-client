@@ -64,7 +64,7 @@ list_features = function(con) {
 #' 
 #' The function queries the back-end for supported output formats.
 #' 
-#' @param connected openeo client object
+#' @param con openeo client object
 #' @return list of formats with optional configuration parameter
 #' @export
 list_file_types = function(con) {

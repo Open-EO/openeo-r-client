@@ -329,7 +329,7 @@ list_results = function(con, job) {
   
   tryCatch({
     tag = "jobs_download"
-    listOfResults = con$request(tag=tag,parameters=list(jon_id),operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
+    listOfResults = con$request(tag=tag,parameters=list(job_id),authorized=TRUE,type="application/json")
     return(listOfResults)
   },error=.capturedErrorToMessage)
 }

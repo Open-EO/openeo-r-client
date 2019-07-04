@@ -1,4 +1,4 @@
-#' @importFrom utils read.csv
+#' @importFrom utils read.csv2
 load_api = function(version) {
   if (!version %in% c("0.0.2","0.3.1","0.4.1")) stop("Unsupported API version.")
   
@@ -26,9 +26,9 @@ endpoint_mapping = function(con) {
   
   api = load_api(version="0.4.1")
 
-  backend_df = data.frame(endpoint = unlist(sapply(cap$endpoints, function(entry) {
+  backend_df = data.frame(endpoint = unlist(sapply(server_offering$endpoints, function(entry) {
     return(rep(entry$path, length(entry$methods)))
-  })),operation = unlist(sapply(cap$endpoints, function(entry) {
+  })),operation = unlist(sapply(server_offering$endpoints, function(entry) {
     return(entry$methods)
   })))
   
