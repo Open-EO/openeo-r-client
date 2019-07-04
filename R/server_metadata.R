@@ -1,7 +1,7 @@
 # server endpoint ----
 #' Returns the suppported OpenEO API versions
 #' 
-#' The function queries the back-end for its supported versions. The endpoint \link[https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get]{/.well-known/openeo} 
+#' The function queries the back-end for its supported versions. The endpoint \href{https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get}{/.well-known/openeo} 
 #' is called and the JSON result is coerced into a tibble.
 #' 
 #' @param url the url as String pointing to the base host of the back-end

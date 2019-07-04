@@ -6,9 +6,6 @@
 \usage{
 client_version()
 }
-\arguments{
-\item{con}{an OpenEO client}
-}
 \value{
 the client version
 }

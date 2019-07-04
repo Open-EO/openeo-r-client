@@ -12,6 +12,8 @@ create_service(con, type, graph, title = NULL, description = NULL,
 
 \item{type}{character the ogc web service type name to be created}
 
+\item{graph}{A process graph object}
+
 \item{title}{character (optional) the title in human readabled form for the service}
 
 \item{description}{character (optional) the description for the service}
@@ -23,8 +25,6 @@ create_service(con, type, graph, title = NULL, description = NULL,
 \item{plan}{character the billing plan}
 
 \item{budget}{numeric the amount of credits that can be spent for this service}
-
-\item{process_graph}{list of processes composed as a process graph}
 }
 \value{
 service representation as list

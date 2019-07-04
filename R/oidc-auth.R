@@ -105,7 +105,7 @@ OIDCAuth = R6Class(
     
     decodeToken = function(access_token, token_part) {
       tokens = unlist(strsplit(access_token,"\\."))
-      fromJSON(rawToChar(base64enc::base64decode(tokens[token_part])))
+      fromJSON(rawToChar(base64decode(tokens[token_part])))
     },
     
     getEndpoints = function() {

@@ -9,7 +9,7 @@ supports(con, tag_name)
 \arguments{
 \item{con}{backend connection}
 
-\item{tag}{the endpoints "tag" name as character}
+\item{tag_name}{the endpoints "tag" name as character}
 }
 \value{
 logical - whether the back-end supports the endpoint or not

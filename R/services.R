@@ -89,7 +89,7 @@ list_services = function(con) {
 #' 
 #' @param con connected and authenticated openeo clien object
 #' @param type character the ogc web service type name to be created
-#' @param process_graph list of processes composed as a process graph
+#' @param graph A process graph object
 #' @param title character (optional) the title in human readabled form for the service
 #' @param description character (optional) the description for the service
 #' @param enabled logical 
@@ -111,7 +111,7 @@ create_service = function(con,
     if (is.null(type)) {
       stop("No type specified.")
     }
-    
+
     service_request_object = list(
       type = type,
       process_graph = graph$serialize(),
@@ -238,7 +238,7 @@ update_service = function(con, id,
                       authorized = TRUE,
                       encodeType = "json",
                       data=patch)
-    message(paste("Service '",service_id,"' was successfully updated.",sep=""))
+    message(paste("Service '",id,"' was successfully updated.",sep=""))
     invisible(TRUE)
   },error=.capturedErrorToMessage)
 }
@@ -248,7 +248,7 @@ update_service = function(con, id,
 #' Queries the server and returns information about a particular service
 #' 
 #' @param con connected and authorized openeo client object
-#' @param service_id the service id
+#' @param id the service id
 #' @return service as a list
 #' @export
 describe_service = function(con, id) {

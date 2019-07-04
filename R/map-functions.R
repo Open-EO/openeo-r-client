@@ -66,6 +66,7 @@ mapCollection = function(con, collection) {
   return(map)
 }
 
+#' @importFrom sp SpatialPolygons
 .bboxToSpatialPolygon = function(bbox,crs) {
   
   coordinates= rbind(

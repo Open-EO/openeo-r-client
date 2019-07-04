@@ -9,7 +9,7 @@ describe_service(con, id)
 \arguments{
 \item{con}{connected and authorized openeo client object}
 
-\item{service_id}{the service id}
+\item{id}{the service id}
 }
 \value{
 service as a list

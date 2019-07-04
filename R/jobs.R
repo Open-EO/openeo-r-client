@@ -127,22 +127,26 @@ compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
 }
 
 
-#' Creates a job on the back-end from a prepared task
+#' Creates a job on the back-end from a Graph object
 #' 
-#' This function shall be called after the user defined a task for the back-end to create a job on the
-#' back-end. Therefore the user sends the task (process graph) and the optional output specifications like
-#' format and additional creation parameter by '...'. Afterwards ths user can decide to either execute the
-#' job asynchronous or they can create a service from it.
+#' This function shall be called after the user defined a process graph for the back-end to create a job on the
+#' back-end. Therefore the user sends the process graph and the optional output specifications like
+#' format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
+#' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
+#' back-end provider.
 #' 
 #' @param con connected and authenticated openeo client
 #' @param graph A Graph object
-#' @param graph_id The id of an already stored process graph on the same back-end
+#' @param title Optional title of a job to be found
+#' @param description Optional a more detailed information about a job
+#' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
+#' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
 #' @param format The inteded format of the data to be returned
 #' @param ... additional configuration parameter for output generation
 #' 
 #' @return the id of the job
 #' @export
-create_job = function(con,graph=NULL, graph_id=NULL , 
+create_job = function(con,graph=NULL, 
                       title = NULL, description = NULL,
                       plan = NULL, budget = NULL,
                       format=NULL, ...) {
@@ -163,8 +167,6 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
       } else {
         stop("Parameter task is not a task object. Awaiting a list.")
       }
-    } else if (! is.null(graph_id)) {
-      job = list(process_graph=graph_id,output = output)
     } else {
       stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
     }
@@ -341,6 +343,7 @@ list_results = function(con, job) {
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
 #' 
+#' @importFrom utils download.file
 #' @export
 download_results = function(con, job, folder) {
   

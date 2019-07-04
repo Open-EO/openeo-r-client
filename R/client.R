@@ -7,9 +7,7 @@ NULL
 #'
 #' @importFrom R6 R6Class
 #' @import httr
-#' @import magrittr
 #' @import jsonlite
-#' @importFrom lubridate as_datetime
 #' @import dplyr 
 #' @export
 OpenEOClient <- R6Class(
@@ -28,7 +26,7 @@ OpenEOClient <- R6Class(
     },
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
-        endpoint =  unlist(unname(dplyr::select(.data = dplyr::filter(.data = self$api.mapping,tag==endpoint_name, available),backend_endpoint))) 
+        endpoint =  unlist(unname(dplyr::select(.data = dplyr::filter(.data = self$api.mapping,tag==endpoint_name, available),endpoint))) 
         if (length(endpoint) > 0) {
           if (startsWith(endpoint,"/")) {
             return(substr(endpoint,2,nchar(endpoint)))
@@ -520,8 +518,6 @@ OpenEOClient <- R6Class(
 #' Returns the client version
 #' 
 #' The function returns the client version.
-#' 
-#' @param con an OpenEO client
 #' 
 #' @return the client version
 client_version = function() {

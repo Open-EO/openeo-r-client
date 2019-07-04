@@ -9,7 +9,7 @@ assign(x="DEBUG_MODE",value=FALSE,envir=pkgEnvironment)
 #' 
 #' @rdname debugging
 #' @export
-debug = function(status=TRUE) {
+debug = function() {
   assign(x = "DEBUG_MODE",value = TRUE,envir = pkgEnvironment)
 }
 

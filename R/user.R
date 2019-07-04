@@ -43,6 +43,7 @@ list_files = function(con) {
 #' @param mime mime type used in upload_file ("application/octet-stream" as a default)
 #' 
 #' @return the relative file path on the server
+#' @importFrom utils URLencode
 #' @export
 upload_file = function (con, content, target,encode="raw",mime="application/octet-stream") {
   

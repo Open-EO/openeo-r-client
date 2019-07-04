@@ -14,11 +14,11 @@
 #' @param content The local file path of a script the user wants to upload
 #' @param target The relative path on the users workspace on the openEO back-end
 #' @param language The programming language of the uploaded script
-#' @param ...
+#' @param ... additional udf parameters
 #'
 #' @return A named list that represents an UDF as list for the process graph
 #' @export
-defineUDF = function(process,con, prior.name="collections", language, type, content, target, ...) {
+create_udf = function(process,con, prior.name="collections", language, type, content, target, ...) {
   if (!missing(con) && !missing(content)) {
     if (is.character(content)) {
       content = file.path(content)

@@ -2,17 +2,23 @@
 % Please edit documentation in R/jobs.R
 \name{create_job}
 \alias{create_job}
-\title{Creates a job on the back-end from a prepared task}
+\title{Creates a job on the back-end from a Graph object}
 \usage{
-create_job(con, graph = NULL, graph_id = NULL, title = NULL,
-  description = NULL, plan = NULL, budget = NULL, format = NULL, ...)
+create_job(con, graph = NULL, title = NULL, description = NULL,
+  plan = NULL, budget = NULL, format = NULL, ...)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}
 
 \item{graph}{A Graph object}
 
-\item{graph_id}{The id of an already stored process graph on the same back-end}
+\item{title}{Optional title of a job to be found}
+
+\item{description}{Optional a more detailed information about a job}
+
+\item{plan}{An optional execution plan offered by the back-end, determining how the job will be executed}
+
+\item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
 
 \item{format}{The inteded format of the data to be returned}
 
@@ -22,8 +28,9 @@ create_job(con, graph = NULL, graph_id = NULL, title = NULL,
 the id of the job
 }
 \description{
-This function shall be called after the user defined a task for the back-end to create a job on the
-back-end. Therefore the user sends the task (process graph) and the optional output specifications like
-format and additional creation parameter by '...'. Afterwards ths user can decide to either execute the
-job asynchronous or they can create a service from it.
+This function shall be called after the user defined a process graph for the back-end to create a job on the
+back-end. Therefore the user sends the process graph and the optional output specifications like
+format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
+description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
+back-end provider.
 }

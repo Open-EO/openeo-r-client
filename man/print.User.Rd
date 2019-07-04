@@ -6,6 +6,11 @@
 \usage{
 \method{print}{User}(x, ...)
 }
+\arguments{
+\item{x}{an User object that can be retrieved at \link{describe_account}}
+
+\item{...}{additional parameters (not used)}
+}
 \description{
 A nice visualization for the user account information obtained by /me
 }

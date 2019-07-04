@@ -3,6 +3,9 @@
 #' 
 #' A nice visualization for the user account information obtained by /me
 #' 
+#' @param x an User object that can be retrieved at \link{describe_account}
+#' @param ... additional parameters (not used)
+#' 
 #' @export
 print.User = function(x, ...) {
   cat(paste("ID:","\t",x$user_id,"\n",sep=""))
@@ -17,6 +20,10 @@ print.User = function(x, ...) {
 #' Pretty print an openeo process
 #' 
 #' Print function to visualize relevant information about an openeo process
+#' 
+#' @param x process info that is received on \link{list_processes} and \link{describe_process}
+#' @param ... additional parameters (not used)
+#' 
 #' @export
 print.ProcessInfo <- function(x, ...) {
   title = paste("Process:\t",x$id,sep="")

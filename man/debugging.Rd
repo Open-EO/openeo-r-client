@@ -6,7 +6,7 @@
 \alias{is.debugging}
 \title{Triggers debugging mode}
 \usage{
-debug(status = TRUE)
+debug()
 
 debug.off()
 
