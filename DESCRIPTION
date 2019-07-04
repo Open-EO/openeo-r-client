@@ -17,11 +17,8 @@ Imports:
     tibble,
     lubridate,
     dplyr,
-    sp,
     commonmark,
-    base64enc,
-    mapview,
-    leaflet
+    base64enc
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
@@ -39,7 +36,6 @@ Collate:
     'collections.R'
     'debugging.R'
     'jobs.R'
-    'map-functions.R'
     'markdown_viewer.R'
     'oidc-auth.R'
     'print-functions.R'
