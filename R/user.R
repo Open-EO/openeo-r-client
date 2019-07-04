@@ -9,6 +9,8 @@
 #' @param con authorized connection
 #' 
 #' @return a tibble of for filenames and their sizes
+#' 
+#' @importFrom dplyr summarise
 #' @export
 list_files = function(con) {
   tryCatch({
@@ -21,8 +23,8 @@ list_files = function(con) {
       return(invisible(files))
     }
     
-    if(require(tibble)) {
-      files = dplyr::summarise(rowwise(tibble(files)),path=files$path, size=files$size, modified=files$modified)
+    if(requireNamespace(tibble)) {
+      files = summarise(rowwise(tibble(files)),path=files$path, size=files$size, modified=files$modified)
     }
     
     

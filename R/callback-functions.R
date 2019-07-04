@@ -1,4 +1,16 @@
 
+#' Creates a callback
+#' 
+#' The callback function creates a callback graph for a parameter of a process if the parameter needs
+#' a Callback as a value. If the parameter is omitted it shows possible parameter names which require
+#' a callback.
+#' 
+#' @param con a connected OpenEOClient
+#' @param process a Process object of a back-end process
+#' @param parameter optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback
+#'  
+#' @return a Graph object with the callback parameters as "data"
+#' 
 #' @export
 callback = function(con,process, parameter=NULL) {
   if (!"Process" %in% class(process)) stop("Parameter process is no process for a openeo graph")
