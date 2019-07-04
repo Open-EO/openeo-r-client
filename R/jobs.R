@@ -11,9 +11,11 @@
 list_jobs = function(con) {
   tryCatch({
     tag = "user_jobs"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
     
-    listOfJobs = con$request(operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
+    listOfJobs = con$request(tag=tag,
+                             parameters=list(con$user_id),
+                             authorized=TRUE,
+                             type="application/json")
     listOfJobs = listOfJobs$jobs
     # list to tibble
     table = tibble(id=character(),
@@ -82,8 +84,6 @@ list_jobs = function(con) {
 compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
   tryCatch({
     # former sync evaluation
-    tag = "execute_sync"
-    endpoint = con$getBackendEndpoint(tag)
     if (is.null(format)) {
       stop("Parameter \"format\" is not set. Please provide a valid format.")
     }
@@ -101,8 +101,8 @@ compute_result = function(con,graph,format=NULL,output_file=NULL, ...) {
       stop("Parameter graph is not a Graph object. Awaiting a list.")
     }
     
-    res = con$request(operation="POST",
-                      endpoint=endpoint,
+    tag = "execute_sync"
+    res = con$request(tag=tag,
                       authorized = TRUE, 
                       data=job,
                       encodeType = "json",
@@ -147,8 +147,6 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
                       plan = NULL, budget = NULL,
                       format=NULL, ...) {
   tryCatch({
-    tag = "jobs_define"
-    endpoint = con$getBackendEndpoint(tag)
     
     create_options = list(...)
     output = list()
@@ -177,8 +175,8 @@ create_job = function(con,graph=NULL, graph_id=NULL ,
     if (!is.null(budget)) job$budget = budget
     
     #endpoint,authorized=FALSE,data,encodeType = "json",query = list(),...
-    response = con$request(operation="POST",
-                           endpoint=endpoint,
+    tag = "jobs_define"
+    response = con$request(tag=tag,
                            authorized = TRUE,
                            data=job,
                            raw=TRUE)
@@ -213,9 +211,8 @@ start_job = function(con, job) {
     }
     
     tag = "execute_async"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
     
-    success = con$request(operation="POST",endpoint = endpoint, authorized = TRUE)
+    success = con$request(tag=tag,parameters=list(job_id), authorized = TRUE)
     message(paste("Job '",job_id,"' has been successfully queued for evaluation.",sep=""))
     
     invisible(success)
@@ -255,9 +252,6 @@ update_job = function(con, job_id,
       stop("No job i was specified.")
     }
     
-    tag = "jobs_update"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-    
     patch = list()
     create_options = list(...)
     output = list()
@@ -292,7 +286,9 @@ update_job = function(con, job_id,
       else patch$budget = budget
     }
     
-    res = con$request(operation="PATCH",endpoint = endpoint,
+    tag = "jobs_update"
+    res = con$request(tag=tag,
+                      parameters=list(id),
                       authorized = TRUE,
                       encodeType = "json",
                       data=patch)
@@ -331,9 +327,7 @@ list_results = function(con, job) {
   
   tryCatch({
     tag = "jobs_download"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
-    
-    listOfResults = con$request(operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
+    listOfResults = con$request(tag=tag,parameters=list(jon_id),operation="GET",endpoint=endpoint,authorized=TRUE,type="application/json")
     return(listOfResults)
   },error=.capturedErrorToMessage)
 }
@@ -351,13 +345,13 @@ list_results = function(con, job) {
 download_results = function(con, job, folder) {
   
   if (!dir.exists(folder)) dir.create(folder,recursive = TRUE)
-  results = con %>% list_results(job)
+  results = list_results(con,job)
   
   lapply(results$links, function(link){
     href = link$href
     type = link$type
     
-    if (!folder %>% endsWith(suffix = "/")) folder = paste0(folder,"/")
+    if (!endsWith(x = folder,suffix = "/")) folder = paste0(folder,"/")
     filename = basename(href)
     download.file(href,paste0(folder,filename),mode = "wb")
   })
@@ -386,9 +380,8 @@ stop_job = function(con, job) {
     }
     
     tag = "jobs_cancel"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
     
-    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    success = con$request(tag=tag,parameters=list(job_id), authorized = TRUE)
     if (success) {
       message(paste("Job '",job_id,"' has been successfully canceled.",sep=""))
     }
@@ -414,9 +407,8 @@ describe_job = function(con,job) {
   
   tryCatch({
     tag = "jobs_details"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
     
-    info = con$request(operation="GET",endpoint = endpoint,authorized = TRUE, type="application/json",auto_unbox=TRUE)
+    info = con$request(tag=tag,parameters=list(job_id),authorized = TRUE, type="application/json",auto_unbox=TRUE)
     
     class(info) = "JobInfo"
     class(info$process_graph) = "Json_Graph"
@@ -443,9 +435,8 @@ delete_job = function(con,job) {
   
   tryCatch({
     tag = "jobs_delete"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
     
-    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    success = con$request(tag=tag,parameters=list(job_id), authorized = TRUE)
     if(success) {
       message(paste("Job '",job_id,"' was successfully deleted from the back-end",sep=""))
     }
@@ -476,9 +467,8 @@ estimate_job = function(con,job) {
       stop("No job id specified.")
     }
     tag = "jobs_cost_estimation"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(job_id)
     
-    success = con$request(operation="GET",endpoint = endpoint, authorized = TRUE)
+    success = con$request(tag=tag,parameters=list(job_id), authorized = TRUE)
     class(success) = "JobCostsEstimation"
     return(success)
   },error=.capturedErrorToMessage)

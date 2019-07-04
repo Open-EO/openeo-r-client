@@ -13,9 +13,7 @@
 list_files = function(con) {
   tryCatch({
     tag = "user_files"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
-    
-    files = con$request(operation="GET",endpoint,TRUE,type="application/json")
+    files = con$request(tag=tag,parameters=list(con$user_id),TRUE,type="application/json")
     files = files$files
     
     if (is.null(files) || length(files) == 0) {
@@ -23,7 +21,10 @@ list_files = function(con) {
       return(invisible(files))
     }
     
-    files = tibble(files) %>% rowwise() %>% summarise(path=files$path, size=files$size, modified=files$modified)
+    if(require(tibble)) {
+      files = dplyr::summarise(rowwise(tibble(files)),path=files$path, size=files$size, modified=files$modified)
+    }
+    
     
     return(files)
   },error=.capturedErrorToMessage)
@@ -64,10 +65,8 @@ upload_file = function (con, content, target,encode="raw",mime="application/octe
     }
     
     tag = "user_file_upload"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id,target)
-    
-    m = con$request(operation="PUT",
-                    endpoint= endpoint,
+    m = con$request(tag=tag,
+                    parameters=list(con$user_id,target),
                     authorized = TRUE, 
                     data=httr::upload_file(content,type=mime),
                     encodeType = encode)
@@ -101,10 +100,9 @@ download_file = function(con, src, dst=NULL) {
     }
     
     tag = "user_file_download"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id,src)
-    
     file_connection = file(dst,open="wb")
-    writeBin(object=con$request(operation="GET",endpoint=endpoint,
+    writeBin(object=con$request(tag=tag,
+                                parameters=list(con$user_id,src),
                                 authorized = TRUE,as = "raw"),con = file_connection)
     
     message("Successfully downloaded the requested file.")
@@ -134,9 +132,9 @@ delete_file = function(con, src) {
     }
     
     tag = "user_file_delete"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id, src)
-    
-    return(con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE))
+    return(con$request(tag=tag,
+                       parameters=list(con$user_id,src),
+                       authorized = TRUE))
   },error=.capturedErrorToMessage)
 }
 
@@ -151,9 +149,7 @@ delete_file = function(con, src) {
 describe_account = function(con) {
   tryCatch({
     tag = "user_info"
-    endpoint = con$getBackendEndpoint(tag)
-    
-    user_info = con$request(operation="GET",endpoint=endpoint,authorized = TRUE,type="application/json")
+    user_info = con$request(tag=tag,authorized = TRUE,type="application/json")
     
     class(user_info) = "User"
     return(user_info)

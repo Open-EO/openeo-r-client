@@ -8,9 +8,8 @@ list_collections = function(con) {
   
   tryCatch({
     tag = "data_overview"
-    endpoint = con$getBackendEndpoint(tag)
     
-    listOfProducts = con$request(operation="GET",endpoint=endpoint,type="application/json")
+    listOfProducts = con$request(tag=tag,type="application/json")
     class(listOfProducts) = "CollectionList"
     return(listOfProducts)
   },
@@ -43,9 +42,8 @@ describe_collection = function(con, id=NA) {
   } else {
     tryCatch({
       tag = "data_details"
-      endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
       
-      info = con$request(operation="GET",endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+      info = con$request(tag=tag,parameters=list(id),authorized = FALSE, type="application/json",auto_unbox=TRUE)
       
       class(info) = "CollectionInfo"
       

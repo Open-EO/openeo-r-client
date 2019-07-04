@@ -12,9 +12,8 @@
 list_process_graphs = function(con) {
   tryCatch({
     tag = "graph_overview"
-    endpoint = con$getBackendEndpoint(tag)
     
-    listOfGraphShortInfos = con$request(operation="GET",endpoint=endpoint, authorized = TRUE)
+    listOfGraphShortInfos = con$request(tag=tag, authorized = TRUE)
     listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
     
     table = tibble(id=character(),
@@ -59,8 +58,7 @@ describe_process_graph = function(con, id) {
       }
       
       tag = "graph_details"
-      endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-      graph = con$request(operation="GET",endpoint=endpoint, authorized = TRUE, type="application/json",auto_unbox=TRUE)
+      graph = con$request(tag=tag,parameters=list(id),authorized = TRUE, type="application/json",auto_unbox=TRUE)
       
       class(graph) = "ProcessGraphInfo"
       class(graph$process_graph) = "Json_Graph"
@@ -82,9 +80,8 @@ describe_process_graph = function(con, id) {
 delete_process_graph = function(con, graph_id) {
   tryCatch({
     tag = "graph_delete"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
     
-    success = con$request(operation="DELETE",endpoint = endpoint, authorized = TRUE)
+    success = con$request(tag=tag,parameters=list(id), authorized = TRUE)
     if(success) {
       message(paste("Graph '",id,"' was successfully deleted from the back-end",sep=""))
     }
@@ -103,8 +100,7 @@ delete_process_graph = function(con, graph_id) {
 #' @export
 create_process_graph = function(con, graph, title = NULL, description = NULL) {
   tryCatch({
-    tag = "new_graph"
-    endpoint = con$getBackendEndpoint(tag)
+    
     
     if (!"Graph" %in% class(graph) || is.null(graph)) {
       stop("The graph information is missing or not a list")
@@ -116,8 +112,8 @@ create_process_graph = function(con, graph, title = NULL, description = NULL) {
       process_graph = graph$serialize()
     )
     
-    response = con$request(operation="POST",
-                           endpoint=endpoint,
+    tag = "new_graph"
+    response = con$request(tag=tag,
                            authorized = TRUE,
                            data=requestBody,
                            raw=TRUE)
@@ -173,9 +169,9 @@ update_process_graph = function(con, graph_id, graph=NULL,title=NULL,description
     }
     
     tag = "graph_replace"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
     
-    message = con$request(operation="PATCH",endpoint = endpoint, 
+    message = con$request(tag=tag,
+                          parameters=list(id),
                           authorized = TRUE, 
                           data = requestBody,
                           encodeType = "json")
@@ -197,9 +193,6 @@ update_process_graph = function(con, graph_id, graph=NULL,title=NULL,description
 #' @export
 validate_process_graph = function(con, graph) {
   tryCatch({
-    tag = "process_graph_validate"
-    endpoint = con$getBackendEndpoint(tag)
-    
     if ("Graph" %in% class(graph)) graph = graph$serialize()
     
     if (!is.list(graph) || is.null(graph)) {
@@ -210,7 +203,8 @@ validate_process_graph = function(con, graph) {
       process_graph = graph
     )
     
-    response = con$request(operation="POST",endpoint=endpoint,
+    tag = "process_graph_validate"
+    response = con$request(tag=tag,
                            authorized = TRUE,
                            data=requestBody,
                            encodeType = "json")

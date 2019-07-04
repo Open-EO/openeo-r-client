@@ -11,12 +11,10 @@
 #' @return a leaflet map
 #' @export
 mapService = function(con, service_id, layers,transparent=TRUE) {
-  service = con %>% describeService(service_id)
+  service = describeService(con,service_id)
   url = service$service_url
   
-  map = leaflet() %>% 
-    addTiles() %>% 
-    addWMSTiles(baseUrl = url, 
+  map = addWMSTiles(addTiles(leaflet()),baseUrl = url, 
                 layers = layers,
                 options = WMSTileOptions(format = "image/png", 
                                          transparent = transparent,
@@ -46,7 +44,7 @@ mapCollection = function(con, collection) {
   
   
   collections = lapply(collection, function(coll_name,con) {
-    col = con %>% describeCollection(coll_name)
+    col = describeCollection(con,coll_name)
     return(col)
   }, con=con)
   

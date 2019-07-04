@@ -28,7 +28,7 @@ OpenEOClient <- R6Class(
     },
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
-        endpoint = self$api.mapping %>% filter(tag==endpoint_name,available) %>% dplyr::select(backend_endpoint) %>% unname() %>% unlist()
+        endpoint =  unlist(unname(dplyr::select(.data = dplyr::filter(.data = self$api.mapping,tag==endpoint_name, available),backend_endpoint))) 
         if (length(endpoint) > 0) {
           if (startsWith(endpoint,"/")) {
             return(substr(endpoint,2,nchar(endpoint)))
@@ -44,13 +44,24 @@ OpenEOClient <- R6Class(
       }
     },
     
-    request = function(operation,endpoint, authorized=FALSE, ...) {
-      http_operation = private[[toupper(operation)]]
+    request = function(tag,parameters=NULL, authorized=FALSE, ...) {
       
-      return(do.call(http_operation, append(list(endpoint=endpoint,authorized=authorized),list(...))))
+      http_operation=toupper(self$api.mapping[self$api.mapping[,"tag"] == tag,"operation"][[1]])
+      
+      if (length(parameters) >0 && !is.na(parameters)) {
+        endpoint= do.call(replace_endpoint_parameter, append(list(self$getBackendEndpoint(tag)),as.list(parameters)))
+      } else  {
+        endpoint= self$getBackendEndpoint(tag)
+      }
+      
+      
+      return(do.call(private[[http_operation]], append(list(endpoint=endpoint,authorized=authorized),list(...))))
     },
     isConnected = function() {
       return(!is.null(private$host))
+    },
+    getHost = function() {
+      return(private$host)
     },
     stopIfNotConnected = function() {
       if (!self$isConnected()) {
@@ -150,7 +161,7 @@ OpenEOClient <- R6Class(
     },
     login=function(user=NULL, password=NULL) {
       tryCatch({
-        if (private$host %>% is.null()) {
+        if (is.null(private$host)) {
           stop("Cannot login. Please connect to an OpenEO back-end first.")
         }
         self$stopIfNotConnected()

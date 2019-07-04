@@ -244,5 +244,11 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' 
 #' @export
 supports = function(con, tag_name) {
-  return(con$api.mapping %>% filter(tag == tag_name) %>% select(available) %>% unlist %>% unname)
+  return(unname(
+    unlist(
+      dplyr::select(
+        dplyr::filter(
+          con$api.mapping,
+          tag == tag_name),
+        available))))
 }

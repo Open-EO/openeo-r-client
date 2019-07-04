@@ -71,9 +71,7 @@ list_udf_runtimes = function(con) {
   tryCatch(
     {
       tag = "udf_runtimes"
-      endpoint = con$getBackendEndpoint(tag)
-      
-      return(con$request(operation="GET",endpoint = endpoint,
+      return(con$request(tag=tag,
                          authorized = FALSE))
     }, 
     error = .capturedErrorToMessage
@@ -94,10 +92,10 @@ describe_udf_type = function(con, language, type) {
     if (is.null(language) || is.null(type)) {
       stop("Missing parameter language or udf_type")
     }
-    tag = "udf_functions"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(language,type)
     
-    msg = con$request(operation="GET",endpoint = endpoint,
+    tag = "udf_functions"
+    msg = con$request(tag=tag,
+                      parameters=list(language,type),
                       authorized = FALSE)
     return(msg)
   },error=.capturedErrorToMessage)

@@ -12,9 +12,8 @@ list_processes = function(con) {
   tryCatch({
     if (is.null(con$processes)) {
       tag = "process_overview"
-      endpoint = con$getBackendEndpoint(tag)
       
-      listOfProcesses = con$request(operation="GET",endpoint=endpoint,type="application/json")
+      listOfProcesses = con$request(tag=tag,type="application/json")
       con$processes = listOfProcesses$processes
       
       names(con$processes) = sapply(con$processes,function(p)p$id)

@@ -232,7 +232,10 @@ print.JobCostsEstimation = function(x,...){
 
 #' @export
 print.CollectionList = function(x, ...) {
-  print(as_tibble(x) %>% select(id,title,description))
+  print(dplyr::select(tibble::as_tibble(x),
+                      id,
+                      title,
+                      description))
 }
 
 #' @export
@@ -284,7 +287,7 @@ print.OpenEOCapabilities = function(x, ...) {
     for (j in 1:length(entry$method)) {
       method = entry$method[[j]]
       
-      server_offering = server_offering %>% add_row(path=path,method=method)
+      server_offering = add_row(server_offering,path=path,method=method)
     }
   }
   print(server_offering)

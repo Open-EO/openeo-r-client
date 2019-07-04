@@ -14,9 +14,8 @@
 list_services = function(con) {
   tryCatch(suppressWarnings({
     tag = "user_services"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(con$user_id)
     
-    listOfServices = con$request(operation="GET",endpoint=endpoint,authorized = TRUE ,type="application/json")
+    listOfServices = con$request(tag=tag,parameters=list(con$user_id),authorized = TRUE ,type="application/json")
     listOfServices = listOfServices$services
     
     table = tibble(id=character(),
@@ -113,9 +112,6 @@ create_service = function(con,
       stop("No type specified.")
     }
     
-    tag = "service_publish"
-    endpoint = con$getBackendEndpoint(tag)
-    
     service_request_object = list(
       type = type,
       process_graph = graph$serialize(),
@@ -127,8 +123,8 @@ create_service = function(con,
       budget = budget
     )
     
-    response = con$request(operation="POST",
-                           endpoint=endpoint,
+    tag = "service_publish"
+    response = con$request(tag=tag,
                            authorized = TRUE, 
                            data = service_request_object, 
                            encodeType = "json",
@@ -169,8 +165,7 @@ update_service = function(con, id,
                           parameters = NULL,
                           plan = NULL,
                           budget = NULL) {
-  tag = "services_update"
-  endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
+  
   tryCatch({
     patch = list()
     
@@ -237,7 +232,9 @@ update_service = function(con, id,
       }
     }
     
-    res = con$request(operation="PATCH",endpoint = endpoint,
+    tag = "services_update"
+    res = con$request(tag=tag,
+                      parameters=list(id),
                       authorized = TRUE,
                       encodeType = "json",
                       data=patch)
@@ -261,9 +258,9 @@ describe_service = function(con, id) {
     }
     
     tag = "services_details"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-    
-    service = con$request(operation="GET",endpoint=endpoint,authorized = TRUE)
+    service = con$request(tag=tag,
+                          parameters=list(id),
+                          authorized = TRUE)
     class(service) = "ServiceInfo"
     return(service)
   }, error=.capturedErrorToMessage)
@@ -279,9 +276,8 @@ describe_service = function(con, id) {
 delete_service = function(con, id) {
   tryCatch({
     tag = "services_delete"
-    endpoint = con$getBackendEndpoint(tag) %>% replace_endpoint_parameter(id)
-    
-    msg = con$request(operation="DELETE",endpoint = endpoint,
+    msg = con$request(tag=tag,
+                      parameters=list(id),
                       authorized = TRUE)
     message("Service '",id,"' successfully removed.")
     invisible(msg)

@@ -39,8 +39,7 @@ capabilities = function(con) {
   endpoint = "/"
   tryCatch({
     con$stopIfNotConnected()
-    
-    capabilities = con$request(operation="GET",endpoint = endpoint,authorized = FALSE)
+    capabilities = content(httr::GET(url = paste0(con$getHost(),endpoint)))
     class(capabilities) = "OpenEOCapabilities"
     return(capabilities)
   },
@@ -71,9 +70,8 @@ list_features = function(con) {
 list_file_types = function(con) {
   tryCatch({
     tag = "formats"
-    endpoint = con$getBackendEndpoint(tag)
     
-    formats = con$request(operation="GET",endpoint=endpoint,authorized= FALSE)
+    formats = con$request(tag=tag,authorized= FALSE)
     
     names = names(formats)
     datatypes = unname(lapply(formats, function(format){
@@ -103,9 +101,8 @@ list_service_types = function(con) {
     con$stopIfNotConnected()
     
     tag = "ogc_services"
-    endpoint = con$getBackendEndpoint(tag)
     
-    services = con$request(operation="GET",endpoint, authorized = FALSE)
+    services = con$request(tag=tag, authorized = FALSE)
     
     updated_services = list()
     for (key in names(services)) {
