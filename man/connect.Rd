@@ -16,7 +16,7 @@ connect(host, version = NULL, user = NULL, password = NULL,
 
 \item{password}{the password (optional)}
 
-\item{login_type}{either NULL, "basic" or "oidc". This refers to the login mechanism that shall be used. NULL disables authentication.}
+\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
 }
 \description{
 Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
@@ -24,7 +24,7 @@ specific versions, then you should provide the versions parameter.
 }
 \details{
 Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
-just with considered login. Meaning "basic" allows you to use username and password directly in the call, whereas "oidc" will
+just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
 use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
 }

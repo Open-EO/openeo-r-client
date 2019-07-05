@@ -1,6 +1,4 @@
-#
 # services endpoint ----
-#
 
 #' Lists the current users services
 #' 
@@ -12,74 +10,19 @@
 #' @return list of services lists
 #' @export
 list_services = function(con) {
-  tryCatch(suppressWarnings({
-    tag = "user_services"
-    
-    listOfServices = con$request(tag=tag,parameters=list(con$user_id),authorized = TRUE ,type="application/json")
-    listOfServices = listOfServices$services
-    
-    table = tibble(id=character(),
-                   title=character(),
-                   description=character(),
-                   url = character(),
-                   type = character(),
-                   enabled = logical(),
-                   submitted = .POSIXct(character(0)),
-                   plan = character(0),
-                   costs = numeric(0),
-                   budget = numeric(0))
-    
-    if (length(listOfServices) > 0) {
-      for (index in 1:length(listOfServices)) {
-        service = listOfServices[[index]]
+    tryCatch(suppressWarnings({
+        tag = "user_services"
         
-        id = NA
-        if (!is.null(service$id)) id = service$id
+        listOfServices = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
+        listOfServices = listOfServices$services
         
-        title = NA
-        if (!is.null(service$title)) title = service$title
+        table = .listObjectsToDataFrame(listOfServices)
         
-        description = NA
-        if (!is.null(service$description)) description = service$description
+        if (isNamespaceLoaded("tibble")) table = tibble::as_tibble(table)
         
-        url = NA
-        if (!is.null(service$url)) url = service$url
         
-        type = NA
-        if (!is.null(service$type)) type = service$type
-        
-        enabled = NA
-        if (!is.null(service$enabled)) enabled = service$enabled
-        
-        submitted = NA
-        if (!is.null(service$submitted)) submitted = as_datetime(service$submitted)
-        
-        plan = NA
-        if (!is.null(service$plan)) plan = service$plan
-        
-        costs = NA
-        if (!is.null(service$costs)) costs = as.numeric(service$costs)
-        
-        budget = NA
-        if (!is.null(service$budget)) budget = as.numeric(service$budget)
-        
-        table= add_row(table, 
-                       id=id,
-                       title=title,
-                       description=description,
-                       url = url,
-                       type = type,
-                       enabled=enabled,
-                       submitted=submitted,
-                       plan = plan,
-                       costs = costs,
-                       budget=budget)
-      }
-    }
-    
-    
-    return(table)
-  }), error = .capturedErrorToMessage)
+        return(table)
+    }), error = .capturedErrorToMessage)
 }
 
 #' Prepares and publishes a service on the back-end
@@ -98,43 +41,23 @@ list_services = function(con) {
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-create_service = function(con, 
-                          type, 
-                          graph,
-                          title = NULL,
-                          description = NULL,
-                          enabled = NULL,
-                          parameters = NULL,
-                          plan = NULL,
-                          budget = NULL) {
-  tryCatch({
-    if (is.null(type)) {
-      stop("No type specified.")
-    }
-
-    service_request_object = list(
-      type = type,
-      process_graph = graph$serialize(),
-      title = title,
-      description = description,
-      enabled =enabled,
-      parameters = parameters,
-      plan = plan,
-      budget = budget
-    )
-    
-    tag = "service_publish"
-    response = con$request(tag=tag,
-                           authorized = TRUE, 
-                           data = service_request_object, 
-                           encodeType = "json",
-                           raw = TRUE)
-    
-    message("Service was successfully created.")
-    locationHeader = headers(response)$location
-    split = unlist(strsplit(locationHeader,"/"))
-    return(trimws(split[length(split)]))
-  },error=.capturedErrorToMessage)
+create_service = function(con, type, graph, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
+    tryCatch({
+        if (is.null(type)) {
+            stop("No type specified.")
+        }
+        
+        service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, 
+            parameters = parameters, plan = plan, budget = budget)
+        
+        tag = "service_publish"
+        response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE)
+        
+        message("Service was successfully created.")
+        locationHeader = headers(response)$location
+        split = unlist(strsplit(locationHeader, "/"))
+        return(trimws(split[length(split)]))
+    }, error = .capturedErrorToMessage)
 }
 
 #' Modifies a service
@@ -156,91 +79,80 @@ create_service = function(con,
 #' @return service representation as list
 #' 
 #' @export
-update_service = function(con, id, 
-                          type=NULL, 
-                          process_graph=NULL,
-                          title = NULL,
-                          description = NULL,
-                          enabled = NULL,
-                          parameters = NULL,
-                          plan = NULL,
-                          budget = NULL) {
-  
-  tryCatch({
-    patch = list()
+update_service = function(con, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, 
+    plan = NULL, budget = NULL) {
     
-    if (!is.null(type)) {
-      patch[["type"]] = type
-    }
-    
-    if (!is.null(process_graph)) {
-      if (length(process_graph) > 0) {
-        patch[["process_graph"]] = process_graph
-      } else {
-        stop("Process graph cannot be set to be empty.")
-      }
-    }
-    
-    if (!is.null(title)) {
-      if (!is.na(title)) {
-        patch[["title"]] = title
-      } else {
-        patch[["title"]] = NULL
-      }
-    }
-    
-    if (!is.null(description)) {
-      if (!is.na(description)) {
-        patch[["description"]] = description
-      } else {
-        patch[["description"]] = NULL
-      }
-    }
-    
-    if (!is.null(enabled)) {
-      if (!is.na(enabled) && is.logical(enabled)) {
-        patch[["enabled"]] = enabled
-      } else {
-        stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
-      }
-    }
-    
-    if (!is.null(parameters)) {
-      if (is.na(parameters)) {
-        patch[["parameters"]] = NULL
-      } else if (is.list(parameters)) {
-        patch[["parameters"]] = parameters
-      } else {
-        stop("No valid data for parameter 'parameters'. It has to be a list")
-      }
-    }
-    
-    if (!is.null(plan)) {
-      if (!is.na(plan)) {
-        patch[["plan"]] = plan
-      } else {
-        stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
-      }
-    }
-    
-    # budget = NULL
-    if (!is.null(budget)) {
-      if (!is.na(budget)) {
-        patch[["budget"]] = budget
-      } else {
-        patch[["budget"]] = NULL
-      }
-    }
-    
-    tag = "services_update"
-    res = con$request(tag=tag,
-                      parameters=list(id),
-                      authorized = TRUE,
-                      encodeType = "json",
-                      data=patch)
-    message(paste("Service '",id,"' was successfully updated.",sep=""))
-    invisible(TRUE)
-  },error=.capturedErrorToMessage)
+    tryCatch({
+        patch = list()
+        
+        if (!is.null(type)) {
+            patch[["type"]] = type
+        }
+        
+        if (!is.null(process_graph)) {
+            if (length(process_graph) > 0) {
+                patch[["process_graph"]] = process_graph
+            } else {
+                stop("Process graph cannot be set to be empty.")
+            }
+        }
+        
+        if (!is.null(title)) {
+            if (!is.na(title)) {
+                patch[["title"]] = title
+            } else {
+                patch[["title"]] = NULL
+            }
+        }
+        
+        if (!is.null(description)) {
+            if (!is.na(description)) {
+                patch[["description"]] = description
+            } else {
+                patch[["description"]] = NULL
+            }
+        }
+        
+        if (!is.null(enabled)) {
+            if (!is.na(enabled) && is.logical(enabled)) {
+                patch[["enabled"]] = enabled
+            } else {
+                stop("No valid data for parameter 'enabled'. Use TRUE, FALSE or NULL")
+            }
+        }
+        
+        if (!is.null(parameters)) {
+            if (is.na(parameters)) {
+                patch[["parameters"]] = NULL
+            } else if (is.list(parameters)) {
+                patch[["parameters"]] = parameters
+            } else {
+                stop("No valid data for parameter 'parameters'. It has to be a list")
+            }
+        }
+        
+        if (!is.null(plan)) {
+            if (!is.na(plan)) {
+                patch[["plan"]] = plan
+            } else {
+                stop("No valid data for parameter 'plan'. Use a plan identifier or skip updating the parameter with NULL")
+            }
+        }
+        
+        # budget = NULL
+        if (!is.null(budget)) {
+            if (!is.na(budget)) {
+                patch[["budget"]] = budget
+            } else {
+                patch[["budget"]] = NULL
+            }
+        }
+        
+        tag = "services_update"
+        res = con$request(tag = tag, parameters = list(id), authorized = TRUE, encodeType = "json", data = patch)
+        message(paste("Service '", id, "' was successfully updated.", sep = ""))
+        invisible(TRUE)
+    }, error = .capturedErrorToMessage)
 }
 
 #' Describes a service
@@ -252,18 +164,16 @@ update_service = function(con, id,
 #' @return service as a list
 #' @export
 describe_service = function(con, id) {
-  tryCatch({
-    if (is.null(id)) {
-      stop("No service id specified.")
-    }
-    
-    tag = "services_details"
-    service = con$request(tag=tag,
-                          parameters=list(id),
-                          authorized = TRUE)
-    class(service) = "ServiceInfo"
-    return(service)
-  }, error=.capturedErrorToMessage)
+    tryCatch({
+        if (is.null(id)) {
+            stop("No service id specified.")
+        }
+        
+        tag = "services_details"
+        service = con$request(tag = tag, parameters = list(id), authorized = TRUE)
+        class(service) = "ServiceInfo"
+        return(service)
+    }, error = .capturedErrorToMessage)
 }
 
 #' Deletes a service function for a job
@@ -274,12 +184,10 @@ describe_service = function(con, id) {
 #' @param id the service id
 #' @export
 delete_service = function(con, id) {
-  tryCatch({
-    tag = "services_delete"
-    msg = con$request(tag=tag,
-                      parameters=list(id),
-                      authorized = TRUE)
-    message("Service '",id,"' successfully removed.")
-    invisible(msg)
-  },error=.capturedErrorToMessage)
+    tryCatch({
+        tag = "services_delete"
+        msg = con$request(tag = tag, parameters = list(id), authorized = TRUE)
+        message("Service '", id, "' successfully removed.")
+        invisible(msg)
+    }, error = .capturedErrorToMessage)
 }

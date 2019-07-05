@@ -8,7 +8,6 @@ NULL
 #' @importFrom R6 R6Class
 #' @import httr
 #' @import jsonlite
-#' @import dplyr 
 #' @export
 OpenEOClient <- R6Class(
   "OpenEOClient",
@@ -21,12 +20,18 @@ OpenEOClient <- R6Class(
     processes = NULL,
 
     # functions ====
-    initialize = function() {
-
+    initialize = function(host=NULL) {
+      if (!is.null(host)) {
+        private$host = host
+      }
     },
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
-        endpoint =  unlist(unname(dplyr::select(.data = dplyr::filter(.data = self$api.mapping,tag==endpoint_name, available),endpoint))) 
+
+        endpoint = self$api.mapping[self$api.mapping$tag == endpoint_name & self$api.mapping$available, "endpoint"]
+        
+        if (isNamespaceLoaded("tibble")) endpoint = endpoint[[1]]
+        
         if (length(endpoint) > 0) {
           if (startsWith(endpoint,"/")) {
             return(substr(endpoint,2,nchar(endpoint)))

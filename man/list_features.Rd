@@ -10,7 +10,7 @@ list_features(con)
 \item{con}{A connected OpenEO client}
 }
 \value{
-tibble
+data.frame or tibble (if available)
 }
 \description{
 The client queries the version resolved back-end for its endpoint capabilities and returns it as

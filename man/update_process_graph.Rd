@@ -4,15 +4,15 @@
 \alias{update_process_graph}
 \title{Modify the current graph with a given}
 \usage{
-update_process_graph(con, graph_id, graph = NULL, title = NULL,
+update_process_graph(con, id, graph = NULL, title = NULL,
   description = NULL)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object}
 
-\item{graph_id}{process graph id}
+\item{id}{process graph id}
 
-\item{graph}{a process graph definition created by chaining "process()", "collection()" or using a ProcessGraphBuilder}
+\item{graph}{a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder}
 
 \item{title}{title of the process graph (optional)}
 

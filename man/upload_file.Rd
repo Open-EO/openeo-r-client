@@ -14,9 +14,9 @@ upload_file(con, content, target, encode = "raw",
 
 \item{target}{the relative server path location for the file}
 
-\item{encode}{the encoding type used to upload the data, e.g. "multipart","form","json","raw" ("raw" by default)}
+\item{encode}{the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)}
 
-\item{mime}{mime type used in upload_file ("application/octet-stream" as a default)}
+\item{mime}{mime type used in upload_file ('application/octet-stream' as a default)}
 }
 \value{
 the relative file path on the server

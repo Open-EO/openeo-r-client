@@ -14,7 +14,7 @@ callback(con, process, parameter = NULL)
 \item{parameter}{optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback}
 }
 \value{
-a Graph object with the callback parameters as "data"
+a Graph object with the callback parameters as 'data'
 }
 \description{
 The callback function creates a callback graph for a parameter of a process if the parameter needs

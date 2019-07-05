@@ -1,11 +1,11 @@
 htmlViewer = function(html) {
-  tempfile <- tempfile(fileext = ".html")
-  
-  cat(html, file=tempfile)
-  
-  htmlFile = file.path(tempfile)
-  viewer <- getOption("viewer")
-  viewer(htmlFile)
+    tempfile <- tempfile(fileext = ".html")
+    
+    cat(html, file = tempfile)
+    
+    htmlFile = file.path(tempfile)
+    viewer <- getOption("viewer")
+    viewer(htmlFile)
 }
 
 #' Function to use RStudio viewer to view markdown text
@@ -18,6 +18,6 @@ htmlViewer = function(html) {
 #' 
 #' @importFrom commonmark markdown_html
 #' @export
-markdownViewer = function(mdtext,isgithub=FALSE) {
-  htmlViewer(markdown_html(mdtext,extensions=isgithub))
+markdownViewer = function(mdtext, isgithub = FALSE) {
+    htmlViewer(markdown_html(mdtext, extensions = isgithub))
 }

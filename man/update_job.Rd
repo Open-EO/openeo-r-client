@@ -4,13 +4,14 @@
 \alias{update_job}
 \title{Modifies a job with given parameter}
 \usage{
-update_job(con, job_id, title = NULL, description = NULL,
-  process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...)
+update_job(con, id, title = NULL, description = NULL,
+  process_graph = NULL, plan = NULL, budget = NULL, format = NULL,
+  ...)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client}
 
-\item{job_id}{the job id of a created job}
+\item{id}{the job id of a created job}
 
 \item{title}{update title for the job}
 

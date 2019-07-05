@@ -18,6 +18,6 @@ a connected and authenticated back-end connection
 }
 \description{
 Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
-is usually also performed in the "connect" step. But if you only connected to a back-end in order to 
+is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
 register, then you need to log in afterwards.
 }

@@ -7,6 +7,7 @@ Description: This package provides the user with a client to access data and pro
 Depends:
     R (>= 3.3)
 Suggests:
+    tibble,
     testthat,
     knitr
 Imports:
@@ -14,20 +15,19 @@ Imports:
     httr,
     methods,
     R6,
-    tibble,
     lubridate,
-    dplyr,
     commonmark,
     base64enc
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 License: file LICENSE
 Collate:
     'argument_types.R'
     'basic-auth.R'
     'callback-functions.R'
+    'zzz.R'
     'capabilities-mapping.R'
     'utilities.R'
     'client.R'
