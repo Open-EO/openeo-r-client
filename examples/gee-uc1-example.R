@@ -1,7 +1,9 @@
 # POC: Use Case 1
 # RClient -> GEE back-end
 # v0.4.1
+library(openeo)
 library(magrittr)
+library(tibble)
 
 user = "group8"
 pwd = "test123"
