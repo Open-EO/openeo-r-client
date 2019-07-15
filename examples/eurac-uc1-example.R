@@ -20,18 +20,19 @@ eurac %>% describeProcess("min_time")
 pgb = eurac %>% pgb()
 
 task = pgb$collection$S2_L2A_T32TPS_20M %>%
-  pgb$filter_bbox(extent=list(west=10.5,east=11.0,south=46.0,north=46.5)) %>%
-  pgb$filter_daterange(extent = c("2017-01-01T00:00:00Z","2017-01-31T00:00:00Z")) %>%
+  pgb$filter_bbox(extent=list(west=10.99,east=11.25,south=46.59,north=46.76)) %>%
+  pgb$filter_daterange(extent = c("2016-01-01T00:00:00Z","2016-03-10T23:59:59Z")) %>%
   pgb$NDVI(red="B04",nir="B8A") %>%
-  pgb$min_time()
+  pgb$min_time() %>%
+  pgb$stretch_colors(min=-1, max=1)
 
 raster = eurac %>% preview(task=task,
-                               format="tiff",
+                               format="GTiff",
                                output_file = "eurac_test.tif")
 
 # eurac %>% listJobs()
 
-job_id = eurac %>% defineJob(task=task,format="tiff")
+job_id = eurac %>% defineJob(task=task,format="GTiff")
 
 eurac %>% describeJob(job_id)
 

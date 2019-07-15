@@ -12,11 +12,23 @@ if (!require(devtools)) {
   install.packages("devtools",dependencies=TRUE)
   library(devtools)
 }
-install_github(repo="Open-EO/openeo-r-client",ref="v0.2.2",dependencies=TRUE)
+install_github(repo="Open-EO/openeo-r-client",ref="v0.4.1",dependencies=TRUE)
 library(openeo)
 ```
 
 If you want use a different version, then use for the parameter `ref` either "master", "develop" or another version specified under [releases](https://github.com/Open-EO/openeo-r-client/releases).
+
+Since the openEO project is under heavy development regarding the openeo API that connects clients and backends, all R client versions < 1.0.0 versions will only be compatible with a certain API version.
+
+| openeo R client version | openeo API version |
+| --- | --- |
+| v0.0.1 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| 0.1.0 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
+| v0.4.1 | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
+
 
 ## Getting Started
 After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.
@@ -26,32 +38,50 @@ After we defined the process graph, we send it as a task to the backend where it
 
 ```
 library(openeo)
-conn = connect(host="http://backend1.openeo.org/",user="test",password="test")
+conn = connect(host="http://backend1.openeo.org/",user="test",password="test",login_type="basic")
 
 # list collection and processes
-conn %>% listCollections()
-conn %>% listProcesses()
+conn %>% list_collections()
+conn %>% list_processes()
 
 # get detailed descriptions
-conn %>% describeCollection(c("sentinel2_subset","landsat7_ndvi"))
-conn %>% describeProcess("filter_bbox")
+conn %>% describe_collection(c("sentinel2_subset","landsat7_ndvi"))
+conn %>% describe_process("filter_bbox")
 
-describeCollection
 # create a process graph / task
-pgb = con %>% pgb()
+pgb = conn %>% process_graph_builder()
 
-task = pgb$collection$sentinel2 %>%
-          pgb$filter_daterange(extent = c("2017-07-21","2017-07-28")) %>%
-          pgb$filter_bbox(extent = list(west=7.5, east= 8.5, south=51.0, north=52.0, crs="EPSG:4326")) %>%
-          pgb$NDVI(nir="B8",red = "B4") %>%
-          pgb$min_time()
+data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
+                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
+                              temporal_extent = c("2018-04-30","2018-06-26"),bands = c("B4","B8"))
+b4 = graph$filter_bands(data = data1,bands = "B4")
+b8 = graph$filter_bands(data=data1,bands = "B8")
+
+ndvi = graph$normalized_difference(band1 = b4,band2 = b8)
+
+reducer = graph$reduce(data = ndvi,dimension = "temporal")
+
+cb_graph = gee %>% callback(reducer,parameter = "reducer")
+
+cb_graph$min(data = cb_graph$data$data) %>% cb_graph$setFinalNode()
+
+
+apply_linear_transform = graph$apply(data = reducer)
+
+cb2_graph = conn %>% callback(apply_linear_transform, "process")
+
+cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255) %>% 
+  cb2_graph$setFinalNode()
+
+graph$save_result(data = apply_linear_transform,format = "png") %>% graph$setFinalNode()
+
                                 
-job_id = conn %>% defineJob(task=task, title="Example graph", description="This graph is just a general example",format="GTiff")
+job_id = conn %>% create_job(graph=graph, title="Example graph", description="This graph is just a general example",format="png")
 
-result_obj = conn %>% listResults(job_id)
-urls = sapply(result_obj$link,function(link)link$href)
+result_obj = conn %>% list_results(job_id)
 
-# download the urls as you like
+conn %>% download_results(job = job_id, folder = ".")
+
 ```
 To get an overview which functions the packages offers and to access the function documentation you can either navigate in RStudio into the "Packages" tab and select the "openeo" package and click on the function you are interested in. Or you can use the following command line operations:
 
@@ -63,7 +93,7 @@ library(help="openeo")
 ```
 
 ## Additional Examples
-If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under [examples](https://github.com/Open-EO/openeo-r-client/tree/master/examples) to get a feeling, how to use the package.
+If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under [examples](https://github.com/Open-EO/openeo-r-client/tree/master/examples) to get a feeling, how to use the package. Some of the scripts are outdated and will be replaced in the future.
 
 ## Links
 * [openEO.org](http://openeo.org/)

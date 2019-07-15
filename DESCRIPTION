@@ -1,46 +1,48 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 0.3.1
+Version: 0.4.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
-Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.3.0
-Depends: 
-    R (>= 3.3),
-    magrittr (>= 1.5),
-    jsonlite(>= 1.5),
-    tibble (>= 1.4.2),
-    lubridate (>= 1.7.4),
-    dplyr (>= 0.7.5),
-    sp (>= 1.2)
+Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.3.0.
+Depends:
+    R (>= 3.3)
 Suggests:
-    leaflet (== 2.0.0),
-    mapview (== 2.4.0),
-    commonmark (== 1.5)
+    tibble,
+    testthat,
+    knitr
 Imports:
     jsonlite,
     httr,
+    methods,
     R6,
-    magrittr,
     lubridate,
-    tibble,
-    lubridate,
-    dplyr,
-    sp,
-    commonmark
+    commonmark,
+    base64enc
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
-License: Apache License
-Collate: 
-    'ProcessGraphBuilder-class.R'
+License: file LICENSE
+Collate:
+    'argument_types.R'
+    'basic-auth.R'
+    'callback-functions.R'
+    'zzz.R'
     'capabilities-mapping.R'
+    'utilities.R'
     'client.R'
     'coerce-functions.R'
+    'collection-functions.R'
+    'collections.R'
     'debugging.R'
-    'map-functions.R'
+    'jobs.R'
     'markdown_viewer.R'
-    'oidc-client.R'
+    'oidc-auth.R'
     'print-functions.R'
+    'process_graph.R'
     'process_graph_building.R'
-    'wrapper-functions.R'
+    'processes.R'
+    'server_metadata.R'
+    'services.R'
+    'udf.R'
+    'user.R'
