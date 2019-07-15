@@ -1,6 +1,6 @@
 # POC: Use Case 1
 # RClient -> GEE back-end
-# v0.4.1
+# v0.4.2
 library(openeo)
 library(magrittr)
 library(tibble)
@@ -12,7 +12,7 @@ pwd = "test123"
 gee_host_url = "https://earthengine.openeo.org"
 api_versions(gee_host_url)
 
-gee = connect(host = gee_host_url, version="0.4.1",user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="0.4.2",user = user,password = pwd,login_type = "basic")
 # also inserting the direct link is possible
 # gee = connect(host = "https://earthengine.openeo.org/v0.4",user = user,password = pwd)
 

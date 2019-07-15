@@ -247,10 +247,11 @@ print.JobCostsEstimation = function(x, ...) {
 #' @export
 print.CollectionList = function(x, ...) {
   
+  df = as.data.frame(x,extract=c("id", "title", "description"))
     if (isNamespaceLoaded("tibble"))
-      print(tibble::as_tibble(x)[,c("id", "title", "description")])
+      print(tibble::as_tibble(df)[,c("id", "title", "description")])
   else 
-    print(as.data.frame(x)[,c("id", "title", "description")])
+    print(df)
 }
 
 #' @export

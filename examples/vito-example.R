@@ -1,30 +1,35 @@
 library(openeo)
+library(tibble)
+library(magrittr)
 
 # Add credentials here (configure connect) or point to a R script that holds the credentials and cares for connection
-# source("path/to/credentials/vito_v0.3.1.R")
-# --> con = connect(host = vitoURL,disable_auth = TRUE)
 
-con %>% listCapabilities()
+host = "http://openeo.vgt.vito.be/openeo/0.4.0/"
+con = connect(host = host)
 
-con %>% services()
+con %>% capabilities()
 
-con %>% listFormats()
+con %>% list_service_types()
 
-collection = print(con %>% listCollections())
+con %>% list_file_types() # result is not valid api schema
 
 debug()
-con %>% describeCollection("S2_FAPAR_V102_WEBMERCATOR2") # message body is 'nul'
+colls = con %>% list_collections()
 debug.off()
 
-con %>% listProcesses()
+debug()
+con %>% describe_collection("S2_FAPAR_SCENECLASSIFICATION_V102_PYRAMID") # message body is 'nul'
+debug.off()
+
+con %>% list_processes()
 
 debug()
-con %>% listJobs()
+con %>% list_jobs() # gets a HTTP 200 with info to "create a new batch processing job using POST" as text (no JSON)
 debug.off()
 
 # con %>% listServices() does not work despite enabled
 
-pgb = con %>% pgb()
+pgb = con %>% process_graph_builder()
 
 # 2019-02-07: NDVI not supported -> graph will be incomplete, examples afterwards are given, but cannot be tested
 task = pgb$collection$BIOPAR_FAPAR_V1_GLOBAL %>%

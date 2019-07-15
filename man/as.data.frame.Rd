@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{the list object that will be coerced}
 
-\item{...}{potentially additional parameters to pass on to internal functions (not used)}
+\item{...}{potentially additional parameters to pass on to internal functions like "extract"}
 }
 \value{
 a data.frame
@@ -27,4 +27,8 @@ a data.frame
 \description{
 The openeo package offers functions to transform list objects obtained from JSON
 into data.frames. This is mostly applied in list_* functions.
+}
+\details{
+The parameter "extract" is used as an additional parameter to extract specific values of the output list
+/ json. The value for the parameters is a vector of character like c("id","title")
 }
