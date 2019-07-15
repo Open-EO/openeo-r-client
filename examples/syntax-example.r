@@ -13,27 +13,29 @@ conn = connect("http://openeo.org/openeo", "username", "password")
 
 ## Listing backend capabilities:
 # Get a list of functions that the backend natively supports; names and descriptions (list/named vector)
-listProcesses(conn)
+list_processes(conn)
 
 # Same for listing collections on the backend
-listCollections(conn)
+list_collections(conn)
 
 # Get in-depth information about a collection
-describeCollection(conn, "S2_L2A_T32TPS_20M")
+describe_collection(conn, "S2_L2A_T32TPS_20M")
 # class with Extent, crs, etc.
 
 # Get in-depth information about a process
-describeProcess(conn, "filter_daterange")
+describe_process(conn, "filter_daterange")
 
 # Listing existing user jobs
-listJobs(conn)
+list_jobs(conn)
 
 # Listing which UDF capabilities/packages are supported
-listUDFCapabilities(conn)
+list_udf_runtimes(conn)
 
 
 ## Simple task: calculating NDVI using a linked list of processes (assumes NDVI function takes band names as parameters, currently uses numbers)
-Task = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016-01-01", end="2018-01-01") %>% process("NDVI", red="B04", nir="B8A")
+Task = collection("S2_L2A_T32TPS_20M") %>% 
+  process("filter_daterange", start="2016-01-01", end="2018-01-01") %>% 
+  process("NDVI", red="B04", nir="B8A")
 
 ## Advanced task: calculating NDVI using processes that have other processes as arguments (assumes NDVI function takes process graphs)
 AOICollection = collection("S2_L2A_T32TPS_20M") %>% process("filter_daterange", start="2016-01-01", end="2018-01-01")
@@ -43,27 +45,21 @@ Task = AOICollection %>% process("NDVI", red=RedSubset, nir=NIRSubset)
 
 ## Three ways of processing data in OpenEO:
 # Run right away and give data as an object (Raster?): synchronised; 'format' optional, should default to native that is then read into a Raster* object
-Result = executeTask(conn, Task, format="GTiff")
+Result = compute_result(conn, Task, format="GTiff")
 
 # Batch: ask the server to prepare it the USGS ESPA way, get a job ID and the URL to the output location
-OutputInfo = orderResult(conn, Task)
+OutputInfo = create_job(conn, Task)
 JobID = OutputInfo$JobID
 
 # Lazy: ask the server to run it when needed (on WCS, but also download etc.)
-JobID = queueTask(conn, Task)
+JobID = start_job(conn, Task)
 
 ## Functions that can be performed with a JobID (lazy and batch only)
 followJob(conn, JobID) # cat --follow style updates about the job
-JobInfo = queryJob(conn, JobID) # Get current information on a job
-cancelJob(conn, JobID) # Pause a job; need a way to restart it also
-deleteJob(conn, JobID) # Delete the job from the server entirely
-Result = downloadJob(conn, JobID) # Get the result as with the synchronous case
-(WCSURL = getWCSLink(conn, JobID)) # Get a URL to the WCS to visualise/download data
-
-## Either way have a result, should be a Raster* object
-plot(Result)
-spplot(Result, 3)
-
+JobInfo = describe_job(conn, JobID) # Get current information on a job
+stop_job(conn, JobID) # Pause a job; need a way to restart it also
+delete_job(conn, JobID) # Delete the job from the server entirely
+Result = download_results(conn, JobID,folder=".") # Get the result as with the synchronous case
 
 ## Theoretical use case 1: composite example ##
 
@@ -73,13 +69,14 @@ CompositeTask = collection("S2_L2A_T32TPS_20M") %>% process("date_range_filter",
 
 # Lazy
 Conn = connect(host="http://saocompute.eurac.edu/openEO_WCPS_Driver", user="nobody", password="nobody")
-Job = queueTask(Conn, CompositeTask)
+Job = create_job(Conn, CompositeTask)
+start_job(Conn, Job)
 OutPath = file.path("Downloads", "Result.netcdf")
-downloadJob(Conn, Job, "netcdf", OutPath) # Processing happens here
+download_results(Conn, Job, OutPath) # Processing happens here
 Result = brick(OutPath)
 
 # Synchronous
-Result = executeTask(Conn, CompositeTask)
+Result = compute_result(Conn, CompositeTask,format = "GTiff")
 
 plot(Result)
 
@@ -106,6 +103,6 @@ MeanNDVI = CloudlessNDVI %>% process("mean_time") # Also get the mean NDVI as a 
 # Somehow upload training dataset or have a UDF that downloads it(?)
 LandCoverTask = process("ranger_classification", NDVI=MeanNDVI, DEM=DEMCollection, TS=TSParams) # UDF: runs a ranger training and prediction pass, returns an LC map and some (spatial?) statistics
 
-Result = executeTask(conn, LandCoverTask)
+Result = compute_result(conn, LandCoverTask)
 spplot(Result, 1)
 

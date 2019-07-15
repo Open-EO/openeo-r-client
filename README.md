@@ -78,6 +78,8 @@ graph$save_result(data = apply_linear_transform,format = "png") %>% graph$setFin
                                 
 job_id = conn %>% create_job(graph=graph, title="Example graph", description="This graph is just a general example",format="png")
 
+conn %>% start_job(job_id)
+
 result_obj = conn %>% list_results(job_id)
 
 conn %>% download_results(job = job_id, folder = ".")
