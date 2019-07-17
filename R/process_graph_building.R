@@ -33,7 +33,7 @@ Graph = R6Class(
           # find new node id:
           node_id = .randomNodeId(process$getId(),sep="_")
           
-          while (node_id %in% names(private$nodes)) {
+          while (node_id %in% private$getNodeIds()) {
             node_id = .randomNodeId(process$getId(),sep="_")
           }
           
@@ -56,10 +56,8 @@ Graph = R6Class(
           # special case: value is of type Argument
           
           node = ProcessNode$new(node_id = node_id,process=process)
-          entry = list(node)
-          names(entry) = node_id
           
-          private$nodes = append(private$nodes,entry)
+          private$nodes = append(private$nodes,node)
           
           return(node)
         })
@@ -91,7 +89,7 @@ Graph = R6Class(
       final_path = unname(unlist(private$extractUsedNodeIds(endnode)))
       
       
-      unvisitedNodes = setdiff(names(private$nodes),final_path)
+      unvisitedNodes = setdiff(private$getNodeIds(),final_path)
       map = lapply(unvisitedNodes, function(node_id) {
         return(unname(private$extractUsedNodeIds(self$getNode(node_id))))
       })
@@ -129,7 +127,7 @@ Graph = R6Class(
       result = lapply(private$nodes, function(node) {
         return(node$serialize())
       })
-      names(result) = names(private$nodes)
+      names(result) = private$getNodeIds()
       
       result[[self$getFinalNode()$getNodeId()]]$result = TRUE
       
@@ -163,12 +161,12 @@ Graph = R6Class(
     
     getNode = function (node_id) {
       private$assertNodeExists(node_id)
-      return(private$nodes[[node_id]])
+      return(private$nodes[[which(private$getNodeIds() == node_id)]])
     },
     
     removeNode = function(node_id) {
       private$assertNodeExists(node_id)
-      private$nodes[[node_id]] = NULL
+      private$nodes[[which(private$getNodeIds() == node_id)]] = NULL
       
       return(TRUE)
     },
@@ -178,7 +176,7 @@ Graph = R6Class(
         message("No final node set in this graph.")
         invisible(NULL)
       } else {
-        return(private$nodes[[private$final_node_id]])
+        return(private$nodes[[which(private$getNodeIds() == private$final_node_id)]])
       }
       
       
@@ -200,7 +198,7 @@ Graph = R6Class(
     setArgumentValue = function(node_id, parameter, value) {
       private$assertNodeExists(node_id)
       
-      node = private$nodes[[node_id]]
+      node = self$getNode(node_id)
       params = node$parameters
       
       if (! parameter %in% names(params)) stop(paste0("Cannot find parameter '",parameter,"' for process '",node_id,"'"))
@@ -233,7 +231,11 @@ Graph = R6Class(
     final_node_id = character(),
     
     assertNodeExists = function(node_id) {
-      if (! node_id %in% names(private$nodes)) stop(paste0("Cannot find node with id '",node_id,"' in this graph."))
+      if (! node_id %in% private$getNodeIds()) stop(paste0("Cannot find node with id '",node_id,"' in this graph."))
+    },
+    
+    getNodeIds = function() {
+      return(sapply(private$nodes, function(node)node$getNodeId()))
     },
     
     extractUsedNodeIds = function(node) {
@@ -445,6 +447,9 @@ ProcessNode = R6Class(
     getNodeId = function() {
       return(private$node_id)
     },
+    setNodeId = function(id) {
+      private$node_id = id
+    },
     serializeAsReference = function() {
       return(list(
         from_node=private$node_id
@@ -474,5 +479,114 @@ ProcessNode = R6Class(
   paste(name,paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE)),...)
 }
 
+#' Parses a JSON openeo graph into a R graph
+#' 
+#' The function reads and parses the given json text and creates based on the information of the
+#' text a Graph object.
+#' 
+#' @param con a connected openeo client
+#' @param json the json graph in a textual representation or an already parsed list object
+#' @param graph a already created process graph (probably empty) for callback graphs
+#' @return Graph object
 #' @export
-setOldClass(c("Graph","R6"))
+parse_graph = function(con, json, graph=NULL) {
+  if (is.list(json)) {
+    parsed_json = json
+  } else {
+    if (!is.character(json)) json = as.character(json)
+    
+    is_valid = jsonlite::validate(json)
+    
+    if (!is_valid) {
+      message("Invalid JSON object. With the following message:")
+      stop(attr(is_valid,"err"))
+    }
+    if (is.null(graph)) graph = process_graph_builder(con)
+    
+    parsed_json = fromJSON(json)
+  }
+  
+  
+  # first create foreach process an object
+  lapply(names(parsed_json), function(node_id) {
+    json_process = parsed_json[[node_id]]
+    
+    
+    
+    process = graph[[json_process$process_id]]()
+    process$setNodeId(node_id)
+    
+    
+    if (!is.null(json_process$result) && json_process$result) {
+      graph$setFinalNode(process)
+    }
+    
+    return(node_id)
+  })
+  
+  lapply(names(parsed_json), function(node_id) {
+    json_process = parsed_json[[node_id]]
+    args = json_process$arguments
+    
+    # first create foreach process an object
+    process = graph$getNode(node_id)
+    
+    # set the arguments
+    lapply(names(args), function(param_name) {
+      value = args[[param_name]]
+      
+      # keep track of callback, variables, node references
+      # identifiers:
+      # node ref - list of length 1 with name "from_node"
+      # callback - list of length >= 1 with name "callback"
+      # callback parameters/values - list with name "from_argument"
+      # variable - list with at least at least name "variable_id" (optional description and type)
+      # lists might be parsed as named vector, so don't check for list
+      if ("from_node" %in% names(value)) {
+        process$setParameter(param_name,graph$getNode(value))
+        
+        return(param_name)
+      }
+      
+      if ("variable_id" %in% names(value)) {
+        description = if ("description" %in% names(value)) value[["description"]] else character()
+        type = if ("type" %in% names(value)) value[["type"]] else "string"
+        default = if ("default" %in% names(value)) value[["default"]] else NULL
+        
+        variable = Variable$new(id =value[["variable_id"]],
+                                description = description,
+                                type = type,
+                                default = default)
+        
+        process$setParameter(param_name, variable)
+        return(param_name)
+      }
+      
+      if ("from_argument" %in% names(value)) {
+        
+        cb_val = CallbackValue$new(name=value[["from_argument"]])
+        process$setParameter(param_name, cb_val)
+        return(param_name)
+      }
+      
+      if ("callback" %in% names(value)) {
+        cb_graph = callback(con,process,param_name)
+        parse_graph(con,value[["callback"]],cb_graph)
+      
+        # no extra setting because in callback function the link between the object environments have
+        # already been set
+        return(param_name)  
+      }
+      
+      
+      process$setParameter(param_name,value)
+      
+    })
+    
+  })
+  
+  
+  
+  
+  return(graph)
+}

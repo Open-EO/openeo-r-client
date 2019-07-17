@@ -935,7 +935,7 @@ Callback = R6Class(
   )
 )
 
-# CallbackValues ====
+# CallbackValue ====
 # The value / binding that the process submits to a process in the callback graph, maybe also referred as a Promise:
 # the process that calls a callback promises to submit this value
 CallbackValue = R6Class(
@@ -1355,7 +1355,7 @@ AnyOf = R6Class(
 # parse functions ----
 findParameterGenerator = function(schema) {
   # TODO adapt this if I add some parameter/argument
-  
+  # variables are not listed since they are created at the graph
   parameter_constructor = list(Integer,
                                EPSGCode,
                                Number, 
