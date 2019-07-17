@@ -172,15 +172,15 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
     con = OpenEOClient$new()
     
     if (is.null(user) && is.null(password) && is.null(login_type)) {
-        con = con$connect(url = host, version = version, login_type = login_type)
+        con = con$connect(url = host, version = version)
     } else if (login_type == "basic") {
         if (!is.null(user) && !is.null(password)) {
-            con = con$connect(url = host, version = version, login_type = login_type)$login(user = user, password = password)
+            con = con$connect(url = host, version = version)$login(user = user, password = password, login_type = login_type)
         } else {
-            con = con$connect(url = host, version = version, login_type = login_type)
+            con = con$connect(url = host, version = version)
         }
     } else if (login_type == "oidc") {
-        con = con$connect(url = host, version = version, login_type = login_type)$login()
+        con = con$connect(url = host, version = version)$login(login_type = login_type)
     } else {
         message("Incomplete credentials. Either username or password is missing")
         return()
@@ -198,8 +198,9 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @param con connected back-end connection
 #' @param user the user name
 #' @param password the password
+#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #' @return a connected and authenticated back-end connection
 #' @export
-login = function(con, user = NULL, password = NULL) {
-    return(con$login(user = user, password = password))
+login = function(con, user = NULL, password = NULL, login_type=NULL) {
+    return(con$login(user = user, password = password,login_type = login_type))
 }

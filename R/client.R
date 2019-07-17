@@ -1,4 +1,5 @@
 #'@include utilities.R
+#'@include authentication.R
 NULL
 
 #' OpenEO client class
@@ -72,64 +73,57 @@ OpenEOClient <- R6Class(
       }
     },
 
-    connect = function(url,version, login_type=NULL) {
-      if (!is.null(login_type)) {
-        private$disableAuth = FALSE
-        login_type = tolower(login_type)
-      }
+    connect = function(url,version) {
       
       tryCatch({
-        if (!is.null(login_type) && !login_type %in% c("basic","oidc") ) {
-          stop("Cannot find the login mechanism type. Please use 'basic' or 'oidc'")
-        }
         
-        if (!missing(url)) {
+        if (missing(url)) {
+          message("Note: Host-URL is missing")
+          return(invisible(self))
+        }
           
+        if (endsWith(url,"/")) {
+          url = substr(url,1,nchar(url)-1)
+        }
+        private$host = url
+        
+        if (!is.null(version)) {
+          # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
+          hostInfo=private$backendVersions()$versions
+          versionLabels = sapply(hostInfo,function(x)x$api_version)
+          names(hostInfo) = versionLabels
+          
+          if (!version %in% versionLabels) {
+            # print the available versions
+            message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
+                          paste(versionLabels,collapse=",")))
+            return(invisible(self))
+          } else {
+            url = hostInfo[[version]]$url
+            
             if (endsWith(url,"/")) {
               url = substr(url,1,nchar(url)-1)
             }
             private$host = url
-            private$login_type=login_type
-            
-            if (!is.null(version)) {
-              # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
-              hostInfo=private$backendVersions()$versions
-              versionLabels = sapply(hostInfo,function(x)x$api_version)
-              names(hostInfo) = versionLabels
-              
-              if (!version %in% versionLabels) {
-                # print the available versions
-                message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
-                              paste(versionLabels,collapse=",")))
-              } else {
-                url = hostInfo[[version]]$url
-                
-                if (endsWith(url,"/")) {
-                  url = substr(url,1,nchar(url)-1)
-                }
-                private$host = url
-              }
-            }
-            
-            self$api.mapping = endpoint_mapping(self)
-            cat("Connected to host\n")
-            
-            tryCatch({
-              if (is.null(self$processes)) {
-                processes = list_processes(self)
-                pids = sapply(processes, function(x)x$id)
-                names(processes) = pids
-                self$processes = processes
-              }
-              
-            }, error = function(e){
-              self$processes = NULL
-            })
-            return(invisible(self))
-        } else {
-          message("Note: Host-URL is missing")
-          return(self)
+          }
         }
+        
+        self$api.mapping = endpoint_mapping(self)
+        cat("Connected to host\n")
+        
+        tryCatch({
+          if (is.null(self$processes)) {
+            processes = list_processes(self)
+            pids = sapply(processes, function(x)x$id)
+            names(processes) = pids
+            self$processes = processes
+          }
+          
+        }, error = function(e){
+          self$processes = NULL
+        })
+        return(invisible(self))
+        
       }, 
       error = .capturedErrorToMessage
       )
@@ -162,36 +156,24 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage
       )
     },
-    login=function(user=NULL, password=NULL) {
+    login=function(login_type = NULL,user=NULL, password=NULL) {
+      self$stopIfNotConnected()
+      if (is.null(login_type)) {
+        return(invisible(self))
+      }
+      
       tryCatch({
-        if (is.null(private$host)) {
-          stop("Cannot login. Please connect to an OpenEO back-end first.")
-        }
-        self$stopIfNotConnected()
+        login_type = tolower(login_type)
         
-        if (private$login_type == "oidc") {
+        if (!is.null(login_type) && !login_type %in% c("basic","oidc") ) {
+          stop("Cannot find the login mechanism type. Please use 'basic' or 'oidc'")
+        }
+        
+        if (login_type == "oidc") {
           private$loginOIDC()
-        } else if (private$login_type == "basic") {
+        } else if (login_type == "basic") {
           private$loginBasic(user=user, password = password)
-        } else {
-          if (private$disableAuth) {
-            return(self)
-          } else {
-            stop("Unsupported login mechanism")
-          }
-        }
-        
-        tryCatch({
-          if (is.null(self$processes)) {
-            processes = list_processes(self)
-            pids = sapply(processes, function(x)x$id)
-            names(processes) = pids
-            self$processes = processes
-          }
-        }, error = function(e){
-          self$processes = NULL
-        })
-        
+        } 
         
         invisible(self)
         
@@ -199,8 +181,8 @@ OpenEOClient <- R6Class(
       error=.capturedErrorToMessage)
     },
     logout = function() {
-      if (!is.null(private$oidc_client)){
-        private$oidc_client$logout()
+      if (!is.null(private$auth_client)){
+        private$auth_client$logout()
       }
     }
 
@@ -208,16 +190,12 @@ OpenEOClient <- R6Class(
   # private ----
   private = list(
     # attributes ====
-    login_type = NULL, # basic or oidc
-    login_token = NULL,
-    oidc_client= NULL,
+    auth_client = NULL,
     user = NULL,
     password = NULL,
     host = NULL,
-    graph_builder=NULL,
     version = "0.4.1",
     general_auth_type = "bearer",
-    disableAuth = TRUE,
     
     # functions ====
     loginOIDC = function() {
@@ -235,13 +213,13 @@ OpenEOClient <- R6Class(
           {
             tryCatch({
               discovery_doc = private$GET(endpoint)
-              private$oidc_client = OIDCAuth$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
+              private$auth_client = OIDCAuth$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
               
-              if (is.null(private$oidc_client)) {
+              if (is.null(private$auth_client)) {
                 stop("OIDC client not initialized")
               }
               
-              private$oidc_client$login()
+              private$auth_client$login()
               cat("Login successful.")
               
               return(invisible(self))
@@ -258,46 +236,20 @@ OpenEOClient <- R6Class(
     
     loginBasic = function(user, password) {
       tryCatch({
-        if (missing(user) || missing(password)) {
-          stop("Username or password is missing.")
-        }
-        
         if (!is.null(self$api.mapping)) {
           tag = "login"
-          endpoint = self$getBackendEndpoint(tag)
+          endpoint = paste(self$getHost(),self$getBackendEndpoint(tag),sep="/")
         } else {
-          endpoint = "auth/login"
+          endpoint = paste(self$getHost(),"credentials/basic",sep="/")
         }
         
-        private$user = user
-        private$password = password
-        
-        url = paste(private$host, endpoint, sep="/")
-        res = GET(url=url,
-                  config = authenticate(user=user,
-                                        password = password,
-                                        type = "basic")
-        )
-        
-        if (is.debugging()) {
-          print(res)
-        }
-        
-        if (res$status_code == 200) {
-          cont = content(res,type="application/json")
-          
-          private$login_token = cont$access_token
-          self$user_id = cont$user_id
-          
-          if (is.null(self$api.mapping)) {
-            self$api.mapping = endpoint_mapping(self)
-          }
-          cat("Login successful.")
+        #endpoint,user,password
+        private$auth_client = BasicAuth$new(endpoint,user,password)
 
-          return(invisible(self))
-        } else {
-          stop("Login failed.")
-        }
+        self$user_id = private$auth_client$login()
+        cat("Login successful.")
+        return(invisible(self))
+
       },
       error = .capturedErrorToMessage,
       finally = {
@@ -318,7 +270,7 @@ OpenEOClient <- R6Class(
     GET = function(endpoint,authorized=FALSE,query = list(), ...) {
       url = paste(private$host,endpoint, sep ="/")
 
-      if (authorized && !private$disableAuth) {
+      if (authorized && !is.null(private$auth_client)) {
         response = GET(url=url, config=private$addAuthorization(),query=query)
       } else {
         response = GET(url=url,query=query)
@@ -340,7 +292,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !private$disableAuth) {
+      if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
       
@@ -354,7 +306,6 @@ OpenEOClient <- R6Class(
       
       if (response$status_code < 400) {
         if (response$status_code == 204) {
-          message("Object was successfully deleted.")
           return(TRUE)
         }
       } else {
@@ -376,7 +327,7 @@ OpenEOClient <- R6Class(
       if (is.list(data)) {
         
         header = list()
-        if (authorized && !private$disableAuth) {
+        if (authorized && !is.null(private$auth_client)) {
           header = private$addAuthorization(header)
         }
         
@@ -413,7 +364,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !private$disableAuth) {
+      if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
       
@@ -445,7 +396,7 @@ OpenEOClient <- R6Class(
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
-      if (authorized && !private$disableAuth) {
+      if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
       
@@ -484,14 +435,12 @@ OpenEOClient <- R6Class(
       }
 
       if (private$general_auth_type == "bearer") {
-        if (private$login_type == "basic") {
+        if (!is.null(private$auth_client)) {
           header = append(header,add_headers(
-            Authorization=paste("Bearer",private$login_token, sep =" ")
+            Authorization=paste("Bearer",private$auth_client$access_token, sep =" ")
           ))
-        } else if (private$login_type == "oidc") {
-          header = append(header,add_headers(
-            Authorization=paste("Bearer",private$oidc_client$access_token, sep =" ")
-          ))
+        } else {
+          stop("Cannot add HTTP Authorization, because you are not logged in.")
         }
         
       } else { # if all the endpoints require a basic encoded authorization header

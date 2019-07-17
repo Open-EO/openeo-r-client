@@ -1,3 +1,23 @@
+# Authentication Interface ----
+IAuth = R6Class(
+  "IAuth",
+  public = list(
+    login = function() {
+      
+    },
+    logout = function() {
+      
+    }
+  ),
+  active = list(
+    access_token = function() {
+      
+    }
+  )
+)
+
+# OIDC Authentication ----
+
 #' @importFrom R6 R6Class
 #' @import httr
 #' @importFrom base64enc base64decode
@@ -5,11 +25,12 @@
 #' @import lubridate
 OIDCAuth = R6Class(
   "OIDCAuth",
-  # public ----
+  inherit=IAuth,
+  # public ====
   public=list(
-    # attributes ====
+    # attributes ####
     
-    # functions ====
+    # functions ####
     initialize = function(host,discovery_document = NULL){
       private$setHost(host)
       
@@ -34,7 +55,7 @@ OIDCAuth = R6Class(
       )
       invisible(self)
     },
-
+    
     logout = function() {
       if (is.null(private$auth)) {
         message("Not logged in.")
@@ -50,7 +71,7 @@ OIDCAuth = R6Class(
         return(response)
       }
     },
-    
+    #fetches the oidc user data
     getUserData = function() {
       url = parse_url(private$endpoints$userinfo_endpoint)
       response = GET(url, add_headers(Authorization = paste("Bearer",private$auth$credentials$access_token)))
@@ -62,12 +83,8 @@ OIDCAuth = R6Class(
       }
     }
   ),
-  # active ----
+  # active ====
   active = list(
-    authentication = function() {
-      return(private$auth)
-    },
-    
     access_token = function() {
       if (!is.null(private$auth)) {
         if (private$isExpired(private$auth$credentials$access_token)) {
@@ -85,9 +102,9 @@ OIDCAuth = R6Class(
       }
     }
   ),
-  # private ----
+  # private ====
   private=list(
-    # attributes ====
+    # attributes ####
     host = NA, # the url of the endpoint in 
     # client_id = "openeo-r-client", # predefined in OpenID Provider configuration (should be cryptic :))
     # redirect_uri = "http://localhost:8764/auth/oidc/cb", # also registered
@@ -95,7 +112,7 @@ OIDCAuth = R6Class(
     endpoints = list(),
     auth = NULL, # httr oauth2.0 token object
     
-    # functions ====
+    # functions ####
     
     isExpired = function(token) {
       expiry = as_datetime(private$decodeToken(token,2)$exp, tz=Sys.timezone())
@@ -128,5 +145,59 @@ OIDCAuth = R6Class(
       }
       invisible(self)
     }
+  )
+)
+
+# Basic Authentication ----
+#' @importFrom R6 R6Class
+BasicAuth = R6Class(
+  "BasicAuth",
+  inherit=IAuth,
+  # public ====
+  public=list(
+    initialize = function(endpoint,user,password) {
+      private$endpoint = endpoint
+      private$user=user
+      private$password = password
+    },
+    login = function() {
+      res = GET(url=private$endpoint,
+                config = authenticate(user=private$user,
+                                      password = private$password,
+                                      type = "basic")
+      )
+      
+      if (is.debugging()) {
+        print(res)
+      }
+      
+      if (res$status_code == 200) {
+        cont = content(res,type="application/json")
+        
+        private$.access_token = cont$access_token
+        
+        return(cont$user_id)
+        
+      } else {
+        stop("Login failed.")
+      }
+    },
+    logout = function() {
+      private$.access_token = NA
+    }
+  ),
+  # active ====
+  active = list(
+    access_token = function() {
+      if(length(private$.access_token)==0 || is.na(private$.access_token)) stop("No bearer token available. Please login first.")
+      else return(private$.access_token)
+    }
+  ),
+  # private ====
+  private=list(
+    endpoint = NA,
+    user = NA,
+    password = NA,
+    .access_token = NA
   )
 )

@@ -25,7 +25,7 @@ VignetteBuilder: knitr
 License: file LICENSE
 Collate:
     'argument_types.R'
-    'basic-auth.R'
+    'authentication.R'
     'callback-functions.R'
     'zzz.R'
     'capabilities-mapping.R'
@@ -37,7 +37,6 @@ Collate:
     'debugging.R'
     'jobs.R'
     'markdown_viewer.R'
-    'oidc-auth.R'
     'print-functions.R'
     'process_graph.R'
     'process_graph_building.R'
