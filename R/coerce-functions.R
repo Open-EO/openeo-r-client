@@ -26,32 +26,33 @@
   }
     
     table = do.call("data.frame", args = append(template,list(stringsAsFactors=FALSE)))
+    colnames(table) = names(template)
     
     for (index in seq_along(x)) {
-      initial_row = as.list(rep(NA,length(template)))
-      names(initial_row) = names(template)
+      # new empty row in the table
+      table[index,] = NA
       
-      table = rbind(table,initial_row,stringsAsFactors=FALSE)
-      
-        entry = x[[index]]
-        if (length(entry) > 0) {
-            for (i in seq_along(entry)) {
-                val = entry[[i]]
-                if (is.list(val)) {
-                  entry[[i]] = list(val)
-                }
-            }
-          entry=entry[names(template)]
-          entry[sapply(entry,is.null)] = NA
-          names(entry) = names(template)
-          
-          for (name in names(entry)) {
-            val = entry[[name]]
-            if (length(val) > 1) val = list(val)
-            
-            table[nrow(table),name][[1]] = val
+      entry = x[[index]]
+      if (length(entry) > 0) {
+          for (i in seq_along(entry)) {
+              val = entry[[i]]
+              if (is.list(val)) {
+                entry[[i]] = list(val) # data.frames allow only list with one value as column data type
+              }
           }
+        # select all entry values that available at max
+        entry=entry[names(template)]
+        # if some entries are not there replace NULL with NA to be shown in the data.frame
+        entry[sapply(entry,is.null)] = NA
+        names(entry) = names(template)
+        
+        for (name in names(entry)) {
+          val = entry[[name]]
+          if (length(val) > 1) val = list(val)
+          
+          table[nrow(table),name][[1]] = val
         }
+      }
         
     }
     return(table)
@@ -120,7 +121,6 @@ as.data.frame.JobList = function(x, ...) {
 as.data.frame.BandList = function(x, ...) {
   x = unname(x)
   params = list(...)
-  
   table = .listObjectsToDataFrame(x,extract = params$extract)
   return(table)
 }
