@@ -4,6 +4,51 @@ library(lubridate)
 # definitions ----
 
 # Graph ====
+#' Graph object
+#' 
+#' This class represents an openeo process graph. It consists of process nodes and optional variables. The 
+#' class as such offers also an environment where the offered processes of a back-end are made available on
+#' runtime. This means besides the functions mentioned here, there are also the processes of the back-end
+#' mapped dynamically after creation.
+#' 
+#' @name Graph
+#' @return Object of \code{\link{R6Class}} with methods for building an openeo process graph
+#' 
+#' @field data a named list of collection ids or callback parameters depending on the context
+#' @section Methods:
+#' \describe{
+#'    \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
+#'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
+#'    \item{$getNodes()}{a function to return a list of created process nodes for this graph}
+#'    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
+#'    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize} or 
+#'    \code{$serializeAsReference} on all graph elements that are connected to the graph}
+#'    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
+#'    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
+#'    \item{$removeNode(node_id)}{removes a process node from the graph}
+#'    \item{$getFinalNode()}{gets the result process node of a process graph}
+#'    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
+#'    \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
+#'    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
+#'    \item{$createVariable(id,description=NULL,type="string",default=NULL)}{creates a variable and registers 
+#'    it internally as defined variable}
+#'    \item{$removeVariable(variable_id)}{removes a variable}
+#' }
+#' @section Arguments:
+#' \describe{
+#'    \item{processes}{a list of Process objects}
+#'    \item{data}{optional a named list of available data}
+#'    \item{node_id}{the id of a process node}
+#'    \item{node}{process node or  its node id}
+#'    \item{parameter}{the name of a parameter in a process}
+#'    \item{value}{the value to be set for a parameter of a paricular process}
+#'    \item{id or variable_id}{the variable id}
+#'    \item{description}{a description field for a variable}
+#'    \item{type}{the type of variable, default 'string'}
+#'    \item{default}{optional default value to be set for a variable}
+#' }
+NULL
+
 Graph = R6Class(
   "Graph",
   lock_objects = FALSE,
@@ -272,6 +317,46 @@ Graph = R6Class(
 setOldClass(c("Graph","R6"))
 
 # Process ====
+#' Process object
+#' 
+#' This object reflects the process offered by a back-end. It will be created with the information of a received 
+#' JSON object for a single process, after the arguments of the process have been translated into Argument objects.
+#' 
+#' @name Process
+#' 
+#' @return Object of \code{\link{R6Class}} with methods for storing meta data of back-end processes and user assigned data
+#' 
+#' @field parameters a named list of Argument objects
+#' 
+#' @section Methods:
+#' \describe{
+#'    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
+#'    \item{$getId()}{returns the id of a process which was defined on the back-end}
+#'    \item{$getParameters()}{returns a named list of Arguments}
+#'    \item{$getReturns()}{returns the schema for the return type as list}
+#'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
+#'    corresponds to the parameter name}
+#'    \item{$validate()}{validates the processes argument values}
+#'    \item{$serialize()}{serializes the process - mainly used as primary serialization for a \code{\link{ProcessNode}}}
+#'    \item{$setParameter(name,value)}{sets the value of a parameter}
+#'    \item{$getParameter(name)}{returns the Argument object with the provided name}
+#'    \item{$setDescription(value)}{sets the description text}
+#'    \item{$getCharacteristics()}{select all non functions of the private area, to be used when copying process 
+#'    information into a process node}
+#' }
+#' @section Arguments:
+#' \describe{
+#'    \item{id}{process id from the back-end}
+#'    \item{parameters}{a list of Argument objects}
+#'    \item{description}{the process description}
+#'    \item{summary}{the summary of a process}
+#'    \item{parameter_order}{the order in which the parameters have to be returned to the backend}
+#'    \item{returns}{the schema part of the result definition}
+#'    \item{name}{a parameter name}
+#'    \item{value}{the value for a parameter or the description text}
+#' }
+NULL
+
 Process = R6Class(
   "Process",
   public=list(
@@ -312,7 +397,7 @@ Process = R6Class(
     },
     
     getParameters = function() {
-      return(private$parameters)
+      return(private$.parameters)
     },
     
     getReturns = function() {
@@ -430,6 +515,25 @@ Process = R6Class(
 )
 
 # ProcessNode ====
+#' Process Node object
+#' 
+#' This class inherits all functions and fields from \code{\link{Process}} and extends it with a node id and a 
+#' special serialization function. The ProcessNode is an essential building block of the \code{\link{Graph}}.
+#' 
+#' @name ProcessNode
+#' @section Methods:
+#' \describe{
+#'    \item{$getNodeId()}{returns the node id}
+#'    \item{$setNodeId(id)}{set the node id, which is of interest when \code{\link{parse_graph}} is executed}
+#'    \item{$serializeAsReference()}{during the serialization the process node might be used as a 
+#'    reference and this function serializes the process node accordingly}
+#' }
+#' @section Arguments:
+#' \describe{
+#'    \item{id}{the node id}
+#' }
+NULL
+
 ProcessNode = R6Class(
   "ProcessNode",
   inherit = Process,
@@ -618,4 +722,23 @@ variables = function(graph) {
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   return(graph$getVariables())
+}
+
+#' Removes a variable from the Graph
+#' 
+#' The function removes a selected variable from the graph. It only removes it from the list of defined 
+#' variables that are obtainable with \code{\link{variables}}. Those that are already placed in the graph 
+#' won't be deleted in the graph, only in the defined variables list.
+#' 
+#' @param graph a \code{\link{Graph}} object
+#' @param variable a variable id or a variable object
+#' @returns TRUE
+#' @export
+remove_variable = function(graph, variable) {
+  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
+  
+  if (length(variable) == 0) stop("Parameter 'variable' cannot be NULL or empty")
+  if (all(c("variable","Argument","R6") == class(variable))) variable = variable$getName()
+  
+  return(graph$removeVariable(variable_id = variable))
 }
