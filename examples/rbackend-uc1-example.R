@@ -1,4 +1,5 @@
 # tested against r-back-end v0.3.1-3
+# version 0.3.1
 
 library(openeo)
 library(magrittr)

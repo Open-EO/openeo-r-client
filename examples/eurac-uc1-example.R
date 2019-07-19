@@ -1,3 +1,7 @@
+# RClient -> EURAC
+# version: 0.3.1
+
+
 library(openeo)
 
 euracHost = "http://saocompute.eurac.edu/openEO_0_3_0/openeo/"

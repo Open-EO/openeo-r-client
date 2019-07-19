@@ -1,3 +1,6 @@
+# Rclient -> EODC
+# version: 0.2.2
+
 library(openeo)
 eodcHost = "http://openeo.eodc.eu"
 con = connect(host=eodcHost,user = "", password = "") #add username and password

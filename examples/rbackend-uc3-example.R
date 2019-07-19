@@ -1,4 +1,5 @@
 # checked with R back-end version v0.3.1-3
+# version 0.3.1
 
 library(openeo)
 
