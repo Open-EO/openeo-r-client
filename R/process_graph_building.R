@@ -82,7 +82,6 @@ Graph = R6Class(
         endnode = self$getFinalNode()
       })
       
-      
       if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
       
       # traverse over nested process nodes and extract their node ids from the final node
@@ -112,7 +111,7 @@ Graph = R6Class(
         removeables = unique(removeables)
         
         # now, the remaining nodes are not connected -> remove them from private$nodes
-        private$nodes[removeables] = NULL
+        private$nodes[private$getNodeIds() == removeables] = NULL
       }
       
       
@@ -216,7 +215,7 @@ Graph = R6Class(
       
       temp_list= list(var)
       names(temp_list) = var$getName()
-      private$variables = append(private$variables, var)
+      private$variables = append(private$variables, temp_list)
       
       return(var)
     },
@@ -479,6 +478,8 @@ ProcessNode = R6Class(
   paste(name,paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE)),...)
 }
 
+# Extra functions / wrapper ----
+
 #' Parses a JSON openeo graph into a R graph
 #' 
 #' The function reads and parses the given json text and creates based on the information of the
@@ -577,16 +578,44 @@ parse_graph = function(con, json, graph=NULL) {
         # already been set
         return(param_name)  
       }
-      
-      
       process$setParameter(param_name,value)
       
     })
     
   })
-  
-  
-  
-  
   return(graph)
+}
+
+#' Creates a variable in a process graph
+#' 
+#' This function will create a variable to be used in the designated process graph with additional optional information.
+#' 
+#' @param graph a process graph object
+#' @param id the id of the variable
+#' @param description an optional description of the variable
+#' @param type the type of the value that is replaced on runtime, default 'string'
+#' @param default the default value for this variable
+#' @return a Variable object
+#' 
+#' @export
+create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
+  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
+  
+  if (length(id) == 0) stop("Variable id was not set.")
+  
+  return(graph$createVariable(id,description,type,default))
+}
+
+#' Lists the defined variables for a graph
+#' 
+#' The function creates a list of the defined (not necessarily used) variables of a process graph.
+#' 
+#' @param graph a process graph object
+#' @return a named list of Variables
+#' 
+#' @export
+variables = function(graph) {
+  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
+  
+  return(graph$getVariables())
 }
