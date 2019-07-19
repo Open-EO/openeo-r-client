@@ -11,6 +11,9 @@ remove_variable(graph, variable)
 
 \item{variable}{a variable id or a variable object}
 }
+\value{
+TRUE
+}
 \description{
 The function removes a selected variable from the graph. It only removes it from the list of defined 
 variables that are obtainable with \code{\link{variables}}. Those that are already placed in the graph 

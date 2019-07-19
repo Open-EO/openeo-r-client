@@ -732,7 +732,7 @@ variables = function(graph) {
 #' 
 #' @param graph a \code{\link{Graph}} object
 #' @param variable a variable id or a variable object
-#' @returns TRUE
+#' @return TRUE
 #' @export
 remove_variable = function(graph, variable) {
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
