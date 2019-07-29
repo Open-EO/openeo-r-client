@@ -1,5 +1,43 @@
 # Parameter ====
 # should also be abstract
+
+#' Parameter class
+#' 
+#' This class defines parameters of \code{\link{Process}}. They store information about the type, format and
+#' the pattern. Those classes are designed to not carry any value, because if the would it would be a 
+#' \code{\link{Argument}}. 
+#' 
+#' The parameters are parsed from the specific description and format of the JSON
+#' objects returned for the parameters in processes. Find a list of openEO specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
+#' 
+#' @name Parameter
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a parameter.
+#' 
+#' 
+#' @section Methods:
+#' \describe{
+#'  \item{\code{$new(name, description,required=FALSE)}}{}
+#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
+#'  \item{\code{$getName}}{returns the name of a parameter as string}
+#'  \item{\code{$setName(value)}}{sets the name of a parameter}
+#'  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
+#'  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
+#'  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
+#'  API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+#'  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
+#' }
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{name}}{The name of a parameter}
+#'   \item{\code{description}}{}
+#'   \item{\code{required}}{logical - whether or not }
+#'   \item{\code{value}}{In this case also the name of a parameter}
+#'   \item{\code{pattern}}{the regexp as a string how to formulate the value}
+#'   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
+#' }
+NULL
+
 Parameter = R6Class(
   "Parameter",
   public = list(
@@ -79,6 +117,31 @@ Parameter = R6Class(
 
 # Argument ====
 # should be abstract class
+#' Argument class
+#' 
+#' This class inherits all fields and functions from \code{\link{Parameter}} and augments this class for 
+#' managing a value. This includes getter/setter, validation and serilization. Since this is the parent class
+#' for the type specific argument classes the inheriting classes implement their own version of the private
+#' functions \code{$typeCheck()} and \code{$typeSerialization()}.
+#' 
+#' @name Argument
+#' 
+#' @return Object of \code{\link{R6Class}} which represents an argument.
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$setValue(value)}}{Assigns a value for this argument}
+#'   \item{\code{$getValue()}}{Returns the value of this argument}
+#'   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
+#'   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
+#'   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
+#' }
+#' @section Arguments: 
+#' \describe{
+#'   \item{\code{value}}{The value for this argument.}
+#' }
+NULL
+
 Argument = R6Class(
   "Argument",
   inherit=Parameter,
@@ -89,9 +152,6 @@ Argument = R6Class(
     },
     getValue = function() {
       private$value
-    },
-    getParameterOrder = function() {
-      return(private$parameter_order)
     },
     serialize = function() {
       if ("Graph" %in% class(private$value)) {
@@ -185,6 +245,26 @@ Argument = R6Class(
 )
 
 # Variable ====
+
+#' Variable class
+#' 
+#' This class reflects a variable that can be used within a process graph. It inherits all fields and functions
+#' from \code{\link{Argument}}. If the value is not set, the variable is serialized as a variable, but if it is, 
+#' then the variable is replaced with the set value. The variable is created by \code{\link{create_variable}}.
+#' 
+#' @name Variable
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a variable.
+#'
+NULL
+
 Variable = R6Class(
   "variable",
   inherit=Argument,
@@ -216,6 +296,22 @@ Variable = R6Class(
 )
 
 # Integer ====
+#' Integer class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a single integer value.
+#' 
+#' @name Integer
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents an Integer
+NULL
+
 Integer = R6Class(
   "integer",
   inherit=Argument,
@@ -248,6 +344,22 @@ Integer = R6Class(
 )
 
 # EPSG-Code ====
+#' EPSGCode class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent an EPSG Code as a single integer value.
+#' 
+#' @name EPSGCode
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents an EPSG code as Integer
+NULL
+
 EPSGCode = R6Class(
   "epsg-code",
   inherit=Argument,
@@ -281,6 +393,22 @@ EPSGCode = R6Class(
 )
 
 # Number ====
+#' Number class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a numeric value.
+#' 
+#' @name Number
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a Number
+NULL
+
 Number = R6Class(
   "number",
   inherit=Argument,
@@ -313,6 +441,22 @@ Number = R6Class(
 )
 
 # String ====
+#' String class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a character string value.
+#' 
+#' @name String
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a string.
+NULL
+
 String = R6Class(
   "string",
   inherit=Argument,
@@ -345,6 +489,23 @@ String = R6Class(
 )
 
 # Output Format ====
+#' OutputFormat class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent an output format of a back-end as  a 
+#' character string value.
+#' 
+#' @name OutputFormat
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents an output format of a back-end.
+NULL
+
 OutputFormat = R6Class(
   "output-format",
   inherit=Argument,
@@ -378,6 +539,22 @@ OutputFormat = R6Class(
 )
 
 # CollectionId ====
+#' CollectionId class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a collection id on an openeo back-end.
+#' 
+#' @name CollectionId
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a collection id.
+NULL
+
 CollectionId = R6Class(
   "collection-id",
   inherit=Argument,
@@ -415,6 +592,22 @@ CollectionId = R6Class(
 )
 
 # JobId ====
+#' JobId class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a job id on an openeo back-end.
+#' 
+#' @name JobId
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the id of a job.
+NULL
+
 JobId = R6Class(
   "job-id",
   inherit=Argument,
@@ -452,6 +645,22 @@ JobId = R6Class(
 )
 
 # ProcessGraphId ====
+#' ProcessGraphId
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a process graph id on an openeo back-end.
+#' 
+#' @name ProcessGraphId
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the id of a process graph.
+NULL
+
 ProcessGraphId = R6Class(
   "process-graph-id",
   inherit=Argument,
@@ -489,6 +698,22 @@ ProcessGraphId = R6Class(
 )
 
 # Proj-Definition ====
+#' ProjDefinition
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a projection definition as a PROJ string.
+#' 
+#' @name ProjDefinition
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
+NULL
+
 ProjDefinition = R6Class(
   "proj-definition",
   inherit=Argument,
@@ -522,7 +747,25 @@ ProjDefinition = R6Class(
 )
 
 # Bounding Box ====
-BoundingBox = R6Class(
+#' BoundingBox
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of a certain area of 
+#' interest. Its value is usually a named list with "west","south","east" and "north". A NA value means a open
+#' interval.
+#' 
+#' @name BoundingBox
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a bounding box / extent.
+NULL
+
+oundingBox = R6Class(
   "bounding-box",
   inherit=Argument,
   public = list(
@@ -609,6 +852,22 @@ BoundingBox = R6Class(
 )
 
 # Boolean ====
+#' Boolean
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a boolean / logical.
+#' 
+#' @name Boolean
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a boolean / logical.
+NULL
+
 Boolean = R6Class(
   "boolean",
   inherit=Argument,
@@ -641,6 +900,22 @@ Boolean = R6Class(
 )
 
 # Date ====
+#' Date
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a date.
+#' 
+#' @name Date
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a date.
+NULL
+
 Date = R6Class(
   "date",
   inherit=Argument,
@@ -674,6 +949,22 @@ Date = R6Class(
 )
 
 # DateTime ====
+#' DateTime
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a date with time component.
+#' 
+#' @name DateTime
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a date with time component.
+NULL
+
 DateTime = R6Class(
   "date-time",
   inherit=Argument,
@@ -707,6 +998,22 @@ DateTime = R6Class(
 )
 
 # Time ====
+#' Time
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the time of a day.
+#' 
+#' @name Time
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the time of a day.
+NULL
+
 Time = R6Class(
   "time",
   inherit=Argument,
@@ -751,6 +1058,23 @@ Time = R6Class(
 )
 
 # GeoJson ====
+#' GeoJson
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
+#' class represents geospatial features.
+#' 
+#' @name GeoJson
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents an object in geojson.
+NULL
+
 GeoJson = R6Class(
   "geojson",
   inherit=Argument,
@@ -774,6 +1098,22 @@ GeoJson = R6Class(
 )
 
 # OutputFormatOptions ====
+#' OutputFormatOptions
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the additional output format options of a back-end.
+#' 
+#' @name OutputFormatOptions
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents output format options.
+NULL
+
 OutputFormatOptions = R6Class(
   "output-format-options",
   inherit=Argument,
@@ -797,6 +1137,23 @@ OutputFormatOptions = R6Class(
 )
 
 # ProcessGraphVariables ====
+#' ProcessGraphVariables
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the process graph variables that enable a mapping. 
+#' When the already stored Graph that contains variables is loaded for execution.
+#' 
+#' @name ProcessGraphVariables
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the mapping of variables and values at runtime.
+NULL
+
 ProcessGraphVariables = R6Class(
   "process-graph-variables",
   inherit=Argument,
@@ -820,6 +1177,24 @@ ProcessGraphVariables = R6Class(
 )
 
 # RasterCube ====
+#' RasterCube
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a raster cube. This is usually the in- and 
+#' output format of a process. Unless the process operates within a callback on reduced data. Analogous to
+#' this the \code{\link{VectorCube}} behaves in the same manner, but with spatial feature data.
+#' 
+#' @name RasterCube
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a raster cube.
+NULL
+
 RasterCube = R6Class(
   "raster-cube",
   inherit=Argument,
@@ -851,6 +1226,23 @@ RasterCube = R6Class(
 )
 
 # VectorCube ====
+#' VectorCube
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a vector cube. This is in analogy to
+#' the \code{\link{RasterCube}}.
+#' 
+#' @name VectorCube
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a vector cube.
+NULL
+
 VectorCube = R6Class(
   "vector-cube",
   inherit=Argument,
@@ -883,6 +1275,40 @@ VectorCube = R6Class(
 )
 
 # Callback ====
+#' Callback
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a callback. The callback operates on reduced data
+#' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
+#' single value. The value of a callback is usually a \code{\link{Graph}} with \code{\link{CallbackValue}} as 
+#' injected data. Hints from the openeo api documention:
+#' \itemize{
+#'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
+#'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+#' }
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$getCallbackParameters()}}{returns the available list \code{\link{CallbackValue}}}
+#'   \item{\code{$setCallbackParameters(parameters)}}{assigns a list of \code{\link{CallbackValue}} to the callback}
+#' }
+#' 
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{parameters}}{the list \code{\link{CallbackValue}}}
+#' }
+#' 
+#' @name Callback
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a callback.
+NULL
+
 Callback = R6Class(
   "callback",
   inherit=Argument,
@@ -936,8 +1362,27 @@ Callback = R6Class(
 )
 
 # CallbackValue ====
-# The value / binding that the process submits to a process in the callback graph, maybe also referred as a Promise:
-# the process that calls a callback promises to submit this value
+#' CallbackValue
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the available data within a callback graph.
+#' Hints from the openeo api documention:
+#' \itemize{
+#'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
+#'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+#' }
+#' 
+#' @name CallbackValue
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a callback value.
+NULL
+
 CallbackValue = R6Class(
   "callback-value",
   inherit=Argument,
@@ -967,6 +1412,38 @@ CallbackValue = R6Class(
 )
 
 # Array ====
+#' Array
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent an array of a single data type.
+#' 
+#' @name Array
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$getMinItems}}{returns the minimum number of items}
+#'   \item{\code{$getMaxItems}}{returns the maximum number of items}
+#'   \item{\code{$setMinItems(value)}}{sets the minimum number of items}
+#'   \item{\code{$setMaxItems(value)}}{sets the maximum number of items}
+#'   \item{\code{$getItemSchema}}{returns the item schema of the items in the array}
+#'   \item{\code{$setItemSchema(value)}}{sets the schema for the items in the array}
+#' }
+#' 
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{value}}{either a number describing the minimum and maximum number of elements in an array or the
+#'   parsed JSON schema of a single item in the array}
+#' }
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a single valued array.
+NULL
+
 Array = R6Class(
   "array",
   inherit=Argument,
@@ -1153,6 +1630,22 @@ Array = R6Class(
 )
 
 # Kernel ====
+#' Kernel
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a kernel that shall be applied on the data cube.
+#' 
+#' @name Kernel
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a Kernel.
+NULL
+
 Kernel = R6Class(
   "kernel",
   inherit=Array,
@@ -1174,6 +1667,23 @@ Kernel = R6Class(
 )
 
 #TemporalInterval ====
+#' TemporalInterval
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a temporal interval. Open interval borders are
+#' denoted with NA. Exactly two objects are in the temporal interval.
+#' 
+#' @name TemporalInterval
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a temporal interval.
+NULL
+
 TemporalInterval = R6Class(
   "temporal-interval",
   inherit=Array,
@@ -1197,6 +1707,22 @@ TemporalInterval = R6Class(
 )
 
 #TemporalIntervals ====
+#' TemporalIntervals
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a list of \code{\link{TemporalInterval}}. 
+#' 
+#' @name TemporalIntervals
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
+NULL
+
 TemporalIntervals = R6Class(
   "temporal-intervals",
   inherit=Array,
@@ -1218,6 +1744,31 @@ TemporalIntervals = R6Class(
 )
 
 # AnyOf ====
+#' AnyOf
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent a argument choice object. It means that multiple
+#' types can be stated, but at least on data type has to be picked. In JSON schema this is oftern used to make
+#' objects nullable - meaning that they allow NULL as value. The AnyOf is resolved into a simple nullable argument
+#' if this applies. 
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$getChoice()}}{returns a list of \code{\link{Argument}} that are allowed}
+#'   \item{\code{$isNullable}}{returns TRUE if only one element is in the choice that is not "null"}
+#' }
+#' 
+#' @name TemporalIntervals
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
+NULL
+
 AnyOf = R6Class(
   "anyOf",
   inherit=Argument,

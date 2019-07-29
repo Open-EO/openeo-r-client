@@ -1,4 +1,21 @@
 # Authentication Interface ----
+#' IAuth
+#' 
+#' An interface that states the intended behavior for the authentication.
+#' 
+#' @field access_token The access_token to query password restricted web services of an openeo back-end
+#' 
+#' @name IAuth
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
+#'   \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openeo back-end}
+#' }
+#' 
+#' @seealso \code{\link{BasicAuth}} or \code{\link{OIDCAuth}}
+NULL 
+
 IAuth = R6Class(
   "IAuth",
   public = list(
@@ -17,12 +34,37 @@ IAuth = R6Class(
 )
 
 # OIDC Authentication ----
-
+#' OIDC Authentication
+#' 
+#' A class that authenticates via Open ID Connect. It inherits all fields and functions from \code{\link{IAuth}}. The OIDC login
+#' will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
+#' chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
+#' the OIDC provider (the R client has provided its ID and the callback URI beforehand).
+#' The \code{access_token} will be returned when queried. If the lease time has run out the client will refresh the access_token 
+#' automatically.
+#' 
+#' @name OIDCAuth
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$new(host,discovery_document = NULL)}}{the constructor for the authentication}
+#'   \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
+#' }
+#' 
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{host}}{the URL pointing to the OIDC discovery document}
+#'   \item{\code{discover_document}}{optional the discovery document of the OIDC endpoint}
+#' }
+#' 
 #' @importFrom R6 R6Class
 #' @import httr
 #' @importFrom base64enc base64decode
 #' @importFrom jsonlite fromJSON
 #' @import lubridate
+NULL
+
+
 OIDCAuth = R6Class(
   "OIDCAuth",
   inherit=IAuth,
@@ -149,7 +191,35 @@ OIDCAuth = R6Class(
 )
 
 # Basic Authentication ----
+#' Basic Authentication class
+#' 
+#' This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
+#' of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In 
+#' general the authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
+#' is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token is obtained which
+#' will be used as Bearer token for the password restricted webservices.
+#' 
+#' The class inherits all fields and function from \code{\link{IAuth}}
+#' 
+#' @name BasicAuth
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$new(endpoint,user,password)}}{the constructor with the login endpoint and the credentials}
+#' }
+#' 
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{endpoint}}{the basic authentication endpoint as absolute URL}
+#'   \item{\code{user}}{the user name}
+#'   \item{\code{password}}{the user password}
+#' }
+#' 
+#' @return an object of type \code{\link{R6Class}} representing basic authentication
 #' @importFrom R6 R6Class
+NULL
+
+
 BasicAuth = R6Class(
   "BasicAuth",
   inherit=IAuth,

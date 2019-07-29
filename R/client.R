@@ -4,8 +4,44 @@ NULL
 
 #' OpenEO client class
 #'
-#' A R6Class that interacts with an openEO-conformant backend.
-#'
+#' A R6Class that interacts with an openEO-conformant back-end.
+#' 
+#' @name OpenEOClient
+#' 
+#' @field user_id The user_id obtained after authentication
+#' @field api.mapping The mapping of the API endpoints and the back-end published ones
+#' @field processes a list of \code{\link{Process}} objects offered by the back-end
+#' 
+#' @section Methods:
+#' \describe{
+#'   \item{\code{$new(host=NULL)}}{the constructor with an optional host URL to connect to}
+#'   \item{\code{$getBackendEndpoint(endpoint_name)}}{returns the URL for the requested endpoint tag}
+#'   \item{\code{$request(tag,parameters=NULL, authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
+#'   path parameters and whether or not authorization (access_token) has to be used.}
+#'   \item{\code{$isConnected()}}{whether or not the client has a host set}
+#'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
+#'   \item{\code{$connect(url,version)}}{connects to a specific version of a backend}
+#'   \item{\code{$client_version()}}{returns the client version}
+#'   \item{\code{$register(user,password)}}{registers on the back-end via user and password (GEE only; legacy)}
+#'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
+#'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
+#' }
+#' 
+#' @section Arguments:
+#' \describe{
+#'   \item{\code{host}}{the openeo host URL}
+#'   \item{\code{endpoint_name}}{the endpoint tag the client uses for the endpoints}
+#'   \item{\code{tag}}{endpoint tag}
+#'   \item{\code{parameters}}{named list of values to be replaced in the endpoint}
+#'   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
+#'   \item{\code{url}}{url of an openeo backend either directly versioned or with the separate version statement}
+#'   \item{\code{version}}{the openeo API version to be used, or lists available API versions if set to NULL}
+#'   \item{\code{user}}{the user name}
+#'   \item{\code{password}}{the users password}
+#'   \item{\code{login_type}}{'basic', 'oidc' or NULL to control the authentication}
+#' }
+NULL
+
 #' @importFrom R6 R6Class
 #' @import httr
 #' @import jsonlite

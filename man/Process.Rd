@@ -8,7 +8,7 @@ Object of \code{\link{R6Class}} with methods for storing meta data of back-end p
 }
 \description{
 This object reflects the process offered by a back-end. It will be created with the information of a received 
-JSON object for a single process, after the arguments of the process have been translated into Argument objects.
+JSON object for a single process, after the arguments of the process have been translated into \code{\link{Argument}} objects.
 }
 \section{Fields}{
 
@@ -22,6 +22,7 @@ JSON object for a single process, after the arguments of the process have been t
    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
    \item{$getId()}{returns the id of a process which was defined on the back-end}
    \item{$getParameters()}{returns a named list of Arguments}
+   \item{$getParameterOrder()}{returns the order of the parameters for this process}
    \item{$getReturns()}{returns the schema for the return type as list}
    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
    corresponds to the parameter name}

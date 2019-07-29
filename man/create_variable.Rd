@@ -19,7 +19,7 @@ create_variable(graph, id, description = NULL, type = "string",
 \item{default}{the default value for this variable}
 }
 \value{
-a Variable object
+a \code{\link{Variable}} object
 }
 \description{
 This function will create a variable to be used in the designated process graph with additional optional information.

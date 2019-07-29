@@ -7,7 +7,7 @@
 Object of \code{\link{R6Class}} with methods for building an openeo process graph
 }
 \description{
-This class represents an openeo process graph. It consists of process nodes and optional variables. The 
+This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{Variable}}s. The 
 class as such offers also an environment where the offered processes of a back-end are made available on
 runtime. This means besides the functions mentioned here, there are also the processes of the back-end
 mapped dynamically after creation.
@@ -23,7 +23,7 @@ mapped dynamically after creation.
 \describe{
    \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
-   \item{$getNodes()}{a function to return a list of created process nodes for this graph}
+   \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize} or 
    \code{$serializeAsReference} on all graph elements that are connected to the graph}

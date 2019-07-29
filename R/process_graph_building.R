@@ -6,7 +6,7 @@ library(lubridate)
 # Graph ====
 #' Graph object
 #' 
-#' This class represents an openeo process graph. It consists of process nodes and optional variables. The 
+#' This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{Variable}}s. The 
 #' class as such offers also an environment where the offered processes of a back-end are made available on
 #' runtime. This means besides the functions mentioned here, there are also the processes of the back-end
 #' mapped dynamically after creation.
@@ -19,7 +19,7 @@ library(lubridate)
 #' \describe{
 #'    \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
 #'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
-#'    \item{$getNodes()}{a function to return a list of created process nodes for this graph}
+#'    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
 #'    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
 #'    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize} or 
 #'    \code{$serializeAsReference} on all graph elements that are connected to the graph}
@@ -320,7 +320,7 @@ setOldClass(c("Graph","R6"))
 #' Process object
 #' 
 #' This object reflects the process offered by a back-end. It will be created with the information of a received 
-#' JSON object for a single process, after the arguments of the process have been translated into Argument objects.
+#' JSON object for a single process, after the arguments of the process have been translated into \code{\link{Argument}} objects.
 #' 
 #' @name Process
 #' 
@@ -333,6 +333,7 @@ setOldClass(c("Graph","R6"))
 #'    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
 #'    \item{$getId()}{returns the id of a process which was defined on the back-end}
 #'    \item{$getParameters()}{returns a named list of Arguments}
+#'    \item{$getParameterOrder()}{returns the order of the parameters for this process}
 #'    \item{$getReturns()}{returns the schema for the return type as list}
 #'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
 #'    corresponds to the parameter name}
@@ -425,6 +426,9 @@ Process = R6Class(
       if (!name %in% names(self$parameters)) stop("Cannot find parameter")
       
       return(self$parameters[[name]])
+    },
+    getParameterOrder = function() {
+      return(private$parameter_order)
     },
     serialize = function() {
       serializedArgList = lapply(self$parameters, 
@@ -699,7 +703,7 @@ parse_graph = function(con, json, graph=NULL) {
 #' @param description an optional description of the variable
 #' @param type the type of the value that is replaced on runtime, default 'string'
 #' @param default the default value for this variable
-#' @return a Variable object
+#' @return a \code{\link{Variable}} object
 #' 
 #' @export
 create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
