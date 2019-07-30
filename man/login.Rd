@@ -23,3 +23,14 @@ Retrieves the bearer-token from the backend by sending user name and password to
 is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
 register, then you need to log in afterwards.
 }
+\examples{
+\dontrun{
+# simple connection without login to maybe explore the capabilities of a back-end first
+con = connect(host="http://example.openeo.org",version="0.4.2")
+
+login(con=con, user="user",password="password",login_type="basic")
+
+# or alternatively the oidc login
+login(con=con,login_type="oidc")
+}
+}

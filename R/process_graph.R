@@ -185,7 +185,8 @@ validate_process_graph = function(con, graph) {
 #' Get a process graph builder from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a Graph object to model a process graph in R.
+#' a Graph object to model a process graph in R. To get a better overview about the process graph building, please have
+#' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 #' 
 #' @param con a connection to an openeo back-end
 #' @return a Graph object with the offered processes of the backend

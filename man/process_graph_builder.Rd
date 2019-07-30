@@ -14,5 +14,6 @@ a Graph object with the offered processes of the backend
 }
 \description{
 Queries the connected back-end for all available processes and collection names and registers them via R functions on
-a Graph object to model a process graph in R.
+a Graph object to model a process graph in R. To get a better overview about the process graph building, please have
+a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 }

@@ -13,9 +13,9 @@ then the variable is replaced with the set value. The variable is created by \co
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-\code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+\code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 }

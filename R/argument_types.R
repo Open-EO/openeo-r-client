@@ -255,10 +255,10 @@ Argument = R6Class(
 #' @name Variable
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a variable.
@@ -303,10 +303,10 @@ Variable = R6Class(
 #' @name Integer
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an Integer
@@ -351,10 +351,10 @@ Integer = R6Class(
 #' @name EPSGCode
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an EPSG code as Integer
@@ -400,10 +400,10 @@ EPSGCode = R6Class(
 #' @name Number
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Number
@@ -448,10 +448,10 @@ Number = R6Class(
 #' @name String
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a string.
@@ -497,10 +497,10 @@ String = R6Class(
 #' @name OutputFormat
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an output format of a back-end.
@@ -546,10 +546,10 @@ OutputFormat = R6Class(
 #' @name CollectionId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a collection id.
@@ -599,10 +599,10 @@ CollectionId = R6Class(
 #' @name JobId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a job.
@@ -652,10 +652,10 @@ JobId = R6Class(
 #' @name ProcessGraphId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a process graph.
@@ -705,10 +705,10 @@ ProcessGraphId = R6Class(
 #' @name ProjDefinition
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
@@ -756,16 +756,16 @@ ProjDefinition = R6Class(
 #' @name BoundingBox
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a bounding box / extent.
 NULL
 
-oundingBox = R6Class(
+BoundingBox = R6Class(
   "bounding-box",
   inherit=Argument,
   public = list(
@@ -859,10 +859,10 @@ oundingBox = R6Class(
 #' @name Boolean
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a boolean / logical.
@@ -907,10 +907,10 @@ Boolean = R6Class(
 #' @name Date
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date.
@@ -956,10 +956,10 @@ Date = R6Class(
 #' @name DateTime
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date with time component.
@@ -1005,10 +1005,10 @@ DateTime = R6Class(
 #' @name Time
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the time of a day.
@@ -1066,10 +1066,10 @@ Time = R6Class(
 #' @name GeoJson
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an object in geojson.
@@ -1105,10 +1105,10 @@ GeoJson = R6Class(
 #' @name OutputFormatOptions
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents output format options.
@@ -1145,10 +1145,10 @@ OutputFormatOptions = R6Class(
 #' @name ProcessGraphVariables
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the mapping of variables and values at runtime.
@@ -1186,10 +1186,10 @@ ProcessGraphVariables = R6Class(
 #' @name RasterCube
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a raster cube.
@@ -1234,10 +1234,10 @@ RasterCube = R6Class(
 #' @name VectorCube
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a vector cube.
@@ -1297,13 +1297,13 @@ VectorCube = R6Class(
 #'   \item{\code{parameters}}{the list \code{\link{CallbackValue}}}
 #' }
 #' 
-#' @name Callback
+#' @name CallbackArgument
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a callback.
@@ -1374,10 +1374,10 @@ Callback = R6Class(
 #' @name CallbackValue
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a callback value.
@@ -1435,10 +1435,10 @@ CallbackValue = R6Class(
 #' }
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a single valued array.
@@ -1637,10 +1637,10 @@ Array = R6Class(
 #' @name Kernel
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Kernel.
@@ -1675,10 +1675,10 @@ Kernel = R6Class(
 #' @name TemporalInterval
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a temporal interval.
@@ -1714,10 +1714,10 @@ TemporalInterval = R6Class(
 #' @name TemporalIntervals
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
@@ -1757,13 +1757,13 @@ TemporalIntervals = R6Class(
 #'   \item{\code{$isNullable}}{returns TRUE if only one element is in the choice that is not "null"}
 #' }
 #' 
-#' @name TemporalIntervals
+#' @name AnyOf
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{Callback}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
 #' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{temporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.

@@ -167,6 +167,23 @@ describe_account = function(con) {
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #'
+#' @examples 
+#' \dontrun{
+#' # connect to a host with specific version and without authentication
+#' con = connect(host="http://example.openeo.org",version="0.4.2")
+#' 
+#' # connect to a host by direct url and basic login
+#' con = connect(host="http://example.openeo.org/v/0.4.2",
+#'               user="user",
+#'              password="password",
+#'              login_type="basic")
+#' 
+#' # connect to a host with open id connect authentication
+#' con = connect(host="http://example.openeo.org",
+#'               version="0.4.2",
+#'               login_type="oidc")
+#' }
+#'
 #' @export
 connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL) {
     con = OpenEOClient$new()
@@ -200,6 +217,17 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #' @return a connected and authenticated back-end connection
+#' 
+#' @examples 
+#' \dontrun{
+#' # simple connection without login to maybe explore the capabilities of a back-end first
+#' con = connect(host="http://example.openeo.org",version="0.4.2")
+#' 
+#' login(con=con, user="user",password="password",login_type="basic")
+#' 
+#' # or alternatively the oidc login
+#' login(con=con,login_type="oidc")
+#' }
 #' @export
 login = function(con, user = NULL, password = NULL, login_type=NULL) {
     return(con$login(user = user, password = password,login_type = login_type))

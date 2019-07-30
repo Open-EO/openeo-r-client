@@ -16,6 +16,19 @@ htmlViewer = function(html) {
 #' @param mdtext markdown text
 #' @param isgithub logical parameter to state whether Github markdown was used or not. Default: FALSE
 #' 
+#' @examples 
+#' \dontrun{
+#' con = connect(host="http://example.openeo.org/v/0.4.2",
+#'               user="user",
+#'               password="password",
+#'               login_type="basic")
+#' 
+#' collection = describe_collection(con = con, id = "some_collection_id")
+#' 
+#' # the description of a collection is allowed to use markdown
+#' markdownViewer(collection$description)
+#' }
+#' 
 #' @importFrom commonmark markdown_html
 #' @export
 markdownViewer = function(mdtext, isgithub = FALSE) {
