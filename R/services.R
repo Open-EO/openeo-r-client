@@ -18,7 +18,8 @@ list_services = function(con) {
         
         table = .listObjectsToDataFrame(listOfServices)
         
-        if (isNamespaceLoaded("tibble")) table = tibble::as_tibble(table)
+        if (isNamespaceLoaded("tibble")) 
+            table = tibble::as_tibble(table)
         
         
         return(table)
@@ -47,8 +48,8 @@ create_service = function(con, type, graph, title = NULL, description = NULL, en
             stop("No type specified.")
         }
         
-        service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, 
-            parameters = parameters, plan = plan, budget = budget)
+        service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, parameters = parameters, 
+            plan = plan, budget = budget)
         
         tag = "service_publish"
         response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE)
@@ -79,8 +80,7 @@ create_service = function(con, type, graph, title = NULL, description = NULL, en
 #' @return service representation as list
 #' 
 #' @export
-update_service = function(con, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, 
-    plan = NULL, budget = NULL) {
+update_service = function(con, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
     
     tryCatch({
         patch = list()

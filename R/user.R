@@ -66,8 +66,7 @@ upload_file = function(con, content, target, encode = "raw", mime = "application
         }
         
         tag = "user_file_upload"
-        m = con$request(tag = tag, parameters = list(con$user_id, target), authorized = TRUE, data = httr::upload_file(content, type = mime), 
-            encodeType = encode)
+        m = con$request(tag = tag, parameters = list(con$user_id, target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
         message("Upload of user data was successful.")
         return(m)
     }, error = .capturedErrorToMessage)
@@ -170,18 +169,18 @@ describe_account = function(con) {
 #' @examples 
 #' \dontrun{
 #' # connect to a host with specific version and without authentication
-#' con = connect(host="http://example.openeo.org",version="0.4.2")
+#' con = connect(host='http://example.openeo.org',version='0.4.2')
 #' 
 #' # connect to a host by direct url and basic login
-#' con = connect(host="http://example.openeo.org/v/0.4.2",
-#'               user="user",
-#'              password="password",
-#'              login_type="basic")
+#' con = connect(host='http://example.openeo.org/v/0.4.2',
+#'               user='user',
+#'              password='password',
+#'              login_type='basic')
 #' 
 #' # connect to a host with open id connect authentication
-#' con = connect(host="http://example.openeo.org",
-#'               version="0.4.2",
-#'               login_type="oidc")
+#' con = connect(host='http://example.openeo.org',
+#'               version='0.4.2',
+#'               login_type='oidc')
 #' }
 #'
 #' @export
@@ -221,14 +220,14 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @examples 
 #' \dontrun{
 #' # simple connection without login to maybe explore the capabilities of a back-end first
-#' con = connect(host="http://example.openeo.org",version="0.4.2")
+#' con = connect(host='http://example.openeo.org',version='0.4.2')
 #' 
-#' login(con=con, user="user",password="password",login_type="basic")
+#' login(con=con, user='user',password='password',login_type='basic')
 #' 
 #' # or alternatively the oidc login
-#' login(con=con,login_type="oidc")
+#' login(con=con,login_type='oidc')
 #' }
 #' @export
-login = function(con, user = NULL, password = NULL, login_type=NULL) {
-    return(con$login(user = user, password = password,login_type = login_type))
+login = function(con, user = NULL, password = NULL, login_type = NULL) {
+    return(con$login(user = user, password = password, login_type = login_type))
 }

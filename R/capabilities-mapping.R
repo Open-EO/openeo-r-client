@@ -9,7 +9,7 @@ load_api = function(version) {
     if (isNamespaceLoaded("tibble")) 
         api = tibble::as_tibble(api)
     
-    return(api[,c("endpoint", "operation", "tag")])
+    return(api[, c("endpoint", "operation", "tag")])
 }
 
 endpoint_mapping = function(con) {
@@ -30,7 +30,7 @@ endpoint_mapping = function(con) {
     
     
     if (isNamespaceLoaded("tibble")) {
-      api_mapping = tibble::as_tibble(api_mapping)
+        api_mapping = tibble::as_tibble(api_mapping)
     }
     return(api_mapping)
     
@@ -73,6 +73,6 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' 
 #' @export
 supports = function(con, tag_name) {
-  if (isNamespaceLoaded("tibble")) return(con$api.mapping[con$api.mapping$tag == tag_name,"available"][[1]])
-  else return(con$api.mapping[con$api.mapping$tag == tag_name,"available"])
+    if (isNamespaceLoaded("tibble")) 
+        return(con$api.mapping[con$api.mapping$tag == tag_name, "available"][[1]]) else return(con$api.mapping[con$api.mapping$tag == tag_name, "available"])
 }

@@ -1,6 +1,6 @@
-# The /collections/{collection_id} endpoint returns a detailed description of a collection. While print.CollectionInfo visualizes
-# only the most important readable components and writes it to console the functions here aim at providing functions for using
-# specific components of the collection for example the dimensionality
+# The /collections/{collection_id} endpoint returns a detailed description of a collection. While print.CollectionInfo visualizes only the most important
+# readable components and writes it to console the functions here aim at providing functions for using specific components of the collection for example the
+# dimensionality
 
 #' Returns dimension
 #' 
