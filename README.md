@@ -61,7 +61,7 @@ ndvi = graph$normalized_difference(band1 = b4,band2 = b8)
 
 reducer = graph$reduce(data = ndvi,dimension = "temporal")
 
-cb_graph = gee %>% callback(reducer,parameter = "reducer")
+cb_graph = conn %>% callback(reducer,parameter = "reducer")
 
 cb_graph$min(data = cb_graph$data$data) %>% cb_graph$setFinalNode()
 
