@@ -21,7 +21,7 @@ api_versions = function(url) {
             class(vlist) = "VersionsList"
             
             if (isNamespaceLoaded("tibble")) {
-              return(tibble::as_tibble(vlist))
+                return(tibble::as_tibble(vlist))
             }
             return(as.data.frame(vlist))
         } else {
@@ -89,7 +89,7 @@ list_file_types = function(con) {
         table = data.frame(format = names, type = datatypes, parameters = parameters)
         
         if (isNamespaceLoaded("tibble")) {
-          table = tibble::as_tibble(table)
+            table = tibble::as_tibble(table)
         }
         
         return(table)

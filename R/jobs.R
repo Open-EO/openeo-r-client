@@ -18,22 +18,22 @@ list_jobs = function(con) {
         df = as.data.frame(listOfJobs)
         
         if (nrow(df) == 0 || ncol(df) == 0) {
-          message("No jobs stored on the back-end.")
-          invisible(df)
+            message("No jobs stored on the back-end.")
+            invisible(df)
         }
         
-        showed_columns = c("id","title","status","submitted","updated","costs","budget","plan")
+        showed_columns = c("id", "title", "status", "submitted", "updated", "costs", "budget", "plan")
         
         missing_columns = showed_columns[!showed_columns %in% colnames(df)]
         if (length(missing_columns) > 0) {
-          nas = rep(NA,length(missing_columns))
-          names(nas) = missing_columns
-          df = do.call("cbind",append(list(df),as.list(nas)))
+            nas = rep(NA, length(missing_columns))
+            names(nas) = missing_columns
+            df = do.call("cbind", append(list(df), as.list(nas)))
         }
-        df = df[,showed_columns]
+        df = df[, showed_columns]
         
         if (isNamespaceLoaded("tibble")) {
-          df = tibble::as_tibble(df)
+            df = tibble::as_tibble(df)
         }
         
         return(df)
@@ -208,8 +208,7 @@ start_job = function(con, job) {
 #' @param format the output format
 #' @param ... The create options parameter you want to change. See Details for more information
 #' @export
-update_job = function(con, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, 
-    ...) {
+update_job = function(con, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
         if (is.null(id)) {
             stop("No job i was specified.")

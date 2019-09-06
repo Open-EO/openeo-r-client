@@ -16,12 +16,13 @@ list_process_graphs = function(con) {
         
         table = .listObjectsToDataFrame(listOfGraphShortInfos)
         if (ncol(table) == 0 || nrow(table) == 0) {
-          message("No process graphs are currently stored on the back-end.")
-          invisible(table)
+            message("No process graphs are currently stored on the back-end.")
+            invisible(table)
         }
         
-        table = table[,c("id","title","description")]
-        if (isNamespaceLoaded("tibble")) table = tibble::as_tibble(table)
+        table = table[, c("id", "title", "description")]
+        if (isNamespaceLoaded("tibble")) 
+            table = tibble::as_tibble(table)
         
         return(table)
     }, error = .capturedErrorToMessage)

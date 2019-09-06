@@ -71,6 +71,8 @@ Parameter = R6Class(
       if (is.null(schema$type)) schema$type = character()
       if (is.null(schema$format)) schema$format = character()
       
+      if (length(schema$type) == 0 && length(schema$format) == 0) return(TRUE) # TODO add unchecked warning?
+      
       return(setequal(private$schema[sel], schema[sel]))
     },
     getSchema = function() {

@@ -8,14 +8,14 @@
 #' @export
 print.User = function(x, ...) {
     cat(paste("ID:", "\t", x$user_id, "\n", sep = ""))
-  if (!is.null(x$budget)) {
-    cat(paste("Budget:", "\t", x$budget, "\n", sep = ""))
-  }
+    if (!is.null(x$budget)) {
+        cat(paste("Budget:", "\t", x$budget, "\n", sep = ""))
+    }
     
     if (!is.null(x$stroage)) {
-      cat("File Storage:\n")
-      cat(paste("   Quota:", "\t", x$storage$quota, " Bytes", "\n", sep = ""))
-      cat(paste("   Free:", "\t", x$storage$free, " Bytes", "\n", sep = ""))
+        cat("File Storage:\n")
+        cat(paste("   Quota:", "\t", x$storage$quota, " Bytes", "\n", sep = ""))
+        cat(paste("   Free:", "\t", x$storage$free, " Bytes", "\n", sep = ""))
     }
 }
 
@@ -35,14 +35,13 @@ print.ProcessInfo <- function(x, ...) {
     result = paste("Returns:\t", x$returns$description, sep = "")
     
     if (length(x$parameters) > 0) {
-        d = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Required = sapply(x$parameters, 
-            function(arg) {
-                if (!is.null(arg$required)) {
-                  return(arg$required)
-                } else {
-                  return(FALSE)
-                }
-            }), stringsAsFactors = FALSE)
+        d = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Required = sapply(x$parameters, function(arg) {
+            if (!is.null(arg$required)) {
+                return(arg$required)
+            } else {
+                return(FALSE)
+            }
+        }), stringsAsFactors = FALSE)
         rownames(d) <- NULL
         cat(paste(title, summary, description, result, "", sep = "\n"))
         cat("\n")
@@ -55,20 +54,19 @@ print.ServiceType = function(x, ...) {
     service_type = paste(x$service, "\n")
     parameters = paste("Parameters", "(used on service creation)\n")
     
-    d1 = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Type = sapply(x$parameters, 
-        function(arg) arg$type), default = sapply(x$parameters, function(arg) arg$default), example = sapply(x$parameters, function(arg) {
-        enum = arg$enum
-        return(paste("[", paste(enum, sep = "", collapse = ", "), "]", sep = ""))
-    }), stringsAsFactors = FALSE)
+    d1 = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Type = sapply(x$parameters, function(arg) arg$type), 
+        default = sapply(x$parameters, function(arg) arg$default), example = sapply(x$parameters, function(arg) {
+            enum = arg$enum
+            return(paste("[", paste(enum, sep = "", collapse = ", "), "]", sep = ""))
+        }), stringsAsFactors = FALSE)
     row.names(d1) = NULL
     
     attributes = paste("Attributes", "(used during request)\n")
     
-    d2 = data.frame(Attributes = names(x$attributes), Description = sapply(x$attributes, function(arg) arg$description), example = sapply(x$attributes, 
-        function(arg) {
-            example = arg$example
-            return(paste("[", paste(example, sep = "", collapse = ", "), "]", sep = ""))
-        }), stringsAsFactors = FALSE)
+    d2 = data.frame(Attributes = names(x$attributes), Description = sapply(x$attributes, function(arg) arg$description), example = sapply(x$attributes, function(arg) {
+        example = arg$example
+        return(paste("[", paste(example, sep = "", collapse = ", "), "]", sep = ""))
+    }), stringsAsFactors = FALSE)
     row.names(d2) = NULL
     
     cat(service_type, parameters)
@@ -108,8 +106,7 @@ print.CollectionInfo = function(x, ...) {
     
     
     
-    spatial.extent = paste("(", x$extent$spatial[1], ", ", x$extent$spatial[2], "), (", x$extent$spatial[3], ", ", x$extent$spatial[4], 
-        ")", sep = "")
+    spatial.extent = paste("(", x$extent$spatial[1], ", ", x$extent$spatial[2], "), (", x$extent$spatial[3], ", ", x$extent$spatial[4], ")", sep = "")
     extent = paste("Spatial extent (lon,lat):\t", spatial.extent, sep = "")
     
     time = paste("Temporal extent:\t\t", paste(sapply(x$extent$temporal, function(obj) {
@@ -246,12 +243,10 @@ print.JobCostsEstimation = function(x, ...) {
 
 #' @export
 print.CollectionList = function(x, ...) {
-  
-  df = as.data.frame(x,extract=c("id", "title", "description"))
-    if (isNamespaceLoaded("tibble"))
-      print(tibble::as_tibble(df)[,c("id", "title", "description")])
-  else 
-    print(df)
+    
+    df = as.data.frame(x, extract = c("id", "title", "description"))
+    if (isNamespaceLoaded("tibble")) 
+        print(tibble::as_tibble(df)[, c("id", "title", "description")]) else print(df)
 }
 
 #' @export
@@ -295,6 +290,7 @@ print.OpenEOCapabilities = function(x, ...) {
     
     server_offering = .listObjectsToDataFrame(endpoints)
     
-    if (isNamespaceLoaded("tibble")) server_offering = tibble::as_tibble(server_offering)
+    if (isNamespaceLoaded("tibble")) 
+        server_offering = tibble::as_tibble(server_offering)
     print(server_offering)
 }

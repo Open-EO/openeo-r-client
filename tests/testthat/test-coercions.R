@@ -2,7 +2,7 @@ context("test-coercions")
 library(jsonlite)
 
 test_that("bandlist coercion gee", {
-  bandlist = fromJSON(txt="[
+    bandlist = fromJSON(txt = "[
       {
         \"name\": \"B1\",
         \"description\": \"Aerosols\",
@@ -96,13 +96,14 @@ test_that("bandlist coercion gee", {
         \"description\": \"Cloud mask\",
         \"gee:gsd\": \"meters\"
       }
-  ]",simplifyDataFrame = FALSE)
-  
-  class(bandlist) = "BandList"
-  
-  df = as.data.frame(bandlist)
-  expect_equal(class(df), "data.frame")
-  expect_equal(nrow(df),16)
-  expect_equal(ncol(df),4)
-  expect_equal(is.na(df[16,"gee:scale"]),TRUE)
+  ]", 
+        simplifyDataFrame = FALSE)
+    
+    class(bandlist) = "BandList"
+    
+    df = as.data.frame(bandlist)
+    expect_equal(class(df), "data.frame")
+    expect_equal(nrow(df), 16)
+    expect_equal(ncol(df), 4)
+    expect_equal(is.na(df[16, "gee:scale"]), TRUE)
 })

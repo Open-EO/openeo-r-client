@@ -46,8 +46,7 @@ callback = function(con, process, parameter = NULL) {
             cat(paste(callbacksParameterNames, collapse = ", "))
         }
         
-        # get the callback values that are available for this callback (data that will be used in the graph like load_collection in the main
-        # graph)
+        # get the callback values that are available for this callback (data that will be used in the graph like load_collection in the main graph)
     } else {
         message("No callbacks found in the parameters of the stated process")
     }
