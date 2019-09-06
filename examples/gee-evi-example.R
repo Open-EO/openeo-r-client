@@ -71,8 +71,13 @@ min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalN
 
 temporal_reduce %>% graph$save_result(format="GTiff") %>% graph$setFinalNode()
 
+# print as JSON
 graph
 
+# write to file 
+cat(graphToJSON(graph),file = "r-evi-phenology-graph.json")
+
+# client side graph validation
 graph$validate()
 
 
