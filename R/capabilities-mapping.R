@@ -15,7 +15,7 @@ load_api = function(version) {
 endpoint_mapping = function(con) {
     endpoints = capabilities(con)$endpoints
     
-    api = load_api(version = "0.4.1")
+    api = load_api(version = "0.4.1") # also valid for 0.4.2
     
     backend_df = data.frame(endpoint = unlist(sapply(endpoints, function(entry) {
         return(rep(entry$path, length(entry$methods)))
