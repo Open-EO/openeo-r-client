@@ -317,8 +317,13 @@ OpenEOClient <- R6Class(
       }
 
       if (response$status_code < 400) {
-        info = content(response, ...)
-        return(info)
+        if (response$status_code != 202) {
+          info = content(response, ...)
+          return(info)
+        } else {
+          return(NULL)
+        }
+        
 
       } else {
         private$errorHandling(response,url)
@@ -382,13 +387,18 @@ OpenEOClient <- R6Class(
         }
         
         if (response$status_code < 400) {
-          if (raw) {
-            return(response)
+          if (response$status_code != 202) {
+            if (raw) {
+              return(response)
+            } else {
+              okMessage = content(response,"parsed","application/json")
+              
+              return(okMessage)
+            }
           } else {
-            okMessage = content(response,"parsed","application/json")
-            
-            return(okMessage)
+            return(NULL)
           }
+          
         } else {
           private$errorHandling(response,url)
         }

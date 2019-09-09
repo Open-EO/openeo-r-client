@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- fixed the attempt to parse the response body when evaluating HTTP 202
+
 ## [0.4.2] - 2019-09-09
 
 ### Changed
