@@ -10,7 +10,7 @@ list_file_types(con)
 \item{con}{openeo client object}
 }
 \value{
-list of formats with optional configuration parameter
+a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
 }
 \description{
 The function queries the back-end for supported output formats.

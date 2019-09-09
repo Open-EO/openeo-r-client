@@ -154,3 +154,21 @@ as.data.frame.VersionsList = function(x, ...) {
     table = .listObjectsToDataFrame(versions, extract = params$extract)
     return(table[c("api_version", "production", "url")])
 }
+
+#' @rdname as.data.frame
+#' @export
+as.data.frame.FileTypesList = function(x, ...) {
+    names = names(x)
+    datatypes = unname(lapply(x, function(format) {
+        return(format$gis_data_types)
+    }))
+    
+    parameters = unname(lapply(x, function(format) {
+        return(format$parameters)
+    }))
+    
+    table = as.data.frame(cbind(format = names, type = datatypes, parameters = parameters))
+    table$format = unlist(table$format)
+    
+    return(table)
+}
