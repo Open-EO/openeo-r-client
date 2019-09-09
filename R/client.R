@@ -230,7 +230,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
-    version = "0.4.1",
+    version = "0.4.2",
     general_auth_type = "bearer",
     
     # functions ====
