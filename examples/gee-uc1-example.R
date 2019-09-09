@@ -71,7 +71,11 @@ service_id
 gee %>% list_services()
 
 service = gee %>% describe_service(service_id)
-service$url
+url = service$url
+
+# 8. b) visualizing a xyz service with leaflet
+library(leaflet)
+leaflet() %>% addTiles() %>% addTiles(url, tileOptions(tms=TRUE)) %>% setView(lng = -1.8,lat=43.4,zoom = 8)
 
 
 # 9. alternative download / processing 
