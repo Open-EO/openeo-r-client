@@ -27,10 +27,9 @@ graph = eurac %>% process_graph_builder()
 data1 = graph$load_collection(id = graph$data$openEO_S2_32632_10m_L2A, 
                               spatial_extent = list(west = 11.2792, 
                                                     south = 46.4643, 
-                                                    east = 10.5227, 
-                                                    north = 43.8385), 
-                              temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"), 
-                              bands = c("red", "nir"))
+                                                    east = 11.4072, 
+                                                    north = 46.5182), 
+                              temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"))
 
 ndvi = data1 %>% graph$ndvi()
 max_t = ndvi %>% graph$max_time()
@@ -52,8 +51,6 @@ eurac %>% compute_result(graph, format="GTiff",output_file = "eurac_test.tif")
 job_id = eurac %>% create_job(graph,title = "UC1 Graph from R client")
 
 eurac %>% start_job(job_id)
-eurac %>% list_jobs()
-
 
 eurac %>% describe_job(job_id)
 
