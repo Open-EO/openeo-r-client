@@ -27,7 +27,7 @@ Since the openEO project is under heavy development regarding the openeo API tha
 | v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
 | v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
 | v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
-| v0.4.1 | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
+| v0.4.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
 
 
 ## Getting Started

@@ -17,12 +17,12 @@ fields. This function provides means to visualize the Markdown code as HTML in a
 }
 \examples{
 \dontrun{
-con = connect(host="http://example.openeo.org/v/0.4.2",
-              user="user",
-              password="password",
-              login_type="basic")
+con = connect(host='http://example.openeo.org/v/0.4.2',
+              user='user',
+              password='password',
+              login_type='basic')
 
-collection = describe_collection(con = con, id = "some_collection_id")
+collection = describe_collection(con = con, id = 'some_collection_id')
 
 # the description of a collection is allowed to use markdown
 markdownViewer(collection$description)

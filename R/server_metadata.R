@@ -69,7 +69,7 @@ list_features = function(con) {
 #' The function queries the back-end for supported output formats.
 #' 
 #' @param con openeo client object
-#' @return list of formats with optional configuration parameter
+#' @return a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
 #' @export
 list_file_types = function(con) {
     tryCatch({
@@ -77,16 +77,9 @@ list_file_types = function(con) {
         
         formats = con$request(tag = tag, authorized = FALSE)
         
-        names = names(formats)
-        datatypes = unname(lapply(formats, function(format) {
-            return(format$gis_data_types)
-        }))
+        class(formats) = "FileTypesList"
         
-        parameters = unname(lapply(formats, function(format) {
-            return(format$parameters)
-        }))
-        
-        table = data.frame(format = names, type = datatypes, parameters = parameters)
+        table = as.data.frame(formats)
         
         if (isNamespaceLoaded("tibble")) {
             table = tibble::as_tibble(table)

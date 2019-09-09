@@ -2,6 +2,7 @@
 
 S3method(as.data.frame,BandList)
 S3method(as.data.frame,CollectionList)
+S3method(as.data.frame,FileTypesList)
 S3method(as.data.frame,JobList)
 S3method(as.data.frame,VersionsList)
 S3method(dimensions,CollectionInfo)

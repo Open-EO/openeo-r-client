@@ -13,6 +13,9 @@ download_results(con, job, folder)
 
 \item{folder}{a character string that is the target path on the local computer}
 }
+\value{
+a list of the target file paths
+}
 \description{
 The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
 'folder' will be the target location on the local computer.

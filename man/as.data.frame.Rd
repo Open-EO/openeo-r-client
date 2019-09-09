@@ -6,6 +6,7 @@
 \alias{as.data.frame.BandList}
 \alias{as.data.frame.CollectionList}
 \alias{as.data.frame.VersionsList}
+\alias{as.data.frame.FileTypesList}
 \title{Coercions into data.frame objects}
 \usage{
 \method{as.data.frame}{JobList}(x, ...)
@@ -15,11 +16,13 @@
 \method{as.data.frame}{CollectionList}(x, ...)
 
 \method{as.data.frame}{VersionsList}(x, ...)
+
+\method{as.data.frame}{FileTypesList}(x, ...)
 }
 \arguments{
 \item{x}{the list object that will be coerced}
 
-\item{...}{potentially additional parameters to pass on to internal functions like "extract"}
+\item{...}{potentially additional parameters to pass on to internal functions like 'extract'}
 }
 \value{
 a data.frame
@@ -29,6 +32,6 @@ The openeo package offers functions to transform list objects obtained from JSON
 into data.frames. This is mostly applied in list_* functions.
 }
 \details{
-The parameter "extract" is used as an additional parameter to extract specific values of the output list
-/ json. The value for the parameters is a vector of character like c("id","title")
+The parameter 'extract' is used as an additional parameter to extract specific values of the output list
+/ json. The value for the parameters is a vector of character like c('id','title')
 }
