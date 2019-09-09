@@ -10,6 +10,8 @@ pwd = "test123"
 gee_host_url = "https://earthengine.openeo.org"
 api_versions(gee_host_url)
 
+gee %>% list_file_types()
+
 gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd, login_type = "basic")
 # also inserting the direct link is possible gee = connect(host = 'https://earthengine.openeo.org/v0.4',user = user,password = pwd)
 
@@ -32,14 +34,13 @@ gee %>% list_service_types()
 
 # 7. Create a WMS service (XYZ in this case)
 
-
 graph = gee %>% process_graph_builder()
 data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`, spatial_extent = list(west = -2.7634, south = 43.0408, east = -1.121, north = 43.8385), temporal_extent = c("2018-04-30", 
     "2018-06-26"), bands = c("B4", "B8"))
 b4 = graph$filter_bands(data = data1, bands = "B4")
 b8 = graph$filter_bands(data = data1, bands = "B8")
 
-ndvi = graph$normalized_difference(band1 = b4, band2 = b8)
+ndvi = graph$normalized_difference(band1 = b8, band2 = b4)
 
 reducer = graph$reduce(data = ndvi, dimension = "temporal")
 
