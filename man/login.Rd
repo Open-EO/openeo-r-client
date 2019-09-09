@@ -26,11 +26,11 @@ register, then you need to log in afterwards.
 \examples{
 \dontrun{
 # simple connection without login to maybe explore the capabilities of a back-end first
-con = connect(host="http://example.openeo.org",version="0.4.2")
+con = connect(host='http://example.openeo.org',version='0.4.2')
 
-login(con=con, user="user",password="password",login_type="basic")
+login(con=con, user='user',password='password',login_type='basic')
 
 # or alternatively the oidc login
-login(con=con,login_type="oidc")
+login(con=con,login_type='oidc')
 }
 }

@@ -31,18 +31,18 @@ use the bearer token that the client has obtained after the login, unless the au
 \examples{
 \dontrun{
 # connect to a host with specific version and without authentication
-con = connect(host="http://example.openeo.org",version="0.4.2")
+con = connect(host='http://example.openeo.org',version='0.4.2')
 
 # connect to a host by direct url and basic login
-con = connect(host="http://example.openeo.org/v/0.4.2",
-              user="user",
-             password="password",
-             login_type="basic")
+con = connect(host='http://example.openeo.org/v/0.4.2',
+              user='user',
+             password='password',
+             login_type='basic')
 
 # connect to a host with open id connect authentication
-con = connect(host="http://example.openeo.org",
-              version="0.4.2",
-              login_type="oidc")
+con = connect(host='http://example.openeo.org',
+              version='0.4.2',
+              login_type='oidc')
 }
 
 }

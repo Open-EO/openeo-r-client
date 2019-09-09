@@ -3,7 +3,7 @@ library(openeo)
 library(magrittr)
 library(tibble)
 
-user = "group8"
+user = "group4"
 pwd = "test123"
 
 # 1. Requesting the API versions available at the back-end
@@ -21,9 +21,6 @@ collections = gee %>% list_collections()
 collections
 
 # 4. Request details about a specific collection
-collection_ids = lapply(collections$collections, function(coll) coll$id)
-names(collection_ids) = collection_ids
-
 gee %>% describe_collection("COPERNICUS/S2")
 
 # 5. Check that needed processes are available
@@ -73,4 +70,19 @@ service_id
 # 8. Requesting the service information
 gee %>% list_services()
 
-gee %>% describe_service(service_id)
+service = gee %>% describe_service(service_id)
+service$url
+
+
+# 9. alternative download / processing 
+# 9 a) direct computation
+library(sp)
+library(raster)
+gee %>% compute_result(graph=graph,format="png",output_file = "gee_test.png")
+spplot(raster("gee_test.png"))
+
+# 9.b) batch processing
+job_id = gee %>% create_job(graph=graph,title="UC1 Rclient NDVI")
+gee %>% start_job(job_id)
+gee %>% download_results(job_id,folder = "./gee_test/")
+gee %>% delete_job(job_id)

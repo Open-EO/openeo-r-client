@@ -69,7 +69,7 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
             graph = graph$serialize()
         
         if (is.list(graph)) {
-            job = toJSON(list(process_graph = graph, output = output), force = TRUE, auto_unbox = TRUE)
+            job = list(process_graph = graph, output = output)
         } else {
             stop("Parameter graph is not a Graph object. Awaiting a list.")
         }
@@ -301,6 +301,8 @@ list_results = function(con, job) {
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
 #' 
+#' @return a list of the target file paths
+#' 
 #' @importFrom utils download.file
 #' @export
 download_results = function(con, job, folder) {
@@ -309,16 +311,22 @@ download_results = function(con, job, folder) {
         dir.create(folder, recursive = TRUE)
     results = list_results(con, job)
     
-    lapply(results$links, function(link) {
+    target_files = lapply(results$links, function(link) {
         href = link$href
         type = link$type
         
         if (!endsWith(x = folder, suffix = "/")) 
             folder = paste0(folder, "/")
         filename = basename(href)
-        download.file(href, paste0(folder, filename), mode = "wb")
+        
+        file_path = paste0(folder, filename)
+        
+        download.file(href, file_path, mode = "wb")
+        
+        return(file_path)
     })
-    invisible(TRUE)
+    
+    return(target_files)
 }
 
 #' Terminates a running job
