@@ -49,7 +49,7 @@ conn %>% describe_collection(c("sentinel2_subset","landsat7_ndvi"))
 conn %>% describe_process("filter_bbox")
 
 # create a process graph / task
-pgb = conn %>% process_graph_builder()
+graph = conn %>% process_graph_builder()
 
 data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
                               spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
