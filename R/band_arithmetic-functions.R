@@ -1,6 +1,6 @@
 tokenize = function(str) {
   str = gsub(pattern="\\s+",x=str,replacement = "",perl=TRUE)
-  pos=gregexpr(str,pattern = "[\\(\\)\\+\\*\\-\\/\\^\\,]",perl=TRUE)[[1]]
+  pos=gregexpr(str,pattern = "([\\(\\)\\+\\*\\-\\/\\^\\,])|(\\%\\%)",perl=TRUE)[[1]]
   pos2 = as.data.frame(cbind(pos=pos,length=attr(pos,"match.length")))
   
   tokens = c()
@@ -136,20 +136,19 @@ math_parse = function(formular) {
   stack = c()
   output = c()
   
-  # ops = c("+","/","-","*","^")
-  
-  precedence = as.data.frame(cbind(operator=c("^","*","/","+","-"),
-                                   precedence=c(4,3,3,2,2),
-                                   associativity = c("r","l","l","l","l")),
+  precedence = as.data.frame(cbind(operator=c("^","*","/","+","-","%%"),
+                                   precedence=c(4,3,3,2,2,4),
+                                   associativity = c("r","l","l","l","l","l")),
                              stringsAsFactors = FALSE)
   
-  pfun = as.data.frame(cbind(operator = c("sin","cos","tan","asin","acos","atan","abs","min","max","mean","median","sum","sd","var"),
+  pfun = as.data.frame(cbind(operator = c("sin","cos","tan","asin","acos","atan",
+                                          "abs","min","max","mean","median","sum",
+                                          "sd","var","sqrt","sign","trunc"),
                              precedence = 1,
                              associativity = "l"),stringsAsFactors = FALSE)
   
   precedence = rbind(precedence,pfun)
   
-  # fun = c("sin","cos","tan","asin","acos","atan","abs","min","max","mean","median","sum","sd","var")
   for (c in 1:length(tokens)) {
     token = tokens[c]
     
@@ -160,12 +159,11 @@ math_parse = function(formular) {
     }
     
     token_is_fun = token %in% precedence$operator && 
-      precedence[precedence$operator == token,"precedence"] == 1 # maybe not the ","
+      precedence[precedence$operator == token,"precedence"] == 1 
     if (token_is_fun) {
       stack = c(token,stack)
     }
     
-    # argumenttrennzeichen...
     token_is_separator = token == ","
     if (token_is_separator) {
       while(stack[1] != "(") {
@@ -263,7 +261,7 @@ call_tree = function(postfix_ast) {
     token = postfix_ast[i]
     if (token %in% fun) { # function
       # treat functions as unary
-      unary_arg = operand_stack[[1]]
+      unary_arg = operand_stack[1]
       operand_stack = operand_stack[-1]
       
       # check if the next is a separator 
@@ -277,7 +275,8 @@ call_tree = function(postfix_ast) {
           operand_stack = operand_stack[-1]
           args = append(arg,args)
         }
-        operand = append(list(operator=token),args)
+        
+        operand = append(list(operator=token),lapply(args,function(elem)elem[[1]]))
         operand_stack = append(list(operand),operand_stack)
       } else { # unary
         operand = list(operator=token,unary_arg)
@@ -311,7 +310,87 @@ call_tree = function(postfix_ast) {
     
     
   }
-  return(operand_stack)
+  return(operand_stack[[1]])
   
   # list(op, arg2, arg1) important, because / has order!
+}
+
+
+replace_fun = function(call_graph,process_mapping,data) {
+  operation = call_graph
+  if (!"operator" %in% names(operation)) {
+    if (grepl(operation,pattern = "\\[",perl=TRUE)) {
+      index = as.integer(sub(x = operation,pattern = ".*\\[(\\d+)\\]",replacement = "\\1",perl=TRUE))-1
+      FUN = process_mapping[process_mapping$r == "[","FUN"]
+      if (is.null(FUN[[1]])) {
+        stop("Back-end does not offer process: 'array_element'")
+      }
+      return(list(operator=FUN[[1]],data,index))
+    } else {
+      return(operation)
+    }
+    
+  } 
+  else {
+    sel = process_mapping[process_mapping$r == operation$operator,]
+    if (nrow(sel) < 1) stop(paste0("No match defined for R operator / function: '",operation$operator,"'"))
+    
+    if (!any(!sapply(sel$FUN,is.null))) stop(paste0("Back-end does not offer neither process(es): ",paste(paste0("'",sel[,"openeo"],"'"),sep="",collapse=", ")))
+    
+    FUN = sel$FUN[!sapply(sel$FUN,is.null)][[1]]
+    operator = operation$operator
+    operation$operator = NULL
+    
+    args = lapply(operation,replace_fun,process_mapping,data)
+    
+    
+    return(append(list(operator=FUN),args)) 
+  }
+  
+}
+
+band_arithmetics = function(graph, data, formular) {
+  required_processes = c("array_element", "reduce","product","subtract","sum","divide") #TBC
+  if (!all(required_processes %in% names(graph))) stop(paste0("Cannot perform band arithmetics. Common processes: ",paste(setdiff(required_processes,names(graph)),sep=",")," are not defined at the back-end."))
+  
+  spectral_reduce = data %>% graph$reduce(dimension = "bands")
+  
+  
+  
+  suppressMessages({
+    params = con %>% callback(spectral_reduce)
+    
+  })
+  evi_graph = con %>% callback(spectral_reduce,parameter = params[1])
+  
+  if (is.function(formular)) {
+    function_arg = names(formals(formular))[1] # should be only one... the array data others are ignored
+    fbody = deparse(body(formular))
+    fbody = trimws(fbody[c(-1,-length(fbody))]) # remove {}
+    fbody = gsub(fbody,pattern = paste0("(",function_arg,")\\["),replacement = "[",perl=TRUE)
+  } else if (is.character(formular)) {
+    fbody = trimws(formular)
+  } else {
+    stop("Formular is no function or mathematical string expression")
+  }
+  
+  cb_input = evi_graph$data[[1]] # take the first one, to my knowledge we won't have more than one
+  
+  # function body -> postfix notation
+  postfix = math_parse(fbody)
+  graph = call_tree(postfix)
+  
+  # maybe put this as package data
+  process_mapping = as.data.frame(cbind(openeo=c("array_element","sum","subtract","divide","multiply",
+                                                 "product","power","sin","cos","tan","arcsin","arccos","arctan","absolute",
+                                                 "min","max","mean","median","sum","sd","variance","sqrt","sgn","mod","int"),
+                                        r = c("[","+","-","/","*","*","^","sin","cos","tan","asin","acos","atan",
+                                              "abs","min","max","mean","median","sum","sd","var","sqrt","sign",
+                                              "%%","trunc")
+  ),stringsAsFactors = FALSE)
+  process_mapping$FUN = lapply(process_mapping$openeo,function(openeo_fun){evi_graph[[openeo_fun]]})
+  
+  return(replace_fun(graph,process_mapping,cb_input))
+  # TODO evaluate the functions in order to create the nodes
+  # TODO set final node
 }
