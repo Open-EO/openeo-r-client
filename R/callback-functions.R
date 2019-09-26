@@ -42,8 +42,8 @@ callback = function(con, process, parameter = NULL) {
             callback_arg$setValue(cb_graph)
             return(cb_graph)
         } else {
-            cat("Parameter that expect a callback: ")
-            cat(paste(callbacksParameterNames, collapse = ", "))
+            message(paste0("Parameter that expect a callback: ",
+                       paste(callbacksParameterNames, collapse = ", ")))
         }
         
         # get the callback values that are available for this callback (data that will be used in the graph like load_collection in the main graph)
