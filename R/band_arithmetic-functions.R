@@ -349,19 +349,109 @@ replace_fun = function(call_graph,process_mapping,data) {
   
 }
 
+eval_call = function(call) {
+  
+  FUN = call$operator
+  call$operator=NULL
+  for (i in 1:length(call)) {
+    if (is.list(call[[i]])) {
+      call[[i]] = eval_call(call[[i]])
+    }
+  }
+  
+  call = unname(call)
+  arg_names = names(formals(FUN))
+  
+  # note: this might be problematic as we don't know if the back-end has specified it that way;
+  # however the core processes should be implemented
+  if ("data" %in% arg_names) {
+    # all args go into this
+    call = list(data=call)
+  } else if (all(c("x","y") %in% arg_names)) {
+    # x and y arguments, check if length args == 2 and then assign
+    if (length(call) == 2) {
+      names(call) = c("x","y")
+    } else {
+      stop("more than x and y found")
+    }
+  } else if (all(c("base","p") %in% arg_names)){
+    # same as xy but this is for power
+    if (length(call) == 2) {
+      names(call) = c("base","p")
+    } else {
+      stop("more than base and p found")
+    }
+  } else if ("x" %in% arg_names) {
+    if (length(call) == 1) {
+      names(call) = "x"
+    } else {
+      stop("more than x found")
+    }
+  }
+  
+  return(do.call(FUN,call))
+}
+
+
+#' Performs band arithmetic on a data set
+#' 
+#' The function evaluates a function with a mathematical expression and creates internally a
+#' reduce function on the spectral dimension, by converting the function stated in 'formular'
+#' into a subgraph for the callback.
+#' 
+#' @details 
+#' Similar to the 'calc' function in the raster package, band arithmetic will be performed on an
+#' data vector. The select bands are available via indexing in the R way (e.g. x[1] for the first
+#' value). It is important that if the bands are prefiltered the order of the bands matters otherwise 
+#' it is assumed that the bands are ordered as in the collection description.
+#' The expression stated in the function shall be single line and should not contain
+#' a return statement.
+#' 
+#' @note It might occur that a back-end does not comply to the process definitions of the core
+#' process definition. This is when this function will not work properly. Alternatively you
+#' have to manage the graph creation by your own and work with the given processes of the back-end.
+#' 
+#' @param graph The graph into which the spectral reduce function will go
+#' @param data A process that returns a data cube
+#' @param formular A function that contains a mathematical expression
+#' 
+#' @examples 
+#' \dontrun{
+#' ...
+#' data = graph$load_collection(graph$data$`COPERNICUS/S2`,
+#'   spatial_extent = list(
+#'      west=16.1,
+#'      east=16.6,
+#'      north=48.6,
+#'      south= 47.2
+#'    ),
+#'    temporal_extent = list(
+#'      "2018-01-01", "2018-02-01"
+#'    ),
+#'   bands=list("B08","B04","B02"))
+#'  
+#' evi = graph %>% band_arithmetics(data=data,function(x){
+#'    2.5*((x[1]-x[2])/sum(1,x[1],6*x[2],-7.5*x[3]))
+#' })
+#' 
+#' ...
+#' }
+#' @export
 band_arithmetics = function(graph, data, formular) {
+  con = graph$getConnection()
+  
   required_processes = c("array_element", "reduce","product","subtract","sum","divide") #TBC
   if (!all(required_processes %in% names(graph))) stop(paste0("Cannot perform band arithmetics. Common processes: ",paste(setdiff(required_processes,names(graph)),sep=",")," are not defined at the back-end."))
   
-  spectral_reduce = data %>% graph$reduce(dimension = "bands")
+  spectral_reduce =  graph$reduce(data = data,dimension = "bands")
   
   
   
   suppressMessages({
-    params = con %>% callback(spectral_reduce)
+    params = callback(con = con,spectral_reduce)
     
   })
-  evi_graph = con %>% callback(spectral_reduce,parameter = params[1])
+  subgraph = callback(con = con,spectral_reduce,parameter = params[1])
   
   if (is.function(formular)) {
     function_arg = names(formals(formular))[1] # should be only one... the array data others are ignored
@@ -374,7 +464,7 @@ band_arithmetics = function(graph, data, formular) {
     stop("Formular is no function or mathematical string expression")
   }
   
-  cb_input = evi_graph$data[[1]] # take the first one, to my knowledge we won't have more than one
+  cb_input = subgraph$data[[1]] # take the first one, to my knowledge we won't have more than one
   
   # function body -> postfix notation
   postfix = math_parse(fbody)
@@ -388,9 +478,11 @@ band_arithmetics = function(graph, data, formular) {
                                               "abs","min","max","mean","median","sum","sd","var","sqrt","sign",
                                               "%%","trunc")
   ),stringsAsFactors = FALSE)
-  process_mapping$FUN = lapply(process_mapping$openeo,function(openeo_fun){evi_graph[[openeo_fun]]})
+  process_mapping$FUN = lapply(process_mapping$openeo,function(openeo_fun){subgraph[[openeo_fun]]})
   
-  return(replace_fun(graph,process_mapping,cb_input))
-  # TODO evaluate the functions in order to create the nodes
-  # TODO set final node
+  calls = replace_fun(graph,process_mapping,cb_input)
+  final_node = eval_call(calls)
+  subgraph$setFinalNode(final_node)
+  
+  return(spectral_reduce)
 }
