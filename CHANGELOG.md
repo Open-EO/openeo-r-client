@@ -2,8 +2,19 @@
 
 ## [Unreleased]
 
+### Added
+- band_arithmetics function that parses a mathematical function into a process graph if the back-end supports some of the core processes
+- example script shown in the open geo hub summer school
+- notebooks for comparing the NDVI calculation on EURAC back-end and GEE
+
+### Changed
+- graphs are initialized with a connection instead of the parsed processes list
+- connection is now available via a private field in the Graph object
+- callback now reuses the obtained process in JSON format of the connection
+
 ### Fixed
 - fixed the attempt to parse the response body when evaluating HTTP 202
+- typo in the README
 
 ## [0.4.2] - 2019-09-09
 
