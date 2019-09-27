@@ -271,6 +271,10 @@ Graph = R6Class(
     
     removeVariable = function(variable_id) {
       private$variables[[variable_id]] = NULL
+    },
+    
+    getConnection = function() {
+      return(private$connection)
     }
   ),
   private = list(
@@ -313,10 +317,8 @@ Graph = R6Class(
       
       return(c(node$getNodeId(),sapply(nodeParams,private$extractUsedNodeIds)))
       
-    },
-    getConnection = function() {
-      return(private$connection)
     }
+    
   )
 )
 
