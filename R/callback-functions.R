@@ -29,15 +29,7 @@ callback = function(con, process, parameter = NULL) {
             
             cb_parameters = callback_arg$getCallbackParameters()  # all the possible data exports offered by the argument
             
-            processes = list_processes(con)
-            # json processes -> process objects
-            
-            names(processes) = sapply(processes, function(p) p$id)
-            
-            
-            plist = lapply(processes, processFromJson)
-            
-            cb_graph = Graph$new(plist, cb_parameters)
+            cb_graph = Graph$new(con, cb_parameters)
             
             callback_arg$setValue(cb_graph)
             return(cb_graph)
