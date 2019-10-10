@@ -21,7 +21,7 @@ NULL
 #'   \item{\code{$isConnected()}}{whether or not the client has a host set}
 #'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 #'   \item{\code{$connect(url,version)}}{connects to a specific version of a backend}
-#'   \item{\code{$client_version()}}{returns the client version}
+#'   \item{\code{$api_version()}}{returns the openEO API version which this client complies to}
 #'   \item{\code{$register(user,password)}}{registers on the back-end via user and password (GEE only; legacy)}
 #'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
@@ -165,7 +165,7 @@ OpenEOClient <- R6Class(
       )
 
     },
-    client_version = function () {
+    api_version = function () {
       return(private$version)
     },
     
@@ -521,5 +521,5 @@ OpenEOClient <- R6Class(
 #' 
 #' @return the client version
 client_version = function() {
-  return("0.4.1")
+  return("0.5.0")
 }
