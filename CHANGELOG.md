@@ -13,6 +13,7 @@
 - callback now reuses the obtained process in JSON format of the connection
 
 ### Fixed
+- fixed callback function to recognize nested callback arguments in anyOf (#35)
 - fixed the attempt to parse the response body when evaluating HTTP 202
 - typo in the README
 

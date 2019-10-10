@@ -4,7 +4,7 @@
 \alias{callback}
 \title{Creates a callback}
 \usage{
-callback(con, process, parameter = NULL)
+callback(con, process, parameter = NULL, choice_index = NULL)
 }
 \arguments{
 \item{con}{a connected \code{\link{OpenEOClient}}}
@@ -12,6 +12,8 @@ callback(con, process, parameter = NULL)
 \item{process}{a \code{\link{Process}} or \code{\link{ProcessNode}} object of a back-end process}
 
 \item{parameter}{optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback}
+
+\item{choice_index}{optional integer denoting the callback parameter selected in an \code{\link{anyOf}}}
 }
 \value{
 a \code{\link{Graph}} object with the callback parameters as 'data'
