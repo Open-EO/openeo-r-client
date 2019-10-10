@@ -203,9 +203,6 @@ process_graph_builder = function(con) {
         collections = as.list(cids)
         names(collections) = cids
         
-        
-        plist = lapply(con$processes, processFromJson)
-        
-        return(Graph$new(plist, collections))
+        return(Graph$new(con, collections))
     }, error = .capturedErrorToMessage)
 }

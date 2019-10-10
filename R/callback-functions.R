@@ -8,11 +8,12 @@
 #' @param con a connected \code{\link{OpenEOClient}}
 #' @param process a \code{\link{Process}} or \code{\link{ProcessNode}} object of a back-end process
 #' @param parameter optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback
+#' @param choice_index optional integer denoting the callback parameter selected in an \code{\link{anyOf}}
 #'  
 #' @return a \code{\link{Graph}} object with the callback parameters as 'data'
 #' 
 #' @export
-callback = function(con, process, parameter = NULL) {
+callback = function(con, process, parameter = NULL, choice_index=NULL) {
     if (!"Process" %in% class(process)) 
         stop("Parameter process is no process for a openeo graph")
     
@@ -20,6 +21,12 @@ callback = function(con, process, parameter = NULL) {
     callbacksParameterNames = unname(unlist(sapply(process$parameters, function(param) {
         if ("callback" %in% class(param)) 
             return(param$getName())
+        
+        if ("anyOf" %in% class(param)) {
+            if (any(sapply(param$getChoice(), function(p) {
+                return("callback" %in% class(p))
+            }))) return(param$getName())
+        }
     })))
     
     if (!is.null(callbacksParameterNames)) {
@@ -27,23 +34,26 @@ callback = function(con, process, parameter = NULL) {
         if (!is.null(parameter) && is.character(parameter) && parameter %in% callbacksParameterNames) {
             callback_arg = process$getParameter(name = parameter)
             
+            # TODO handle anyOf ... different data!
+            if ("anyOf" %in% class(callback_arg)) {
+                
+                if (is.na(choice_index) || length(choice_index) == 0) {
+                    message("Callback parameter offers multiple data injection options. Please state the 'choice_index' parameter.")
+                    return(invisible(NULL))
+                }
+                
+                callback_arg = callback_arg$getChoice()[[choice_index]]
+            }
+            
             cb_parameters = callback_arg$getCallbackParameters()  # all the possible data exports offered by the argument
             
-            processes = list_processes(con)
-            # json processes -> process objects
-            
-            names(processes) = sapply(processes, function(p) p$id)
-            
-            
-            plist = lapply(processes, processFromJson)
-            
-            cb_graph = Graph$new(plist, cb_parameters)
+            cb_graph = Graph$new(con, cb_parameters)
             
             callback_arg$setValue(cb_graph)
             return(cb_graph)
         } else {
-            cat("Parameter that expect a callback: ")
-            cat(paste(callbacksParameterNames, collapse = ", "))
+            message(paste0("Parameter that expect a callback: ",
+                       paste(callbacksParameterNames, collapse = ", ")))
         }
         
         # get the callback values that are available for this callback (data that will be used in the graph like load_collection in the main graph)

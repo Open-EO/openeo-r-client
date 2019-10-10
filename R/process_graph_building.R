@@ -55,7 +55,11 @@ Graph = R6Class(
   public = list(
     data = list(),
     
-    initialize = function(processes, data = list()) {
+    initialize = function(con, data = list()) {
+      private$connection = con
+      
+      processes = lapply(con$processes, processFromJson)
+      
       if (!is.list(processes)) stop("Processes are not provided as list")
       
       self$data = data
@@ -267,6 +271,10 @@ Graph = R6Class(
     
     removeVariable = function(variable_id) {
       private$variables[[variable_id]] = NULL
+    },
+    
+    getConnection = function() {
+      return(private$connection)
     }
   ),
   private = list(
@@ -310,6 +318,7 @@ Graph = R6Class(
       return(c(node$getNodeId(),sapply(nodeParams,private$extractUsedNodeIds)))
       
     }
+    
   )
 )
 
@@ -477,6 +486,7 @@ Process = R6Class(
   
   private=list(
     id = character(),
+    connection=NULL, # the openeo backend connection to which this graph belongs to
     returns = NULL, # the object that is returend Parameter or Argument
     parameter_order = character(), # a vector of string corresponding to the parameter order
     summary = character(),
