@@ -148,9 +148,8 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
         response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE)
         
         message("Job was sucessfully registered on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader, "/"))
-        return(split[length(split)])
+        job_id = headers(response)$`openeo-identifier`
+        return(job_id)
     }, error = .capturedErrorToMessage)
 }
 
