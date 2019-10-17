@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- fixed callback function which not replaced the AnyOf parameter with the newly created Graph
 - `create_job` now refers to the HTTP response header "OpenEO-Identifier" rather than parsing the "Location" header
 
 ## [0.5.0] - 2019-10-10
