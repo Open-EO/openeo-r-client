@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- `create_job` now refers to the HTTP response header "OpenEO-Identifier" rather than parsing the "Location" header
+
 ## [0.5.0] - 2019-10-10
 
 ### Added
