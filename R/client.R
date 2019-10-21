@@ -100,6 +100,17 @@ OpenEOClient <- R6Class(
     isConnected = function() {
       return(!is.null(private$host))
     },
+    isLoggedIn = function() {
+      tryCatch({
+        if (is.null(private$auth_client) || length(private$auth_client$access_token) == 0) {
+          return(FALSE)
+        } 
+        
+        return(TRUE)
+      }, error = function(e) {
+        return(FALSE)
+      })
+    },
     getHost = function() {
       return(private$host)
     },
@@ -260,6 +271,7 @@ OpenEOClient <- R6Class(
               
               return(invisible(self))
             },error=function(e){
+              private$auth_client = NULL
               stop("Login failed.")
             })
             

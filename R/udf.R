@@ -11,6 +11,6 @@
 list_udf_runtimes = function(con) {
     tryCatch({
         tag = "udf_runtimes"
-        return(con$request(tag = tag, authorized = FALSE))
+        return(con$request(tag = tag, authorized = con$isLoggedIn()))
     }, error = .capturedErrorToMessage)
 }

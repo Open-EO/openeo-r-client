@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Changed
+- some endpoints allowed optional sending of a bearer token in the header, which was not yet considered. Added a function to check if a user has logged in (`OpenEOClient$isLoggedIn()`) and made it optional at the following endpoints to sent a Bearer token as Authorization-header depending on whether the user is logged in: 
+```
+GET /output_formats
+GET /udf_runtimes
+GET /service_types
+GET /collections
+GET /collections/{collection_id}
+GET /processes
+POST /validation
+```
+
 ### Fixed
 - fixed callback function which not replaced the AnyOf parameter with the newly created Graph
 - `create_job` now refers to the HTTP response header "OpenEO-Identifier" rather than parsing the "Location" header

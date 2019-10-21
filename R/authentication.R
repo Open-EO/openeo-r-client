@@ -90,10 +90,10 @@ OIDCAuth = R6Class(
         access = private$endpoints$token_endpoint
       ),class="oauth_endpoint")
       
-      app = oauth_app("openeo_login",private$client_id)
+      app = httr::oauth_app("openeo_login",private$client_id)
       
       suppressWarnings(
-        private$auth <- oauth2.0_token(openeo_endpoints, app,cache=FALSE,scope="openid")
+        private$auth <- httr::oauth2.0_token(openeo_endpoints, app,cache=FALSE,scope="openid")
       )
       invisible(self)
     },
