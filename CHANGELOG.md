@@ -13,10 +13,12 @@ GET /collections/{collection_id}
 GET /processes
 POST /validation
 ```
+- modified gee-evi-example now that the GEE driver supports all relevant openeo processes, it now creates the graph with apply, linear_scale and saves it as PNG; added also an example for the band_arithmetics use case
 
 ### Fixed
 - fixed callback function which not replaced the AnyOf parameter with the newly created Graph
 - `create_job` now refers to the HTTP response header "OpenEO-Identifier" rather than parsing the "Location" header
+- fixed a problem in `band_arithmetics` where the parameter in array_element were falsely assigned
 
 ## [0.5.0] - 2019-10-10
 
