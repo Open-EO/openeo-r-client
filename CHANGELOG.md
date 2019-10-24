@@ -3,9 +3,11 @@
 ## [Unreleased]
 
 ### Added
-- example process graph building for minimum EVI with EURAC
+- example process graph building for minimum EVI with EURAC and EODC
+- added a Google OIDC authentication option
 
 ### Changed
+- modified `connect` with new parameters `exchange_token` and `external`. With the latter we can specify 'google' as an external identity provider and with `exchange_token` we can specify if we send the default `access_token` or the `id_token` as Bearer token in the authentication header
 - some endpoints allowed optional sending of a bearer token in the header, which was not yet considered. Added a function to check if a user has logged in (`OpenEOClient$isLoggedIn()`) and made it optional at the following endpoints to sent a Bearer token as Authorization-header depending on whether the user is logged in: 
 ```
 GET /output_formats

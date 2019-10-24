@@ -5,7 +5,8 @@
 \title{Connect to a openeEO back-end}
 \usage{
 connect(host, version = NULL, user = NULL, password = NULL,
-  login_type = NULL)
+  login_type = NULL, exchange_token = "access_token",
+  external = NULL)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server back-end host}
@@ -17,6 +18,10 @@ connect(host, version = NULL, user = NULL, password = NULL,
 \item{password}{the password (optional)}
 
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
+
+\item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
+
+\item{external}{which external oidc provider shall be used (currently 'google' as allowed value)}
 }
 \description{
 Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to

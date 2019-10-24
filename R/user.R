@@ -165,6 +165,8 @@ describe_account = function(con) {
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
+#' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
+#' @param external which external oidc provider shall be used (currently 'google' as allowed value)
 #'
 #' @examples 
 #' \dontrun{
@@ -184,19 +186,19 @@ describe_account = function(con) {
 #' }
 #'
 #' @export
-connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL) {
+connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", external=NULL) {
     con = OpenEOClient$new()
     
     if (is.null(user) && is.null(password) && is.null(login_type)) {
-        con = con$connect(url = host, version = version)
+        con = con$connect(url = host, version = version,exchange_token=exchange_token)
     } else if (login_type == "basic") {
         if (!is.null(user) && !is.null(password)) {
-            con = con$connect(url = host, version = version)$login(user = user, password = password, login_type = login_type)
+            con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(user = user, password = password, login_type = login_type)
         } else {
-            con = con$connect(url = host, version = version)
+            con = con$connect(url = host, version = version,exchange_token=exchange_token)
         }
     } else if (login_type == "oidc") {
-        con = con$connect(url = host, version = version)$login(login_type = login_type)
+        con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(login_type = login_type, external=external)
     } else {
         message("Incomplete credentials. Either username or password is missing")
         return()
@@ -215,6 +217,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @param user the user name
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
+#' @param external character - 'google' whether Google is used as a Identity Provider for OIDC
 #' @return a connected and authenticated back-end connection
 #' 
 #' @examples 
@@ -228,6 +231,6 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' login(con=con,login_type='oidc')
 #' }
 #' @export
-login = function(con, user = NULL, password = NULL, login_type = NULL) {
-    return(con$login(user = user, password = password, login_type = login_type))
+login = function(con, user = NULL, password = NULL, login_type = NULL, external=NULL) {
+    return(con$login(user = user, password = password, login_type = login_type, external = external))
 }
