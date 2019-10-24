@@ -1,4 +1,4 @@
-# Example GEE -> RClient
+# Example RClient <-> GEE
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
 
 library(openeo)
@@ -54,7 +54,7 @@ min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalN
 
 apply_linear_transform = temporal_reduce %>% graph$apply()
 
-cb2_graph = gee %>% callback(apply_linear_transform, "process")
+cb2_graph = con %>% callback(apply_linear_transform, "process")
 cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
 
 

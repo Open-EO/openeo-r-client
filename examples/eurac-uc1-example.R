@@ -5,9 +5,9 @@ library(openeo)
 library(tibble)
 
 # enter valid credentials
-euracHost = "https://openeo.eurac.edu"
-user = NA
-password = NA
+euracHost = ""
+user = ""
+password = ""
 
 eurac = connect(host = euracHost, user = user,password = password, login_type = "basic")
 eurac %>% list_processes()
