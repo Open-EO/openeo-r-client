@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- example process graph building for minimum EVI with EURAC and EODC
+- example process graph building for minimum EVI with EURAC, EODC and VITO
 - added a Google OIDC authentication option
 
 ### Changed
