@@ -8,7 +8,7 @@ library(jsonlite)
 
 host_url = "https://openeo.eodc.edu"
 
-con = connect(host = eodcHost, login_type = "oidc",external="google",exchange_token = "id_token") 
+con = connect(host = host_url, login_type = "oidc",external="google",exchange_token = "id_token")
 
 graph = con %>% process_graph_builder()
 
