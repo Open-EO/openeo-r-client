@@ -16,11 +16,11 @@ graph = con %>% process_graph_builder()
 
 # creating the graph
 data = graph$load_collection(id = graph$data$SENTINEL2_L2A_SENTINELHUB,
-                             spatial_extent = list(
+                             spatial_extent = list( # names are irrelevant here... it has to be the order xmin, ymin, xmax,ymax
                                west=16.1,
+                               south= 47.2,
                                east=16.6,
-                               north=48.6,
-                               south= 47.2
+                               north=48.6
                              ),
                              temporal_extent = list(
                                "2018-01-01", "2018-02-01"
@@ -56,11 +56,11 @@ temporal_reduce %>% graph$save_result(format="GTiff") %>% graph$setFinalNode()
 graph
 
 # write to file 
-# cat(graphToJSON(graph),file = "r-evi-phenology-graph.json")
+cat(graphToJSON(graph),file = "vito-r-evi-phenology-graph.json")
 
 # client side graph validation
 graph$validate()
 
 # con %>% validate_process_graph(graph)
 
-
+con %>% compute_result(graph=graph,format="GTiff",output_file = "vito-evi.tif")
