@@ -9,7 +9,7 @@ list_collections = function(con) {
     tryCatch({
         tag = "data_overview"
         
-        listOfProducts = con$request(tag = tag, type = "application/json")
+        listOfProducts = con$request(tag = tag, authorized = con$isLoggedIn(), type = "application/json")
         class(listOfProducts) = "CollectionList"
         return(listOfProducts)
     }, error = .capturedErrorToMessage)
@@ -40,7 +40,7 @@ describe_collection = function(con, id = NA) {
         tryCatch({
             tag = "data_details"
             
-            info = con$request(tag = tag, parameters = list(id), authorized = FALSE, type = "application/json", auto_unbox = TRUE)
+            info = con$request(tag = tag, parameters = list(id), authorized = con$isLoggedIn(), type = "application/json", auto_unbox = TRUE)
             
             class(info) = "CollectionInfo"
             

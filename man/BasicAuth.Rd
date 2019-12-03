@@ -8,7 +8,7 @@ an object of type \code{\link{R6Class}} representing basic authentication
 }
 \description{
 This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
-of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In 
+of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In
 general the authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
 is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token is obtained which
 will be used as Bearer token for the password restricted webservices.

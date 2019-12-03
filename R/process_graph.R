@@ -176,7 +176,7 @@ validate_process_graph = function(con, graph) {
         requestBody = list(process_graph = graph)
         
         tag = "process_graph_validate"
-        response = con$request(tag = tag, authorized = TRUE, data = requestBody, encodeType = "json")
+        response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json")
         
         message("Graph was sucessfully validated.")
         invisible(response)

@@ -25,6 +25,7 @@ NULL
 #'   \item{\code{$register(user,password)}}{registers on the back-end via user and password (GEE only; legacy)}
 #'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
+#'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
 #' }
 #' 
 #' @section Arguments:
@@ -100,6 +101,17 @@ OpenEOClient <- R6Class(
     isConnected = function() {
       return(!is.null(private$host))
     },
+    isLoggedIn = function() {
+      tryCatch({
+        if (is.null(private$auth_client) || length(private$auth_client$access_token) == 0) {
+          return(FALSE)
+        } 
+        
+        return(TRUE)
+      }, error = function(e) {
+        return(FALSE)
+      })
+    },
     getHost = function() {
       return(private$host)
     },
@@ -109,7 +121,7 @@ OpenEOClient <- R6Class(
       }
     },
 
-    connect = function(url,version) {
+    connect = function(url,version,exchange_token="access_token") {
       
       tryCatch({
         
@@ -122,6 +134,7 @@ OpenEOClient <- R6Class(
           url = substr(url,1,nchar(url)-1)
         }
         private$host = url
+        private$exchange_token = exchange_token
         
         if (!is.null(version)) {
           # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
@@ -192,7 +205,7 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage
       )
     },
-    login=function(login_type = NULL,user=NULL, password=NULL) {
+    login=function(login_type = NULL,user=NULL, password=NULL,external=NULL) {
       self$stopIfNotConnected()
       if (is.null(login_type)) {
         return(invisible(self))
@@ -206,7 +219,7 @@ OpenEOClient <- R6Class(
         }
         
         if (login_type == "oidc") {
-          private$loginOIDC()
+            private$loginOIDC(external = external)
         } else if (login_type == "basic") {
           private$loginBasic(user=user, password = password)
         } 
@@ -220,6 +233,10 @@ OpenEOClient <- R6Class(
       if (!is.null(private$auth_client)){
         private$auth_client$logout()
       }
+    },
+    
+    getAuthClient = function() {
+      return(private$auth_client)
     }
 
   ),
@@ -232,9 +249,10 @@ OpenEOClient <- R6Class(
     host = NULL,
     version = "0.4.2",
     general_auth_type = "bearer",
+    exchange_token="access_token",
     
     # functions ====
-    loginOIDC = function() {
+    loginOIDC = function(external=NULL) {
       if (!is.null(self$api.mapping)) {
         tag = "oidc_login"
         endpoint = self$getBackendEndpoint(tag)
@@ -249,7 +267,18 @@ OpenEOClient <- R6Class(
           {
             tryCatch({
               discovery_doc = private$GET(endpoint)
-              private$auth_client = OIDCAuth$new(host=discovery_doc$issuer,discovery_document = discovery_doc)
+              if (is.null(external)) {
+                private$auth_client = OIDCAuth$new(host=discovery_doc$issuer,
+                                                   discovery_document = discovery_doc)
+              } else {
+                switch(tolower(external),
+                       google = {
+                         discovery_doc = content(httr::GET("https://accounts.google.com/.well-known/openid-configuration"))
+                         private$auth_client = GoogleOIDCAuth$new(host=discovery_doc$issuer,
+                                                            discovery_document = discovery_doc)
+                       })
+              }
+              
               
               if (is.null(private$auth_client)) {
                 stop("OIDC client not initialized")
@@ -260,6 +289,7 @@ OpenEOClient <- R6Class(
               
               return(invisible(self))
             },error=function(e){
+              private$auth_client = NULL
               stop("Login failed.")
             })
             
@@ -483,7 +513,7 @@ OpenEOClient <- R6Class(
       if (private$general_auth_type == "bearer") {
         if (!is.null(private$auth_client)) {
           header = append(header,add_headers(
-            Authorization=paste("Bearer",private$auth_client$access_token, sep =" ")
+            Authorization=paste("Bearer",private$auth_client[[private$exchange_token]], sep =" ")
           ))
         } else {
           stop("Cannot add HTTP Authorization, because you are not logged in.")

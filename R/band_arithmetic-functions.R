@@ -366,7 +366,17 @@ eval_call = function(call) {
   # however the core processes should be implemented
   if ("data" %in% arg_names) {
     # all args go into this
-    call = list(data=call)
+    if (all(c("data","index","return_nodata") %in% arg_names)) { # array_element
+      if (length(call) == 2) {
+        names(call) = c("data","index")
+      } else {
+        names(call) = c("data","index","return_nodata")
+      }
+      
+    } else {
+      call = list(data=call)
+    }
+    
   } else if (all(c("x","y") %in% arg_names)) {
     # x and y arguments, check if length args == 2 and then assign
     if (length(call) == 2) {

@@ -11,7 +11,7 @@ list_processes = function(con) {
         if (is.null(con$processes)) {
             tag = "process_overview"
             
-            listOfProcesses = con$request(tag = tag, type = "application/json")
+            listOfProcesses = con$request(tag = tag, authorized=con$isLoggedIn(), type = "application/json")
             con$processes = listOfProcesses$processes
             
             names(con$processes) = sapply(con$processes, function(p) p$id)

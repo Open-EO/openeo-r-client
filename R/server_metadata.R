@@ -75,7 +75,8 @@ list_file_types = function(con) {
     tryCatch({
         tag = "formats"
         
-        formats = con$request(tag = tag, authorized = FALSE)
+        # optional sending of bearer otherwise no authentication required
+        formats = con$request(tag = tag, authorized = con$isLoggedIn())
         
         class(formats) = "FileTypesList"
         
@@ -102,7 +103,7 @@ list_service_types = function(con) {
         
         tag = "ogc_services"
         
-        services = con$request(tag = tag, authorized = FALSE)
+        services = con$request(tag = tag, authorized = con$isLoggedIn())
         
         updated_services = list()
         for (key in names(services)) {

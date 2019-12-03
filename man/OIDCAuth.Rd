@@ -8,7 +8,7 @@ A class that authenticates via Open ID Connect. It inherits all fields and funct
 will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
 chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
 the OIDC provider (the R client has provided its ID and the callback URI beforehand).
-The \code{access_token} will be returned when queried. If the lease time has run out the client will refresh the access_token 
+The \code{access_token} will be returned when queried. If the lease time has run out the client will refresh the access_token
 automatically.
 }
 \section{Methods}{

@@ -12,7 +12,7 @@ if (!require(devtools)) {
   install.packages("devtools",dependencies=TRUE)
   library(devtools)
 }
-install_github(repo="Open-EO/openeo-r-client",ref="v0.4.1",dependencies=TRUE)
+install_github(repo="Open-EO/openeo-r-client",ref="v0.5.0",dependencies=TRUE)
 library(openeo)
 ```
 
@@ -28,6 +28,7 @@ Since the openEO project is under heavy development regarding the openeo API tha
 | v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
 | v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
 | v0.4.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
+| v0.5.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
 
 
 ## Getting Started
@@ -96,6 +97,9 @@ library(help="openeo")
 
 ## Additional Examples
 If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under [examples](https://github.com/Open-EO/openeo-r-client/tree/master/examples) to get a feeling, how to use the package. Some of the scripts are outdated and will be replaced in the future.
+
+## Further Information
+The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additional information on process graph building and other topics.
 
 ## Links
 * [openEO.org](http://openeo.org/)

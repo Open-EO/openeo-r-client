@@ -1,4 +1,4 @@
-# Example GEE -> RClient
+# Example RClient <-> GEE
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
 
 library(openeo)
@@ -12,23 +12,6 @@ pwd = "test123"
 gee_host_url = "https://earthengine.openeo.org"
 
 con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
-
-# add missing process definitions for array_element, product, subtract and divide to showcase the evi graph
-# this will mock the functions required, but won't be executable or validateable against any back-end
-additional_decriptions = list(
-  array_element = read_json("https://raw.githubusercontent.com/Open-EO/openeo-processes/master/array_element.json"),
-  subtract = read_json("https://raw.githubusercontent.com/Open-EO/openeo-processes/master/subtract.json"),
-  product = read_json("https://raw.githubusercontent.com/Open-EO/openeo-processes/master/product.json"),
-  divide = read_json("https://raw.githubusercontent.com/Open-EO/openeo-processes/master/divide.json")
-)
-
-additional_decriptions = lapply(additional_decriptions, function(elem){
-  class(elem) = "ProcessInfo"
-  return(elem)
-})
-
-con$processes = append(con$processes,additional_decriptions)
-  
 
 graph = con %>% process_graph_builder()
 
@@ -69,7 +52,13 @@ temporal_reduce = spectral_reduce %>% graph$reduce(dimension = "temporal")
 min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
 min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
 
-temporal_reduce %>% graph$save_result(format="GTiff") %>% graph$setFinalNode()
+apply_linear_transform = temporal_reduce %>% graph$apply()
+
+cb2_graph = con %>% callback(apply_linear_transform, "process")
+cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
+
+
+apply_linear_transform %>% graph$save_result(format="PNG") %>% graph$setFinalNode()
 
 # print as JSON
 graph
@@ -80,6 +69,42 @@ cat(graphToJSON(graph),file = "r-evi-phenology-graph.json")
 # client side graph validation
 graph$validate()
 
+#
+# Or do the same using the band_arithmetic
+#
+graph = con %>% process_graph_builder()
+
+# creating the graph
+data = graph$load_collection(graph$data$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-01-01", "2018-02-01"
+                             ),
+                             bands=list("B08","B04","B02"))
+
+evi_calculation = data %>% band_arithmetics(graph = graph,function(x) {
+  2.5*((x[1]-x[2])/sum(1,x[1],6*x[2],-7.5*x[3]))
+})
+
+temporal_reduce = evi_calculation %>% graph$reduce(dimension = "temporal")
+
+min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
+min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
+
+apply_linear_transform = temporal_reduce %>% graph$apply()
+
+cb2_graph = con %>% callback(apply_linear_transform, "process")
+cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
 
 
+apply_linear_transform %>% graph$save_result(format="PNG") %>% graph$setFinalNode()
+
+graph$validate()
+
+graph
 

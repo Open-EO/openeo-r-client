@@ -4,7 +4,8 @@
 \alias{login}
 \title{Function to login to a specific backend}
 \usage{
-login(con, user = NULL, password = NULL, login_type = NULL)
+login(con, user = NULL, password = NULL, login_type = NULL,
+  external = NULL)
 }
 \arguments{
 \item{con}{connected back-end connection}
@@ -14,6 +15,8 @@ login(con, user = NULL, password = NULL, login_type = NULL)
 \item{password}{the password}
 
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
+
+\item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
 }
 \value{
 a connected and authenticated back-end connection

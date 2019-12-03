@@ -34,7 +34,6 @@ callback = function(con, process, parameter = NULL, choice_index=NULL) {
         if (!is.null(parameter) && is.character(parameter) && parameter %in% callbacksParameterNames) {
             callback_arg = process$getParameter(name = parameter)
             
-            # TODO handle anyOf ... different data!
             if ("anyOf" %in% class(callback_arg)) {
                 
                 if (is.na(choice_index) || length(choice_index) == 0) {
@@ -43,6 +42,8 @@ callback = function(con, process, parameter = NULL, choice_index=NULL) {
                 }
                 
                 callback_arg = callback_arg$getChoice()[[choice_index]]
+                # also replace the AnyOf choice
+                process$setParameter(name=parameter, value=callback_arg)
             }
             
             cb_parameters = callback_arg$getCallbackParameters()  # all the possible data exports offered by the argument
