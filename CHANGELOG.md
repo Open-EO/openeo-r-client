@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## [Unreleased]
 
 ### Added
 - transferred a function to directly interact with UDF services from an example script of R UDF service repository `send_udf` and added documentation to the function
