@@ -11,15 +11,14 @@ host = "http://openeo.vgt.vito.be/openeo/0.4.2/"
 
 con = connect(host = host)
 
-
 graph = con %>% process_graph_builder()
 
 # creating the graph
 data = graph$load_collection(id = graph$data$SENTINEL2_L2A_SENTINELHUB,
                              spatial_extent = list( # names are irrelevant here... it has to be the order xmin, ymin, xmax,ymax
                                west=16.1,
-                               south= 47.2,
                                east=16.6,
+                               south= 47.2,
                                north=48.6
                              ),
                              temporal_extent = list(
@@ -61,6 +60,9 @@ cat(graphToJSON(graph),file = "vito-r-evi-phenology-graph.json")
 # client side graph validation
 graph$validate()
 
-# con %>% validate_process_graph(graph)
+con %>% validate_process_graph(graph = graph)
 
+# compute the result and check if the graph was valid
+debug()
 con %>% compute_result(graph=graph,format="GTiff",output_file = "vito-evi.tif")
+debug.off()
