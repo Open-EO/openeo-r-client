@@ -88,6 +88,7 @@ Graph = R6Class(
           
           #map given parameter of this function to the process parameter / arguments and set value
           arguments = process$parameters
+          
           # parameter objects should be updated directly, since there is a real object reference
           this_param_names = names(formals())
           
@@ -95,16 +96,16 @@ Graph = R6Class(
           this_arguments = lapply(this_param_names, function(param) get(param))
           names(this_arguments) = this_param_names
           
+          # special case: value is of type Argument
+          
+          node = ProcessNode$new(node_id = node_id,process=process,graph=self)
+          
           lapply(names(this_arguments), function(param_name, arguments){
             call_arg = this_arguments[[param_name]]
             
             #TODO maybe check here for is.list and then try the assignable
             arguments[[param_name]]$setValue(call_arg)
           }, arguments = arguments)
-          
-          # special case: value is of type Argument
-          
-          node = ProcessNode$new(node_id = node_id,process=process)
           
           private$nodes = append(private$nodes,node)
           
@@ -188,7 +189,7 @@ Graph = R6Class(
         
         # for each process node call their processes parameters validate function
         results = unname(unlist(lapply(private$nodes, function(node) {
-          node$validate(node_id=node$getNodeId())
+          node$validate()
         })))
         
         
@@ -455,10 +456,10 @@ Process = R6Class(
       
       return(results)
     },
-    validate = function(node_id=NULL) {
-      return(unname(unlist(lapply(self$parameters,function(arg, node_id){
-        arg$validate(node_id = node_id)
-      },node_id = node_id))))
+    validate = function() {
+      return(unname(unlist(lapply(self$parameters,function(arg){
+        arg$validate()
+      }))))
     },
     
     getCharacteristics = function() {
@@ -554,11 +555,29 @@ ProcessNode = R6Class(
   public = list(
     
     # initialized in the graph$<function> call  together with is argument values
-    initialize = function(node_id=character(),process) {
+    initialize = function(node_id=character(),process,graph=NULL) {
       private$node_id = node_id
       
       if (!"Process" %in% class(process)) stop("Process is not of type 'Process'")
+      
+      if(length(graph) > 0) {
+        private$graph = graph
+      }
+      
       private$copyAttributes(process)
+      
+      # all arguments need a reference to their parent process, this also counts for callback
+      # values!
+      lapply(private$.parameters,function(param)  {
+        param$setProcess(self)
+        if ("callback" %in% class(param)) {
+          lapply(param$getCallbackParameters(), function(cbv) {
+            cbv$setProcess(param$getProcess())
+          })
+        }
+      })
+      
+      return(self)
     },
     
     getNodeId = function() {
@@ -571,11 +590,19 @@ ProcessNode = R6Class(
       return(list(
         from_node=private$node_id
       ))
+    },
+    getGraph = function() {
+      return(private$graph)
+    },
+    setGraph = function(g) {
+      private$graph = g
+      invisible(self)
     }
   ),
   
   private = list(
     node_id = character(),
+    graph = NULL,
     
     copyAttributes = function(process) {
       #extract names that are no function
@@ -590,6 +617,8 @@ ProcessNode = R6Class(
     }
   )
 )
+
+setOldClass(c("ProcessNode","Process","R6"))
 
 .randomNodeId = function(name,n = 1,...) {
   a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
@@ -755,4 +784,27 @@ remove_variable = function(graph, variable) {
   if (all(c("variable","Argument","R6") == class(variable))) variable = variable$getName()
   
   return(graph$removeVariable(variable_id = variable))
+}
+
+.final_node_serializer = function(node,graph=list()) {
+  add = list(node)
+  names(add) = node$getNodeId()
+  
+  paramValues = unname(unlist(lapply(node$parameters,function(param)param$getValue())))
+  nodeSelectors = sapply(paramValues,function(v) {
+    "ProcessNode" %in% class(v)
+  })
+  selectedNodes = paramValues[nodeSelectors]
+  
+  if(length(selectedNodes)==0) {
+    return(add)
+  } else {
+    temp = unlist(c(lapply(selectedNodes,function(node){
+      .final_node_serializer(node,graph)
+    }),add))
+    
+    unames = unique(names(temp))
+    
+    return(temp[unames])
+  } 
 }

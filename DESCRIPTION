@@ -38,6 +38,7 @@ Collate:
     'debugging.R'
     'jobs.R'
     'markdown_viewer.R'
+    'ops.R'
     'print-functions.R'
     'process_graph.R'
     'process_graph_building.R'

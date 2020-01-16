@@ -173,7 +173,8 @@ Argument = R6Class(
       # for format specific conversion overwrite this by children
       return(private$typeSerialization())
     },
-    validate = function(node_id=NULL) {
+    validate = function() {
+      
       tryCatch(
         {
           private$checkRequiredNotSet()
@@ -188,6 +189,7 @@ Argument = R6Class(
           
           invisible(NULL)
         }, error = function(e) {
+          node_id = self$getProcess()$getNodeId()
           if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
           
           message = paste0(node_id,"Parameter '",private$name,"': ",e$message)
@@ -202,10 +204,19 @@ Argument = R6Class(
                 is.null(private$value) ||
                 is.na(private$value) ||
                 length(private$value) == 0))
+    },
+    getProcess = function() {
+      return(private$process)
+    },
+    setProcess = function(p) {
+      private$process = p
+      
+      return(invisible(self))
     }
   ),
   private = list(
     value=NULL,
+    process = NULL,
     
     checkRequiredNotSet = function() {
       if (private$required && 
@@ -1325,6 +1336,38 @@ Callback = R6Class(
     
     setValue = function(value) {
       # if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
+      if ("function" == class(value)) {
+        # if value is a function -> then make a call with the function and a suitable callback 
+        # parameter
+        
+        # create a new graph
+        con = private$process$getGraph()$getConnection()
+        new_graph = process_graph_builder(con)
+        old_graph = private$process$getGraph()
+        
+        # probably switch temporarily the graph of the parent process
+        # then all newly created process nodes go into the new graph
+        private$process$setGraph(new_graph)
+        
+        # find suitable callback parameter (mostly array or binary) -> check for length of formals
+        callback_parameter = unname(private$parameters[1]) #TODO change later correctly
+        
+        # make call
+        final_node = do.call(value,args = callback_parameter)
+        
+        # then serialize it via the final node
+        # node_list = .final_node_serializer(final_node)
+        # used?
+        
+        # switch back the graph
+        private$process$setGraph(old_graph)
+        # add the process node list to this graph
+        new_graph$setFinalNode(final_node)
+        
+        # assign new graph as value
+        value = new_graph
+      }
+      
       
       private$value = value
     },
@@ -1385,6 +1428,9 @@ Callback = R6Class(
 #' @return Object of \code{\link{R6Class}} which represents a callback value.
 NULL
 
+# in case the callback-value is an arry - which it will be in most cases - we have to store
+# process nodes for array subsetting in the object with its index. This should be done to 
+# reuse the results of previous steps
 CallbackValue = R6Class(
   "callback-value",
   inherit=Argument,
@@ -1412,6 +1458,8 @@ CallbackValue = R6Class(
     }
   )
 )
+
+setOldClass(c("callback-value","Argument","Parameter","R6"))
 
 # Array ====
 #' Array
