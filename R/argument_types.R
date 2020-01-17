@@ -439,7 +439,7 @@ Number = R6Class(
         # check return value?
         return_schema = private$value$getReturns()$schema
         
-        if (!is.null(return_schema$type) && !"schema" %in% return_schema$type)
+        if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
           stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
       } else if (!is.numeric(private$value)) {
         suppressWarnings({

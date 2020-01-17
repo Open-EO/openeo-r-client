@@ -37,7 +37,9 @@ reduce = graph$reduce(data = data, reducer = function(x) {
   B08 = x[8]
   B04 = x[4]
   B02 = x[2]
-  min(B02^2,sqrt(B08),1,sin(B04)) # min, max or other summary functions require the ProcessNode object to be the first element!
+  temp = min(B02^2,sqrt(B08),1,sin(B04),log(B02 ^ B04,2))
+  
+  mean(x) - temp  # min, max or other summary functions require the ProcessNode object to be the first element!
 }, dimension = "bands")
 toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
 reduce$validate()
