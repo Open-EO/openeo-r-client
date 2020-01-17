@@ -31,6 +31,7 @@ reduce = graph$reduce(data = data, reducer = function(x) {
   B02 = x[2]
   (2.5 * (B08-B04)) / ((B08 + 6 * B04 - 7.5 * B02) + 1)
 }, dimension = "bands")
+toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
 
 reduce = graph$reduce(data = data, reducer = function(x) {
   B08 = x[8]
@@ -38,8 +39,11 @@ reduce = graph$reduce(data = data, reducer = function(x) {
   B02 = x[2]
   min(B02^2,sqrt(B08),1,sin(B04)) # min, max or other summary functions require the ProcessNode object to be the first element!
 }, dimension = "bands")
-
 toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
+reduce$validate()
 
-data_s2 = describe_collection(con, id = graph$data$`COPERNICUS/S2`)
-names(dimensions(data_s2))
+reduce = graph$reduce(data = data, reducer = function(x) {
+  min(x) # min, max or other summary functions require the ProcessNode object to be the first element!
+}, dimension = "bands")
+toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
+reduce$validate()

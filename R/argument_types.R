@@ -174,7 +174,6 @@ Argument = R6Class(
       return(private$typeSerialization())
     },
     validate = function() {
-      
       tryCatch(
         {
           private$checkRequiredNotSet()
@@ -435,7 +434,14 @@ Number = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.numeric(private$value)) {
+      
+      if ("ProcessNode" %in% class(private$value)) {
+        # check return value?
+        return_schema = private$value$getReturns()$schema
+        
+        if (!is.null(return_schema$type) && !"schema" %in% return_schema$type)
+          stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+      } else if (!is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -1598,7 +1604,7 @@ Array = R6Class(
         if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
         
       } else {
-        if (!"callback-value" %in% class(private$value)) {
+        if (!"callback-value" %in% class(private$value[[1]])) {
           allOK = switch(itemType,
                          string = all(sapply(private$value,function(val){
                            if ("Process" %in% class(val)) {
