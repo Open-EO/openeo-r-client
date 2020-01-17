@@ -12,6 +12,7 @@ con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd,
 
 graph = con %>% process_graph_builder()
 
+# the graph will not be finished! it is just a test case for the improved new callback approach
 data = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
                              spatial_extent = list(
                                west=16.1,
@@ -23,9 +24,22 @@ data = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
                                "2018-01-01", "2018-02-01"
                              ))
 
+# multiple different cases
 reduce = graph$reduce(data = data, reducer = function(x) {
-  B08 = x[3]
-  B04 = x[2]
-  B02 = x[1]
+  B08 = x[8]
+  B04 = x[4]
+  B02 = x[2]
   (2.5 * (B08-B04)) / ((B08 + 6 * B04 - 7.5 * B02) + 1)
-}, dimension = "time")
+}, dimension = "bands")
+
+reduce = graph$reduce(data = data, reducer = function(x) {
+  B08 = x[8]
+  B04 = x[4]
+  B02 = x[2]
+  min(B02^2,sqrt(B08),1,sin(B04)) # min, max or other summary functions require the ProcessNode object to be the first element!
+}, dimension = "bands")
+
+toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
+
+data_s2 = describe_collection(con, id = graph$data$`COPERNICUS/S2`)
+names(dimensions(data_s2))
