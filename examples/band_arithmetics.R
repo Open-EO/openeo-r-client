@@ -47,3 +47,10 @@ reduce = graph$reduce(data = data, reducer = function(x) {
 }, dimension = "bands")
 toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
 reduce$validate()
+
+reduce = graph$reduce(data = data, reducer = function(x) {
+  B08 = x[8]
+  -B08
+}, dimension = "bands")
+toJSON(reduce$serialize(),auto_unbox = TRUE,pretty = TRUE)
+reduce$validate()

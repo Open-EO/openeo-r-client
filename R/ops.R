@@ -334,7 +334,9 @@
 `-.ProcessNode` <- function(e1,e2) {
   # v0.4.2 -> subtract of array
   # v0.5 -> subtract of two values
-  if (is.null(e1)) browser()
+  if (missing(e2)) {
+    return(-1 * e1)
+  }
   
   if ("ProcessNode" %in% class(e1)) {
     graph = e1$getGraph()
