@@ -1342,7 +1342,7 @@ Callback = R6Class(
     
     setValue = function(value) {
       # if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
-      if ("function" == class(value)) {
+      if ("function" %in% class(value)) {
         # if value is a function -> then make a call with the function and a suitable callback 
         # parameter
         

@@ -4,6 +4,14 @@
 
 ### Added
 - transferred a function to directly interact with UDF services from an example script of R UDF service repository `send_udf` and added documentation to the function
+- added an example script for the new callback functions
+
+### Changed
+- overloaded mathematical operators for `ProcessNode` and `callback-value` classes
+- allowed functions as "callbacks" for reducer function, e.g. in reduce or apply (not only for band arithmetics)
+
+### Removed
+- removed the function `band_arithmetics`, because callbacks can now be functions
 
 ## [0.5.0] - 2019-12-03
 

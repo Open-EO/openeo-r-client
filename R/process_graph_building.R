@@ -72,22 +72,23 @@ Graph = R6Class(
         f = function() {}
         formals(f) = function_formals
         
+        
         # probably do a deep copy of the object
         # for the body we have the problem that index is addressed as variable in the parent environment. This
         # causes a problem at call time, where index is resolve and this means that usually the last element
         # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
         # and then as.call
         body(f) = quote({
-          process = processes[[index]]$clone(deep=TRUE)
+          exec_process = processes[[index]]$clone(deep=TRUE)
           # find new node id:
-          node_id = .randomNodeId(process$getId(),sep="_")
+          node_id = .randomNodeId(exec_process$getId(),sep="_")
           
           while (node_id %in% private$getNodeIds()) {
-            node_id = .randomNodeId(process$getId(),sep="_")
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
           }
           
           #map given parameter of this function to the process parameter / arguments and set value
-          arguments = process$parameters
+          arguments = exec_process$parameters
           
           # parameter objects should be updated directly, since there is a real object reference
           this_param_names = names(formals())
@@ -98,7 +99,7 @@ Graph = R6Class(
           
           # special case: value is of type Argument
           
-          node = ProcessNode$new(node_id = node_id,process=process,graph=self)
+          node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
           
           lapply(names(this_arguments), function(param_name, arguments){
             call_arg = this_arguments[[param_name]]
