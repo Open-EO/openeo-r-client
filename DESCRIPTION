@@ -26,7 +26,6 @@ License: file LICENSE
 Collate:
     'argument_types.R'
     'authentication.R'
-    'band_arithmetic-functions.R'
     'callback-functions.R'
     'zzz.R'
     'capabilities-mapping.R'
