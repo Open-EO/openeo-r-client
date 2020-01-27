@@ -1362,12 +1362,24 @@ Callback = R6Class(
         final_node = do.call(value,args = callback_parameter)
         
         # then serialize it via the final node
-        # node_list = .final_node_serializer(final_node)
-        # used?
+        node_list = .final_node_serializer(final_node)
+        
+        #add the process node list to this graph
+        void = lapply(node_list, function(node) {
+          if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
+            old_graph$removeNode(node$getNodeId())
+          }
+          
+          if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
+            new_graph$addNode(node)
+          }
+          
+        })
         
         # switch back the graph
         private$process$setGraph(old_graph)
-        # add the process node list to this graph
+        
+        # add final node
         new_graph$setFinalNode(final_node)
         
         # assign new graph as value

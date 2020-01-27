@@ -300,70 +300,51 @@
 # [ (subset) ====
 #' @export
 `[.callback-value` <- function(x,i,...,drop=TRUE) {
+  # TODO think if i is a vector?
+  
   # check x for being an array
   if (! x$getSchema()$type == "array") stop("Non-array callback value cannot be addressed by index. Check if the callback requires a binary operator")
   graph = x$getProcess()$getGraph()
   
   FUN = "array_element"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data=x,index=i) 
+  graph[[FUN]](data=x,index=i-1) # do index shift because javascript / JSON addresses an element of an array from 0 to n-1
 }
 
 # mathematical operators ----
 # + (plus / add) ====
-#' @export
-`+.ProcessNode` <- function(e1,e2) {
-  # v0.4.2 -> sum
-  # v0.5 -> add
-  
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
-  
-  FUN = "sum"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = c(e1,e2)) 
+
+.plus = function(e1,e2){
+  .genericBinaryFunction(e1,e2,"sum")
 }
 
-# - (minus / subtract) ====
 #' @export
-`-.ProcessNode` <- function(e1,e2) {
+`+.ProcessNode` <- .plus
+
+#' @export
+`+.callback-value` <- .plus
+
+# - (minus / subtract) ====
+.minus = function(e1,e2) {
   # v0.4.2 -> subtract of array
   # v0.5 -> subtract of two values
   if (missing(e2)) {
     return(-1 * e1)
   }
   
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
-  
-  FUN = "subtract"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = c(e1,e2)) 
+  .genericBinaryFunction(e1,e2,"subtract")
 }
 
-# * (multiply) ====
 #' @export
-`*.ProcessNode` <- function(e1,e2) {
+`-.ProcessNode` <- .minus
+
+#' @export
+`-.callback-value` <- .minus
+
+# * (multiply) ====
+.multiply = function(e1,e2) {
   # v0.4.2 -> multiply or product of array
   # v0.5 -> multiply of two values, product of an array of values
-  
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
   
   if ("multiply" %in% names(graph)) {
     FUN = "multiply"
@@ -373,42 +354,37 @@
     stop("Neither 'multiply' nor 'product' are available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'.")
   }
   
-  graph[[FUN]](data = c(e1,e2)) 
+  .genericBinaryFunction(e1,e2,FUN)
   
 }
+
+#' @export
+`*.ProcessNode` <- .multiply
+
+#' @export
+`*.callback-value` <- .multiply
 
 # / (divide) ====
-#' @export
-`/.ProcessNode` <- function(e1,e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
-
-  FUN = "divide"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = c(e1,e2)) 
+.divide = function(e1,e2) {
+  .genericBinaryFunction(e1,e2,"divide")
 }
+
+#' @export
+`/.ProcessNode` <- .divide
+
+#' @export
+`/.callback-value` <- .divide
 
 # ^ (power) ====
-#' @export
-`^.ProcessNode` <- function(e1,e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
-  
-  FUN = "power"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](e1,e2) 
-  
+.power = function(e1,e2) {
+  .genericBinaryFunction(e1,e2,"power")
 }
+
+#' @export
+`^.ProcessNode` <- .power
+
+#' @export
+`^.callback-value` <- .power
 
 # %% (modulo) ====
 #' @export
@@ -788,3 +764,48 @@
 #' @export
 `quantile.callback-value` <- .quantile
 
+
+# utility functions ====
+.getGraph = function(e1,e2) {
+  if (any(c("callback-value","ProcessNode") %in% class(e1))) {
+    if ("ProcessNode" %in% class(e1)) {
+      return(e1$getGraph())
+    } else { # callback-value
+      return(e1$getProcess()$getGraph())
+    }
+    
+    
+  } else if (any(c("callback-value","ProcessNode") %in% class(e2))) {
+    if ("ProcessNode" %in% class(e2)) {
+      return(e2$getGraph())
+    } else { # callback-value
+      return(e2$getProcess()$getGraph())
+    } 
+    
+  } else {
+    # should not happen
+  }
+}
+
+.genericBinaryFunction = function(e1,e2,FUN) {
+  graph = .getGraph(e1,e2)
+  
+  # if callback-value, then check if array or single value
+  if ("callback-value" %in% class(e1)) {
+    
+    if (length(e1$getSchema()$type) > 0 && e1$getSchema()$type == "array") {
+      e1 = e1[1]
+      warning("Using first index of the input parameter else do explicit subset.")
+    }
+  }
+  
+  if ("callback-value" %in% class(e2)) {
+    if (length(e2$getSchema()$type) > 0 && e2$getSchema()$type == "array") {
+      e2 = e2[1]
+      warning("Using first index of the input parameter else do explicit subset.")
+    }
+  }
+  
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+  graph[[FUN]](data = c(e1,e2)) 
+}

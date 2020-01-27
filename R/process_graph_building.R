@@ -213,6 +213,10 @@ Graph = R6Class(
       private$assertNodeExists(node_id)
       return(private$nodes[[which(private$getNodeIds() == node_id)]])
     },
+    addNode = function(node) {
+      if (!"ProcessNode" %in% class(node)) stop("Input object is no ProcessNode")
+      private$nodes = c(private$nodes,node)
+    },
     
     removeNode = function(node_id) {
       private$assertNodeExists(node_id)
@@ -226,7 +230,7 @@ Graph = R6Class(
         message("No final node set in this graph.")
         invisible(NULL)
       } else {
-        return(private$nodes[[which(private$getNodeIds() == private$final_node_id)]])
+        return(private$nodes[[which(private$getNodeIds() == private$final_node_id)[1]]])
       }
       
       
