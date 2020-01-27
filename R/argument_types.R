@@ -821,7 +821,7 @@ BoundingBox = R6Class(
       ))
       
       suppressWarnings({
-        vals = lapply(private$value[required_dir_params],as.numeric)
+        vals = lapply(private$value[obj_names],as.numeric)
         nas = sapply(vals, is.na)
         
         if (any(nas)) {
