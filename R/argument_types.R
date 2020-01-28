@@ -171,7 +171,15 @@ Argument = R6Class(
       }
       
       # for format specific conversion overwrite this by children
-      return(private$typeSerialization())
+      tryCatch({
+        return(private$typeSerialization())
+      }, error = function(e) {
+        serialization_error = paste0("Error serializing parameter '",self$getName(),
+                                     "' in process node '", self$getProcess()$getNodeId(),
+                                     "' :",e$message)
+        stop(serialization_error)
+      })
+      
     },
     validate = function() {
       tryCatch(
@@ -1584,6 +1592,19 @@ Array = R6Class(
 
       if (itemType == "array") {
         # just check the first layer, everything else would be nice, but is no more in our responsibility
+        if ("callback-value" %in% class(private$value)) {
+          if (length(private$value$getSchema()$type) > 0 && 
+              private$value$getSchema()$type == "array")
+            if (length(private$value$getSchema()$items$type) > 0) {
+              if (private$value$getSchema()$items$type == private$schema$items$type) {
+                return()
+              }
+            } else {
+              stop("Selected callback-value is an array, but has a different item type.")
+            }
+            
+        }
+        
         allOK = all(sapply(private$value, function(item) {
           # item is an array type -> list or vector
           itemsItemType = private$schema$items$type
@@ -1682,18 +1703,20 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
-      if ("callback-value" %in% class(self$getValue())) return(self$getValue()$serialize())
-      
-      return(
-        lapply(self$getValue(), function(value) {
-          
-          if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
-          
-          if ("Argument" %in% class(value)) return(value$serialize())
-          
-          return(value)
-        })
-      )
+      if ("callback-value" %in% class(self$getValue()[[1]])) {
+        return(self$getValue()[[1]]$serialize())
+      } else {
+        return(
+          lapply(self$getValue(), function(value) {
+            
+            if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
+            
+            if ("Argument" %in% class(value)) return(value$serialize())
+            
+            return(value)
+          })
+        )
+      }
     })
 )
 
