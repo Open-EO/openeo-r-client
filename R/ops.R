@@ -303,7 +303,7 @@
   # TODO think if i is a vector?
   
   # check x for being an array
-  if (! x$getSchema()$type == "array") stop("Non-array callback value cannot be addressed by index. Check if the callback requires a binary operator")
+  if (! isTRUE(x$getSchema()$type == "array")) stop("Non-array callback value cannot be addressed by index. Check if the callback requires a binary operator")
   graph = x$getProcess()$getGraph()
   
   FUN = "array_element"

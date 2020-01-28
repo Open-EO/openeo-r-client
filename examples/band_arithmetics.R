@@ -181,8 +181,7 @@ data = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
                              ),
                              temporal_extent = list(
                                "2018-01-01", "2018-02-01"
-                             ),
-                             bands = c("B4","B8"))
+                             ))
 
 band_calc = data %>% graph$reduce(dimension = "bands",reducer = function(x) {
   B08 = x[8]
@@ -209,3 +208,42 @@ lin_scale = min_time %>% graph$apply(
 graph$save_result(data = lin_scale,format = "png") %>% graph$setFinalNode()
 
 graph
+
+# test at VITO
+
+con = connect(host = "http://openeo.vgt.vito.be/openeo/0.4.0/")
+con %>% list_file_types()
+
+graph = con %>% process_graph_builder()
+
+
+
+data = graph$load_collection(id = graph$data$CGS_SENTINEL2_RADIOMETRY_V102_001,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               south= 47.2,
+                               north=48.6,
+                               crs="EPSG:4326"
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-06-01"
+                             ),
+                             bands = c("2","4","8"))
+
+evi_calc = graph$reduce(data=data,dimension = "bands",reducer = function(x) {
+    B08 = x[3]
+    B04 = x[2]
+    B02 = x[1]
+    (2.5 * (B08-B04)) / ((B08 + 6 * B04 - 7.5 * B02) + 1)
+  }) 
+
+mint = graph$reduce(data = evi_calc,dimension = "temporal", reducer = function(x) {
+    min(x)
+  })
+
+graph$save_result(data=mint,format = "GTiff") %>% graph$setFinalNode()
+
+# graph
+
+con %>% compute_result(graph, format = "GTiff",output_file = "test.tif")

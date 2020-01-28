@@ -1353,7 +1353,6 @@ Callback = R6Class(
       if ("function" %in% class(value)) {
         # if value is a function -> then make a call with the function and a suitable callback 
         # parameter
-        
         # create a new graph
         con = private$process$getGraph()$getConnection()
         new_graph = process_graph_builder(con)
@@ -1364,10 +1363,12 @@ Callback = R6Class(
         private$process$setGraph(new_graph)
         
         # find suitable callback parameter (mostly array or binary) -> check for length of formals
-        callback_parameter = unname(private$parameters[1]) #TODO change later correctly
+        
+        callback_parameter = unname(private$parameters[[1]]) 
+        callback_parameter$setProcess(private$process)
         
         # make call
-        final_node = do.call(value,args = callback_parameter)
+        final_node = do.call(value,args = list(callback_parameter))
         
         # then serialize it via the final node
         node_list = .final_node_serializer(final_node)
@@ -1872,6 +1873,28 @@ AnyOf = R6Class(
       private$parameter_choice = parameter_list
     },
     setValue = function(value) {
+      if ("function" %in% class(value)) {
+        signature = formals(value)
+        
+        # currently we have only 1 parameter (either single value or array) or two (directly binary operation)
+        number_of_params = sapply(private$parameter_choice,function(cb) {
+          length(cb$getCallbackParameters())
+        })
+        
+        
+        choice_index = unname(which(number_of_params == length(signature)))
+        
+        if (length(choice_index) == 0) {
+          stop("Cannot match function to any of the callback parameter.")
+        }
+        
+        choice = private$parameter_choice[[choice_index]]
+        self$setValue(choice)
+        choice$setProcess(private$process)
+        choice$setValue(value)
+        
+        return(self)
+      }
       
       if ("Argument" %in% class(value)) {
         # This is mostly for callbacks
