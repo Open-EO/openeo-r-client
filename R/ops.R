@@ -7,81 +7,92 @@
 # TODO graph needs to be available in the ProcessNode
 
 # 1. Group
-#' @export
-`abs.ProcessNode` <- function(x) {
-  graph = x$getGraph()
 
-  FUN = "absolute"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+.abs = function(x) {
+  .genericUnaryFunction(x,"absolute")
 }
 
 #' @export
-`sign.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "sgn"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
+`abs.ProcessNode` <- .abs
 
 #' @export
-`sqrt.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "sqrt"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+`abs.callback-value` <- .abs
+
+
+.sign = function(x) {
+  .genericUnaryFunction(x,"sgn")
 }
+#' @export
+`sign.ProcessNode` <- .sign
+#' @export
+`sign.callback-value` <- .sign
+
+.sqrt <- function(x) {
+  .genericUnaryFunction(x,"sqrt")
+}
+#' @export
+`sqrt.ProcessNode` <- .sqrt
 
 #' @export
-`trunc.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "int"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+`sqrt.callback-value` <- .sqrt
+
+.trunc = function(x) {
+  .genericUnaryFunction(x,"int")
 }
+#' @export
+`trunc.ProcessNode` <- .trunc
 
 #' @export
-`floor.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "floor"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+`trunc.callback-value` <- .trunc
+
+.floor = function(x) {
+  .genericUnaryFunction(x,"floor")
 }
+#' @export
+`floor.ProcessNode` <- .floor
 
 #' @export
-`ceiling.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "ceil"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+`floor.callback-value` <- .floor
+
+.ceiling = function(x) {
+  .genericUnaryFunction(x,"ceil")
 }
+#' @export
+`ceiling.ProcessNode` <- .ceiling
 
 #' @export
-`round.ProcessNode` <- function(x,digits=0) {
-  graph = x$getGraph()
+`ceiling.callback-value` <- .ceiling
+
+.round = function(x,digits=0) {
+  graph = .getGraph(x)
   
   FUN = "round"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+  
+  x = .autoArraySubset(x)
+  x = .checkMathConstants(x,graph)
   graph[[FUN]](x=x,p=digits) 
 }
+#' @export
+`round.ProcessNode` <- .round
 
 #' @export
-`exp.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "exp"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+`round.callback-value` <- .round
+
+
+.exp = function(x) {
+  .genericUnaryFunction(x,"exp")
 }
 
 #' @export
-`log.ProcessNode` <- function(x,base=exp(1)) {
-  graph = x$getGraph()
+`exp.ProcessNode` <- .exp
+
+#' @export
+`exp.callback-value` <- .exp
+
+
+.log = function(x,base=exp(1)) {
+  graph = .getGraph(x)
   
   if (base==exp(1)) {
     FUN = "ln"
@@ -90,148 +101,184 @@
   }
   
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x,base=base) 
-}
-
-#' @export
-`log10.ProcessNode` <- function(x) {
-  graph = x$getGraph()
   
-  FUN = "log"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x,base=10) 
-}
-
-# trigonometric functions ----
-#' @export
-`cos.ProcessNode` <- function(x) {
-  graph = x$getGraph()
+  x = .autoArraySubset(x)
+  x = .checkMathConstants(x,graph)
   
-  FUN = "cos"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`sin.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "sin"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`tan.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "tan"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`cosh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "cosh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`sinh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "sinh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`tanh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "tanh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`acos.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arccos"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`asin.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arcsin"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`atan.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arctan"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`acosh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arccosh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`asinh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arcsinh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`atanh.ProcessNode` <- function(x) {
-  graph = x$getGraph()
-  
-  FUN = "arctanh"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
-}
-
-#' @export
-`atan2.ProcessNode` <- function(y,x) {
-  graph = x$getGraph()
-  
-  FUN = "arctan2"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](y=y,x=x) 
-}
-
-# cummulative ----
-# cumsum ====
-.cumsum <- function(x) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
+  if (FUN == "log") {
+    graph[[FUN]](x=x,base=base) 
   } else {
-    graph = x$getProcess()$getGraph()
+    graph[[FUN]](x=x) 
   }
   
-  FUN = "cumsum"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+}
+
+#' @export
+`log.ProcessNode` <- .log
+
+#' @export
+`log.callback-value` <- .log
+
+
+.log10 = function(x) {
+  .log(x,10)
+}
+#' @export
+`log10.ProcessNode` <- .log10
+
+#' @export
+`log10.callback-value` <- .log10
+
+# trigonometric functions ----
+.cos = function(x) {
+  .genericUnaryFunction(x,"cos")
+}
+
+#' @export
+`cos.ProcessNode` <- .cos
+
+#' @export
+`cos.callback-value` <- .cos
+
+
+.sin = function(x) {
+  .genericUnaryFunction(x,"sin")
+}
+#' @export
+`sin.ProcessNode` <- .sin
+
+#' @export
+`sin.callback-value` <- .sin
+
+
+.tan = function(x) {
+  .genericUnaryFunction(x,"tan")
+}
+#' @export
+`tan.ProcessNode` <- .tan
+
+#' @export
+`tan.callback-value` <- .tan
+
+
+.cosh = function(x) {
+  .genericUnaryFunction(x,"cosh")
+}
+
+#' @export
+`cosh.ProcessNode` <- .cosh
+
+#' @export
+`cosh.callback-value` <- .cosh
+
+
+.sinh = function(x) {
+  .genericUnaryFunction(x,"sinh")
+}
+
+#' @export
+`sinh.ProcessNode` <- .sinh
+
+#' @export
+`sinh.callback-value` <- .sinh
+
+
+.tanh = function(x) {
+  .genericUnaryFunction(x,"tanh")
+}
+
+#' @export
+`tanh.ProcessNode` <- .tanh
+
+#' @export
+`tanh.callback-value` <- .tanh
+
+
+.acos = function(x) {
+  .genericUnaryFunction(x,"arccos")
+}
+
+#' @export
+`acos.ProcessNode` <- .acos
+
+#' @export
+`acos.callback-value` <- .acos
+
+
+.asin = function(x) {
+  .genericUnaryFunction(x,"arcsin")
+}
+
+#' @export
+`asin.ProcessNode` <- .asin
+
+#' @export
+`asin.callback-value` <- .asin
+
+
+.atan = function(x) {
+  .genericUnaryFunction(x,"arctan")
+}
+
+#' @export
+`atan.ProcessNode` <- .atan
+
+#' @export
+`atan.callback-value` <- .atan
+
+
+.acosh = function(x) {
+  .genericUnaryFunction(x,"arccosh")
+}
+#' @export
+`acosh.ProcessNode` <- .acosh
+
+#' @export
+`acosh.callback-value` <- .acosh
+
+
+.asinh = function(x) {
+  .genericUnaryFunction(x,"arcsinh")
+}
+#' @export
+`asinh.ProcessNode` <- .asinh
+
+#' @export
+`asinh.callback-value` <- .asinh
+
+
+.atanh = function(x) {
+  .genericUnaryFunction(x,"arcsinh")
+}
+#' @export
+`atanh.ProcessNode` <- .atanh
+
+#' @export
+`atanh.callback-value` <- .atanh
+
+
+# internal function does not work
+# @export
+# `atan2` = function(y,x) {
+#   UseMethod("atan2")
+# }
+# 
+# .atan2 = function(y,x) {
+#     graph = .getGraph(y,x)
+# 
+#     FUN = "arctan2"
+#     if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+#     graph[[FUN]](y=y,x=x)
+# }
+# @export
+# `atan2.ProcessNode` <- .atan2
+# 
+# @export
+# `atan2.callback-value` <- .atan2
+
+# cummulative ----
+.cumsum <- function(x) {
+  .genericUnaryFunction(x,"cumsum")
 }
 #' @export
 `cumsum.ProcessNode` <- .cumsum
@@ -239,36 +286,20 @@
 #' @export
 `cumsum.callback-value` <- .cumsum
 
-# cummin ====
-#' @export
+
 .cummin <- function(x) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
-  
-  FUN = "cummin"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+  .genericUnaryFunction(x,"cummin")
 }
 
+#' @export
 `cummin.ProcessNode` <- .cummin
 
 #' @export
 `cummin.callback-value` <- .cummin
 
-# cummax ====
+
 .cummax <- function(x) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
-  
-  FUN = "cummax"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+  .genericUnaryFunction(x,"cummax")
 }
 
 #' @export
@@ -277,17 +308,9 @@
 #' @export
 `cummax.callback-value` <- .cummax
 
-# cumprod ====
+
 .cumprod <- function(x) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
-  
-  FUN = "cumproduct"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](x=x) 
+  .genericUnaryFunction(x,"cumproduct")
 }
 
 #' @export
@@ -312,8 +335,6 @@
 }
 
 # mathematical operators ----
-# + (plus / add) ====
-
 .plus = function(e1,e2){
   .genericBinaryFunction(e1,e2,"sum")
 }
@@ -324,14 +345,13 @@
 #' @export
 `+.callback-value` <- .plus
 
-# - (minus / subtract) ====
+
 .minus = function(e1,e2) {
   # v0.4.2 -> subtract of array
   # v0.5 -> subtract of two values
   if (missing(e2)) {
     return(-1 * e1)
   }
-  
   .genericBinaryFunction(e1,e2,"subtract")
 }
 
@@ -341,7 +361,7 @@
 #' @export
 `-.callback-value` <- .minus
 
-# * (multiply) ====
+
 .multiply = function(e1,e2) {
   # v0.4.2 -> multiply or product of array
   # v0.5 -> multiply of two values, product of an array of values
@@ -353,9 +373,7 @@
   } else {
     stop("Neither 'multiply' nor 'product' are available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'.")
   }
-  
   .genericBinaryFunction(e1,e2,FUN)
-  
 }
 
 #' @export
@@ -364,7 +382,7 @@
 #' @export
 `*.callback-value` <- .multiply
 
-# / (divide) ====
+
 .divide = function(e1,e2) {
   .genericBinaryFunction(e1,e2,"divide")
 }
@@ -375,7 +393,7 @@
 #' @export
 `/.callback-value` <- .divide
 
-# ^ (power) ====
+
 .power = function(e1,e2) {
   .genericBinaryFunction(e1,e2,"power")
 }
@@ -386,46 +404,31 @@
 #' @export
 `^.callback-value` <- .power
 
-# %% (modulo) ====
-#' @export
-`%%.ProcessNode` <- function(e1,e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
-  
-  FUN = "mod"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](e1,e2) 
-  
+
+.mod = function(e1,e2) {
+  .genericBinaryFunction(e1,e2,"mod")
 }
+
+#' @export
+`%%.ProcessNode` <- .mod
+
+#' @export
+`%%.callback-value` <- .mod
 
 # logical operators ----
 
-# ! (not) ====
-#' @export
-`!.ProcessNode` <- function(e1,e2) {
-  # e2 missing
-  graph = e1$getGraph()
-
-  FUN = "not"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](e1) 
+.not = function(e1,e2) {
+  .genericUnaryFunction(e1,"not")
 }
-
-# & (and) ====
 #' @export
-`&.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`!.ProcessNode` <- .not
+
+#' @export
+`!.callback-value` <- .not
+
+
+.and = function(e1,e2) {
+  graph = .getGraph(e1,e2)
   
   # v0.5 -> and only has two arguments
   # TODO think to overwrite 'all'
@@ -434,153 +437,143 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
-
-# | (or) ====
 #' @export
-`|.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`&.ProcessNode` <- .and
+
+#' @export
+`&.callback-value` <- .and
+
+
+.or = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   # v0.5 -> or only has two arguments, now it takes an array
   # TODO think to overwrite 'any'
-
+  
   FUN = "or"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
-
-# xor ====
 #' @export
-`xor.ProcessNode` <- function(x,y) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else if ("ProcessNode" %in% class(y)) {
-    graph = y$getGraph()
-  } else {
-    # should not happen
-  }
+`|.ProcessNode` <- .or
+
+#' @export
+`|.callback-value` <- .or
+
+
+.xor = function(x,y) {
+  graph = .getGraph(x,y)
   
   FUN = "xor"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](expressions=c(e1,e2)) 
+  graph[[FUN]](expressions=c(x,y)) 
 }
 
-# == (equals) ====
 #' @export
-`==.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`xor.ProcessNode` <- .xor
+
+#' @export
+`xor.callback-value` <- .xor
+
+
+.equals = function(e1,e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "eq"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 }
-
-# != (unequal) ====
 #' @export
-`!=.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`==.ProcessNode` <- .equals
+
+#' @export
+`==.callback-value` <- .equals
+
+
+.notequal = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "neq"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 } 
-
-# < (smaller than) ====
 #' @export
-`<.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`!=.ProcessNode` <- .notequal
+
+#' @export
+`!=.callback-value` <- .notequal
+
+
+.smaller = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "lt"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 }
-
-# <= (smaller than equals) ====
 #' @export
-`<=.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`<.ProcessNode` <- .smaller
+
+#' @export
+`<.callback-value` <- .smaller
+
+
+.smaller_eq = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "lte"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 }
-
-# >= (greater than equals) ====
 #' @export
-`>=.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`<=.ProcessNode` <- .smaller_eq
+
+#' @export
+`<=.callback-value` <- .smaller_eq
+
+
+.greater_eq = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "gte"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 }
-
-# > (greater than) ====
 #' @export
-`>.ProcessNode` <- function(e1, e2) {
-  if ("ProcessNode" %in% class(e1)) {
-    graph = e1$getGraph()
-  } else if ("ProcessNode" %in% class(e2)) {
-    graph = e2$getGraph()
-  } else {
-    # should not happen
-  }
+`>=.ProcessNode` <- .greater_eq
+
+#' @export
+`>=.callback-value` <- .greater_eq
+
+
+.greater = function(e1, e2) {
+  graph = .getGraph(e1,e2)
   
   FUN = "gt"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 
+#' @export
+`>.ProcessNode` <- .greater
+
+#' @export
+`>.callback-value` <- .greater
+
 # 3. group
 # summary operators ----
-# sum ====
 .sum <- function(..., na.rm=FALSE) {
   elems = list(...)
-  
-  if ("ProcessNode" %in% class(elems[[1]])) {
-    graph = elems[[1]]$getGraph()
-  } else {
-    graph = elems[[1]]$getProcess()$getGraph()
-  }
+  graph = .getGraph(elems[[1]])
   
   FUN = "sum"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = elems) 
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = elems) 
+  }
+  
 }
 
 #' @export
@@ -589,20 +582,19 @@
 #' @export
 `sum.callback-value` <- .sum
 
-# prod ====
+
 .prod <- function(..., na.rm=TRUE) {
   
   elems = list(...)
-  
-  if ("ProcessNode" %in% class(elems[[1]])) {
-    graph = elems[[1]]$getGraph()
-  } else {
-    graph = elems[[1]]$getProcess()$getGraph()
-  }
+  graph = .getGraph(elems[[1]])
   
   FUN = "product"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = elems)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = elems) 
+  }
 }
 #' @export
 `prod.ProcessNode` <- .prod
@@ -610,20 +602,19 @@
 #' @export
 `prod.callback-value` <- .prod
 
-# min ====
+
 .min <- function(..., na.rm=TRUE) {
   
   elems = list(...)
-  
-  if ("ProcessNode" %in% class(elems[[1]])) {
-    graph = elems[[1]]$getGraph()
-  } else {
-    graph = elems[[1]]$getProcess()$getGraph()
-  }
+  graph = .getGraph(elems[[1]])
   
   FUN = "min"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = elems)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = elems) 
+  }
 }
 #' @export
 `min.ProcessNode` <- .min
@@ -631,20 +622,20 @@
 #' @export
 `min.callback-value` <- .min
 
-# max ====
+
 .max <- function(..., na.rm=TRUE) {
   
   elems = list(...)
   
-  if ("ProcessNode" %in% class(elems[[1]])) {
-    graph = elems[[1]]$getGraph()
-  } else {
-    graph = elems[[1]]$getProcess()$getGraph()
-  }
+  graph = .getGraph(elems[[1]])
   
   FUN = "max"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = elems)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = elems) 
+  }
 }
 #' @export
 `max.ProcessNode` <- .max
@@ -652,16 +643,12 @@
 #' @export
 `max.callback-value` <- .max
 
-# range ====
+
 .range <- function(..., na.rm=TRUE) {
   
   elems = list(...)
   
-  if ("ProcessNode" %in% class(elems[[1]])) {
-    graph = elems[[1]]$getGraph()
-  } else {
-    graph = elems[[1]]$getProcess()$getGraph()
-  }
+  graph = .getGraph(elems[[1]])
   
   FUN = "extrema"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
@@ -674,17 +661,17 @@
 #' @export
 `range.callback-value` <- .range
 
-# mean ====
+
 .mean <- function(x, na.rm=FALSE,...) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
+  graph = .getGraph(x)
   
   FUN = "mean"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = x)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = x,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = x) 
+  }
 }
 
 #' @export
@@ -693,52 +680,53 @@
 #' @export
 `mean.callback-value` <- .mean
 
-# median ====
+
 #' @export
 .median <- function(x, na.rm=FALSE,...) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
+  graph = .getGraph(x)
   
   FUN = "median"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = x)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = x,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = x) 
+  }
 }
 `median.ProcessNode`<- .median
 
 #' @export
 `median.callback-value`<- .median
 
-# sd ====
+
 .sd <- function(x, na.rm=FALSE) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
+  graph = .getGraph(x)
   
   FUN = "sd"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = x)
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = x,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = x) 
+  }
 }
 #' @export
 `sd.ProcessNode`  <- .sd
 #' @export
 `sd.callback-value`  <- .sd
 
-# var ====
+
 .var <- function(x, na.rm=FALSE) {
-  if ("ProcessNode" %in% class(x)) {
-    graph = x$getGraph()
-  } else {
-    graph = x$getProcess()$getGraph()
-  }
+  graph = .getGraph(x)
   
   FUN = "variance"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = x)
+  
+  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+    graph[[FUN]](data = x,ignore_nodata=na.rm) 
+  } else {
+    graph[[FUN]](data = x) 
+  }
 }
 
 #' @export
@@ -746,7 +734,7 @@
 #' @export
 `var.callback-value` <- .var
 
-# quantile ====
+
 .quantile <- function(x, probs, na.rm=FALSE) {
   if ("ProcessNode" %in% class(x)) {
     graph = x$getGraph()
@@ -767,7 +755,7 @@
 
 # utility functions ====
 .getGraph = function(e1,e2) {
-  if (any(c("callback-value","ProcessNode") %in% class(e1))) {
+  if (!missing(e1) && any(c("callback-value","ProcessNode") %in% class(e1))) {
     if ("ProcessNode" %in% class(e1)) {
       return(e1$getGraph())
     } else { # callback-value
@@ -775,7 +763,9 @@
     }
     
     
-  } else if (any(c("callback-value","ProcessNode") %in% class(e2))) {
+  }
+  
+  if (!missing(e2) && any(c("callback-value","ProcessNode") %in% class(e2))) {
     if ("ProcessNode" %in% class(e2)) {
       return(e2$getGraph())
     } else { # callback-value
@@ -787,25 +777,63 @@
   }
 }
 
+.checkMathConstants = function(x, graph) {
+  if (is.numeric(x)) {
+    if (isTRUE(x == exp(1))) {
+      FUN = "e"
+      if (FUN %in% names(graph)) {
+        return(graph[[FUN]]())
+      } else {
+        warning("Mathematical constant 'e' detected, but back-end does not support function 'e()'. Using approximated value instead.")
+      }
+    }
+    
+    if (isTRUE(x == pi)) {
+      FUN = "pi"
+      if (FUN %in% names(graph)) {
+        return(graph[[FUN]]())
+      } else {
+        warning("Mathematical constant 'pi' detected, but back-end does not support function 'pi()'. Using approximated value instead.")
+      }
+    }
+  }
+  
+  return(x)
+}
+
+.autoArraySubset = function(x) {
+  if ("callback-value" %in% class(x)) {
+    
+    if (length(x$getSchema()$type) > 0 && x$getSchema()$type == "array") {
+      x = x[1]
+      warning("Using first index of the input parameter else do explicit subset.")
+    }
+  }
+  return(x)
+}
+
+.genericUnaryFunction = function(x,FUN) {
+  graph = .getGraph(e1=x)
+  
+  if (!FUN %in% names(graph)) {
+    stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+  }
+  
+  x = .autoArraySubset(x)
+  x = .checkMathConstants(x,graph)
+  graph[[FUN]](x=x) 
+}
+
 .genericBinaryFunction = function(e1,e2,FUN) {
   graph = .getGraph(e1,e2)
   
-  # if callback-value, then check if array or single value
-  if ("callback-value" %in% class(e1)) {
-    
-    if (length(e1$getSchema()$type) > 0 && e1$getSchema()$type == "array") {
-      e1 = e1[1]
-      warning("Using first index of the input parameter else do explicit subset.")
-    }
-  }
-  
-  if ("callback-value" %in% class(e2)) {
-    if (length(e2$getSchema()$type) > 0 && e2$getSchema()$type == "array") {
-      e2 = e2[1]
-      warning("Using first index of the input parameter else do explicit subset.")
-    }
-  }
-  
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+  
+  # if callback-value, then check if array or single value
+  e1 = .autoArraySubset(e1)
+  e2 = .autoArraySubset(e2)
+  
+  e1 = .checkMathConstants(e1,graph)
+  e2 = .checkMathConstants(e2,graph)
   graph[[FUN]](data = c(e1,e2)) 
 }

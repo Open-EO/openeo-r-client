@@ -74,6 +74,13 @@ reduce4 <- graph$reduce(data = data, reducer = function(x) {
 toJSON(reduce4$serialize(), auto_unbox = TRUE, pretty = TRUE)
 reduce4$validate()
 
+# special cases
+reduce5 <- graph$reduce(data = data, reducer = function(x) {
+  mean(list(log(x[1]),pi,exp(1)))
+}, dimension = "bands")
+toJSON(reduce5$serialize(), auto_unbox = TRUE, pretty = TRUE)
+reduce5$validate()
+
 # as mentioned the previous graphs examples are not really supposed to be running rather than
 # for testing the overloaded math operators
 
