@@ -1363,12 +1363,13 @@ Callback = R6Class(
         private$process$setGraph(new_graph)
         
         # find suitable callback parameter (mostly array or binary) -> check for length of formals
+        callback_parameter = private$parameters
+        names(callback_parameter) = names(formals(value))
         
-        callback_parameter = unname(private$parameters[[1]]) 
-        callback_parameter$setProcess(private$process)
+        lapply(callback_parameter, function(cb){cb$setProcess(private$process)})
         
         # make call
-        final_node = do.call(value,args = list(callback_parameter))
+        final_node = do.call(value,args = callback_parameter)
         
         # then serialize it via the final node
         node_list = .final_node_serializer(final_node)
@@ -1705,7 +1706,7 @@ Array = R6Class(
     },
     typeSerialization = function() {
       if ("callback-value" %in% class(self$getValue()[[1]])) {
-        return(self$getValue()[[1]]$serialize())
+        return(lapply(self$getValue(),function(arg)arg$serialize()))
       } else {
         return(
           lapply(self$getValue(), function(value) {
@@ -1881,15 +1882,16 @@ AnyOf = R6Class(
           length(cb$getCallbackParameters())
         })
         
-        
         choice_index = unname(which(number_of_params == length(signature)))
         
         if (length(choice_index) == 0) {
           stop("Cannot match function to any of the callback parameter.")
         }
-        
         choice = private$parameter_choice[[choice_index]]
-        self$setValue(choice)
+        
+        #resolve anyof parameter
+        self$getProcess()$setParameter(name = self$getName(),value = choice)
+        choice$setName(self$getName())
         choice$setProcess(private$process)
         choice$setValue(value)
         
