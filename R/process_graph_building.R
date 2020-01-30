@@ -173,7 +173,6 @@ Graph = R6Class(
       # iterate over all nodes and serialize their process (not the node it self, since this serializes it as argument)
       # before clean the nodes, remove those that are not connected
       self$clean()
-      
       result = lapply(private$nodes, function(node) {
         return(node$serialize())
       })
@@ -446,16 +445,23 @@ Process = R6Class(
       return(private$parameter_order)
     },
     serialize = function() {
-      serializedArgList = lapply(self$parameters, 
-                                 function(arg){
-                                   if(!arg$isEmpty()) arg$serialize()
-                                 })
       
-      serializedArgList[sapply(serializedArgList,is.null)] = NULL
-      
-      results = list(process_id=private$id,
-                     arguments = serializedArgList
-      )
+      if (length(self$parameters) > 0) {
+        serializedArgList = lapply(self$parameters, 
+                                   function(arg){
+                                     if(!arg$isEmpty()) arg$serialize()
+                                   })
+        
+        serializedArgList[sapply(serializedArgList,is.null)] = NULL
+        
+        results = list(process_id=private$id,
+                       arguments = serializedArgList
+        )
+      } else {
+        results = list(process_id=private$id,
+                       arguments = NA
+        )
+      }
       
       if (length(private$description)>0) results$description = private$description
       

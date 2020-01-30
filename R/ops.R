@@ -2,9 +2,6 @@
 
 # it works on process nodes and callback-value
 
-# TODO callback-value as array needs to store process nodes for subsetting to avoid having the same 
-# requests multiple times
-# TODO graph needs to be available in the ProcessNode
 
 # 1. Group
 
@@ -564,78 +561,43 @@
 # summary operators ----
 .sum <- function(..., na.rm=FALSE) {
   elems = list(...)
-  graph = .getGraph(elems[[1]])
-  
-  FUN = "sum"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = elems) 
-  }
-  
+  .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="sum")
 }
-
 #' @export
 `sum.ProcessNode` <- .sum
-
 #' @export
 `sum.callback-value` <- .sum
+#' @export
+`sum.list` <- .sum
 
 
 .prod <- function(..., na.rm=TRUE) {
-  
   elems = list(...)
-  graph = .getGraph(elems[[1]])
-  
-  FUN = "product"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = elems) 
-  }
+  .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="product")
 }
 #' @export
 `prod.ProcessNode` <- .prod
-
 #' @export
 `prod.callback-value` <- .prod
+#' @export
+`prod.list` <- .prod
 
 
 .min <- function(..., na.rm=TRUE) {
-  
   elems = list(...)
-  graph = .getGraph(elems[[1]])
-  
-  FUN = "min"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = elems) 
-  }
+  .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="min")
 }
 #' @export
 `min.ProcessNode` <- .min
-
 #' @export
 `min.callback-value` <- .min
+#' @export
+`min.list` <- .min
 
 
 .max <- function(..., na.rm=TRUE) {
-  
   elems = list(...)
-  
-  graph = .getGraph(elems[[1]])
-  
-  FUN = "max"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = elems,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = elems) 
-  }
+  .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="max")
 }
 #' @export
 `max.ProcessNode` <- .max
@@ -643,16 +605,13 @@
 #' @export
 `max.callback-value` <- .max
 
+#' @export
+`max.list` <- .max
+
 
 .range <- function(..., na.rm=TRUE) {
-  
   elems = list(...)
-  
-  graph = .getGraph(elems[[1]])
-  
-  FUN = "extrema"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  graph[[FUN]](data = elems)
+  .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="extrema")
 }
 
 #' @export
@@ -661,17 +620,12 @@
 #' @export
 `range.callback-value` <- .range
 
+#' @export
+`range.list` <- .range
+
 
 .mean <- function(x, na.rm=FALSE,...) {
-  graph = .getGraph(x)
-  
-  FUN = "mean"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = x,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = x) 
-  }
+  .genericAggregationFunction(x=x,na.rm=na.rm,FUN="mean")
 }
 
 #' @export
@@ -680,59 +634,48 @@
 #' @export
 `mean.callback-value` <- .mean
 
-
 #' @export
+`mean.list` <- .mean
+
+
+
+
 .median <- function(x, na.rm=FALSE,...) {
-  graph = .getGraph(x)
-  
-  FUN = "median"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = x,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = x) 
-  }
+  .genericAggregationFunction(x=x,na.rm=na.rm,FUN="median")
 }
+#' @export
 `median.ProcessNode`<- .median
 
 #' @export
 `median.callback-value`<- .median
 
+#' @export
+`median.list`<- .median
+
 
 .sd <- function(x, na.rm=FALSE) {
-  graph = .getGraph(x)
-  
-  FUN = "sd"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = x,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = x) 
-  }
+  .genericAggregationFunction(x=x,na.rm=na.rm,FUN="sd")
 }
 #' @export
 `sd.ProcessNode`  <- .sd
 #' @export
 `sd.callback-value`  <- .sd
 
+#' @export
+`sd.list`  <- .sd
+
 
 .var <- function(x, na.rm=FALSE) {
-  graph = .getGraph(x)
-  
-  FUN = "variance"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
-  
-  if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
-    graph[[FUN]](data = x,ignore_nodata=na.rm) 
-  } else {
-    graph[[FUN]](data = x) 
-  }
+  .genericAggregationFunction(x=x,na.rm=na.rm,FUN="variance")
 }
 
 #' @export
 `var.ProcessNode` <- .var
 #' @export
 `var.callback-value` <- .var
+
+#' @export
+`var.list` <- .var
 
 
 .quantile <- function(x, probs, na.rm=FALSE) {
@@ -761,8 +704,14 @@
     } else { # callback-value
       return(e1$getProcess()$getGraph())
     }
-    
-    
+  }
+  
+  if (!missing(e1) && "list" %in% class(e1)) {
+    if ("ProcessNode" %in% class(e1[[1]])) {
+      return(e1[[1]]$getGraph())
+    } else { # callback-value
+      return(e1[[1]]$getProcess()$getGraph())
+    }
   }
   
   if (!missing(e2) && any(c("callback-value","ProcessNode") %in% class(e2))) {
@@ -836,4 +785,39 @@
   e1 = .checkMathConstants(e1,graph)
   e2 = .checkMathConstants(e2,graph)
   graph[[FUN]](data = c(e1,e2)) 
+}
+
+.genericAggregationFunction = function(x, ..., FUN) {
+    graph = .getGraph(x)
+    params = list(...)
+    na.rm = FALSE
+    
+    if ("na.rm" %in% names(params)) {
+      na.rm = params$`na.rm`
+    }
+    
+    # check x
+    if ("callback-value" %in% class(x)) {
+      
+    }
+    
+    if ("ProcessNode" %in% class(x)) {
+      
+    } 
+    
+    if ("list" %in% class(x)) {
+      # do type checking? everything should me a single value with the same type or it should
+      # be of any type
+      x = lapply(x, function(elem){
+        .checkMathConstants(elem,graph)
+      })
+    }
+    
+    if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
+    
+    if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
+      graph[[FUN]](data = x,ignore_nodata=na.rm) 
+    } else {
+      graph[[FUN]](data = x) 
+    }
 }

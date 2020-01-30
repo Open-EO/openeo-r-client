@@ -1705,6 +1705,7 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
+      
       if ("callback-value" %in% class(self$getValue()[[1]])) {
         return(lapply(self$getValue(),function(arg)arg$serialize()))
       } else {
