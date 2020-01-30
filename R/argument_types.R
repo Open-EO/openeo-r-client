@@ -1707,7 +1707,11 @@ Array = R6Class(
     typeSerialization = function() {
       
       if ("callback-value" %in% class(self$getValue()[[1]])) {
-        return(lapply(self$getValue(),function(arg)arg$serialize()))
+        serialized = lapply(self$getValue(),function(arg)arg$serialize())
+        if (length(serialized) == 1) {
+          serialized = serialized[[1]]        
+        } 
+        return(serialized)
       } else {
         return(
           lapply(self$getValue(), function(value) {
