@@ -2,16 +2,13 @@
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
 
 library(openeo)
-library(magrittr)
-library(tibble)
-library(jsonlite)
 
 user = "group8"
 pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
 
 graph = process_graph_builder(con = con)
 

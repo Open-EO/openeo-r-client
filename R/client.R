@@ -124,7 +124,6 @@ OpenEOClient <- R6Class(
     connect = function(url,version,exchange_token="access_token") {
       
       tryCatch({
-        
         if (missing(url)) {
           message("Note: Host-URL is missing")
           return(invisible(self))
@@ -136,7 +135,7 @@ OpenEOClient <- R6Class(
         private$host = url
         private$exchange_token = exchange_token
         
-        if (!is.null(version)) {
+        if (!missing(version) && !is.null(version)) {
           # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
           hostInfo=private$backendVersions()$versions
           versionLabels = sapply(hostInfo,function(x)x$api_version)
@@ -155,6 +154,18 @@ OpenEOClient <- R6Class(
             }
             private$host = url
           }
+        } else {
+          hostInfo=private$backendVersions()$versions
+          hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
+          
+          for (i in 1:ncol(hostInfo)) {
+            hostInfo[,i] = unlist(hostInfo[,i])
+          }
+          
+          # select highest API version that is production ready. if none is production
+          # ready, then select highest version
+          hostInfo = .version_sort(hostInfo)
+          private$host = hostInfo[1,"url"]
         }
         
         self$api.mapping = endpoint_mapping(self)
