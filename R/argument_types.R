@@ -2185,29 +2185,35 @@ processFromJson=function(json) {
   if (is.null(json$summary)) json$summary = character()
   if (is.null(json$parameter_order)) json$parameter_order = character()
   
-  #map parameters!
-  parameters = lapply(
-    names(json$parameters), function(name) {
-      pdef = json$parameters[[name]]
-      if (is.null(pdef$name)) {
-        pdef$name = name
+  tryCatch({
+    #map parameters!
+    parameters = lapply(
+      names(json$parameters), function(name) {
+        pdef = json$parameters[[name]]
+        if (is.null(pdef$name)) {
+          pdef$name = name
+        }
+        
+        # set param if it is contained in the schema
+        param = parameterFromJson(pdef)
+        pattern = pdef$schema$pattern
+        if (!is.null(pattern)) {
+          param$setPattern(pattern)
+        }
+        
+        return(param)
       }
-      
-      # set param if it is contained in the schema
-      param = parameterFromJson(pdef)
-      pattern = pdef$schema$pattern
-      if (!is.null(pattern)) {
-        param$setPattern(pattern)
-      }
-      
-      return(param)
-    }
-  )
+    )
   
-  Process$new(id=json$id,
-              description = json$description,
-              summary=json$summary,
-              parameters = parameters,
-              returns = json$returns,
-              parameter_order = json$parameter_order)
+    Process$new(id=json$id,
+                description = json$description,
+                summary=json$summary,
+                parameters = parameters,
+                returns = json$returns,
+                parameter_order = json$parameter_order)
+  }, error = function(e) {
+    warning(paste0("Invalid process description for '",json$id,"'"))
+    NULL
+  })
+
 }

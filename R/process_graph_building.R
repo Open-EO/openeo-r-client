@@ -65,6 +65,9 @@ Graph = R6Class(
       self$data = data
       
       for (index in 1:length(processes)) {
+        if (is.null(processes[[index]])) {
+          next
+        }
         
         pid = processes[[index]]$getId()
         function_formals = processes[[index]]$getFormals()
@@ -645,7 +648,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' 
 #' @param con a connected openeo client
 #' @param json the json graph in a textual representation or an already parsed list object
-#' @param graph a already created process graph (probably empty) for callback graphs
+#' @param graph an already created process graph (probably empty) for callback graphs
 #' @return Graph object
 #' @export
 parse_graph = function(con, json, graph=NULL) {
