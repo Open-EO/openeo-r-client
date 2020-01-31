@@ -321,10 +321,9 @@ OpenEOClient <- R6Class(
       finally = {
       })
     },
-    backendVersions = function(url) {
-      
+    backendVersions = function() {
       tryCatch({
-        endpoint = "/.well-known/openeo"
+        endpoint = ".well-known/openeo"
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
         
