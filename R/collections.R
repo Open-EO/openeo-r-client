@@ -5,6 +5,9 @@
 #' @param con Connection object
 #' @export
 list_collections = function(con) {
+    if (missing(con)) {
+        con = active_connection()
+    }
     
     tryCatch({
         tag = "data_overview"
@@ -26,6 +29,10 @@ list_collections = function(con) {
 #' @return a list of detailed information about a product/collection
 #' @export
 describe_collection = function(con, id = NA) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     missing_id = !missing(id) && !is.na(id)
     
     if (!missing_id) {

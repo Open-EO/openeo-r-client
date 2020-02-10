@@ -56,6 +56,10 @@ Graph = R6Class(
     data = list(),
     
     initialize = function(con, data = list()) {
+      if (missing(con)) {
+        con = active_connection()
+      }
+      
       private$connection = con
       
       processes = lapply(con$processes, processFromJson)
@@ -667,6 +671,10 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @return Graph object
 #' @export
 parse_graph = function(con, json, graph=NULL) {
+  if (missing(con)) {
+    con = active_connection()
+  }
+  
   if (is.list(json)) {
     parsed_json = json
   } else {

@@ -62,6 +62,8 @@ OpenEOClient <- R6Class(
       if (!is.null(host)) {
         private$host = host
       }
+      
+      active_connection(con=self)
     },
     getBackendEndpoint = function(endpoint_name) {
       if (!is.null(self$api.mapping)) {
