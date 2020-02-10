@@ -105,20 +105,29 @@ print.CollectionInfo = function(x, ...) {
     }
     
     
-    
     spatial.extent = paste("(", x$extent$spatial[1], ", ", x$extent$spatial[2], "), (", x$extent$spatial[3], ", ", x$extent$spatial[4], ")", sep = "")
     extent = paste("Spatial extent (lon,lat):\t", spatial.extent, sep = "")
     
-    time = paste("Temporal extent:\t\t", paste(sapply(x$extent$temporal, function(obj) {
-        if (is.null(obj) || is.na(obj) || length(obj) == 0) 
-            return(NA) else return(format(as_datetime(obj), format = "%Y-%m-%dT%H:%M:%SZ"))
-    }), collapse = "/"), sep = "")
+    time = tryCatch({
+        paste("Temporal extent:\t\t", paste(sapply(x$extent$temporal, function(obj) {
+            if (is.null(obj) || is.na(obj) || length(obj) == 0) 
+                return(NA) 
+            else 
+                return(format(as_datetime(obj), format = "%Y-%m-%dT%H:%M:%SZ"))
+        }), collapse = "/"), sep = "")
+    }, error = function(e) {
+        paste("Temporal extent:\t\t***parsing error***")
+    })
+
     
     cat(c(id, title, description, source, platform, constellation, instrument, extent, crs, time), sep = "\n")
     
     if (!is.null(x$properties$`eo:bands`)) {
         cat("Bands:\n")
         print(as.data.frame(x$properties$`eo:bands`))
+    } else if (!is.null(x$properties$`sar:bands`)) {
+        cat("Bands:\n")
+        print(as.data.frame(x$properties$`sar:bands`))
     }
     
 }
@@ -140,7 +149,7 @@ print.JobInfo = function(x, ...) {
         x$progress = "---"
     progress = paste("Progress:\t", x$progress, "\n", sep = "")
     
-    if (is.null(x$error)) 
+    if (is.null(x$error))  
         x$error$message = "---"
     error = paste("Error:\t\t", x$error$message, "\n", sep = "")
     

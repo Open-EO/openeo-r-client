@@ -2,18 +2,15 @@
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
 
 library(openeo)
-library(magrittr)
-library(tibble)
-library(jsonlite)
 
 user = "group8"
 pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
 
-graph = con %>% process_graph_builder()
+graph = process_graph_builder(con = con)
 
 # creating the graph
 data = graph$load_collection(graph$data$`COPERNICUS/S2`,
@@ -24,41 +21,35 @@ data = graph$load_collection(graph$data$`COPERNICUS/S2`,
                                south= 47.2
                              ),
                              temporal_extent = list(
-                               "2018-01-01", "2018-02-01"
+                               "2018-04-01", "2018-05-01"
                              ),
-                             bands=list("B08","B04","B02"))
+                             bands=list("B8","B4","B2"))
 
-spectral_reduce = data %>% graph$reduce(dimension = "bands")
+spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = function(x) {
+  B08 = x[1]
+  B04 = x[2]
+  B02 = x[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
 
-evi_graph = con %>% callback(spectral_reduce,parameter = "reducer")
+temporal_reduce = graph$reduce(data = spectral_reduce,dimension = "temporal", reducer = function(x) {
+  min(x)
+})
 
-nir = evi_graph$data$data %>% evi_graph$array_element(0)
-red = evi_graph$data$data %>% evi_graph$array_element(1)
-blue = evi_graph$data$data %>% evi_graph$array_element(2)
+# alternatives
+# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = graph$min)
+# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
 
-p1 = evi_graph$product(data = list(red, 6))
-p2 = evi_graph$product(data = list(blue, -7.5))
+apply_linear_transform = graph$apply(data=temporal_reduce,process = function(value) {
+  graph$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
 
-sub = evi_graph$subtract(data = list(nir,red))
-sum = evi_graph$sum(data = list(1,nir,p1,p2))
-div = evi_graph$divide(data = list(sub,sum))
-
-p3 = evi_graph$product(data = list(2.5,div))
-
-evi_graph$setFinalNode(p3)
-
-temporal_reduce = spectral_reduce %>% graph$reduce(dimension = "temporal")
-
-min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
-min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
-
-apply_linear_transform = temporal_reduce %>% graph$apply()
-
-cb2_graph = con %>% callback(apply_linear_transform, "process")
-cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
-
-
-apply_linear_transform %>% graph$save_result(format="PNG") %>% graph$setFinalNode()
+final_node = graph$save_result(data=apply_linear_transform,format="PNG")
+graph$setFinalNode(final_node)
 
 # print as JSON
 graph
@@ -69,42 +60,36 @@ cat(graphToJSON(graph),file = "r-evi-phenology-graph.json")
 # client side graph validation
 graph$validate()
 
-#
-# Or do the same using the band_arithmetic
-#
-graph = con %>% process_graph_builder()
+validate_process_graph(con = con, graph = graph)
 
-# creating the graph
-data = graph$load_collection(graph$data$`COPERNICUS/S2`,
-                             spatial_extent = list(
-                               west=16.1,
-                               east=16.6,
-                               north=48.6,
-                               south= 47.2
-                             ),
-                             temporal_extent = list(
-                               "2018-01-01", "2018-02-01"
-                             ),
-                             bands=list("B08","B04","B02"))
+compute_result(con=con,graph=graph,format = "PNG",output_file = "gee_evi_example.png")
 
-evi_calculation = data %>% band_arithmetics(graph = graph,function(x) {
-  2.5*((x[1]-x[2])/sum(1,x[1],6*x[2],-7.5*x[3]))
-})
+# old code snippets for the callback creations
 
-temporal_reduce = evi_calculation %>% graph$reduce(dimension = "temporal")
-
-min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
-min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
-
-apply_linear_transform = temporal_reduce %>% graph$apply()
-
-cb2_graph = con %>% callback(apply_linear_transform, "process")
-cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
+# old callback creation - spectral reducer
+# evi_graph = con %>% callback(spectral_reduce,parameter = "reducer")
+# 
+# nir = evi_graph$data$data %>% evi_graph$array_element(0)
+# red = evi_graph$data$data %>% evi_graph$array_element(1)
+# blue = evi_graph$data$data %>% evi_graph$array_element(2)
+# 
+# p1 = evi_graph$product(data = list(red, 6))
+# p2 = evi_graph$product(data = list(blue, -7.5))
+# 
+# sub = evi_graph$subtract(data = list(nir,red))
+# sum = evi_graph$sum(data = list(1,nir,p1,p2))
+# div = evi_graph$divide(data = list(sub,sum))
+# 
+# p3 = evi_graph$product(data = list(2.5,div))
+# 
+# evi_graph$setFinalNode(p3)
 
 
-apply_linear_transform %>% graph$save_result(format="PNG") %>% graph$setFinalNode()
+# old callback - temporal reducer
+# min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
+# min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
 
-graph$validate()
 
-graph
-
+# old callback - linear scaling
+# cb2_graph = con %>% callback(apply_linear_transform, "process")
+# cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()

@@ -1,4 +1,4 @@
-# RClient -> EURAC version: 0.4.2
+# RClient v0.6.0 -> EURAC version: 0.4.2
 
 library(magrittr)
 library(openeo)
@@ -10,20 +10,20 @@ user = ""
 password = ""
 
 eurac = connect(host = euracHost, user = user,password = password, login_type = "basic")
-eurac %>% list_processes()
-eurac %>% capabilities()
-eurac %>% list_file_types()
+list_processes(con = eurac)
+capabilities(con = eurac)
+list_file_types(con = eurac)
 
-descriptions = eurac %>% list_collections()
+descriptions = list_collections(con = eurac)
 
-eurac %>% describe_collection(id="openEO_S2_32632_10m_L2A")
+describe_collection(con = eurac, id="openEO_S2_32632_10m_L2A")
 
-eurac %>% describe_process("load_collection")
-eurac %>% describe_process("ndvi")
-eurac %>% describe_process("min_time")
+describe_process(con = eurac,"load_collection")
+describe_process(con = eurac,"ndvi")
+describe_process(con = eurac,"min_time")
 
 # Build a process graph: Maximum NDVI with a linear scale into a png file
-graph = eurac %>% process_graph_builder()
+graph = process_graph_builder(con = eurac)
 
 data1 = graph$load_collection(id = graph$data$openEO_S2_32632_10m_L2A, 
                               spatial_extent = list(west = 11.2792, 
@@ -35,33 +35,36 @@ data1 = graph$load_collection(id = graph$data$openEO_S2_32632_10m_L2A,
 ndvi = data1 %>% graph$ndvi()
 max_t = ndvi %>% graph$max_time()
 
-apply_linear_transform = graph$apply(data = max_t)
+apply_linear_transform = graph$apply(data = max_t, process = function(value) {
+  graph$linear_scale_range(x = value, 
+                           inputMin = -1, inputMax = 1, 
+                           outputMin = 0, outputMax = 255)
+})
 
-cb2_graph = callback(apply_linear_transform, "process")
+final = graph$save_result(data = apply_linear_transform, format = "PNG") 
 
-cb2_graph$linear_scale_range(x = cb2_graph$data$x, 
-                             inputMin = -1, inputMax = 1, 
-                             outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
-
-apply_linear_transform %>% graph$save_result(format = "PNG") %>% graph$setFinalNode()
-
-
-eurac %>% compute_result(graph, format="GTiff",output_file = "eurac_test.png")
+graph$setFinalNode(node = final)
 
 
-job_id = eurac %>% create_job(graph,title = "UC1 Graph from R client") # Location header is not available -> breaks the client
+compute_result(con = eurac, graph = graph, format="GTiff",output_file = "eurac_test.png")
 
-eurac %>% start_job(job_id)
 
-eurac %>% describe_job(job_id)
+job_id = create_job(con = eurac,
+                    graph = graph,
+                    title = "UC1 Graph from R client")
 
-eurac %>% list_results(job=job_id)
+start_job(con = eurac, job = job_id)
 
-eurac %>% download_results(job = job_id,folder = "./eurac_test/")
+describe_job(con = eurac, job = job_id)
+
+list_results(con = eurac, job=job_id)
+
+download_results(con = eurac,job = job_id,folder = "./eurac_test/")
+
 
 # Create a process graph calculating maximum NDVI but download as GTiff
 
-graph2 = eurac %>% process_graph_builder()
+graph2 = process_graph_builder(con = eurac)
 
 data2 = graph2$load_collection(id = graph2$data$openEO_S2_32632_10m_L2A, 
                               spatial_extent = list(west = 11.2792, 
@@ -70,12 +73,13 @@ data2 = graph2$load_collection(id = graph2$data$openEO_S2_32632_10m_L2A,
                                                     north = 46.5182), 
                               temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"))
 
-data2 %>% 
-  graph2$ndvi() %>% 
-  graph2$max_time() %>% 
-  graph2$save_result(format = "GTiff") %>% 
-  graph2$setFinalNode()
+
+ndvi = graph2$ndvi(data = data2)
+max_t = graph2$max_time(data = ndvi)
+final = graph2$save_result(data = max_t,format = "GTiff")
+
+graph2$setFinalNode(node = final)
 
 
-eurac %>% compute_result(graph2, format="GTiff",output_file = "eurac_test.tif")
+compute_result(con = eurac,graph=graph2, format="GTiff",output_file = "eurac_test.tif")
 

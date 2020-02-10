@@ -45,10 +45,25 @@ describe_collection = function(con, id = NA) {
             class(info) = "CollectionInfo"
             
             if (!is.null(info$properties$`eo:bands`)) {
+                if (length(info$properties$`eo:bands`) == 1 && is.null(info$properties$`eo:bands`[[1]]$name)) {
+                    info$properties$`eo:bands` = info$properties$`eo:bands`[[1]]
+                }
                 class(info$properties$`eo:bands`) = "BandList"
             }
             
-            class(info$properties$`cube:dimensions`) = "CubeDimensions"
+            if (!is.null(info$properties$`sar:bands`)) {
+                if (length(info$properties$`sar:bands`) == 1 && is.null(info$properties$`sar:bands`[[1]]$name)) {
+                    info$properties$`sar:bands` = info$properties$`sar:bands`[[1]]
+                }
+                class(info$properties$`sar:bands`) = "BandList"
+            }
+            
+            if (!is.null(info$properties$`cube:dimensions`)) {
+                class(info$properties$`cube:dimensions`) = "CubeDimensions"
+            } else {
+                warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
+            }
+            
             
             return(info)
         }, error = .capturedErrorToMessage)
