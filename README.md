@@ -29,7 +29,7 @@ Since the openEO project is under heavy development regarding the openeo API tha
 | v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
 | v0.4.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
 | v0.5.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
-
+| v0.6.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
 
 ## Getting Started
 After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.

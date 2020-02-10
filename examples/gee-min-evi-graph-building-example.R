@@ -32,13 +32,13 @@ spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = functi
   (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
 })
 
-temporal_reduce = graph$reduce(data = spectral_reduce,dimension = "temporal", reducer = function(x) {
-  min(x)
-})
+temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = graph$min)
 
 # alternatives
-# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = graph$min)
 # temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
+# temporal_reduce = graph$reduce(data = spectral_reduce,dimension = "temporal", reducer = function(x) {
+#   min(x)
+# })
 
 apply_linear_transform = graph$apply(data=temporal_reduce,process = function(value) {
   graph$linear_scale_range(x = value, 
