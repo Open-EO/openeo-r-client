@@ -424,9 +424,24 @@ Process = R6Class(
     },
     
     getFormals = function() {
-      #TODO set also default values
-      result = rep(NA,length(self$parameters))
-      names(result) = names(self$parameters)
+      if (length(self$parameters) == 0) return(list())
+      
+      result = as.list(rep(NA,length(self$parameters)))
+      
+      # set also default values
+      
+      for (i in 1:length(self$parameters)) {
+        
+        default_value = self$parameters[[i]]$getDefault()
+
+        if (!is.null(default_value)) {
+          result[[i]] = default_value
+        }
+        # otherwise leave it as NA
+      }
+      
+      
+      names(result) = sapply(self$parameters, function(param)param$getName())
       
       return(result)
     },

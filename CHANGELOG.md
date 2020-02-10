@@ -11,6 +11,7 @@
 - overloaded mathematical operators for `ProcessNode` and `callback-value` classes
 - allowed functions as "callbacks" for reducer function, e.g. in reduce or apply (not only for band arithmetics)
 - processes can now be created from any graph in callbacks provided as functions
+- slight change for indirect parameter order in processes (backward compatible)
 
 ### Fixed
 - fixed bad ordering of bounding box parameter

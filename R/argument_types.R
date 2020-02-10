@@ -65,6 +65,13 @@ Parameter = R6Class(
     setPattern = function(pattern) {
       private$schema$pattern = pattern
     },
+    setDefault = function(value) {
+      private$schema$default = value
+      invisible(self)
+    },
+    getDefault = function() {
+      return(private$schema$default)
+    },
     matchesSchema = function(schema) {
       sel = c("type","format")
       
@@ -2140,6 +2147,9 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   
   # in general also reolve null cases
   param$isNullable = nullable
+  
+  # TODO change in 1.0.0 to param_def$default
+  param$setDefault(param_def$schema$default)
   
   if ("callback" %in% class(param)) {
     # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
