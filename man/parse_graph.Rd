@@ -11,7 +11,7 @@ parse_graph(con, json, graph = NULL)
 
 \item{json}{the json graph in a textual representation or an already parsed list object}
 
-\item{graph}{a already created process graph (probably empty) for callback graphs}
+\item{graph}{an already created process graph (probably empty) for callback graphs}
 }
 \value{
 Graph object

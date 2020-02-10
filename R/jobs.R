@@ -8,6 +8,10 @@
 #' @export
 list_jobs = function(con) {
     tryCatch({
+        if (missing(con)) {
+            con = active_connection()
+        }
+        
         tag = "user_jobs"
         
         listOfJobs = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
@@ -54,6 +58,10 @@ list_jobs = function(con) {
 #' @export
 compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
     tryCatch({
+        if (missing(con)) {
+            con = active_connection()
+        }
+        
         # former sync evaluation
         if (is.null(format)) {
             stop("Parameter \"format\" is not set. Please provide a valid format.")
@@ -114,6 +122,9 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
 #' @export
 create_job = function(con, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
+        if (missing(con)) {
+            con = active_connection()
+        }
         
         create_options = list(...)
         output = list()
@@ -164,6 +175,10 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
 #' @return the job_id of the defined job
 #' @export 
 start_job = function(con, job) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -209,6 +224,10 @@ start_job = function(con, job) {
 #' @export
 update_job = function(con, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
+        if (missing(con)) {
+            con = active_connection()
+        }
+        
         if (is.null(id)) {
             stop("No job i was specified.")
         }
@@ -278,6 +297,10 @@ follow_job = function(con, job_id) {
 #' @return result object containing of URLs for download
 #' @export
 list_results = function(con, job) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -305,6 +328,9 @@ list_results = function(con, job) {
 #' @importFrom utils download.file
 #' @export
 download_results = function(con, job, folder) {
+    if (missing(con)) {
+        con = active_connection()
+    }
     
     if (!dir.exists(folder)) 
         dir.create(folder, recursive = TRUE)
@@ -338,6 +364,10 @@ download_results = function(con, job, folder) {
 #' @return a success / failure notification
 #' @export
 stop_job = function(con, job) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -369,6 +399,14 @@ stop_job = function(con, job) {
 #' @return a detailed description about the job
 #' @export
 describe_job = function(con, job) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -426,6 +464,10 @@ delete_job = function(con, job) {
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
 estimate_job = function(con, job) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {

@@ -8,6 +8,10 @@
 #' @export
 list_processes = function(con) {
     tryCatch({
+        if (missing(con)) {
+            con = active_connection()
+        }
+        
         if (is.null(con$processes)) {
             tag = "process_overview"
             
@@ -33,6 +37,10 @@ list_processes = function(con) {
 #' @return a list of detailed information
 #' @export
 describe_process = function(con, id = NA) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
     describeProcess = !missing(id) && !is.na(id)
     
     if (!describeProcess) {
