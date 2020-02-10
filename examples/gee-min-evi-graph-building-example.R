@@ -36,6 +36,10 @@ temporal_reduce = graph$reduce(data = spectral_reduce,dimension = "temporal", re
   min(x)
 })
 
+# alternatives
+# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = graph$min)
+# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
+
 apply_linear_transform = graph$apply(data=temporal_reduce,process = function(value) {
   graph$linear_scale_range(x = value, 
                            inputMin = -1, 

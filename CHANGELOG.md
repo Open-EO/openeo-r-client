@@ -5,6 +5,7 @@
 ### Added
 - transferred a function to directly interact with UDF services from an example script of R UDF service repository `send_udf` and added documentation to the function
 - added an example script for the new callback functions
+- added a Rmd for the new callback behavior
 
 ### Changed
 - overloaded mathematical operators for `ProcessNode` and `callback-value` classes
