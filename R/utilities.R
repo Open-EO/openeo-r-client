@@ -88,3 +88,13 @@ graphToJSON = function(graph) {
     temp = merge(versions,v,by=0)
     v[with(temp,order(production,V1,V2,V3,V4,na.last=FALSE,decreasing = TRUE)),]
 }
+
+.assure_connection = function(con) {
+    if (missing(con)) {
+        con = active_connection()
+    }
+    
+    if (is.null(con)) stop("Cannot find a valid and active openEO connection. Please use 'connect' to connect with an openEO service.")
+    
+    return(con)
+}

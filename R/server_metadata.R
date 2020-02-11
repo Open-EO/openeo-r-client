@@ -43,9 +43,7 @@ api_versions = function(url) {
 capabilities = function(con) {
     endpoint = "/"
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         con$stopIfNotConnected()
         capabilities = content(httr::GET(url = paste0(con$getHost(), endpoint)))
         class(capabilities) = "OpenEOCapabilities"
@@ -64,9 +62,7 @@ capabilities = function(con) {
 #' 
 #' @export
 list_features = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     return(con$api.mapping[c("endpoint", "operation", "available")])
 }
 
@@ -81,9 +77,7 @@ list_file_types = function(con) {
     tryCatch({
         tag = "formats"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         # optional sending of bearer otherwise no authentication required
         formats = con$request(tag = tag, authorized = con$isLoggedIn())
@@ -109,9 +103,7 @@ list_file_types = function(con) {
 #' @export
 list_service_types = function(con) {
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         con$stopIfNotConnected()
         

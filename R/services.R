@@ -13,9 +13,7 @@ list_services = function(con) {
     tryCatch(suppressWarnings({
         tag = "user_services"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         listOfServices = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
         listOfServices = listOfServices$services
@@ -52,9 +50,7 @@ create_service = function(con, type, graph, title = NULL, description = NULL, en
             stop("No type specified.")
         }
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, parameters = parameters, 
             plan = plan, budget = budget)
@@ -93,9 +89,7 @@ update_service = function(con, id, type = NULL, process_graph = NULL, title = NU
     tryCatch({
         patch = list()
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (!is.null(type)) {
             patch[["type"]] = type
@@ -181,9 +175,7 @@ describe_service = function(con, id) {
             stop("No service id specified.")
         }
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         tag = "services_details"
         service = con$request(tag = tag, parameters = list(id), authorized = TRUE)
@@ -203,9 +195,7 @@ delete_service = function(con, id) {
     tryCatch({
         tag = "services_delete"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         msg = con$request(tag = tag, parameters = list(id), authorized = TRUE)
         message("Service '", id, "' successfully removed.")

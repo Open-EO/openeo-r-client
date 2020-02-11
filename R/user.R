@@ -13,9 +13,7 @@ list_files = function(con) {
     tryCatch({
         tag = "user_files"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         files = con$request(tag = tag, parameters = list(con$user_id), TRUE, type = "application/json")
         files = files$files
@@ -66,9 +64,7 @@ upload_file = function(con, content, target, encode = "raw", mime = "application
         target = URLencode(target, reserved = TRUE)
         target = gsub("\\.", "%2E", target)
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (is.null(con$user_id)) {
             stop("User id is not set. Either login or set the id manually.")
@@ -107,9 +103,7 @@ download_file = function(con, src, dst = NULL) {
         
         tag = "user_file_download"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         file_connection = file(dst, open = "wb")
         writeBin(object = con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE, as = "raw"), con = file_connection)
@@ -141,9 +135,7 @@ delete_file = function(con, src) {
         
         tag = "user_file_delete"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         return(con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE))
     }, error = .capturedErrorToMessage)
@@ -161,9 +153,7 @@ describe_account = function(con) {
     tryCatch({
         tag = "user_info"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         user_info = con$request(tag = tag, authorized = TRUE, type = "application/json")
         
@@ -256,9 +246,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' }
 #' @export
 login = function(con, user = NULL, password = NULL, login_type = NULL, external=NULL) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     return(con$login(user = user, password = password, login_type = login_type, external = external))
 }

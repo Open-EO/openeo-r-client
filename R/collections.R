@@ -5,9 +5,7 @@
 #' @param con Connection object
 #' @export
 list_collections = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     tryCatch({
         tag = "data_overview"
@@ -29,9 +27,7 @@ list_collections = function(con) {
 #' @return a list of detailed information about a product/collection
 #' @export
 describe_collection = function(con, id = NA) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     missing_id = !missing(id) && !is.na(id)
     

@@ -13,9 +13,7 @@ load_api = function(version) {
 }
 
 endpoint_mapping = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     endpoints = capabilities(con)$endpoints
     
@@ -77,9 +75,7 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' 
 #' @export
 supports = function(con, tag_name) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     if (isNamespaceLoaded("tibble")) 
         return(con$api.mapping[con$api.mapping$tag == tag_name, "available"][[1]]) else return(con$api.mapping[con$api.mapping$tag == tag_name, "available"])

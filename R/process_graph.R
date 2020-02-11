@@ -11,9 +11,7 @@ list_process_graphs = function(con) {
     tryCatch({
         tag = "graph_overview"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         listOfGraphShortInfos = con$request(tag = tag, authorized = TRUE)
         listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
@@ -43,9 +41,7 @@ list_process_graphs = function(con) {
 #' @export
 describe_process_graph = function(con, id) {
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (is.null(id)) {
             stop("No graph id specified. Cannot fetch unknown graph.")
@@ -73,9 +69,7 @@ delete_process_graph = function(con, id) {
     tryCatch({
         tag = "graph_delete"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         success = con$request(tag = tag, parameters = list(id), authorized = TRUE)
         if (success) {
@@ -96,9 +90,7 @@ delete_process_graph = function(con, id) {
 #' @export
 create_process_graph = function(con, graph, title = NULL, description = NULL) {
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (!"Graph" %in% class(graph) || is.null(graph)) {
             stop("The graph information is missing or not a list")
@@ -132,9 +124,7 @@ update_process_graph = function(con, id, graph = NULL, title = NULL, description
             stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
         }
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         requestBody = list()
         
@@ -191,9 +181,7 @@ validate_process_graph = function(con, graph) {
             stop("The graph information is missing or not a list")
         }
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         requestBody = list(process_graph = graph)
         
@@ -216,9 +204,7 @@ validate_process_graph = function(con, graph) {
 #' @export
 process_graph_builder = function(con) {
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (is.null(con$processes)) {
             temp = list_processes(con)
@@ -231,4 +217,16 @@ process_graph_builder = function(con) {
         
         return(Graph$new(con, collections))
     }, error = .capturedErrorToMessage)
+}
+
+#' @export
+processes = function(con) {
+    con = .assure_connection(con)
+    
+    collections = list_collections(con)$collections
+    cids = sapply(collections, function(coll) coll$id)
+    collections = as.list(cids)
+    names(collections) = cids
+    
+    return(ProcessCollection$new(con = con, data = collections))
 }

@@ -11,9 +11,7 @@
 list_udf_runtimes = function(con) {
     tryCatch({
         tag = "udf_runtimes"
-        if (missing(con)) {
-          con = active_connection()
-        }
+        con = .assure_connection(con)
         return(con$request(tag = tag, authorized = con$isLoggedIn()))
     }, error = .capturedErrorToMessage)
 }

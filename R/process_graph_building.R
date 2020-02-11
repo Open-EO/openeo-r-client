@@ -56,9 +56,7 @@ Graph = R6Class(
     data = list(),
     
     initialize = function(con, data = list(),final_node=NULL) {
-      if (missing(con)) {
-        con = active_connection()
-      }
+      con = .assure_connection(con)
       
       private$connection = con
       
@@ -344,16 +342,13 @@ Graph = R6Class(
 setOldClass(c("Graph","R6"))
 
 # ProcessCollection ====
-#' @export
 ProcessCollection = R6Class(
   "ProcessCollection",
   lock_objects = FALSE,
   public = list(
     data = list(),
     initialize = function(con, data = list()) {
-      if (missing(con)) {
-        con = active_connection()
-      }
+      con = .assure_connection(con)
       
       private$connection = con
       
@@ -764,9 +759,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @return Graph object
 #' @export
 parse_graph = function(con, json, graph=NULL) {
-  if (missing(con)) {
-    con = active_connection()
-  }
+  con = .assure_connection(con)
   
   if (is.list(json)) {
     parsed_json = json
