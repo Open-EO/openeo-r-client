@@ -454,6 +454,11 @@ Number = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "number"
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      private$value = .checkMathConstants(value,process_collection)
     }
   ),
   private = list(
@@ -478,7 +483,11 @@ Number = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.numeric(private$value))
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serialize())
+      } else {
+        return(as.numeric(private$value))
+      }
     }
   )
 )
@@ -1594,6 +1603,16 @@ Array = R6Class(
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
       
       private$schema$items = value
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      
+      if (length(value) > 0) {
+        private$value = sapply(value, function(x, pc) {
+          .checkMathConstants(x,pc)
+        }, pc = process_collection)
+      }
     }
   ),
   private = list(
