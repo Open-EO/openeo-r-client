@@ -163,6 +163,15 @@ Argument = R6Class(
       private$value
     },
     serialize = function() {
+      # nullable / required / value = NULL
+      if (self$isNullable && 
+          (length(self$getValue()) == 0 || 
+           (!is.environment(self$getValue()) && 
+            is.na(self$getValue()))) && 
+          self$isRequired()) {
+        return(NA)
+      }
+      
       if ("Graph" %in% class(private$value)) {
         if (!"callback" %in% class(self)) {
           return(private$value$serialize())
@@ -880,7 +889,11 @@ BoundingBox = R6Class(
       }
     },
     typeSerialization = function() {
-      return(private$value)
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        return(self$getValue())
+      }
     }
   )
 )
@@ -1361,13 +1374,15 @@ Callback = R6Class(
         # if value is a function -> then make a call with the function and a suitable callback 
         # parameter
         # create a new graph
-        con = private$process$getGraph()$getConnection()
-        new_graph = process_graph_builder(con)
-        old_graph = private$process$getGraph()
+        # con = private$process$getGraph()$getConnection()
+        # new_graph = process_graph_builder(con)
+        # old_graph = private$process$getGraph()
+        
+        process_collection = private$process$getGraph()
         
         # probably switch temporarily the graph of the parent process
         # then all newly created process nodes go into the new graph
-        private$process$setGraph(new_graph)
+        private$process$setGraph(process_collection)
         
         # find suitable callback parameter (mostly array or binary) -> check for length of formals
         callback_parameter = private$parameters
@@ -1379,28 +1394,28 @@ Callback = R6Class(
         final_node = do.call(value,args = callback_parameter)
         
         # then serialize it via the final node
-        node_list = .final_node_serializer(final_node)
+        
         
         #add the process node list to this graph
-        void = lapply(node_list, function(node) {
-          if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
-            old_graph$removeNode(node$getNodeId())
-          }
-          
-          if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
-            new_graph$addNode(node)
-          }
-          
-        })
+        # void = lapply(node_list, function(node) {
+        #   if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
+        #     old_graph$removeNode(node$getNodeId())
+        #   }
+        #   
+        #   if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
+        #     new_graph$addNode(node)
+        #   }
+        #   
+        # })
         
         # switch back the graph
-        private$process$setGraph(old_graph)
+        # private$process$setGraph(old_graph)
         
         # add final node
-        new_graph$setFinalNode(final_node)
+        # new_graph$setFinalNode(final_node)
         
         # assign new graph as value
-        value = new_graph
+        value = Graph$new(final_node = final_node)
       }
       
       
@@ -1712,6 +1727,9 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
+      if (length(self$getValue()) == 0 || is.na(self$getValue())) {
+        return(NULL)
+      }
       
       if ("callback-value" %in% class(self$getValue()[[1]])) {
         serialized = lapply(self$getValue(),function(arg)arg$serialize())
@@ -1993,7 +2011,11 @@ AnyOf = R6Class(
       # TODO rework
     },
     typeSerialization = function() {
-      return(private$value[[1]]$serialize())
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        return(self$getValue()[[1]]$serialize())
+      }
     },
     deep_clone = function(name, value) {
       
