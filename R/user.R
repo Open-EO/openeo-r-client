@@ -4,12 +4,13 @@
 #' 
 #' Lists all files in the workspaces of the authenticated user.
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' 
 #' @return a tibble of for filenames and their sizes
 #' 
 #' @export
-list_files = function(con) {
+list_files = function(con=NULL) {
     tryCatch({
         tag = "user_files"
         
@@ -39,7 +40,8 @@ list_files = function(con) {
 #' This function sends the file given by 'content' to the specified target location (relative file path in the
 #' user workspace) on the back-end.
 #'
-#' @param con authorized Connection
+#' @param con authorized Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file
 #' @param encode the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)
@@ -83,7 +85,8 @@ upload_file = function(con=NULL, content, target, encode = "raw", mime = "applic
 #' 
 #' Sends a request to an openeo back-end to access the users files and downloads them to a given location
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param src the relative filepath of the source file on the openeo back-end
 #' @param dst the destination file path on the local file system
 #' 
@@ -120,7 +123,8 @@ download_file = function(con=NULL, src, dst = NULL) {
 #'
 #' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' 
 #' @return logical
@@ -146,10 +150,11 @@ delete_file = function(con=NULL, src) {
 #' 
 #' Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
 #' 
-#' @param con authenticated client object
+#' @param con authenticated client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return object of type user
 #' @export
-describe_account = function(con) {
+describe_account = function(con=NULL) {
     tryCatch({
         tag = "user_info"
         
@@ -169,13 +174,19 @@ describe_account = function(con) {
 #' Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
 #' specific versions, then you should provide the versions parameter.
 #' 
-#' @details Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
+#' @details Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
 #' just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 #' open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
 #' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
 #' 
+#' The parameter \code{version} is not required. If the service offers a well-known document of the
+#' service the client will choose an appropriate version (default the most recent production ready version).
+#' 
+#' When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+#' which marks the latest service that was connected to.
+#' 
 #' @param host URL pointing to the openEO server back-end host
-#' @param version the version number as string
+#' @param version the version number as string (optional)
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
@@ -199,6 +210,7 @@ describe_account = function(con) {
 #'               login_type='oidc')
 #' }
 #'
+#' @seealso \code{\link{active_connection}}
 #' @export
 connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", external=NULL) {
     con = OpenEOClient$new()
@@ -227,7 +239,8 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
 #' register, then you need to log in afterwards.
 #' 
-#' @param con connected back-end connection
+#' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param user the user name
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
@@ -251,6 +264,22 @@ login = function(con=NULL, user = NULL, password = NULL, login_type = NULL, exte
     return(con$login(user = user, password = password, login_type = login_type, external = external))
 }
 
+#' Active Connection
+#' 
+#' The function gets or sets the currently active connection to an openEO service. Usually the
+#' active connection is set when calling the \code{\link{connect}} function. Only the last 
+#' connection is set to active.
+#' An application for the active connection is the optional connection within all the functions
+#' that interact with the openEO service and require a connection. If the connection is omitted 
+#' in those function this function will be called in order to try to fetch a connection. If you 
+#' want to operate on multiple services at once, you should use an explicit connection.
+#' 
+#' @param con optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
+#' connection is returned
+#' @return \code{\link{OpenEOClient}}
+#' 
+#' @seealso \code{\link{connect}}
+#' 
 #' @export
 active_connection = function(con=NULL) {
     if (is.null(con)) {

@@ -4,10 +4,11 @@
 \alias{describe_collection}
 \title{Describe a product}
 \usage{
-describe_collection(con, id = NA)
+describe_collection(con = NULL, id = NA)
 }
 \arguments{
-\item{con}{Authentication object}
+\item{con}{Authentication object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{id}{id of a product/collection to be described}
 }

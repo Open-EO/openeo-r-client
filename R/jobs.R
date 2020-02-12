@@ -4,9 +4,10 @@
 #'
 #' lists the jobs that a user has uploaded or in execution
 #'
-#' @param con the authenticated Connection
+#' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @export
-list_jobs = function(con) {
+list_jobs = function(con=NULL) {
     tryCatch({
         con=.assure_connection(con)
         
@@ -47,7 +48,8 @@ list_jobs = function(con) {
 #' Executes a job directly on the connected openEO back-end and returns the data. It relates to
 #' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 #'
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph A process graph
 #' @param format The inteded format of the data to be returned
 #' @param output_file Where to store the retrieved data under
@@ -107,7 +109,8 @@ compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ..
 #' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
 #' back-end provider.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph A Graph object
 #' @param title Optional title of a job to be found
 #' @param description Optional a more detailed information about a job
@@ -168,7 +171,8 @@ create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, 
 #' The function sends a start signal to the backend in order to start processing the results
 #' for a defined job.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the job id of the defined job
 #' 
 #' @return the job_id of the defined job
@@ -209,7 +213,8 @@ start_job = function(con=NULL, job) {
 #' e.g. if you just want to update the output format. 
 #' To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the job id of a created job
 #' @param title update title for the job
 #' @param description update description
@@ -278,7 +283,8 @@ update_job = function(con=NULL, id, title = NULL, description = NULL, process_gr
 #'
 #' Opens up a websocket to the openEO back-end to fetch updates about a running job.
 #'
-#' @param con An authenticated connection
+#' @param con An authenticated connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return a WebSocket connection
 #' @export
@@ -292,7 +298,8 @@ follow_job = function(con=NULL, job_id) {
 #' 
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of the job
 #' 
 #' @return result object containing of URLs for download
@@ -318,7 +325,8 @@ list_results = function(con=NULL, job) {
 #' The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
 #' 'folder' will be the target location on the local computer.
 #' 
-#' @param con a connected and authenticated OpenEO connection
+#' @param con a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
 #' 
@@ -356,7 +364,8 @@ download_results = function(con=NULL, job, folder) {
 #' Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
 #' further executions and related costs.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of job that will be canceled
 #' @return a success / failure notification
 #' @export
@@ -389,7 +398,8 @@ stop_job = function(con=NULL, job) {
 #'
 #' Returns a detailed description about a specified job. For example to check the status of a job.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of the job
 #' @return a detailed description about the job
 #' @export
@@ -419,7 +429,8 @@ describe_job = function(con=NULL, job) {
 #'
 #' Deletes a job from the backend.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job or the id of the job
 #' @return logical with state of success
 #' @export
@@ -449,7 +460,8 @@ delete_job = function(con=NULL, job) {
 #' will be required to finish the job and whether or not the job owners data download is already
 #' included in the monetary costs.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job or the id of the job
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export

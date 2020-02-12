@@ -4,10 +4,11 @@
 #' 
 #' Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return vector of process graph ids
 #' @export
-list_process_graphs = function(con) {
+list_process_graphs = function(con=NULL) {
     tryCatch({
         tag = "graph_overview"
         
@@ -34,7 +35,8 @@ list_process_graphs = function(con) {
 #' 
 #' The function queries the back-end for a specific user defined process graph
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id The id of a process graph on the back-end
 #' 
 #' @return the process graph as list
@@ -61,7 +63,8 @@ describe_process_graph = function(con=NULL, id) {
 #' The function initiates the deletion of a process graph on the back-end. Only the owning user can delete
 #' a graph. The graph also should not be part of any particular job.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the id of the graph
 #' 
 #' @export
@@ -83,7 +86,8 @@ delete_process_graph = function(con=NULL, id) {
 #' 
 #' Uploads the process graph information to the back-end and stores it for reuse.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph a process graph definition
 #' @param title the title of the process graph (optional)
 #' @param description the description of a process graph (optional)
@@ -117,7 +121,8 @@ create_process_graph = function(con=NULL, graph, title = NULL, description = NUL
 #' 
 #' Upload a process graph to the back-end under a given (existing) process graph.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id process graph id
 #' @param graph a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder
 #' @param title title of the process graph (optional)
@@ -177,7 +182,8 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
 #' 
 #' Sends the process graph to the back-end and validates it against the offered processes by the backend.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph the process graph that will be sent to the back-end and is being validated
 #' 
 #' @export
@@ -211,10 +217,11 @@ validate_process_graph = function(con=NULL, graph) {
 #' a Graph object to model a process graph in R. To get a better overview about the process graph building, please have
 #' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 #' 
-#' @param con a connection to an openeo back-end
+#' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return a Graph object with the offered processes of the backend
 #' @export
-process_graph_builder = function(con) {
+process_graph_builder = function(con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         

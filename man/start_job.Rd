@@ -4,10 +4,11 @@
 \alias{start_job}
 \title{Starts remote asynchronous evaluation of a job}
 \usage{
-start_job(con, job)
+start_job(con = NULL, job)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client}
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{job}{the job object or the job id of the defined job}
 }

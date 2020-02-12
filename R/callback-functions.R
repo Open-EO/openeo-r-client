@@ -5,7 +5,8 @@
 #' a \code{\link{CallbackArgument}} as a value. If the parameter is omitted it shows possible parameter names which require
 #' a callback.
 #' 
-#' @param con a connected \code{\link{OpenEOClient}}
+#' @param con a connected \code{\link{OpenEOClient}} (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param process a \code{\link{Process}} or \code{\link{ProcessNode}} object of a back-end process
 #' @param parameter optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback
 #' @param choice_index optional integer denoting the callback parameter selected in an \code{\link{AnyOf}}

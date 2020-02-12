@@ -4,10 +4,11 @@
 \alias{list_process_graphs}
 \title{Lists the Ids of the process graphs from the current user}
 \usage{
-list_process_graphs(con)
+list_process_graphs(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client object}
+\item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 vector of process graph ids

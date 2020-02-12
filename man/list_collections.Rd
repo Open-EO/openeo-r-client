@@ -4,10 +4,11 @@
 \alias{list_collections}
 \title{List Data on conected server}
 \usage{
-list_collections(con)
+list_collections(con = NULL)
 }
 \arguments{
-\item{con}{Connection object}
+\item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \description{
 List available collections stored on a openEO server

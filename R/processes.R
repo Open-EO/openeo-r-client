@@ -3,10 +3,11 @@
 #' List available processes on server
 #'
 #' list all processes available on the back-end
-#' @param con Connection object
+#' @param con Connection object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return a list of lists with process_id and description
 #' @export
-list_processes = function(con) {
+list_processes = function(con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -29,7 +30,8 @@ list_processes = function(con) {
 #' Describe a process
 #'
 #' Queries an openeo back-end and retrieves more detailed information about offered processes
-#' @param con Authentication object
+#' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id id of a process to be described
 #'
 #' @return a list of detailed information

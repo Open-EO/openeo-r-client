@@ -4,10 +4,11 @@
 \alias{callback}
 \title{Creates a callback}
 \usage{
-callback(con, process, parameter = NULL, choice_index = NULL)
+callback(con = NULL, process, parameter = NULL, choice_index = NULL)
 }
 \arguments{
-\item{con}{a connected \code{\link{OpenEOClient}}}
+\item{con}{a connected \code{\link{OpenEOClient}} (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{process}{a \code{\link{Process}} or \code{\link{ProcessNode}} object of a back-end process}
 

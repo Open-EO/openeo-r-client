@@ -4,10 +4,11 @@
 \alias{list_jobs}
 \title{List the jobs that a user has}
 \usage{
-list_jobs(con)
+list_jobs(con = NULL)
 }
 \arguments{
-\item{con}{the authenticated Connection}
+\item{con}{the authenticated Connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \description{
 lists the jobs that a user has uploaded or in execution

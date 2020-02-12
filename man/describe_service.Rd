@@ -4,10 +4,11 @@
 \alias{describe_service}
 \title{Describes a service}
 \usage{
-describe_service(con, id)
+describe_service(con = NULL, id)
 }
 \arguments{
-\item{con}{connected and authorized openeo client object}
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{id}{the service id}
 }

@@ -5,11 +5,12 @@
 #' Queries the back-end to retrieve a list of services that the current user owns. Services are 
 #' webservices like WCS, WFS, etc.
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' 
 #' @return list of services lists
 #' @export
-list_services = function(con) {
+list_services = function(con=NULL) {
     tryCatch(suppressWarnings({
         tag = "user_services"
         
@@ -33,7 +34,8 @@ list_services = function(con) {
 #' The function will send a configuration object to the back-end to create a webservice from a job considering
 #' additional parameter.
 #' 
-#' @param con connected and authenticated openeo clien object
+#' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param type character the ogc web service type name to be created
 #' @param graph A process graph object
 #' @param title character (optional) the title in human readabled form for the service
@@ -76,7 +78,8 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
 #' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
 #' will be deleted and also set to NULL.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the service id
 #' @param type character the ogc web service type name to be created
 #' @param process_graph list of processes composed as a process graph
@@ -175,7 +178,8 @@ update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title
 #' 
 #' Queries the server and returns information about a particular service
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the service id
 #' @return service as a list
 #' @export
@@ -198,7 +202,8 @@ describe_service = function(con=NULL, id) {
 #' 
 #' Queries the back-end and removes the current set service function of job.
 #' 
-#' @param con connected and authorized openeo client object
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the service id
 #' @export
 delete_service = function(con=NULL, id) {

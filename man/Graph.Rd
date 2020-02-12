@@ -21,7 +21,7 @@ mapped dynamically after creation.
 \section{Methods}{
 
 \describe{
-   \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
+   \item{\code{$new(con = NULL, data = list(), final_node=NULL)}}{The object creator created from processes and available data. 
    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
@@ -43,8 +43,9 @@ mapped dynamically after creation.
 \section{Arguments}{
 
 \describe{
-   \item{processes}{a list of Process objects}
+   \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
    \item{data}{optional a named list of available data}
+   \item{final_node}{optional the final node (end node) that was used to create a graph}
    \item{node_id}{the id of a process node}
    \item{node}{process node or  its node id}
    \item{parameter}{the name of a parameter in a process}

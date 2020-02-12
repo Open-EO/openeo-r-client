@@ -4,10 +4,11 @@
 \alias{list_results}
 \title{Creates a list of download paths}
 \usage{
-list_results(con, job)
+list_results(con = NULL, job)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client object}
+\item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{job}{the job object or the id of the job}
 }
