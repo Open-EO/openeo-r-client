@@ -35,12 +35,12 @@ api_versions = function(url) {
 #' 
 #' Queries the back-end for its general capabilities.
 #' 
-#' @param con A connected OpenEO client
+#' @param con A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used
 #' 
 #' @return capabilities object
 #' 
 #' @export
-capabilities = function(con) {
+capabilities = function(con=NULL) {
     endpoint = "/"
     tryCatch({
         con = .assure_connection(con)

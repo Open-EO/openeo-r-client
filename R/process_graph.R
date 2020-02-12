@@ -239,7 +239,7 @@ process_graph_builder = function(con=NULL) {
 }
 
 #' @export
-processes = function(con) {
+processes = function(con = NULL) {
     con = .assure_connection(con)
     
     collections = list_collections(con)$collections
