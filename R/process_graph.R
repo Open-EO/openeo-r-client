@@ -206,7 +206,15 @@ validate_process_graph = function(con=NULL, graph) {
         tag = "process_graph_validate"
         response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json")
         
-        message("Graph was sucessfully validated.")
+        if (length(response$errors) == 0) {
+            message("Graph was sucessfully validated.")
+        } else {
+            void = sapply(response$errors, function(obj) {
+                paste0("[",obj$code,"] ",obj$message)
+            })
+            cat(paste0(void,collapse="\n"))
+        }
+        
         invisible(response)
     }, error = .capturedErrorToMessage)
 }

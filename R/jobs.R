@@ -74,13 +74,17 @@ compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ..
         if ("Graph" %in% class(graph))  {
             graph = graph$serialize()
         } else if (is.list(graph)) {
-            job = list(process_graph = graph, output = output)
+            graph = list(process_graph = graph, output = output)
         } else if ("ProcessNode" %in% class(graph)){
             # final node!
             graph = Graph$new(final_node = graph)$serialize()
         } else {
             stop("Parameter graph is not a Graph object. Awaiting a list.")
         }
+        
+        job = list(
+            process_graph = graph
+        )
         
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE)

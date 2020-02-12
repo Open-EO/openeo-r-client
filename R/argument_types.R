@@ -1610,7 +1610,7 @@ Array = R6Class(
       process_collection = self$getProcess()$getGraph()
       
       if (length(value) > 0) {
-        private$value = sapply(value, function(x, pc) {
+        private$value = lapply(value, function(x, pc) {
           .checkMathConstants(x,pc)
         }, pc = process_collection)
       }
@@ -1748,7 +1748,7 @@ Array = R6Class(
     },
     typeSerialization = function() {
       if (length(self$getValue()) == 0 || is.na(self$getValue())) {
-        return(NULL)
+        return(NA)
       }
       
       if ("callback-value" %in% class(self$getValue()[[1]])) {
@@ -1927,6 +1927,11 @@ AnyOf = R6Class(
       private$parameter_choice = parameter_list
     },
     setValue = function(value) {
+      if (is.null(value)) {
+        private$value =NULL
+        return(self)
+      }
+      
       if ("function" %in% class(value)) {
         signature = formals(value)
         
@@ -1953,7 +1958,7 @@ AnyOf = R6Class(
       
       if ("Argument" %in% class(value)) {
         # This is mostly for callbacks
-        arg_allowed = any(sapply(self$getChoice(), function(argument) {
+        arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
               length(setdiff(class(value),class(argument))) == 0
           )
@@ -1964,14 +1969,14 @@ AnyOf = R6Class(
         private$value = list(value)
       } else {
         # set to all sub parameters and run validate
-        validated = sapply(private$parameter_choice, function(param) {
+        choice_copies = self$getChoice()
+        validated = sapply(choice_copies, function(param) {
           
           param$setValue(value)
           
           tryCatch(
             {
               validation = param$validate()
-              param$setValue(NULL)
               return(is.null(validation))
             },
             error = function(e) {
@@ -1982,7 +1987,10 @@ AnyOf = R6Class(
           
         })
         
-        private$value = private$parameter_choice[validated]
+        private$value = unname(choice_copies[validated])
+        
+        private$value[[1]]$setValue(value)
+        return(self)
       }
       
       
@@ -1994,10 +2002,15 @@ AnyOf = R6Class(
       # or return the first result
       if (is.null(private$value)) return(private$value)
       
-      if (class(private$value)=="list" && length(private$value)==1) {
+      if (class(private$value)=="list") {
+        if (length(private$value)==1) {
+          return(private$value[[1]]$getValue())
+        }
+        
         return(private$value[[1]]$getValue())
+      } else {
+        return(private$value$getValue())
       }
-      return(private$value[[1]]$getValue())
     },
     
     getChoice = function() {
