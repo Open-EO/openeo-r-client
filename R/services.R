@@ -44,7 +44,7 @@ list_services = function(con) {
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-create_service = function(con, type, graph, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
+create_service = function(con=NULL, type, graph, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
     tryCatch({
         if (is.null(type)) {
             stop("No type specified.")
@@ -89,7 +89,7 @@ create_service = function(con, type, graph, title = NULL, description = NULL, en
 #' @return service representation as list
 #' 
 #' @export
-update_service = function(con, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
+update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
     
     tryCatch({
         patch = list()
@@ -179,7 +179,7 @@ update_service = function(con, id, type = NULL, process_graph = NULL, title = NU
 #' @param id the service id
 #' @return service as a list
 #' @export
-describe_service = function(con, id) {
+describe_service = function(con=NULL, id) {
     tryCatch({
         if (is.null(id)) {
             stop("No service id specified.")
@@ -201,7 +201,7 @@ describe_service = function(con, id) {
 #' @param con connected and authorized openeo client object
 #' @param id the service id
 #' @export
-delete_service = function(con, id) {
+delete_service = function(con=NULL, id) {
     tryCatch({
         tag = "services_delete"
         

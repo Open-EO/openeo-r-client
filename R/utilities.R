@@ -90,7 +90,7 @@ graphToJSON = function(graph) {
 }
 
 .assure_connection = function(con) {
-    if (missing(con)) {
+    if (missing(con) || is.null(con)) {
         con = active_connection()
     }
     

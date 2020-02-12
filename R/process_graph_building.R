@@ -55,7 +55,7 @@ Graph = R6Class(
   public = list(
     data = list(),
     
-    initialize = function(con, data = list(),final_node=NULL) {
+    initialize = function(con=NULL, data = list(),final_node=NULL) {
       con = .assure_connection(con)
       
       private$connection = con
@@ -349,7 +349,7 @@ ProcessCollection = R6Class(
   lock_objects = FALSE,
   public = list(
     data = list(),
-    initialize = function(con, data = list()) {
+    initialize = function(con=NULL, data = list()) {
       con = .assure_connection(con)
       
       private$connection = con
@@ -760,7 +760,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @param graph an already created process graph (probably empty) for callback graphs
 #' @return Graph object
 #' @export
-parse_graph = function(con, json, graph=NULL) {
+parse_graph = function(con=NULL, json, graph=NULL) {
   con = .assure_connection(con)
   
   if (is.list(json)) {

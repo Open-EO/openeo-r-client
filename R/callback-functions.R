@@ -13,7 +13,9 @@
 #' @return a \code{\link{Graph}} object with the callback parameters as 'data'
 #' 
 #' @export
-callback = function(con, process, parameter = NULL, choice_index=NULL) {
+callback = function(con=NULL, process, parameter = NULL, choice_index=NULL) {
+    con = .assure_connection(con)
+    
     if (!"Process" %in% class(process)) 
         stop("Parameter process is no process for a openeo graph")
     

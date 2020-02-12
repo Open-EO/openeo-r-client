@@ -48,7 +48,7 @@ list_files = function(con) {
 #' @return the relative file path on the server
 #' @importFrom utils URLencode
 #' @export
-upload_file = function(con, content, target, encode = "raw", mime = "application/octet-stream") {
+upload_file = function(con=NULL, content, target, encode = "raw", mime = "application/octet-stream") {
     
     if (missing(content)) {
         stop("Content data is missing")
@@ -89,7 +89,7 @@ upload_file = function(con, content, target, encode = "raw", mime = "application
 #' 
 #' @return The file path of the stored file
 #' @export
-download_file = function(con, src, dst = NULL) {
+download_file = function(con=NULL, src, dst = NULL) {
     tryCatch({
         if (!is.character(src)) {
             stop("Cannot download file with a source statement that is no character")
@@ -125,7 +125,7 @@ download_file = function(con, src, dst = NULL) {
 #' 
 #' @return logical
 #' @export
-delete_file = function(con, src) {
+delete_file = function(con=NULL, src) {
     tryCatch({
         if (is.character(src)) {
             src = .urlHardEncode(src)
@@ -245,7 +245,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' login(con=con,login_type='oidc')
 #' }
 #' @export
-login = function(con, user = NULL, password = NULL, login_type = NULL, external=NULL) {
+login = function(con=NULL, user = NULL, password = NULL, login_type = NULL, external=NULL) {
     con = .assure_connection(con)
     
     return(con$login(user = user, password = password, login_type = login_type, external = external))

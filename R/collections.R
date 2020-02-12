@@ -26,7 +26,7 @@ list_collections = function(con) {
 #' 
 #' @return a list of detailed information about a product/collection
 #' @export
-describe_collection = function(con, id = NA) {
+describe_collection = function(con=NULL, id = NA) {
     con = .assure_connection(con)
     
     missing_id = !missing(id) && !is.na(id)

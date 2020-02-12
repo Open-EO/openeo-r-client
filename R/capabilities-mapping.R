@@ -74,7 +74,7 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' @return logical - whether the back-end supports the endpoint or not
 #' 
 #' @export
-supports = function(con, tag_name) {
+supports = function(con=NULL, tag_name) {
     con = .assure_connection(con)
     
     if (isNamespaceLoaded("tibble")) 

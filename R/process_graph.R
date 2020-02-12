@@ -39,7 +39,7 @@ list_process_graphs = function(con) {
 #' 
 #' @return the process graph as list
 #' @export
-describe_process_graph = function(con, id) {
+describe_process_graph = function(con=NULL, id) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -65,7 +65,7 @@ describe_process_graph = function(con, id) {
 #' @param id the id of the graph
 #' 
 #' @export
-delete_process_graph = function(con, id) {
+delete_process_graph = function(con=NULL, id) {
     tryCatch({
         tag = "graph_delete"
         
@@ -88,7 +88,7 @@ delete_process_graph = function(con, id) {
 #' @param title the title of the process graph (optional)
 #' @param description the description of a process graph (optional)
 #' @export
-create_process_graph = function(con, graph, title = NULL, description = NULL) {
+create_process_graph = function(con=NULL, graph, title = NULL, description = NULL) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -123,7 +123,7 @@ create_process_graph = function(con, graph, title = NULL, description = NULL) {
 #' @param title title of the process graph (optional)
 #' @param description description of the process graph (optional)
 #' @export
-update_process_graph = function(con, id, graph = NULL, title = NULL, description = NULL) {
+update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, description = NULL) {
     tryCatch({
         if (is.null(id)) {
             stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
@@ -181,7 +181,7 @@ update_process_graph = function(con, id, graph = NULL, title = NULL, description
 #' @param graph the process graph that will be sent to the back-end and is being validated
 #' 
 #' @export
-validate_process_graph = function(con, graph) {
+validate_process_graph = function(con=NULL, graph) {
     tryCatch({
         if ("Graph" %in% class(graph)) {
             graph = graph$serialize()

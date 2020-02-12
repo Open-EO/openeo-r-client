@@ -54,7 +54,7 @@ list_jobs = function(con) {
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
+compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -118,7 +118,7 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
 #' 
 #' @return the id of the job
 #' @export
-create_job = function(con, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -173,7 +173,7 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
 #' 
 #' @return the job_id of the defined job
 #' @export 
-start_job = function(con, job) {
+start_job = function(con=NULL, job) {
     con = .assure_connection(con)
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
@@ -219,7 +219,7 @@ start_job = function(con, job) {
 #' @param format the output format
 #' @param ... The create options parameter you want to change. See Details for more information
 #' @export
-update_job = function(con, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+update_job = function(con=NULL, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -282,8 +282,10 @@ update_job = function(con, id, title = NULL, description = NULL, process_graph =
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return a WebSocket connection
 #' @export
-follow_job = function(con, job_id) {
+follow_job = function(con=NULL, job_id) {
     .not_implemented_yet()
+    
+    con = .assure_connection(con)
 }
 
 #' Creates a list of download paths
@@ -295,7 +297,7 @@ follow_job = function(con, job_id) {
 #' 
 #' @return result object containing of URLs for download
 #' @export
-list_results = function(con, job) {
+list_results = function(con=NULL, job) {
     con = .assure_connection(con)
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
@@ -324,7 +326,7 @@ list_results = function(con, job) {
 #' 
 #' @importFrom utils download.file
 #' @export
-download_results = function(con, job, folder) {
+download_results = function(con=NULL, job, folder) {
     con = .assure_connection(con)
     
     if (!dir.exists(folder)) 
@@ -358,7 +360,7 @@ download_results = function(con, job, folder) {
 #' @param job the job object or the id of job that will be canceled
 #' @return a success / failure notification
 #' @export
-stop_job = function(con, job) {
+stop_job = function(con=NULL, job) {
     con = .assure_connection(con)
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
@@ -391,7 +393,7 @@ stop_job = function(con, job) {
 #' @param job the job object or the id of the job
 #' @return a detailed description about the job
 #' @export
-describe_job = function(con, job) {
+describe_job = function(con=NULL, job) {
     con = .assure_connection(con)
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
@@ -421,12 +423,13 @@ describe_job = function(con, job) {
 #' @param job the job or the id of the job
 #' @return logical with state of success
 #' @export
-delete_job = function(con, job) {
+delete_job = function(con=NULL, job) {
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
         job_id = job
     }
+    con = .assure_connection(con)
     
     tryCatch({
         tag = "jobs_delete"
@@ -450,7 +453,7 @@ delete_job = function(con, job) {
 #' @param job the job or the id of the job
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
-estimate_job = function(con, job) {
+estimate_job = function(con=NULL, job) {
     con = .assure_connection(con)
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
