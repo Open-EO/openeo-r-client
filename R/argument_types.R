@@ -1146,6 +1146,7 @@ GeoJson = R6Class(
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+      stop("Not implemented")
     },
     typeSerialization = function() {
       return(as.list(private$value))
@@ -1844,6 +1845,9 @@ TemporalInterval = R6Class(
       private$schema$items = items
       private$schema$maxItems = 2
       private$schema$minItems = 2
+    },
+    setValue = function(value) {
+      private$value = value
     }
   )
 )
@@ -1967,7 +1971,7 @@ AnyOf = R6Class(
           tryCatch(
             {
               validation = param$validate()
-              
+              param$setValue(NULL)
               return(is.null(validation))
             },
             error = function(e) {
@@ -2033,7 +2037,25 @@ AnyOf = R6Class(
       if (length(self$getValue()) == 0) {
         return(NULL)
       } else {
-        return(self$getValue()[[1]]$serialize())
+        val = self$getValue()
+        
+        if (!is.list(val)) {
+          val = list(val)
+        }
+        
+        val = lapply(val, function(v) {
+          if ("Argument" %in% class(v)) {
+            return(v$serialize())
+          } else if ("ProcessNode" %in% class(v)){
+            return(v$serializeAsReference())
+          } else {
+            return(v)
+          }
+        })
+        
+        if (length(val) == 1) return(val[[1]])
+        else return(val)
+        
       }
     },
     deep_clone = function(name, value) {

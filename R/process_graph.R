@@ -92,6 +92,11 @@ create_process_graph = function(con, graph, title = NULL, description = NULL) {
     tryCatch({
         con = .assure_connection(con)
         
+        if ("ProcessNode" %in% class(graph)){
+            # final node!
+            graph = Graph$new(final_node = graph)
+        }
+        
         if (!"Graph" %in% class(graph) || is.null(graph)) {
             stop("The graph information is missing or not a list")
         }
@@ -134,6 +139,10 @@ update_process_graph = function(con, id, graph = NULL, title = NULL, description
             } else if (!is.list(graph)) {
                 stop("The graph information is missing or not a list")
             } else {
+                if ("ProcessNode" %in% class(graph)){
+                    # final node!
+                    graph = Graph$new(con=con,final_node = graph)$serialize()
+                } 
                 requestBody[["process_graph"]] = graph
             }
         }
@@ -174,9 +183,12 @@ update_process_graph = function(con, id, graph = NULL, title = NULL, description
 #' @export
 validate_process_graph = function(con, graph) {
     tryCatch({
-        if ("Graph" %in% class(graph)) 
+        if ("Graph" %in% class(graph)) {
             graph = graph$serialize()
-        
+        } else if ("ProcessNode" %in% class(graph)) {
+            graph = Graph$new(final_node = graph)$serialize()
+        }
+            
         if (!is.list(graph) || is.null(graph)) {
             stop("The graph information is missing or not a list")
         }

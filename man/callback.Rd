@@ -13,7 +13,7 @@ callback(con, process, parameter = NULL, choice_index = NULL)
 
 \item{parameter}{optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback}
 
-\item{choice_index}{optional integer denoting the callback parameter selected in an \code{\link{anyOf}}}
+\item{choice_index}{optional integer denoting the callback parameter selected in an \code{\link{AnyOf}}}
 }
 \value{
 a \code{\link{Graph}} object with the callback parameters as 'data'

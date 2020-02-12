@@ -69,11 +69,13 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
         
-        if ("Graph" %in% class(graph)) 
+        if ("Graph" %in% class(graph))  {
             graph = graph$serialize()
-        
-        if (is.list(graph)) {
+        } else if (is.list(graph)) {
             job = list(process_graph = graph, output = output)
+        } else if ("ProcessNode" %in% class(graph)){
+            # final node!
+            graph = Graph$new(final_node = graph)$serialize()
         } else {
             stop("Parameter graph is not a Graph object. Awaiting a list.")
         }
@@ -132,6 +134,9 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
                 job = list(process_graph = graph$serialize(), output = output)
             } else if (is.list(graph)) {
                 job = list(process_graph = toJSON(graph, force = TRUE), output = output)
+            } else if ("ProcessNode" %in% class(graph)){
+                # final node!
+                job = list(process_graph = Graph$new(final_node = graph)$serialize(), output = output)
             } else {
                 stop("Parameter task is not a task object. Awaiting a list.")
             }
@@ -235,6 +240,10 @@ update_job = function(con, id, title = NULL, description = NULL, process_graph =
             patch$output = output
         
         if (!is.null(process_graph)) {
+            if ("ProcessNode" %in% class(process_graph)){
+                # final node!
+                process_graph = Graph$new(final_node = process_graph)$serialize()
+            }
             patch$process_graph = process_graph
         }
         

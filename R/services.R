@@ -52,6 +52,11 @@ create_service = function(con, type, graph, title = NULL, description = NULL, en
         
         con = .assure_connection(con)
         
+        if ("ProcessNode" %in% class(graph)){
+            # final node!
+            graph = Graph$new(final_node = graph)
+        }
+        
         service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, parameters = parameters, 
             plan = plan, budget = budget)
         
@@ -97,6 +102,11 @@ update_service = function(con, id, type = NULL, process_graph = NULL, title = NU
         
         if (!is.null(process_graph)) {
             if (length(process_graph) > 0) {
+                if ("ProcessNode" %in% class(process_graph)){
+                    # final node!
+                    process_graph = Graph$new(final_node = process_graph)
+                } 
+                
                 patch[["process_graph"]] = process_graph
             } else {
                 stop("Process graph cannot be set to be empty.")

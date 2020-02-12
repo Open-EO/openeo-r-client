@@ -127,9 +127,11 @@ Graph = R6Class(
         }
       } else if ("ProcessNode" %in% class(final_node)) {
         node_list = .final_node_serializer(final_node)
-        void = lapply(node_list,self$addNode)
+        private$nodes=node_list
         private$final_node_id = final_node$getNodeId()
       }
+      
+      invisible(self)
     },
     
     getNodes = function() {
@@ -869,6 +871,11 @@ parse_graph = function(con, json, graph=NULL) {
 #' 
 #' @export
 create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
+  if ("ProcessNode" %in% class(graph)){
+    # final node!
+    graph = Graph$new(final_node = graph)
+  }
+  
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   if (length(id) == 0) stop("Variable id was not set.")
@@ -901,6 +908,11 @@ variables = function(graph) {
 #' @return TRUE
 #' @export
 remove_variable = function(graph, variable) {
+  if ("ProcessNode" %in% class(graph)){
+    # final node!
+    graph = Graph$new(final_node = graph)
+  }
+  
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   if (length(variable) == 0) stop("Parameter 'variable' cannot be NULL or empty")

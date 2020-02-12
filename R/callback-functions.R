@@ -8,7 +8,7 @@
 #' @param con a connected \code{\link{OpenEOClient}}
 #' @param process a \code{\link{Process}} or \code{\link{ProcessNode}} object of a back-end process
 #' @param parameter optional name of a parameter of the process which requires a callback as value. If omitted then it returns only the names of parameter that require a callback
-#' @param choice_index optional integer denoting the callback parameter selected in an \code{\link{anyOf}}
+#' @param choice_index optional integer denoting the callback parameter selected in an \code{\link{AnyOf}}
 #'  
 #' @return a \code{\link{Graph}} object with the callback parameters as 'data'
 #' 
