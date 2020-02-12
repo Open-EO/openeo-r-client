@@ -13,9 +13,7 @@ load_api = function(version) {
 }
 
 endpoint_mapping = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+    con = .assure_connection(con)
     
     endpoints = capabilities(con)$endpoints
     
@@ -71,15 +69,14 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' Looks up the client tag for a particular endpoint on the back-end and returns whether it is available
 #' or not.
 #' 
-#' @param con backend connection
+#' @param con backend connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param tag_name the endpoints 'tag' name as character
 #' @return logical - whether the back-end supports the endpoint or not
 #' 
 #' @export
-supports = function(con, tag_name) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+supports = function(con=NULL, tag_name) {
+    con = .assure_connection(con)
     
     if (isNamespaceLoaded("tibble")) 
         return(con$api.mapping[con$api.mapping$tag == tag_name, "available"][[1]]) else return(con$api.mapping[con$api.mapping$tag == tag_name, "available"])

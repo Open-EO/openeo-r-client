@@ -4,10 +4,11 @@
 \alias{follow_job}
 \title{Follow an executed Job}
 \usage{
-follow_job(con, job_id)
+follow_job(con = NULL, job_id)
 }
 \arguments{
-\item{con}{An authenticated connection}
+\item{con}{An authenticated connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{job_id}{the id of the job on the server the user wants to connect to}
 }

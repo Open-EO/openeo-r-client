@@ -4,10 +4,11 @@
 \alias{delete_service}
 \title{Deletes a service function for a job}
 \usage{
-delete_service(con, id)
+delete_service(con = NULL, id)
 }
 \arguments{
-\item{con}{connected and authorized openeo client object}
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{id}{the service id}
 }

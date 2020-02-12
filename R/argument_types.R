@@ -163,6 +163,15 @@ Argument = R6Class(
       private$value
     },
     serialize = function() {
+      # nullable / required / value = NULL
+      if (self$isNullable && 
+          (length(self$getValue()) == 0 || 
+           (!is.environment(self$getValue()) && 
+            is.na(self$getValue()))) && 
+          self$isRequired()) {
+        return(NA)
+      }
+      
       if ("Graph" %in% class(private$value)) {
         if (!"callback" %in% class(self)) {
           return(private$value$serialize())
@@ -445,6 +454,11 @@ Number = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "number"
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      private$value = .checkMathConstants(value,process_collection)
     }
   ),
   private = list(
@@ -469,7 +483,11 @@ Number = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.numeric(private$value))
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serialize())
+      } else {
+        return(as.numeric(private$value))
+      }
     }
   )
 )
@@ -880,7 +898,11 @@ BoundingBox = R6Class(
       }
     },
     typeSerialization = function() {
-      return(private$value)
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        return(self$getValue())
+      }
     }
   )
 )
@@ -1124,6 +1146,7 @@ GeoJson = R6Class(
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+      stop("Not implemented")
     },
     typeSerialization = function() {
       return(as.list(private$value))
@@ -1361,13 +1384,15 @@ Callback = R6Class(
         # if value is a function -> then make a call with the function and a suitable callback 
         # parameter
         # create a new graph
-        con = private$process$getGraph()$getConnection()
-        new_graph = process_graph_builder(con)
-        old_graph = private$process$getGraph()
+        # con = private$process$getGraph()$getConnection()
+        # new_graph = process_graph_builder(con)
+        # old_graph = private$process$getGraph()
+        
+        process_collection = private$process$getGraph()
         
         # probably switch temporarily the graph of the parent process
         # then all newly created process nodes go into the new graph
-        private$process$setGraph(new_graph)
+        private$process$setGraph(process_collection)
         
         # find suitable callback parameter (mostly array or binary) -> check for length of formals
         callback_parameter = private$parameters
@@ -1379,28 +1404,28 @@ Callback = R6Class(
         final_node = do.call(value,args = callback_parameter)
         
         # then serialize it via the final node
-        node_list = .final_node_serializer(final_node)
+        
         
         #add the process node list to this graph
-        void = lapply(node_list, function(node) {
-          if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
-            old_graph$removeNode(node$getNodeId())
-          }
-          
-          if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
-            new_graph$addNode(node)
-          }
-          
-        })
+        # void = lapply(node_list, function(node) {
+        #   if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
+        #     old_graph$removeNode(node$getNodeId())
+        #   }
+        #   
+        #   if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
+        #     new_graph$addNode(node)
+        #   }
+        #   
+        # })
         
         # switch back the graph
-        private$process$setGraph(old_graph)
+        # private$process$setGraph(old_graph)
         
         # add final node
-        new_graph$setFinalNode(final_node)
+        # new_graph$setFinalNode(final_node)
         
         # assign new graph as value
-        value = new_graph
+        value = Graph$new(final_node = final_node)
       }
       
       
@@ -1579,6 +1604,16 @@ Array = R6Class(
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
       
       private$schema$items = value
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      
+      if (length(value) > 0) {
+        private$value = lapply(value, function(x, pc) {
+          .checkMathConstants(x,pc)
+        }, pc = process_collection)
+      }
     }
   ),
   private = list(
@@ -1712,6 +1747,9 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
+      if (length(self$getValue()) == 0 || is.na(self$getValue())) {
+        return(NA)
+      }
       
       if ("callback-value" %in% class(self$getValue()[[1]])) {
         serialized = lapply(self$getValue(),function(arg)arg$serialize())
@@ -1807,6 +1845,9 @@ TemporalInterval = R6Class(
       private$schema$items = items
       private$schema$maxItems = 2
       private$schema$minItems = 2
+    },
+    setValue = function(value) {
+      private$value = value
     }
   )
 )
@@ -1886,6 +1927,11 @@ AnyOf = R6Class(
       private$parameter_choice = parameter_list
     },
     setValue = function(value) {
+      if (is.null(value)) {
+        private$value =NULL
+        return(self)
+      }
+      
       if ("function" %in% class(value)) {
         signature = formals(value)
         
@@ -1912,7 +1958,7 @@ AnyOf = R6Class(
       
       if ("Argument" %in% class(value)) {
         # This is mostly for callbacks
-        arg_allowed = any(sapply(self$getChoice(), function(argument) {
+        arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
               length(setdiff(class(value),class(argument))) == 0
           )
@@ -1923,14 +1969,14 @@ AnyOf = R6Class(
         private$value = list(value)
       } else {
         # set to all sub parameters and run validate
-        validated = sapply(private$parameter_choice, function(param) {
+        choice_copies = self$getChoice()
+        validated = sapply(choice_copies, function(param) {
           
           param$setValue(value)
           
           tryCatch(
             {
               validation = param$validate()
-              
               return(is.null(validation))
             },
             error = function(e) {
@@ -1941,7 +1987,10 @@ AnyOf = R6Class(
           
         })
         
-        private$value = private$parameter_choice[validated]
+        private$value = unname(choice_copies[validated])
+        
+        private$value[[1]]$setValue(value)
+        return(self)
       }
       
       
@@ -1953,10 +2002,15 @@ AnyOf = R6Class(
       # or return the first result
       if (is.null(private$value)) return(private$value)
       
-      if (class(private$value)=="list" && length(private$value)==1) {
+      if (class(private$value)=="list") {
+        if (length(private$value)==1) {
+          return(private$value[[1]]$getValue())
+        }
+        
         return(private$value[[1]]$getValue())
+      } else {
+        return(private$value$getValue())
       }
-      return(private$value[[1]]$getValue())
     },
     
     getChoice = function() {
@@ -1993,7 +2047,29 @@ AnyOf = R6Class(
       # TODO rework
     },
     typeSerialization = function() {
-      return(private$value[[1]]$serialize())
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        val = self$getValue()
+        
+        if (!is.list(val)) {
+          val = list(val)
+        }
+        
+        val = lapply(val, function(v) {
+          if ("Argument" %in% class(v)) {
+            return(v$serialize())
+          } else if ("ProcessNode" %in% class(v)){
+            return(v$serializeAsReference())
+          } else {
+            return(v)
+          }
+        })
+        
+        if (length(val) == 1) return(val[[1]])
+        else return(val)
+        
+      }
     },
     deep_clone = function(name, value) {
       

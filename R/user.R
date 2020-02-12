@@ -4,18 +4,17 @@
 #' 
 #' Lists all files in the workspaces of the authenticated user.
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' 
 #' @return a tibble of for filenames and their sizes
 #' 
 #' @export
-list_files = function(con) {
+list_files = function(con=NULL) {
     tryCatch({
         tag = "user_files"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         files = con$request(tag = tag, parameters = list(con$user_id), TRUE, type = "application/json")
         files = files$files
@@ -41,7 +40,8 @@ list_files = function(con) {
 #' This function sends the file given by 'content' to the specified target location (relative file path in the
 #' user workspace) on the back-end.
 #'
-#' @param con authorized Connection
+#' @param con authorized Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file
 #' @param encode the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)
@@ -50,7 +50,7 @@ list_files = function(con) {
 #' @return the relative file path on the server
 #' @importFrom utils URLencode
 #' @export
-upload_file = function(con, content, target, encode = "raw", mime = "application/octet-stream") {
+upload_file = function(con=NULL, content, target, encode = "raw", mime = "application/octet-stream") {
     
     if (missing(content)) {
         stop("Content data is missing")
@@ -66,9 +66,7 @@ upload_file = function(con, content, target, encode = "raw", mime = "application
         target = URLencode(target, reserved = TRUE)
         target = gsub("\\.", "%2E", target)
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         if (is.null(con$user_id)) {
             stop("User id is not set. Either login or set the id manually.")
@@ -87,13 +85,14 @@ upload_file = function(con, content, target, encode = "raw", mime = "application
 #' 
 #' Sends a request to an openeo back-end to access the users files and downloads them to a given location
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param src the relative filepath of the source file on the openeo back-end
 #' @param dst the destination file path on the local file system
 #' 
 #' @return The file path of the stored file
 #' @export
-download_file = function(con, src, dst = NULL) {
+download_file = function(con=NULL, src, dst = NULL) {
     tryCatch({
         if (!is.character(src)) {
             stop("Cannot download file with a source statement that is no character")
@@ -107,9 +106,7 @@ download_file = function(con, src, dst = NULL) {
         
         tag = "user_file_download"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         file_connection = file(dst, open = "wb")
         writeBin(object = con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE, as = "raw"), con = file_connection)
@@ -126,12 +123,13 @@ download_file = function(con, src, dst = NULL) {
 #'
 #' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
 #' 
-#' @param con authorized connection
+#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' 
 #' @return logical
 #' @export
-delete_file = function(con, src) {
+delete_file = function(con=NULL, src) {
     tryCatch({
         if (is.character(src)) {
             src = .urlHardEncode(src)
@@ -141,9 +139,7 @@ delete_file = function(con, src) {
         
         tag = "user_file_delete"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         return(con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE))
     }, error = .capturedErrorToMessage)
@@ -154,16 +150,15 @@ delete_file = function(con, src) {
 #' 
 #' Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
 #' 
-#' @param con authenticated client object
+#' @param con authenticated client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return object of type user
 #' @export
-describe_account = function(con) {
+describe_account = function(con=NULL) {
     tryCatch({
         tag = "user_info"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         user_info = con$request(tag = tag, authorized = TRUE, type = "application/json")
         
@@ -179,13 +174,19 @@ describe_account = function(con) {
 #' Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
 #' specific versions, then you should provide the versions parameter.
 #' 
-#' @details Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
+#' @details Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
 #' just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 #' open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
 #' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
 #' 
+#' The parameter \code{version} is not required. If the service offers a well-known document of the
+#' service the client will choose an appropriate version (default the most recent production ready version).
+#' 
+#' When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+#' which marks the latest service that was connected to.
+#' 
 #' @param host URL pointing to the openEO server back-end host
-#' @param version the version number as string
+#' @param version the version number as string (optional)
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
@@ -209,6 +210,7 @@ describe_account = function(con) {
 #'               login_type='oidc')
 #' }
 #'
+#' @seealso \code{\link{active_connection}}
 #' @export
 connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", external=NULL) {
     con = OpenEOClient$new()
@@ -237,7 +239,8 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
 #' register, then you need to log in afterwards.
 #' 
-#' @param con connected back-end connection
+#' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param user the user name
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
@@ -255,14 +258,28 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' login(con=con,login_type='oidc')
 #' }
 #' @export
-login = function(con, user = NULL, password = NULL, login_type = NULL, external=NULL) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+login = function(con=NULL, user = NULL, password = NULL, login_type = NULL, external=NULL) {
+    con = .assure_connection(con)
     
     return(con$login(user = user, password = password, login_type = login_type, external = external))
 }
 
+#' Active Connection
+#' 
+#' The function gets or sets the currently active connection to an openEO service. Usually the
+#' active connection is set when calling the \code{\link{connect}} function. Only the last 
+#' connection is set to active.
+#' An application for the active connection is the optional connection within all the functions
+#' that interact with the openEO service and require a connection. If the connection is omitted 
+#' in those function this function will be called in order to try to fetch a connection. If you 
+#' want to operate on multiple services at once, you should use an explicit connection.
+#' 
+#' @param con optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
+#' connection is returned
+#' @return \code{\link{OpenEOClient}}
+#' 
+#' @seealso \code{\link{connect}}
+#' 
 #' @export
 active_connection = function(con=NULL) {
     if (is.null(con)) {

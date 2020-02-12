@@ -5,15 +5,14 @@
 #' The function queries the back-end for its supported udf runtimes and returns detailed information about each
 #' runtime.
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return list of udf runtimes with supported udf types, versions and installed packages
 #' @export
-list_udf_runtimes = function(con) {
+list_udf_runtimes = function(con=NULL) {
     tryCatch({
         tag = "udf_runtimes"
-        if (missing(con)) {
-          con = active_connection()
-        }
+        con = .assure_connection(con)
         return(con$request(tag = tag, authorized = con$isLoggedIn()))
     }, error = .capturedErrorToMessage)
 }

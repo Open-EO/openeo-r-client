@@ -362,6 +362,7 @@
 .multiply = function(e1,e2) {
   # v0.4.2 -> multiply or product of array
   # v0.5 -> multiply of two values, product of an array of values
+  graph = .getGraph(e1,e2)
   
   if ("multiply" %in% names(graph)) {
     FUN = "multiply"

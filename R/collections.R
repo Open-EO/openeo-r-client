@@ -2,12 +2,11 @@
 #' List Data on conected server
 #'
 #' List available collections stored on a openEO server
-#' @param con Connection object
+#' @param con Connection object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @export
-list_collections = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+list_collections = function(con=NULL) {
+    con = .assure_connection(con)
     
     tryCatch({
         tag = "data_overview"
@@ -23,15 +22,14 @@ list_collections = function(con) {
 #' 
 #' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 #' 
-#' @param con Authentication object
+#' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id id of a product/collection to be described
 #' 
 #' @return a list of detailed information about a product/collection
 #' @export
-describe_collection = function(con, id = NA) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+describe_collection = function(con=NULL, id = NA) {
+    con = .assure_connection(con)
     
     missing_id = !missing(id) && !is.na(id)
     

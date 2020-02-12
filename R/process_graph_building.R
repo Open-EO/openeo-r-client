@@ -17,7 +17,7 @@ library(lubridate)
 #' @field data a named list of collection ids or callback parameters depending on the context
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
+#'    \item{\code{$new(con = NULL, data = list(), final_node=NULL)}}{The object creator created from processes and available data. 
 #'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
 #'    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
 #'    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
@@ -36,8 +36,9 @@ library(lubridate)
 #' }
 #' @section Arguments:
 #' \describe{
-#'    \item{processes}{a list of Process objects}
+#'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
 #'    \item{data}{optional a named list of available data}
+#'    \item{final_node}{optional the final node (end node) that was used to create a graph}
 #'    \item{node_id}{the id of a process node}
 #'    \item{node}{process node or  its node id}
 #'    \item{parameter}{the name of a parameter in a process}
@@ -55,77 +56,83 @@ Graph = R6Class(
   public = list(
     data = list(),
     
-    initialize = function(con, data = list()) {
-      if (missing(con)) {
-        con = active_connection()
-      }
+    initialize = function(con=NULL, data = list(),final_node=NULL) {
+      con = .assure_connection(con)
       
       private$connection = con
       
-      processes = lapply(con$processes, processFromJson)
-      
-      if (!is.list(processes)) stop("Processes are not provided as list")
-      
-      self$data = data
-      
-      for (index in 1:length(processes)) {
-        if (is.null(processes[[index]])) {
-          next
-        }
+      if (is.null(final_node)) {
+        processes = lapply(con$processes, processFromJson)
         
-        pid = processes[[index]]$getId()
-        function_formals = processes[[index]]$getFormals()
+        if (!is.list(processes)) stop("Processes are not provided as list")
         
-        f = function() {}
-        formals(f) = function_formals
+        self$data = data
         
-        
-        # probably do a deep copy of the object
-        # for the body we have the problem that index is addressed as variable in the parent environment. This
-        # causes a problem at call time, where index is resolve and this means that usually the last element
-        # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
-        # and then as.call
-        body(f) = quote({
-          exec_process = processes[[index]]$clone(deep=TRUE)
-          # find new node id:
-          node_id = .randomNodeId(exec_process$getId(),sep="_")
-          
-          while (node_id %in% private$getNodeIds()) {
-            node_id = .randomNodeId(exec_process$getId(),sep="_")
+        for (index in 1:length(processes)) {
+          if (is.null(processes[[index]])) {
+            next
           }
           
-          #map given parameter of this function to the process parameter / arguments and set value
-          arguments = exec_process$parameters
+          pid = processes[[index]]$getId()
+          function_formals = processes[[index]]$getFormals()
           
-          # parameter objects should be updated directly, since there is a real object reference
-          this_param_names = names(formals())
+          f = function() {}
+          formals(f) = function_formals
           
-          # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
-          this_arguments = lapply(this_param_names, function(param) get(param))
-          names(this_arguments) = this_param_names
           
-          # special case: value is of type Argument
-          
-          node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
-          
-          lapply(names(this_arguments), function(param_name, arguments){
-            call_arg = this_arguments[[param_name]]
+          # probably do a deep copy of the object
+          # for the body we have the problem that index is addressed as variable in the parent environment. This
+          # causes a problem at call time, where index is resolve and this means that usually the last element
+          # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+          # and then as.call
+          body(f) = quote({
+            exec_process = processes[[index]]$clone(deep=TRUE)
+            # find new node id:
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
             
-            #TODO maybe check here for is.list and then try the assignable
-            arguments[[param_name]]$setValue(call_arg)
-          }, arguments = arguments)
+            while (node_id %in% private$getNodeIds()) {
+              node_id = .randomNodeId(exec_process$getId(),sep="_")
+            }
+            
+            #map given parameter of this function to the process parameter / arguments and set value
+            arguments = exec_process$parameters
+            
+            # parameter objects should be updated directly, since there is a real object reference
+            this_param_names = names(formals())
+            
+            # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+            this_arguments = lapply(this_param_names, function(param) get(param))
+            names(this_arguments) = this_param_names
+            
+            # special case: value is of type Argument
+            
+            node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+            
+            lapply(names(this_arguments), function(param_name, arguments){
+              call_arg = this_arguments[[param_name]]
+              
+              #TODO maybe check here for is.list and then try the assignable
+              arguments[[param_name]]$setValue(call_arg)
+            }, arguments = arguments)
+            
+            private$nodes = append(private$nodes,node)
+            
+            return(node)
+          })
+          # replace index with the actual number!
+          tmp = gsub(body(f),pattern="index",replacement = eval(index))
+          body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
           
-          private$nodes = append(private$nodes,node)
-          
-          return(node)
-        })
-        # replace index with the actual number!
-        tmp = gsub(body(f),pattern="index",replacement = eval(index))
-        body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
-        
-        # register the ProcessNode creator functions on the Graph class
-        self[[pid]] = f
+          # register the ProcessNode creator functions on the Graph class
+          self[[pid]] = f
+        }
+      } else if ("ProcessNode" %in% class(final_node)) {
+        node_list = .final_node_serializer(final_node)
+        private$nodes=node_list
+        private$final_node_id = final_node$getNodeId()
       }
+      
+      invisible(self)
     },
     
     getNodes = function() {
@@ -337,6 +344,91 @@ Graph = R6Class(
 #'@export
 setOldClass(c("Graph","R6"))
 
+# ProcessCollection ====
+ProcessCollection = R6Class(
+  "ProcessCollection",
+  lock_objects = FALSE,
+  public = list(
+    data = list(),
+    initialize = function(con=NULL, data = list()) {
+      con = .assure_connection(con)
+      
+      private$connection = con
+      
+      private$processes = lapply(con$processes, processFromJson)
+      
+      if (!is.list(private$processes)) stop("Processes are not provided as list")
+      
+      self$data = data
+      
+      for (index in 1:length(private$processes)) {
+        if (is.null(private$processes[[index]])) {
+          next
+        }
+        
+        pid = private$processes[[index]]$getId()
+        function_formals = private$processes[[index]]$getFormals()
+        
+        f = function() {}
+        formals(f) = function_formals
+        
+        
+        # probably do a deep copy of the object
+        # for the body we have the problem that index is addressed as variable in the parent environment. This
+        # causes a problem at call time, where index is resolve and this means that usually the last element
+        # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+        # and then as.call
+        body(f) = quote({
+          exec_process = private$processes[[index]]$clone(deep=TRUE)
+          # find new node id:
+          node_id = .randomNodeId(exec_process$getId(),sep="_")
+          
+          while (node_id %in% private$getNodeIds()) {
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
+          }
+          
+          private$node_ids = c(private$node_ids,node_id)
+          
+          #map given parameter of this function to the process parameter / arguments and set value
+          arguments = exec_process$parameters
+          
+          # parameter objects should be updated directly, since there is a real object reference
+          this_param_names = names(formals())
+          
+          # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+          this_arguments = lapply(this_param_names, function(param) get(param))
+          names(this_arguments) = this_param_names
+          
+          # special case: value is of type Argument
+          
+          node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+          
+          lapply(names(this_arguments), function(param_name, arguments){
+            call_arg = this_arguments[[param_name]]
+            
+            #TODO maybe check here for is.list and then try the assignable
+            arguments[[param_name]]$setValue(call_arg)
+          }, arguments = arguments)
+          
+          return(node)
+        })
+        # replace index with the actual number!
+        tmp = gsub(body(f),pattern="index",replacement = eval(index))
+        body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
+        
+        # register the ProcessNode creator functions on the Graph class
+        self[[pid]] = f
+      }
+    }
+  ),
+  private = list(
+    conection = NULL,
+    node_ids = character(),
+    processes = list(),
+    getNodeIds = function() {private$node_ids}
+  )
+)
+
 # Process ====
 #' Process object
 #' 
@@ -467,11 +559,10 @@ Process = R6Class(
       return(private$parameter_order)
     },
     serialize = function() {
-      
       if (length(self$parameters) > 0) {
         serializedArgList = lapply(self$parameters, 
                                    function(arg){
-                                     if(!arg$isEmpty()) arg$serialize()
+                                     arg$serialize()
                                    })
         
         serializedArgList[sapply(serializedArgList,is.null)] = NULL
@@ -665,15 +756,14 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' The function reads and parses the given json text and creates based on the information of the
 #' text a Graph object.
 #' 
-#' @param con a connected openeo client
+#' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
 #' @param graph an already created process graph (probably empty) for callback graphs
 #' @return Graph object
 #' @export
-parse_graph = function(con, json, graph=NULL) {
-  if (missing(con)) {
-    con = active_connection()
-  }
+parse_graph = function(con=NULL, json, graph=NULL) {
+  con = .assure_connection(con)
   
   if (is.list(json)) {
     parsed_json = json
@@ -783,6 +873,11 @@ parse_graph = function(con, json, graph=NULL) {
 #' 
 #' @export
 create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
+  if ("ProcessNode" %in% class(graph)){
+    # final node!
+    graph = Graph$new(final_node = graph)
+  }
+  
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   if (length(id) == 0) stop("Variable id was not set.")
@@ -815,6 +910,11 @@ variables = function(graph) {
 #' @return TRUE
 #' @export
 remove_variable = function(graph, variable) {
+  if ("ProcessNode" %in% class(graph)){
+    # final node!
+    graph = Graph$new(final_node = graph)
+  }
+  
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   if (length(variable) == 0) stop("Parameter 'variable' cannot be NULL or empty")

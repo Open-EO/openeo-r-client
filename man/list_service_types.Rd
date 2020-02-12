@@ -4,10 +4,11 @@
 \alias{list_service_types}
 \title{Returns the offered webservice types of the back-end}
 \usage{
-list_service_types(con)
+list_service_types(con = NULL)
 }
 \arguments{
-\item{con}{a connected openeo client object}
+\item{con}{a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 vector of identifier of supported webservice

@@ -34,38 +34,32 @@ list_service_types()
 
 # 7. Create a WMS service (XYZ in this case)
 
-graph = process_graph_builder()
-data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`, 
+p = processes()
+data1 = p$load_collection(id = p$data$`COPERNICUS/S2`, 
                               spatial_extent = list(west = -2.7634, south = 43.0408, 
                                                     east = -1.121, north = 43.8385), 
-                              temporal_extent = c("2018-04-30", "2018-06-26"), 
-                              bands = c("B4", "B8"))
+                              temporal_extent = c("2018-04-30", "2018-06-26"),
+                          bands = c("B4","B8"))
 
-b4 = graph$filter_bands(data = data1, bands = "B4")
-b8 = graph$filter_bands(data = data1, bands = "B8")
+b4 = p$filter_bands(data = data1, bands = list("B4"))
+b8 = p$filter_bands(data = data1, bands = list("B8"))
 
-ndvi = graph$normalized_difference(band1 = b8, band2 = b4)
+ndvi = p$normalized_difference(band1 = b8, band2 = b4)
 
-reducer = graph$reduce(data = ndvi, dimension = "temporal",reducer = graph$min)
+reducer = p$reduce(data = ndvi, dimension = "temporal",reducer = min)
 
-apply_linear_transform = graph$apply(data = reducer, process = function(val) {
-  graph$linear_scale_range(x = val, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255)
+apply_linear_transform = p$apply(data = reducer, process = function(val) {
+  p$linear_scale_range(x = val, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255)
 })
 
 
-final = graph$save_result(data = apply_linear_transform, format = "png") 
+final = p$save_result(data = apply_linear_transform, format = "png") 
 
-graph$setFinalNode(node = final)
-
-graph
-
-# client-sided validation
-graph$validate()
 
 # server-sided validation
-validate_process_graph(graph = graph)
+validate_process_graph(graph = final)
 
-service_id = create_service(type = "xyz", graph = graph, title = "UC1 service with R", description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
+service_id = create_service(type = "xyz", graph = final, title = "UC1 service with R v2", description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
 service_id
 
 # 8. Requesting the service information
@@ -85,11 +79,15 @@ delete_service(id = service_id)
 # 9 a) direct computation
 library(sp)
 library(raster)
-compute_result(graph=graph,format="png",output_file = "gee_test.png")
-spplot(raster("gee_test.png"))
+compute_result(graph = final,format="png",output_file = "gee_test.png")
+plot(raster("gee_test.png"))
 
 # 9.b) batch processing
-job_id =  create_job(graph=graph,title="UC1 Rclient NDVI")
+job_id =  create_job(graph=final,title="UC1 Rclient NDVI")
 start_job(job = job_id)
+
+describe_job(job = job_id)
+list_jobs()
+
 download_results(job = job_id,folder = "./gee_test/")
 delete_job(job = job_id)

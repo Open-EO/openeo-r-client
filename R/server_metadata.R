@@ -35,17 +35,15 @@ api_versions = function(url) {
 #' 
 #' Queries the back-end for its general capabilities.
 #' 
-#' @param con A connected OpenEO client
+#' @param con A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used
 #' 
 #' @return capabilities object
 #' 
 #' @export
-capabilities = function(con) {
+capabilities = function(con=NULL) {
     endpoint = "/"
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         con$stopIfNotConnected()
         capabilities = content(httr::GET(url = paste0(con$getHost(), endpoint)))
         class(capabilities) = "OpenEOCapabilities"
@@ -58,15 +56,14 @@ capabilities = function(con) {
 #' The client queries the version resolved back-end for its endpoint capabilities and returns it as
 #' a tibble.
 #' 
-#' @param con A connected OpenEO client
+#' @param con A connected OpenEO client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' 
 #' @return data.frame or tibble (if available)
 #' 
 #' @export
-list_features = function(con) {
-    if (missing(con)) {
-        con = active_connection()
-    }
+list_features = function(con=NULL) {
+    con = .assure_connection(con)
     return(con$api.mapping[c("endpoint", "operation", "available")])
 }
 
@@ -74,16 +71,15 @@ list_features = function(con) {
 #' 
 #' The function queries the back-end for supported output formats.
 #' 
-#' @param con openeo client object
+#' @param con openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
 #' @export
-list_file_types = function(con) {
+list_file_types = function(con=NULLs) {
     tryCatch({
         tag = "formats"
         
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         # optional sending of bearer otherwise no authentication required
         formats = con$request(tag = tag, authorized = con$isLoggedIn())
@@ -104,14 +100,13 @@ list_file_types = function(con) {
 #' 
 #' The function queries the back-end for the supported webservice types that can be used on the client.
 #' 
-#' @param con a connected openeo client object
+#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @return vector of identifier of supported webservice
 #' @export
-list_service_types = function(con) {
+list_service_types = function(con=NULL) {
     tryCatch({
-        if (missing(con)) {
-            con = active_connection()
-        }
+        con = .assure_connection(con)
         
         con$stopIfNotConnected()
         

@@ -4,10 +4,11 @@
 \alias{list_processes}
 \title{List available processes on server}
 \usage{
-list_processes(con)
+list_processes(con = NULL)
 }
 \arguments{
-\item{con}{Connection object}
+\item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a list of lists with process_id and description

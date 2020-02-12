@@ -2,9 +2,7 @@
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
 
 library(openeo)
-library(magrittr)
 library(tibble)
-library(jsonlite)
 
 # enter valid credentials!
 user = ""

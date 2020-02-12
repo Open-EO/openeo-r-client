@@ -4,10 +4,11 @@
 \alias{supports}
 \title{Tag support lookup}
 \usage{
-supports(con, tag_name)
+supports(con = NULL, tag_name)
 }
 \arguments{
-\item{con}{backend connection}
+\item{con}{backend connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{tag_name}{the endpoints 'tag' name as character}
 }
