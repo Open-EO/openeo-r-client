@@ -10,10 +10,13 @@ gee_host_url = "https://earthengine.openeo.org"
 
 con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
 
-graph = process_graph_builder(con = con)
+# creation with client v0.5.0
+# graph = process_graph_builder()
+p = processes()
 
+var1 = create_variable(id = "collection_name")
 # creating the graph
-data = graph$load_collection(graph$data$`COPERNICUS/S2`,
+data = p$load_collection(id = var1,
                              spatial_extent = list(
                                west=16.1,
                                east=16.6,
@@ -25,33 +28,37 @@ data = graph$load_collection(graph$data$`COPERNICUS/S2`,
                              ),
                              bands=list("B8","B4","B2"))
 
-spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = function(x) {
+spectral_reduce = p$reduce(data = data, dimension = "bands",reducer = function(x) {
   B08 = x[1]
   B04 = x[2]
   B02 = x[3]
   (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
 })
 
-temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = graph$min)
+temporal_reduce = p$reduce(data=spectral_reduce,dimension = "temporal", reducer = p$min)
 
 # alternatives
-# temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
-# temporal_reduce = graph$reduce(data = spectral_reduce,dimension = "temporal", reducer = function(x) {
+# temporal_reduce = p$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
+# temporal_reduce = p$reduce(data = spectral_reduce,dimension = "temporal", reducer = function(x) {
 #   min(x)
 # })
 
-apply_linear_transform = graph$apply(data=temporal_reduce,process = function(value) {
-  graph$linear_scale_range(x = value, 
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value) {
+  p$linear_scale_range(x = value, 
                            inputMin = -1, 
                            inputMax = 1, 
                            outputMin = 0, 
                            outputMax = 255)
 })
 
-final_node = graph$save_result(data=apply_linear_transform,format="PNG")
-graph$setFinalNode(final_node)
+final_node = p$save_result(data=apply_linear_transform,format="PNG")
+
+graph = as(final_node,"Graph")
 
 # print as JSON
+graph
+
+var1$setValue("COPERNICUS/S2")
 graph
 
 # write to file 
@@ -62,10 +69,10 @@ graph$validate()
 
 validate_process_graph(con = con, graph = graph)
 
-compute_result(con=con,graph=graph,format = "PNG",output_file = "gee_evi_example.png")
+compute_result(graph=final_node,format = "PNG",output_file = "gee_evi_example.png")
 
 # old code snippets for the callback creations
-
+# library(magrittr)
 # old callback creation - spectral reducer
 # evi_graph = con %>% callback(spectral_reduce,parameter = "reducer")
 # 
