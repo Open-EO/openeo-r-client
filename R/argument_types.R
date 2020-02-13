@@ -1379,14 +1379,10 @@ Callback = R6Class(
     },
     
     setValue = function(value) {
-      # if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
       if ("function" %in% class(value)) {
         # if value is a function -> then make a call with the function and a suitable callback 
         # parameter
         # create a new graph
-        # con = private$process$getGraph()$getConnection()
-        # new_graph = process_graph_builder(con)
-        # old_graph = private$process$getGraph()
         
         process_collection = private$process$getGraph()
         
@@ -1404,25 +1400,6 @@ Callback = R6Class(
         final_node = do.call(value,args = callback_parameter)
         
         # then serialize it via the final node
-        
-        
-        #add the process node list to this graph
-        # void = lapply(node_list, function(node) {
-        #   if (node$getNodeId() %in% sapply(old_graph$getNodes(),function(x)x$getNodeId())) {
-        #     old_graph$removeNode(node$getNodeId())
-        #   }
-        #   
-        #   if (!node$getNodeId() %in% sapply(new_graph$getNodes(),function(x)x$getNodeId())) {
-        #     new_graph$addNode(node)
-        #   }
-        #   
-        # })
-        
-        # switch back the graph
-        # private$process$setGraph(old_graph)
-        
-        # add final node
-        # new_graph$setFinalNode(final_node)
         
         # assign new graph as value
         value = Graph$new(final_node = final_node)
@@ -1609,7 +1586,7 @@ Array = R6Class(
     setValue = function(value) {
       process_collection = self$getProcess()$getGraph()
       
-      if (length(value) > 0) {
+      if (!is.environment(value) && length(value) > 0) {
         private$value = lapply(value, function(x, pc) {
           .checkMathConstants(x,pc)
         }, pc = process_collection)
