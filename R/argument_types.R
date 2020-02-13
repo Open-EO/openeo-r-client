@@ -1590,6 +1590,8 @@ Array = R6Class(
         private$value = lapply(value, function(x, pc) {
           .checkMathConstants(x,pc)
         }, pc = process_collection)
+      } else {
+        private$value = value
       }
     }
   ),
