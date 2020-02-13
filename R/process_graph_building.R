@@ -128,8 +128,10 @@ Graph = R6Class(
         }
       } else if ("ProcessNode" %in% class(final_node)) {
         node_list = .final_node_serializer(final_node)
-        private$nodes=node_list
+        private$nodes=unname(node_list)
         private$final_node_id = final_node$getNodeId()
+        
+        #TODO check for variables and assign them
       }
       
       invisible(self)
@@ -140,45 +142,42 @@ Graph = R6Class(
     },
     
     clean = function() {
-      # run through the nodes and clean them
-      
       # start at the end -> if multiple end nodes throw an error
+      # take the final node
       suppressMessages({
         endnode = self$getFinalNode()
       })
       
       if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
       
-      # traverse over nested process nodes and extract their node ids from the final node
-      final_path = unname(unlist(private$extractUsedNodeIds(endnode)))
       
+      # get all the available process nodes of that graph
+      used_nodes = .final_node_serializer(endnode)
       
-      unvisitedNodes = setdiff(private$getNodeIds(),final_path)
-      map = lapply(unvisitedNodes, function(node_id) {
-        return(unname(private$extractUsedNodeIds(self$getNode(node_id))))
-      })
-      
-      # now we need to check the remaining nodes if they connect in their downward traversion to an already visited node
-      # therefore list also the ids again
-      # remove found ids from temporary list
-      removeables = character()
-      if (length(map) > 0) {
-        for (index in 1:length(map)) {
-          if (any(map[[index]] %in% final_path)) {
-            # they are connected to the final_path -> add new elements to final_path
-            final_path = union(setdiff(map[[index]],final_path),final_path)
-          } else {
-            # add to removeables
-            removeables = union(map[[index]],removeables)
+      void = lapply(used_nodes,function(node){
+        # check all parameter
+        void2 = lapply(node$parameters,function(param) {
+          # if we find a graph (maybe also in a list or in an anyof) then clean them too
+          if ("Graph" %in% class(param)) {
+            param$clean() #should not be...
           }
-        }
+          
+          if ("callback" %in% class(param)) {
+            value = param$getValue()
+            
+            if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+              if ("Graph" %in% class(value)) {
+                value$clean()
+              }
+            }
+          }
+          return(TRUE)
+        })
         
-        removeables = unique(removeables)
-        
-        # now, the remaining nodes are not connected -> remove them from private$nodes
-        private$nodes[private$getNodeIds() == removeables] = NULL
-      }
-      
+        return(TRUE)
+      })
+      # set the used nodes as nodes
+      private$nodes = unname(used_nodes)
       
       invisible(self)
     },
