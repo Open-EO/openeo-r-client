@@ -130,7 +130,7 @@ Graph = R6Class(
         node_list = .final_node_serializer(final_node)
         private$nodes=unname(node_list)
         private$final_node_id = final_node$getNodeId()
-        
+        private$variables = variables(final_node)
         #TODO check for variables and assign them
       }
       
@@ -273,24 +273,59 @@ Graph = R6Class(
       return(params[[parameter]]$validate()) # TODO decide if this is useful
     },
     
-    getVariables = function() {
+    getVariables = function(final_node=NULL) {
+      # TODO rebuild
       return(private$variables)
+      # if (is.null(final_node)) {
+      #   # get final node
+      #   suppressMessages({
+      #     final_node = self$getFinalNode()
+      #   })
+      # }
+      # 
+      # if (is.null(final_node)) stop("No final node defined in this graph. Please set a final node.")
+      # 
+      # 
+      # # get all the available process nodes of that graph
+      # used_nodes = .final_node_serializer(final_node)
+      # 
+      # variables = lapply(used_nodes,function(node){
+      #   # check all parameter
+      #   node_variables = lapply(node$parameters,function(param) {
+      # 
+      #     value = param$getValue()
+      # 
+      #     if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+      #       if ("Graph" %in% class(value)) {
+      #         return(value$getVariables())
+      #       } else if ("variable" %in% class(value)) {
+      #         return(value)
+      #       } else if (is.list(value)) {
+      #         return(
+      #           lapply(value, function(array_elem) {
+      #             if ("variable" %in% class(array_elem)) {
+      #               return(array_elem)
+      #             }
+      # 
+      #             return(NULL)
+      #           })
+      #         )
+      #       }
+      # 
+      #       # if list / array check also
+      #     }
+      # 
+      # 
+      # 
+      #     return(NULL)
+      #   })
+      # 
+      # 
+      # })
+      # return(unlist(variables))
+
     },
-    
-    createVariable = function(id,description=NULL,type="string",default=NULL) {
-      var = Variable$new(id=id, description=description,type=type,default=default)
-      
-      temp_list= list(var)
-      names(temp_list) = var$getName()
-      private$variables = append(private$variables, temp_list)
-      
-      return(var)
-    },
-    
-    removeVariable = function(variable_id) {
-      private$variables[[variable_id]] = NULL
-    },
-    
+
     getConnection = function() {
       return(private$connection)
     }
@@ -306,37 +341,7 @@ Graph = R6Class(
     
     getNodeIds = function() {
       return(sapply(private$nodes, function(node)node$getNodeId()))
-    },
-    
-    extractUsedNodeIds = function(node) {
-      
-      nodeParams = unlist(lapply(node$parameters, function (param) {
-        #check if the argument contains a ProcessNode in a list
-      
-        if (!is.null(param$getValue()) && all("list" %in% class(param$getValue()))) {
-          nodesInList = lapply(param$getValue(), function(listArg) {
-            
-            if ("ProcessNode" %in% class(listArg)) return(listArg)
-            
-            return(NULL)
-          })
-          return(nodesInList)
-        }
-        
-        # check if the argument contains a ProcessNode in itself
-        if ("ProcessNode" %in% class(param$getValue())) return(param$getValue())
-        
-        # if no node return NULL which will be removed with unlist()
-        return(NULL)
-      }))
-      
-      if (is.null(nodeParams)) return(node$getNodeId())
-      if (length(nodeParams) == 0) return(node$getNodeId())
-      
-      return(c(node$getNodeId(),sapply(nodeParams,private$extractUsedNodeIds)))
-      
     }
-    
   )
 )
 
@@ -871,17 +876,8 @@ parse_graph = function(con=NULL, json, graph=NULL) {
 #' @return a \code{\link{Variable}} object
 #' 
 #' @export
-create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
-  if ("ProcessNode" %in% class(graph)){
-    # final node!
-    graph = Graph$new(final_node = graph)
-  }
-  
-  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
-  
-  if (length(id) == 0) stop("Variable id was not set.")
-  
-  return(graph$createVariable(id,description,type,default))
+create_variable = function(id,description=NULL,type="string",default=NULL) {
+    return(Variable$new(id=id, description=description,type=type,default=default))
 }
 
 #' Lists the defined variables for a graph
@@ -892,12 +888,54 @@ create_variable = function(graph, id,description=NULL,type="string",default=NULL
 #' @return a named list of Variables
 #' 
 #' @export
-variables = function(graph) {
-  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
+variables = function(final_node) {
+  if ("Graph" %in% class(final_node)) {
+    # get final node
+    suppressMessages({
+      final_node = final_node$getFinalNode()
+    })
+  }
   
-  return(graph$getVariables())
+  if (length(final_node) == 0 || 
+      !"ProcessNode" %in% class(final_node)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
+  
+  
+  # get all the available process nodes of that graph
+  used_nodes = .final_node_serializer(final_node)
+  
+  variables = lapply(used_nodes,function(node){
+    # check all parameter
+    node_variables = lapply(node$parameters,function(param) {
+      
+      value = param$getValue()
+      
+      if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+        if ("Graph" %in% class(value)) {
+          return(value$getVariables())
+        } else if ("variable" %in% class(value)) {
+          return(value)
+        } else if (is.list(value)) {
+          return(
+            lapply(value, function(array_elem) {
+              if ("variable" %in% class(array_elem)) {
+                return(array_elem)
+              }
+              
+              return(NULL)
+            })
+          )
+        }
+      } 
+      
+      return(NULL)
+    })
+    
+    
+  })
+  return(unname(unlist(variables)))
 }
-
+  
+  
 #' Removes a variable from the Graph
 #' 
 #' The function removes a selected variable from the graph. It only removes it from the list of defined 

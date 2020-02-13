@@ -4,12 +4,10 @@
 \alias{create_variable}
 \title{Creates a variable in a process graph}
 \usage{
-create_variable(graph, id, description = NULL, type = "string",
+create_variable(id, description = NULL, type = "string",
   default = NULL)
 }
 \arguments{
-\item{graph}{a process graph object}
-
 \item{id}{the id of the variable}
 
 \item{description}{an optional description of the variable}
@@ -17,6 +15,8 @@ create_variable(graph, id, description = NULL, type = "string",
 \item{type}{the type of the value that is replaced on runtime, default 'string'}
 
 \item{default}{the default value for this variable}
+
+\item{graph}{a process graph object}
 }
 \value{
 a \code{\link{Variable}} object
