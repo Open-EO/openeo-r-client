@@ -69,6 +69,11 @@ describe_collection = function(con=NULL, id = NA) {
                 warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
             }
             
+            # replace null in temporal extent with NA (which will be transformed into JSON null)
+            info$extent$temporal = lapply(info$extent$temporal, function(t) {
+                if (is.null(t)) return(NA)
+                else return(t)
+            })
             
             return(info)
         }, error = .capturedErrorToMessage)
