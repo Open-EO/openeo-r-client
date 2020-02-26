@@ -5,6 +5,12 @@ htmlViewer = function(html) {
     
     htmlFile = file.path(tempfile)
     viewer <- getOption("viewer")
+    
+    if (is.null(viewer)) {
+      warning(paste0("Cannot show a viewer panel. 'viewer' not available, maybe you are using this package not in RStudio."))
+      return(invisible(NULL))
+    }
+    
     viewer(htmlFile)
 }
 
@@ -20,6 +26,15 @@ escaper = function(list) {
     })
 }
 
+#' Viewer panel for provided openEO processes
+#' 
+#' Opens up a viewer panel in RStudio and renders nicely one or more processes of the connected 
+#' openEO service in HTML. The components of openeo-js-commons / openEO webeditor are reused.
+#' 
+#' @param x a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
+#' \code{\link{Process}} or a character containing the process id.
+#' @param con a specific connection (optional), last connected service if omitted.
+#' 
 #' @export
 process_viewer = function(x,con=NULL) {
     if (length(con) == 0) con = .assure_connection(con)
@@ -27,6 +42,24 @@ process_viewer = function(x,con=NULL) {
     api_version = paste0("'",con$api_version(),"'")
     doc_gen_version = "@1.0.0-beta.2"
     
+    if (is.function(x)) {
+      x=do.call(x,args=list())
+    } else if ("ProcessCollection" %in% class(x)) {
+      x = con$processes
+    } else if ("Process" %in% class(x)) {
+      pid = x$getId()
+      if (!pid %in% names(con$processes)) {
+        warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
+        return(invisible(NULL))
+      }
+      x = describe_process(con=con,id = pid)
+    } else if (is.character(x)) {
+      x = describe_process(con=con,id = x)
+      
+      if (is.null(x)) {
+        return(invisible(NULL))
+      }
+    }
     
     if (!"ProcessInfo" %in% class(x)) {
         x = unname(escaper(x))
@@ -79,12 +112,29 @@ process_viewer = function(x,con=NULL) {
     htmlViewer(html)
 }
 
+#' View for openEO collections
+#' 
+#' The function opens up a viewer panel in RStudio which renders the collection information
+#' nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
+#' 
+#' @param x character with the name of a collection or the \code{\link{CollectionInfo}} obtained
+#' with \code{\link{describe_collection}}.
+#' @param con a specific connection (optional), last connected service if omitted.
+#' 
 #' @export
 collection_viewer = function(x,con=NULL) {
     if (length(con) == 0) con = openeo:::.assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
     doc_gen_version = "@latest"
+    
+    if (is.character(x)) {
+      x = describe_collection(con=con,id=x)
+    }
+    
+    if (is.null(x)) {
+      return(invisible(NULL))
+    }
     
     if (!"CollectionInfo" %in% class(x)) {
         x = unname(escaper(x))
@@ -132,32 +182,4 @@ collection_viewer = function(x,con=NULL) {
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
-}
-
-
-#' Function to use RStudio viewer to view markdown text
-#' 
-#' It is intended to view data or process description in a human readable way. Therefore markdown will be allowed in the respective `description`
-#' fields. This function provides means to visualize the Markdown code as HTML in a RStudio viewer.
-#' 
-#' @param mdtext markdown text
-#' @param isgithub logical parameter to state whether Github markdown was used or not. Default: FALSE
-#' 
-#' @examples 
-#' \dontrun{
-#' con = connect(host='http://example.openeo.org/v/0.4.2',
-#'               user='user',
-#'               password='password',
-#'               login_type='basic')
-#' 
-#' collection = describe_collection(con = con, id = 'some_collection_id')
-#' 
-#' # the description of a collection is allowed to use markdown
-#' markdownViewer(collection$description)
-#' }
-#' 
-#' @importFrom commonmark markdown_html
-#' @export
-markdownViewer = function(mdtext, isgithub = FALSE) {
-    htmlViewer(markdown_html(mdtext, extensions = isgithub))
 }

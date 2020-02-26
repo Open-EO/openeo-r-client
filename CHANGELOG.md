@@ -25,6 +25,7 @@
 - fixed bad ordering of bounding box parameter
 
 ### Removed
+- removed the `markdownViewer` function in favour of `process_viewer` and `collection_viewer`
 - removed the function `band_arithmetics`, because callbacks can now be functions
 
 ## [0.5.0] - 2019-12-03
