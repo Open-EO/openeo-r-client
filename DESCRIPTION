@@ -36,7 +36,6 @@ Collate:
     'collections.R'
     'debugging.R'
     'jobs.R'
-    'markdown_viewer.R'
     'ops.R'
     'print-functions.R'
     'process_graph.R'
@@ -46,3 +45,4 @@ Collate:
     'services.R'
     'udf.R'
     'user.R'
+    'viewer.R'

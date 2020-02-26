@@ -46,19 +46,21 @@ process_viewer = function(x,con=NULL) {
       x=do.call(x,args=list())
     } else if ("ProcessCollection" %in% class(x)) {
       x = con$processes
-    } else if ("Process" %in% class(x)) {
-      pid = x$getId()
-      if (!pid %in% names(con$processes)) {
-        warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
-        return(invisible(NULL))
-      }
-      x = describe_process(con=con,id = pid)
     } else if (is.character(x)) {
       x = describe_process(con=con,id = x)
       
       if (is.null(x)) {
         return(invisible(NULL))
       }
+    }
+    
+    if ("Process" %in% class(x)) {
+      pid = x$getId()
+      if (!pid %in% names(con$processes)) {
+        warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
+        return(invisible(NULL))
+      }
+      x = describe_process(con=con,id = pid)
     }
     
     if (!"ProcessInfo" %in% class(x)) {
