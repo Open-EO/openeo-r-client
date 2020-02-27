@@ -4,10 +4,10 @@
 \alias{capabilities}
 \title{Shows an overview about the capabilities of an OpenEO back-end}
 \usage{
-capabilities(con)
+capabilities(con = NULL)
 }
 \arguments{
-\item{con}{A connected OpenEO client}
+\item{con}{A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used}
 }
 \value{
 capabilities object

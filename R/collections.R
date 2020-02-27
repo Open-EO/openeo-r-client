@@ -2,9 +2,11 @@
 #' List Data on conected server
 #'
 #' List available collections stored on a openEO server
-#' @param con Connection object
+#' @param con Connection object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @export
-list_collections = function(con) {
+list_collections = function(con=NULL) {
+    con = .assure_connection(con)
     
     tryCatch({
         tag = "data_overview"
@@ -20,12 +22,15 @@ list_collections = function(con) {
 #' 
 #' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 #' 
-#' @param con Authentication object
+#' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id id of a product/collection to be described
 #' 
 #' @return a list of detailed information about a product/collection
 #' @export
-describe_collection = function(con, id = NA) {
+describe_collection = function(con=NULL, id = NA) {
+    con = .assure_connection(con)
+    
     missing_id = !missing(id) && !is.na(id)
     
     if (!missing_id) {
@@ -45,10 +50,30 @@ describe_collection = function(con, id = NA) {
             class(info) = "CollectionInfo"
             
             if (!is.null(info$properties$`eo:bands`)) {
+                if (length(info$properties$`eo:bands`) == 1 && is.null(info$properties$`eo:bands`[[1]]$name)) {
+                    info$properties$`eo:bands` = info$properties$`eo:bands`[[1]]
+                }
                 class(info$properties$`eo:bands`) = "BandList"
             }
             
-            class(info$properties$`cube:dimensions`) = "CubeDimensions"
+            if (!is.null(info$properties$`sar:bands`)) {
+                if (length(info$properties$`sar:bands`) == 1 && is.null(info$properties$`sar:bands`[[1]]$name)) {
+                    info$properties$`sar:bands` = info$properties$`sar:bands`[[1]]
+                }
+                class(info$properties$`sar:bands`) = "BandList"
+            }
+            
+            if (!is.null(info$properties$`cube:dimensions`)) {
+                class(info$properties$`cube:dimensions`) = "CubeDimensions"
+            } else {
+                warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
+            }
+            
+            # replace null in temporal extent with NA (which will be transformed into JSON null)
+            info$extent$temporal = lapply(info$extent$temporal, function(t) {
+                if (is.null(t)) return(NA)
+                else return(t)
+            })
             
             return(info)
         }, error = .capturedErrorToMessage)

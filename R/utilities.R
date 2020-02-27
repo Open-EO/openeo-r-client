@@ -46,3 +46,55 @@ graphToJSON = function(graph) {
     message(e)
     invisible(NULL)
 }
+
+.version_sort = function(v) {
+    
+    sem_parser = function(ver) {
+        if (length(ver) == 1) {
+            split = strsplit(ver,"[.-]")[[1]]
+            result = list(0,0,0,NA)
+            charMask = sapply(split,function(x) {
+                suppressWarnings({
+                    i = as.integer(x)
+                    if (is.na(i)) TRUE else FALSE
+                })
+            })
+            
+            if (any(charMask)) {
+                result[[4]] = split[which(charMask)]
+                split[-which(charMask)]
+                result[1:(which(charMask)-1)] = as.integer(split[1:(which(charMask)-1)])
+            } else {
+                result[1:length(split)] = as.integer(split)
+            }
+            result
+        } else {
+            lapply(ver,sem_parser)
+        }
+    }
+    
+    versions = as.data.frame(do.call(rbind,sem_parser(v$api_version)))
+    
+    for (i in 1:ncol(versions)) {
+        versions[,i] = unlist(versions[,i])
+        
+        if (i == 4) {
+            versions[,4] = sapply(versions[,4],function(x){
+                ifelse(x=="NA",NA,x)
+            })
+        }
+    }
+    
+    temp = merge(versions,v,by=0)
+    v[with(temp,order(production,V1,V2,V3,V4,na.last=FALSE,decreasing = TRUE)),]
+}
+
+.assure_connection = function(con) {
+    if (missing(con) || is.null(con)) {
+        con = active_connection()
+    }
+    
+    if (is.null(con)) stop("Cannot find a valid and active openEO connection. Please use 'connect' to connect with an openEO service.")
+    
+    return(con)
+}

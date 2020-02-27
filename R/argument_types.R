@@ -65,6 +65,13 @@ Parameter = R6Class(
     setPattern = function(pattern) {
       private$schema$pattern = pattern
     },
+    setDefault = function(value) {
+      private$schema$default = value
+      invisible(self)
+    },
+    getDefault = function() {
+      return(private$schema$default)
+    },
     matchesSchema = function(schema) {
       sel = c("type","format")
       
@@ -156,6 +163,15 @@ Argument = R6Class(
       private$value
     },
     serialize = function() {
+      # nullable / required / value = NULL
+      if (self$isNullable && 
+          (length(self$getValue()) == 0 || 
+           (!is.environment(self$getValue()) && 
+            is.na(self$getValue()))) && 
+          self$isRequired()) {
+        return(NA)
+      }
+      
       if ("Graph" %in% class(private$value)) {
         if (!"callback" %in% class(self)) {
           return(private$value$serialize())
@@ -171,9 +187,17 @@ Argument = R6Class(
       }
       
       # for format specific conversion overwrite this by children
-      return(private$typeSerialization())
+      tryCatch({
+        return(private$typeSerialization())
+      }, error = function(e) {
+        serialization_error = paste0("Error serializing parameter '",self$getName(),
+                                     "' in process node '", self$getProcess()$getNodeId(),
+                                     "' :",e$message)
+        stop(serialization_error)
+      })
+      
     },
-    validate = function(node_id=NULL) {
+    validate = function() {
       tryCatch(
         {
           private$checkRequiredNotSet()
@@ -188,6 +212,7 @@ Argument = R6Class(
           
           invisible(NULL)
         }, error = function(e) {
+          node_id = self$getProcess()$getNodeId()
           if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
           
           message = paste0(node_id,"Parameter '",private$name,"': ",e$message)
@@ -202,10 +227,19 @@ Argument = R6Class(
                 is.null(private$value) ||
                 is.na(private$value) ||
                 length(private$value) == 0))
+    },
+    getProcess = function() {
+      return(private$process)
+    },
+    setProcess = function(p) {
+      private$process = p
+      
+      return(invisible(self))
     }
   ),
   private = list(
     value=NULL,
+    process = NULL,
     
     checkRequiredNotSet = function() {
       if (private$required && 
@@ -420,11 +454,23 @@ Number = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "number"
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      private$value = .checkMathConstants(value,process_collection)
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.numeric(private$value)) {
+      
+      if ("ProcessNode" %in% class(private$value)) {
+        # check return value?
+        return_schema = private$value$getReturns()$schema
+        
+        if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
+          stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+      } else if (!is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -437,7 +483,11 @@ Number = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.numeric(private$value))
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serialize())
+      } else {
+        return(as.numeric(private$value))
+      }
     }
   )
 )
@@ -804,7 +854,7 @@ BoundingBox = R6Class(
       ))
       
       suppressWarnings({
-        vals = lapply(private$value[required_dir_params],as.numeric)
+        vals = lapply(private$value[obj_names],as.numeric)
         nas = sapply(vals, is.na)
         
         if (any(nas)) {
@@ -848,7 +898,11 @@ BoundingBox = R6Class(
       }
     },
     typeSerialization = function() {
-      return(private$value)
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        return(self$getValue())
+      }
     }
   )
 )
@@ -1092,6 +1146,7 @@ GeoJson = R6Class(
   private = list(
     typeCheck = function() {
       #TODO implement! object == list in R
+      stop("Not implemented")
     },
     typeSerialization = function() {
       return(as.list(private$value))
@@ -1324,7 +1379,32 @@ Callback = R6Class(
     },
     
     setValue = function(value) {
-      # if (! "ProcessNode" %in% class(value)) stop("Callback function is no Process / ProcessNode")
+      if ("function" %in% class(value)) {
+        # if value is a function -> then make a call with the function and a suitable callback 
+        # parameter
+        # create a new graph
+        
+        process_collection = private$process$getGraph()
+        
+        # probably switch temporarily the graph of the parent process
+        # then all newly created process nodes go into the new graph
+        private$process$setGraph(process_collection)
+        
+        # find suitable callback parameter (mostly array or binary) -> check for length of formals
+        callback_parameter = private$parameters
+        names(callback_parameter) = names(formals(value))
+        
+        lapply(callback_parameter, function(cb){cb$setProcess(private$process)})
+        
+        # make call
+        final_node = do.call(value,args = callback_parameter)
+        
+        # then serialize it via the final node
+        
+        # assign new graph as value
+        value = Graph$new(final_node = final_node)
+      }
+      
       
       private$value = value
     },
@@ -1385,6 +1465,9 @@ Callback = R6Class(
 #' @return Object of \code{\link{R6Class}} which represents a callback value.
 NULL
 
+# in case the callback-value is an arry - which it will be in most cases - we have to store
+# process nodes for array subsetting in the object with its index. This should be done to 
+# reuse the results of previous steps
 CallbackValue = R6Class(
   "callback-value",
   inherit=Argument,
@@ -1412,6 +1495,8 @@ CallbackValue = R6Class(
     }
   )
 )
+
+setOldClass(c("callback-value","Argument","Parameter","R6"))
 
 # Array ====
 #' Array
@@ -1496,6 +1581,18 @@ Array = R6Class(
       if (is.null(value[["maxItems"]])) value[["maxItems"]] = integer()
       
       private$schema$items = value
+    },
+    
+    setValue = function(value) {
+      process_collection = self$getProcess()$getGraph()
+      
+      if (!is.environment(value) && length(value) > 0) {
+        private$value = lapply(value, function(x, pc) {
+          .checkMathConstants(x,pc)
+        }, pc = process_collection)
+      } else {
+        private$value = value
+      }
     }
   ),
   private = list(
@@ -1518,6 +1615,19 @@ Array = R6Class(
 
       if (itemType == "array") {
         # just check the first layer, everything else would be nice, but is no more in our responsibility
+        if ("callback-value" %in% class(private$value)) {
+          if (length(private$value$getSchema()$type) > 0 && 
+              private$value$getSchema()$type == "array")
+            if (length(private$value$getSchema()$items$type) > 0) {
+              if (private$value$getSchema()$items$type == private$schema$items$type) {
+                return()
+              }
+            } else {
+              stop("Selected callback-value is an array, but has a different item type.")
+            }
+            
+        }
+        
         allOK = all(sapply(private$value, function(item) {
           # item is an array type -> list or vector
           itemsItemType = private$schema$items$type
@@ -1550,7 +1660,7 @@ Array = R6Class(
         if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
         
       } else {
-        if (!"callback-value" %in% class(private$value)) {
+        if (!"callback-value" %in% class(private$value[[1]])) {
           allOK = switch(itemType,
                          string = all(sapply(private$value,function(val){
                            if ("Process" %in% class(val)) {
@@ -1616,18 +1726,28 @@ Array = R6Class(
       }
     },
     typeSerialization = function() {
-      if ("callback-value" %in% class(self$getValue())) return(self$getValue()$serialize())
+      if (length(self$getValue()) == 0 || is.na(self$getValue())) {
+        return(NA)
+      }
       
-      return(
-        lapply(self$getValue(), function(value) {
-          
-          if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
-          
-          if ("Argument" %in% class(value)) return(value$serialize())
-          
-          return(value)
-        })
-      )
+      if ("callback-value" %in% class(self$getValue()[[1]])) {
+        serialized = lapply(self$getValue(),function(arg)arg$serialize())
+        if (length(serialized) == 1) {
+          serialized = serialized[[1]]        
+        } 
+        return(serialized)
+      } else {
+        return(
+          lapply(self$getValue(), function(value) {
+            
+            if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
+            
+            if ("Argument" %in% class(value)) return(value$serialize())
+            
+            return(value)
+          })
+        )
+      }
     })
 )
 
@@ -1704,6 +1824,9 @@ TemporalInterval = R6Class(
       private$schema$items = items
       private$schema$maxItems = 2
       private$schema$minItems = 2
+    },
+    setValue = function(value) {
+      private$value = value
     }
   )
 )
@@ -1783,10 +1906,38 @@ AnyOf = R6Class(
       private$parameter_choice = parameter_list
     },
     setValue = function(value) {
+      if (is.null(value)) {
+        private$value =NULL
+        return(self)
+      }
       
-      if ("Argument" %in% class(value)) {
+      if ("function" %in% class(value)) {
+        signature = formals(value)
+        
+        # currently we have only 1 parameter (either single value or array) or two (directly binary operation)
+        number_of_params = sapply(private$parameter_choice,function(cb) {
+          length(cb$getCallbackParameters())
+        })
+        
+        choice_index = unname(which(number_of_params == length(signature)))
+        
+        if (length(choice_index) == 0) {
+          stop("Cannot match function to any of the callback parameter.")
+        }
+        choice = private$parameter_choice[[choice_index]]
+        
+        #resolve anyof parameter
+        self$getProcess()$setParameter(name = self$getName(),value = choice)
+        choice$setName(self$getName())
+        choice$setProcess(private$process)
+        choice$setValue(value)
+        
+        return(self)
+      }
+      
+      if ("callback" %in% class(value)) {
         # This is mostly for callbacks
-        arg_allowed = any(sapply(self$getChoice(), function(argument) {
+        arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
               length(setdiff(class(value),class(argument))) == 0
           )
@@ -1794,17 +1945,18 @@ AnyOf = R6Class(
         
         if(!arg_allowed) stop("Cannot assign ",class(value)[[1]], " as value. Not allowed.")
         
-        private$value = list(value)
+        private$value = value
+        return(self)
       } else {
         # set to all sub parameters and run validate
-        validated = sapply(private$parameter_choice, function(param) {
+        choice_copies = self$getChoice()
+        validated = sapply(choice_copies, function(param) {
           
           param$setValue(value)
           
           tryCatch(
             {
               validation = param$validate()
-              
               return(is.null(validation))
             },
             error = function(e) {
@@ -1815,7 +1967,9 @@ AnyOf = R6Class(
           
         })
         
-        private$value = private$parameter_choice[validated]
+        private$value = unname(choice_copies[validated])[[1]] # pick the first match
+        private$value$setValue(value)
+        return(self)
       }
       
       
@@ -1827,10 +1981,15 @@ AnyOf = R6Class(
       # or return the first result
       if (is.null(private$value)) return(private$value)
       
-      if (class(private$value)=="list" && length(private$value)==1) {
-        return(private$value[[1]]$getValue())
+      if (is.list(private$value)) {
+        if (length(private$value)==1) {
+          return(private$value[[1]])
+        }
+        
+        return(private$value[[1]])
+      } else {
+        return(private$value)
       }
-      return(private$value[[1]]$getValue())
     },
     
     getChoice = function() {
@@ -1867,7 +2026,29 @@ AnyOf = R6Class(
       # TODO rework
     },
     typeSerialization = function() {
-      return(private$value[[1]]$serialize())
+      if (length(self$getValue()) == 0) {
+        return(NULL)
+      } else {
+        val = self$getValue()
+        
+        if (!is.list(val)) {
+          val = list(val)
+        }
+        
+        val = lapply(val, function(v) {
+          if (any(c("Graph","Argument") %in% class(v))) {
+            return(v$serialize())
+          } else if ("ProcessNode" %in% class(v)){
+            return(v$serializeAsReference())
+          } else {
+            return(v)
+          }
+        })
+        
+        if (length(val) == 1) return(val[[1]])
+        else return(val)
+        
+      }
     },
     deep_clone = function(name, value) {
       
@@ -2022,6 +2203,9 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   # in general also reolve null cases
   param$isNullable = nullable
   
+  # TODO change in 1.0.0 to param_def$default
+  param$setDefault(param_def$schema$default)
+  
   if ("callback" %in% class(param)) {
     # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
     # value has to be assigned by user, then switch name and value during serialization
@@ -2066,29 +2250,35 @@ processFromJson=function(json) {
   if (is.null(json$summary)) json$summary = character()
   if (is.null(json$parameter_order)) json$parameter_order = character()
   
-  #map parameters!
-  parameters = lapply(
-    names(json$parameters), function(name) {
-      pdef = json$parameters[[name]]
-      if (is.null(pdef$name)) {
-        pdef$name = name
+  tryCatch({
+    #map parameters!
+    parameters = lapply(
+      names(json$parameters), function(name) {
+        pdef = json$parameters[[name]]
+        if (is.null(pdef$name)) {
+          pdef$name = name
+        }
+        
+        # set param if it is contained in the schema
+        param = parameterFromJson(pdef)
+        pattern = pdef$schema$pattern
+        if (!is.null(pattern)) {
+          param$setPattern(pattern)
+        }
+        
+        return(param)
       }
-      
-      # set param if it is contained in the schema
-      param = parameterFromJson(pdef)
-      pattern = pdef$schema$pattern
-      if (!is.null(pattern)) {
-        param$setPattern(pattern)
-      }
-      
-      return(param)
-    }
-  )
+    )
   
-  Process$new(id=json$id,
-              description = json$description,
-              summary=json$summary,
-              parameters = parameters,
-              returns = json$returns,
-              parameter_order = json$parameter_order)
+    Process$new(id=json$id,
+                description = json$description,
+                summary=json$summary,
+                parameters = parameters,
+                returns = json$returns,
+                parameter_order = json$parameter_order)
+  }, error = function(e) {
+    warning(paste0("Invalid process description for '",json$id,"'"))
+    NULL
+  })
+
 }

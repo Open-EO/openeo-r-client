@@ -4,11 +4,12 @@
 \alias{login}
 \title{Function to login to a specific backend}
 \usage{
-login(con, user = NULL, password = NULL, login_type = NULL,
+login(con = NULL, user = NULL, password = NULL, login_type = NULL,
   external = NULL)
 }
 \arguments{
-\item{con}{connected back-end connection}
+\item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{user}{the user name}
 

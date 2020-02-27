@@ -4,12 +4,13 @@
 \alias{update_job}
 \title{Modifies a job with given parameter}
 \usage{
-update_job(con, id, title = NULL, description = NULL,
+update_job(con = NULL, id, title = NULL, description = NULL,
   process_graph = NULL, plan = NULL, budget = NULL, format = NULL,
   ...)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client}
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{id}{the job id of a created job}
 

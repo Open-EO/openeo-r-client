@@ -1,24 +1,56 @@
-# Rclient -> EODC version: 0.2.2
+# Rclient -> EODC version: 0.4.2
 
 library(openeo)
-eodcHost = "http://openeo.eodc.eu"
-con = connect(host = eodcHost, user = "", password = "")  #add username and password
-con %>% listCapabilities()
-con %>% listFormats()
+library(tibble)
 
-con %>% listCollections()
-str(con %>% describeCollection("s2a_prd_msil1c"))
-con %>% listProcesses()
-str(con %>% describeProcess("NDVI"))
+host_url = "https://openeo.eodc.eu"
 
-task = collection("s2a_prd_msil1c", "product_id") %>% process("filter_bbox", prior.name = "imagery", left = 652000, right = 5161000, bottom = 5181000, top = 672000, 
-    srs = "EPSG:32632") %>% process("filter_daterange", prior.name = "imagery", from = "2017-01-01", to = "2017-01-08") %>% process("NDVI", prior.name = "imagery", 
-    red = "B04", nir = "B08") %>% process("min_time", prior.name = "imagery")
+con = connect(host = host_url, version="0.4.0", login_type = "oidc",external="google",exchange_token = "id_token")
 
-job_id = con %>% defineJob(task = task, format = "GTiff")
-str(con %>% describeJob(job_id))
 
-con %>% queueJob(job_id)
-str(con %>% describeJob(job_id))
+capabilities()
+list_file_types()
 
-writeBin(con %>% downloadJob(job_id = job_id), "eodc-uc1-test.tif")
+list_collections()
+
+d= describe_collection(id="s2a_prd_msil1c")
+
+list_processes()
+
+describe_process("reduce")
+
+p = processes()
+
+
+data = p$load_collection(id = p$data$s2a_prd_msil1c,
+                         spatial_extent = list(
+                           west = 652000,
+                           south = 5161000,
+                           north = 5181000,
+                           east = 672000,
+                           crs = 32632
+                         ),
+                         temporal_extent = c("2017-01-01T00:00:00Z","2017-01-08T00:00:00Z"),
+                         bands = c("B08","B04"))
+
+ndvi = p$ndvi(data = data,name="ndvi")
+
+min_time = p$reduce(data = ndvi, dimension = "temporal", reducer = function(x) {
+  min(x,na.rm=TRUE)
+})
+
+result = p$save_result(data = min_time,format = "GTiff")
+
+
+job_id = create_job(graph = result,
+                    title = "Min NDVI example",
+                    description = "Calculates the minimum NDVI from R client",
+                    format = "GTiff") 
+
+describe_job(job = job_id)
+
+start_job(job=job_id)
+
+describe_job(job = job_id)
+
+download_results(job=job_id, folder = "eodc-uc1-test.tif")

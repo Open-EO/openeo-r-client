@@ -4,10 +4,11 @@
 \alias{delete_process_graph}
 \title{Deletes a previously stored process graph}
 \usage{
-delete_process_graph(con, id)
+delete_process_graph(con = NULL, id)
 }
 \arguments{
-\item{con}{connected and authorized openeo client object}
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{id}{the id of the graph}
 }

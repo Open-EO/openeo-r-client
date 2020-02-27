@@ -1,0 +1,597 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+### 1. Connecting to the openEO GEE service
+
+The connection part will take place in all the examples, therefore we will store the connection part outside of the specific use cases.
+
+```{r ,"connecting"}
+library(openeo)
+library(tibble)
+
+user = "group8"
+pwd = "test123"
+
+gee_host_url = "https://earthengine.openeo.org"
+api_versions(gee_host_url)
+```
+
+```{r}
+gee = connect(host = gee_host_url, version="0.4.2",user = user,password = pwd,login_type = "basic")
+```
+
+`gee` is a connection to an openEO service. Starting with openeo (v0.6.0) it is no longer required to use the connection on most of the client functions, due to the use of `active_connection`. However, if you use multiple services at once you should pass the intended connection, because `active_connection` will only hold the latest connected services.
+
+# openeo [v0.6.0]
+
+## Use Case 1 - Minimum NDVI as a web service
+
+Make sure to have established a connection to the openEO GEE service by running the code in point 1 (at the beginnging of the document).
+
+### 2. Requesting the capabilities of the back-end
+```{r}
+capabilities()
+```
+
+Here is an example of the new 'connection-less' call of a service. Usually you needed to formulate the call as this: `capabilities(con = gee)`. If you are connected to multiple services and want to explore them, then you can always pass the service connection manually in order to differentiate the calls.
+
+### 3. Check which collections are available at the back-end
+```{r}
+collections = list_collections()
+collections
+```
+
+### 4. Request details about a specific collection 
+```{r}
+c1 = describe_collection(con=gee,id = "COPERNICUS/S2")
+c1
+```
+
+### 5. Check that needed processes are available
+```{r}
+list_processes()
+```
+
+```{r}
+reduce_info = describe_process(id = "reduce")
+reduce_info
+```
+
+```{r, eval=FALSE}
+process_viewer(reduce_info)
+process_viewer(gee$processes$reduce)
+```
+
+
+### 6. Request the supported secondary web service types
+```{r}
+ list_service_types()
+```
+
+### 7. Define the process graph
+```{r}
+p = processes()
+data1 = p$load_collection(id = p$data$`COPERNICUS/S2`,
+                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
+                              temporal_extent = c("2018-04-30","2018-06-26"),
+                              bands = c("B4","B8"))
+
+b4 = p$filter_bands(data = data1,bands = "B4")
+b8 = p$filter_bands(data=data1,bands = "B8")
+
+ndvi = p$normalized_difference(band1 = b4,band2 = b8)
+
+reducer = p$reduce(data = ndvi,dimension = "temporal", reducer = min)
+
+apply_linear_transform = p$apply(data = reducer, process = function(value) {
+  p$linear_scale_range(x = value, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255)
+})
+
+final = p$save_result(data = apply_linear_transform,format = "png") 
+```
+
+Client-sided validation
+```{r}
+graph = as(final,"Graph")
+graph$validate()
+```
+
+Server-sided validation
+```{r}
+validate_process_graph(graph=final)
+```
+
+In the last code block you can see, that you can now pass the last resulting `ProcessNode` into the function. Before this you need to set the final node explicitly on the created `Graph` object.
+
+The process graph created above will be serialized into JSON notation, which enables the openeEO service to interprete the commands.
+```{r}
+graph
+```
+
+
+### 8. Webservice
+#### 8 a) create xyz service
+```{r}
+service_id = create_service(type = "xyz",
+                            graph = final,
+                            title = "UC1 reference service with R", 
+                            description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation). The service is used from the RNotebook example for GEE")
+service_id
+```
+
+#### 8. b) request meta data
+```{r}
+list_services()
+```
+
+```{r}
+service = describe_service(id = service_id)
+url = service$url
+```
+
+
+#### 8. c) visualizing a xyz service with leaflet
+```{r, eval=TRUE}
+library(magrittr)
+library(leaflet)
+url = "https://earthengine.openeo.org/v0.4/xyz/jjDZWtFbNZZYeJvj/{z}/{x}/{y}"
+leaflet() %>% addTiles() %>% addTiles(url, tileOptions(tms=TRUE)) %>% setView(lng = -1.8,lat=43.4,zoom = 8)
+```
+
+For reproducability and availability of service the leaflet example uses another URL. The service was created beforehand, because the created service will be deleted in the next command. For the leaflet plugin to show a result we reference to that service. If you evaluate the code blocks block by block and you have adapted some things, then you can comment out the `url` statement in the code above. Then the url of your service will be used.
+
+#### 8. d) remove service
+```{r}
+delete_service(id = service_id)
+```
+
+### 9. alternative download / processing 
+#### 9 a) direct computation
+```{r}
+library(raster)
+compute_result(graph=graph,format="png",output_file = "gee_test.png")
+plot(raster("gee_test.png"))
+```
+
+```{r}
+file.remove("gee_test.png")
+```
+
+
+#### 9.b) batch processing
+```{r}
+job_id =  create_job(graph=final,title="UC1 Rclient NDVI")
+job_id
+start_job(job = job_id)
+
+list_jobs()
+```
+
+```{r}
+Sys.sleep(25)
+download_results(job = job_id,folder = "./gee_test/")
+```
+
+
+```{r, eval=TRUE}
+delete_job(job = job_id)
+```
+
+```{r}
+list.files("./gee_test/")
+```
+
+
+## UC 3
+
+Make sure to have established a connection to the openEO GEE service by running the code in point 1 (at the beginnging of the document).
+
+
+### 2. create the process graph
+
+```{r}
+p = processes()
+
+data = p$load_collection(id = p$data$`COPERNICUS/S2`, 
+                             spatial_extent = list(west = 16.1, east = 16.6, north = 48.6, south = 47.2), 
+                             temporal_extent = list("2017-01-01", "2017-02-01"), 
+                             bands = list("B8"))
+
+```
+
+
+
+Starting at this point the example won't work and it will only be used to show case how this will be done. The processes `aggregate_polygon` and `zonal_statistics` are not implemented / supported by the openEO GEE back-end.
+
+```{r, eval=FALSE}
+zonal_statistics = p$aggregate_polygon(data = data,
+                                           polygons = list(type = "Polygon", 
+                                                           coordinates = list(c(16.138916, 48.320647), 
+                                                                              c(16.524124, 48.320647), 
+                                                                              c(16.524124, 48.1386), 
+                                                                              c(16.138916, 48.1386), 
+                                                                              c(16.138916, 48.320647))),
+                                           reducer = function(x) {
+                                             p$zonal_statistics(x)
+                                           })
+
+final = p$save_result(data = zonal_statistics,format = "JSON") 
+```
+
+
+
+### 3. create a job
+```{r, eval = FALSE}
+job_id = create_job(graph = final, 
+                   title = "Zonal Statistics / Sentinel 2", 
+                   description = "Compute time series of zonal (regional) statistics of Sentinel 2 imagery over user-specified polygons.")
+```
+
+
+
+### 4. Start batch processing the job
+```{r, eval=FALSE}
+start_job(job = job_id)
+```
+
+
+
+### 5. ping the job to get status updates
+```{r, eval = FALSE}
+describe_job(job = job_id)
+```
+
+
+
+### 6. Retrieve download links (after the job has finished)
+```{r, eval=TRUE}
+list_results(job = job_id)
+```
+
+
+
+### 7. Download file(s)
+```{r, eval=TRUE}
+download_results(job = job_id, folder = paste0(job_id, "_results"))
+```
+
+
+## Minimum EVI
+
+In this example we will briefly show how to create a more complex process graph and store it at the back-end. First we connect to the openEO GEE service.
+
+```{r}
+library(openeo)
+
+user = "group8"
+pwd = "test123"
+
+gee_host_url = "https://earthengine.openeo.org"
+
+con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
+```
+
+Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
+
+```{r}
+p = processes()
+```
+
+In order to showcase another feature, the `variable`, we substitute the collection name with a such a variable. We can then later set the specific value in order to run the code.
+
+```{r}
+var1 = create_variable(id = "collection_name", type = "string")
+var1$serialize()
+```
+
+Now we will create a process graph that calculates the minimum EVI of an area of interest and scales the output to a value range of 0 to 255 and stores the results in a PNG file.
+
+```{r}
+data = p$load_collection(id = var1,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+
+spectral_reduce = p$reduce(data = data, dimension = "bands",reducer = function(x) {
+  B08 = x[1]
+  B04 = x[2]
+  B02 = x[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
+
+temporal_reduce = p$reduce(data=spectral_reduce,dimension = "temporal", reducer = p$min)
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format="PNG")
+```
+
+When we look at the `data` node, we can see that a variable was set for the parameter `id`.
+
+```{r}
+data
+```
+
+Now we set the value and due to the object referneces of the R6 classes the value will be directly substituted. And this also affects the whole process chain.
+
+```{r}
+var1$setValue("COPERNICUS/S2")
+data
+```
+
+As in the other use case examples we can now compute the results directly or create and manage a batch job.
+
+```{r}
+job_id = create_job(graph=result, title = "Min EVI example")
+```
+```{r}
+start_job(job = job_id)
+```
+
+```{r}
+library(dplyr)
+library(magrittr)
+list_jobs() %>% arrange(desc(submitted))
+```
+
+```{r}
+download_results(job=job_id,folder=".")
+```
+
+
+```{r}
+delete_job(job = job_id)
+```
+
+
+# openeo [v0.5.x]
+
+This section shows the use cases for the openEO GEE service based on a R-client version 0.5.x. Starting with version 0.6.0 there were several enhancements that makes the process graph creation much more easier. The code blocks are intended to be shown, but not evaluated.
+
+## UC 1
+
+```{r, eval=FALSE}
+library(openeo)
+library(magrittr)
+library(tibble)
+
+user = "group4"
+pwd = "test123"
+
+# 1. Requesting the API versions available at the back-end
+gee_host_url = "https://earthengine.openeo.org"
+api_versions(url = gee_host_url)
+
+gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd, login_type = "basic")
+# also inserting the direct link is possible gee = connect(host = 'https://earthengine.openeo.org/v0.4',user = user,password = pwd)
+
+
+list_file_types(con = gee)
+
+# 2. Requesting the capabilities of the back-end
+capabilities(con = gee)
+
+# 3. Check which collections are available at the back-end
+collections = list_collections(con = gee)
+collections
+
+# 4. Request details about a specific collection
+describe_collection(con = gee, "COPERNICUS/S2")
+
+# 5. Check that needed processes are available
+list_processes(con = gee)
+describe_process(con = gee, "reduce")
+
+# 6. Request the supported secondary web service types
+list_service_types(con = gee)
+
+# 7. Create a WMS service (XYZ in this case)
+
+graph = process_graph_builder(con = gee)
+data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`, 
+                              spatial_extent = list(west = -2.7634, south = 43.0408, 
+                                                    east = -1.121, north = 43.8385), 
+                              temporal_extent = c("2018-04-30", "2018-06-26"), 
+                              bands = c("B4", "B8"))
+
+b4 = graph$filter_bands(data = data1, bands = "B4")
+b8 = graph$filter_bands(data = data1, bands = "B8")
+
+ndvi = graph$normalized_difference(band1 = b8, band2 = b4)
+
+reducer = graph$reduce(data = ndvi, dimension = "temporal",reducer = function(x) {
+  min(x)
+})
+
+apply_linear_transform = graph$apply(data = reducer, process = function(val) {
+  graph$linear_scale_range(x = val, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255)
+})
+
+
+final = graph$save_result(data = apply_linear_transform, format = "png") 
+
+graph$setFinalNode(node = final)
+
+graph
+
+# client-sided validation
+graph$validate()
+
+# server-sided validation
+validate_process_graph(con = gee, graph = graph)
+
+service_id = create_service(con = gee,type = "xyz", graph = graph, title = "UC1 service with R", description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation)")
+service_id
+
+# 8. Requesting the service information
+list_services(con = gee)
+
+service = describe_service(con=gee, id = service_id)
+url = service$url
+
+# 8. b) visualizing a xyz service with leaflet
+library(leaflet)
+leaflet() %>% addTiles() %>% addTiles(url, tileOptions(tms=TRUE)) %>% setView(lng = -1.8,lat=43.4,zoom = 8)
+
+# 8. c) remove service
+delete_service(con = gee,  id = service_id)
+
+# 9. alternative download / processing 
+# 9 a) direct computation
+library(sp)
+library(raster)
+compute_result(con = gee, graph=graph,format="png",output_file = "gee_test.png")
+spplot(raster("gee_test.png"))
+
+# 9.b) batch processing
+job_id =  create_job(con = gee, graph=graph,title="UC1 Rclient NDVI")
+start_job(con = gee, job = job_id)
+download_results(con=gee,job = job_id,folder = "./gee_test/")
+delete_job(con = gee, job = job_id)
+```
+
+
+## UC 3
+
+This script behaves in similar fashion as the one for the more current R client version. The following script does not run, because there are missing processes like the `polygon_aggregate` at the GEE service. It is merely intended to show the interaction behavior for this use case rather than to provide a functioning script.
+
+```{r, eval=FALSE}
+library(openeo)
+library(magrittr)
+library(tibble)
+
+gee_host_url = "https://earthengine.openeo.org"
+
+user = "group8"
+pwd = "test123"
+
+gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd, login_type = "basic")
+
+# 1. Create a batch job Part 1: create the process graph
+
+graph = process_graph_builder(con = gee)
+
+data = graph$load_collection(id = graph$data$`COPERNICUS/S2`, 
+                             spatial_extent = list(west = 16.1, east = 16.6, north = 48.6, south = 47.2), 
+                             temporal_extent = list("2017-01-01", "2017-02-01"), 
+                             bands = list("B8"))
+
+spectral_reduction = graph$reduce(data = data, dimension = "spectral")
+
+# hint: starting at this point the example doesn't work... no implementation for aggregate_polygon but this is how it should look like
+zonal_statistics = graph$aggregate_polygon(data = spectral_reduction,
+                                           polygons = list(type = "Polygon", 
+                                                           coordinates = list(c(16.138916, 48.320647), 
+                                                                              c(16.524124, 48.320647), 
+                                                                              c(16.524124, 48.1386), 
+                                                                              c(16.138916, 48.1386), 
+                                                                              c(16.138916, 48.320647))),
+                                           reducer = function(x) {
+                                             graph$zonal_statistics(x)
+                                           })
+
+final = graph$save_result(data = zonal_statistics,format = "JSON") 
+
+graph$setFinalNode(node = final)
+
+# Part 2: create a job
+job_id = create_job(con = gee,
+                   graph = graph, 
+                   title = "Zonal Statistics / Sentinel 2", 
+                   description = "Compute time series of zonal (regional) statistics of Sentinel 2 imagery over user-specified polygons.")
+
+# 2. Start batch processing the job
+start_job(con = gee, job = job_id)
+
+# 2.* ping the job to get status updates
+describe_job(con = gee, job = job_id)
+
+# 3. Retrieve download links (after the job has finished)
+list_results(con = gee, job = job_id)
+
+# 4. Download file(s)
+download_results(con = gee, job = job_id, folder = paste0(job_id, "_results"))
+
+```
+
+
+## Minimum EVI
+
+```{r, eval=FALSE}
+library(openeo)
+library(magrittr)
+library(tibble)
+library(jsonlite)
+
+user = "group8"
+pwd = "test123"
+
+gee_host_url = "https://earthengine.openeo.org"
+
+con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+
+graph = con %>% process_graph_builder()
+
+# creating the graph
+data = graph$load_collection(graph$data$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-01-01", "2018-02-01"
+                             ),
+                             bands=list("B08","B04","B02"))
+
+spectral_reduce = data %>% graph$reduce(dimension = "bands")
+
+evi_graph = con %>% callback(spectral_reduce,parameter = "reducer")
+
+nir = evi_graph$data$data %>% evi_graph$array_element(0)
+red = evi_graph$data$data %>% evi_graph$array_element(1)
+blue = evi_graph$data$data %>% evi_graph$array_element(2)
+
+p1 = evi_graph$product(data = list(red, 6))
+p2 = evi_graph$product(data = list(blue, -7.5))
+
+sub = evi_graph$subtract(data = list(nir,red))
+sum = evi_graph$sum(data = list(1,nir,p1,p2))
+div = evi_graph$divide(data = list(sub,sum))
+
+p3 = evi_graph$product(data = list(2.5,div))
+
+evi_graph$setFinalNode(p3)
+
+temporal_reduce = spectral_reduce %>% graph$reduce(dimension = "temporal")
+
+min_time_graph = con %>% callback(temporal_reduce, parameter = "reducer")
+min_time_graph$min(data = min_time_graph$data$data) %>% min_time_graph$setFinalNode()
+
+apply_linear_transform = temporal_reduce %>% graph$apply()
+
+cb2_graph = con %>% callback(apply_linear_transform, "process")
+cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1, outputMin = 0, outputMax = 255) %>% cb2_graph$setFinalNode()
+
+
+apply_linear_transform %>% graph$save_result(format="PNG") %>% graph$setFinalNode()
+
+# print as JSON
+graph
+```
+

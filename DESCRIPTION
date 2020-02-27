@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.4.x.
 Depends:
@@ -26,7 +26,6 @@ License: file LICENSE
 Collate:
     'argument_types.R'
     'authentication.R'
-    'band_arithmetic-functions.R'
     'callback-functions.R'
     'zzz.R'
     'capabilities-mapping.R'
@@ -37,7 +36,7 @@ Collate:
     'collections.R'
     'debugging.R'
     'jobs.R'
-    'markdown_viewer.R'
+    'ops.R'
     'print-functions.R'
     'process_graph.R'
     'process_graph_building.R'
@@ -46,3 +45,4 @@ Collate:
     'services.R'
     'udf.R'
     'user.R'
+    'viewer.R'

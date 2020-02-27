@@ -4,10 +4,11 @@
 \alias{list_udf_runtimes}
 \title{Lists the supported UDF runtimes}
 \usage{
-list_udf_runtimes(con)
+list_udf_runtimes(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client object}
+\item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 list of udf runtimes with supported udf types, versions and installed packages

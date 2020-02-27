@@ -11,7 +11,7 @@ connect(host, version = NULL, user = NULL, password = NULL,
 \arguments{
 \item{host}{URL pointing to the openEO server back-end host}
 
-\item{version}{the version number as string}
+\item{version}{the version number as string (optional)}
 
 \item{user}{the user name (optional)}
 
@@ -28,10 +28,16 @@ Connects to openEO back-end. If the backend provides a well-known endpoint that 
 specific versions, then you should provide the versions parameter.
 }
 \details{
-Especially the login_type and the authType suggested by the client development guidelines are confusing. Here the login_type deals
+Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
 just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
 use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
+
+The parameter \code{version} is not required. If the service offers a well-known document of the
+service the client will choose an appropriate version (default the most recent production ready version).
+
+When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+which marks the latest service that was connected to.
 }
 \examples{
 \dontrun{
@@ -50,4 +56,7 @@ con = connect(host='http://example.openeo.org',
               login_type='oidc')
 }
 
+}
+\seealso{
+\code{\link{active_connection}}
 }

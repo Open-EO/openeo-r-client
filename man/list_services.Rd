@@ -4,10 +4,11 @@
 \alias{list_services}
 \title{Lists the current users services}
 \usage{
-list_services(con)
+list_services(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client object}
+\item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 list of services lists
