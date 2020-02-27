@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.6.0] - 2020-02-27 Usability update
 
 ### Added
 - added a collection visualization in a HTML viewer based on "openEO JS commons"
