@@ -157,6 +157,8 @@ cb2_graph$linear_scale_range(
 
 graph$save_result(data = apply_linear_transform, format = "png") %>% graph$setFinalNode()
 
+graph
+
 graph$clean()
 graph$validate()
 
