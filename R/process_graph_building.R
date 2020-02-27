@@ -964,7 +964,13 @@ remove_variable = function(graph, variable) {
   add = list(node)
   names(add) = node$getNodeId()
   
-  paramValues = unname(unlist(lapply(node$parameters,function(param)param$getValue())))
+  paramValues = unname(unlist(lapply(node$parameters,function(param) {
+    if ("anyOf" %in% class(param)) {
+      param = param$getValue()
+    }
+    
+    param$getValue()
+  })))
   nodeSelectors = sapply(paramValues,function(v) {
     "ProcessNode" %in% class(v)
   })

@@ -1935,7 +1935,7 @@ AnyOf = R6Class(
         return(self)
       }
       
-      if ("Argument" %in% class(value)) {
+      if ("Callback" %in% class(value)) {
         # This is mostly for callbacks
         arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
@@ -1945,7 +1945,7 @@ AnyOf = R6Class(
         
         if(!arg_allowed) stop("Cannot assign ",class(value)[[1]], " as value. Not allowed.")
         
-        private$value = list(value)
+        private$value = value
       } else {
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
@@ -1966,9 +1966,8 @@ AnyOf = R6Class(
           
         })
         
-        private$value = unname(choice_copies[validated])
-        
-        private$value[[1]]$setValue(value)
+        private$value = unname(choice_copies[validated])[[1]] # pick the first match
+        private$value$setValue(value)
         return(self)
       }
       
@@ -1981,14 +1980,14 @@ AnyOf = R6Class(
       # or return the first result
       if (is.null(private$value)) return(private$value)
       
-      if (class(private$value)=="list") {
+      if (is.list(private$value)) {
         if (length(private$value)==1) {
-          return(private$value[[1]]$getValue())
+          return(private$value[[1]])
         }
         
-        return(private$value[[1]]$getValue())
+        return(private$value[[1]])
       } else {
-        return(private$value$getValue())
+        return(private$value)
       }
     },
     
