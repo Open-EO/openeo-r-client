@@ -2036,7 +2036,7 @@ AnyOf = R6Class(
         }
         
         val = lapply(val, function(v) {
-          if ("Argument" %in% class(v)) {
+          if (any(c("Graph","Argument") %in% class(v))) {
             return(v$serialize())
           } else if ("ProcessNode" %in% class(v)){
             return(v$serializeAsReference())
