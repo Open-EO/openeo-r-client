@@ -4,7 +4,7 @@
 \alias{list_file_types}
 \title{Returns the output formats}
 \usage{
-list_file_types(con = NULLs)
+list_file_types(con = NULL)
 }
 \arguments{
 \item{con}{openeo client object (optional) otherwise \code{\link{active_connection}}

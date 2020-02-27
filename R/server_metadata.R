@@ -75,7 +75,7 @@ list_features = function(con=NULL) {
 #' is used.
 #' @return a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
 #' @export
-list_file_types = function(con=NULLs) {
+list_file_types = function(con=NULL) {
     tryCatch({
         tag = "formats"
         
