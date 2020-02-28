@@ -13,9 +13,9 @@ library(openeo)
 library(tibble)
 
 # enter valid credentials
-euracHost = "https://openeo.eurac.edu"
-user = "guest"
-password = "guest_123"
+euracHost = ""
+user = ""
+password = ""
 
 api_versions(url=euracHost)
 
