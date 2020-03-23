@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1] - 2020-03-23
+
+### Fixed
+- fixed #46 were the process link of arguments was not set correctly
+
+### Removed
+- package dependency `commonmark`
+
 ## [0.6.0] - 2020-02-27 Usability update
 
 ### Added
@@ -21,7 +29,6 @@
 - slight change for indirect parameter order in processes (backward compatible)
 
 ### Fixed
-- fixed #46 were the process link of arguments was not set correctly
 - fixed the server sided validation response handling (HTTP 200 were always OK, despite having errors)
 - fixed bad ordering of bounding box parameter
 
