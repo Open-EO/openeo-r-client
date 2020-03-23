@@ -4,9 +4,16 @@
 \alias{create_job}
 \title{Creates a job on the back-end from a Graph object}
 \usage{
-create_job(con = NULL, graph = NULL, title = NULL,
-  description = NULL, plan = NULL, budget = NULL, format = NULL,
-  ...)
+create_job(
+  con = NULL,
+  graph = NULL,
+  title = NULL,
+  description = NULL,
+  plan = NULL,
+  budget = NULL,
+  format = NULL,
+  ...
+)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}

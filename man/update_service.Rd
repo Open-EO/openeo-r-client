@@ -4,9 +4,18 @@
 \alias{update_service}
 \title{Modifies a service}
 \usage{
-update_service(con = NULL, id, type = NULL, process_graph = NULL,
-  title = NULL, description = NULL, enabled = NULL,
-  parameters = NULL, plan = NULL, budget = NULL)
+update_service(
+  con = NULL,
+  id,
+  type = NULL,
+  process_graph = NULL,
+  title = NULL,
+  description = NULL,
+  enabled = NULL,
+  parameters = NULL,
+  plan = NULL,
+  budget = NULL
+)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}

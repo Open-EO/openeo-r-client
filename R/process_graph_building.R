@@ -110,7 +110,7 @@ Graph = R6Class(
             
             lapply(names(this_arguments), function(param_name, arguments){
               call_arg = this_arguments[[param_name]]
-              
+              arguments[[param_name]]$setProcess(node)
               #TODO maybe check here for is.list and then try the assignable
               arguments[[param_name]]$setValue(call_arg)
             }, arguments = arguments)
@@ -349,6 +349,10 @@ Graph = R6Class(
 setOldClass(c("Graph","R6"))
 
 # ProcessCollection ====
+#' Process Collection
+#' 
+#' Similarly to the Graph object this object contains template functions for process graph building, 
+#' but without the overload of creating a Graph object, which contains ProcessNodes.
 ProcessCollection = R6Class(
   "ProcessCollection",
   lock_objects = FALSE,
@@ -404,12 +408,11 @@ ProcessCollection = R6Class(
           names(this_arguments) = this_param_names
           
           # special case: value is of type Argument
-          
           node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
           
           lapply(names(this_arguments), function(param_name, arguments){
             call_arg = this_arguments[[param_name]]
-            
+            arguments[[param_name]]$setProcess(node)
             #TODO maybe check here for is.list and then try the assignable
             arguments[[param_name]]$setValue(call_arg)
           }, arguments = arguments)
@@ -625,6 +628,10 @@ Process = R6Class(
     .parameters = list(),
     
     deep_clone = function(name, value) {
+      if (name == "process") {
+        return(value)
+      }
+      
       # also check if it is a list of R6 objects
       if (name == ".parameters") {
         
@@ -696,15 +703,9 @@ ProcessNode = R6Class(
       
       # all arguments need a reference to their parent process, this also counts for callback
       # values!
-      lapply(private$.parameters,function(param)  {
-        param$setProcess(self)
-        if ("callback" %in% class(param)) {
-          lapply(param$getCallbackParameters(), function(cbv) {
-            cbv$setProcess(param$getProcess())
-          })
-        }
-      })
-      
+      # lapply(private$.parameters,function(param)  {
+      #   param$setProcess(self)
+      # })
       return(self)
     },
     

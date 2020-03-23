@@ -4,9 +4,15 @@
 \alias{connect}
 \title{Connect to a openeEO back-end}
 \usage{
-connect(host, version = NULL, user = NULL, password = NULL,
-  login_type = NULL, exchange_token = "access_token",
-  external = NULL)
+connect(
+  host,
+  version = NULL,
+  user = NULL,
+  password = NULL,
+  login_type = NULL,
+  exchange_token = "access_token",
+  external = NULL
+)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server back-end host}

@@ -4,8 +4,13 @@
 \alias{upload_file}
 \title{Uploads data into the users workspace}
 \usage{
-upload_file(con = NULL, content, target, encode = "raw",
-  mime = "application/octet-stream")
+upload_file(
+  con = NULL,
+  content,
+  target,
+  encode = "raw",
+  mime = "application/octet-stream"
+)
 }
 \arguments{
 \item{con}{authorized Connection (optional) otherwise \code{\link{active_connection}}
