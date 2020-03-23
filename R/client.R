@@ -563,5 +563,5 @@ OpenEOClient <- R6Class(
 #' 
 #' @return the client version
 client_version = function() {
-  return("0.6.0")
+  return("0.6.1")
 }
