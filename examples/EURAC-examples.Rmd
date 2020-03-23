@@ -1,0 +1,195 @@
+---
+title: "EURAC examples"
+output: html_notebook
+---
+
+# UC 1
+RClient v0.6.0 -> EURAC version: 0.4.2
+
+Enter valid credentials for `euracHost`, `user` and `password`.
+
+```{r}
+library(openeo)
+library(tibble)
+
+# enter valid credentials
+euracHost = ""
+user = ""
+password = ""
+
+api_versions(url=euracHost)
+
+eurac = connect(host = euracHost, version="0.4.2", user = user,password = password, login_type = "basic")
+```
+
+Explorative calls as described in the Use Case 1.
+
+```{r}
+list_processes()
+```
+
+
+```{r}
+capabilities()
+```
+
+
+```{r}
+list_file_types()
+```
+
+
+```{r}
+descriptions = list_collections()
+descriptions
+```
+
+
+```{r}
+d = describe_collection(con = eurac, id="openEO_S2_32632_10m_L2A")
+d
+
+describe_process(con = eurac,"load_collection")
+describe_process(con = eurac,"ndvi")
+describe_process(con = eurac,"min_time")
+
+```
+
+We will later use the data set that we have stored on `d`. Since we have to do some dimensional operations, we shoul have a look at the dimensionality of the data set. Especially, how the dimensions are named.
+
+```{r}
+dims_d = dimensions(d)
+dims_d
+names(dims_d)
+```
+
+
+Build a process graph: Maximum NDVI with a linear scale into a png file
+
+```{r}
+p = processes()
+
+data1 = p$load_collection(id = p$data$openEO_S2_32632_10m_L2A, 
+                              spatial_extent = list(west = 11.2792, 
+                                                    south = 46.4643, 
+                                                    east = 11.4072, 
+                                                    north = 46.5182), 
+                              temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"))
+
+ndvi = p$ndvi(data = data1)
+
+max_t = p$reduce(data = ndvi,dimension = "DATE",reducer = function(x) {
+  max(x)})
+
+apply_linear_transform = p$apply(data = max_t, process = function(value) {
+  p$linear_scale_range(x = value, 
+                       inputMin = -1, inputMax = 1, 
+                       outputMin = 0, outputMax = 255)
+})
+
+result = p$save_result(data = apply_linear_transform, format = "PNG")
+
+```
+
+```{r}
+graph = as(result,"Graph")
+```
+
+
+```{r}
+compute_result(graph = graph, format="PNG",output_file = "eurac_test.png")
+```
+
+
+```{r}
+job_id = create_job(con = eurac,
+                    graph = graph,
+                    title = "UC1 Graph from R client")
+
+start_job(con = eurac, job = job_id)
+
+describe_job(con = eurac, job = job_id)
+
+list_results(con = eurac, job=job_id)
+
+download_results(con = eurac,job = job_id,folder = "./eurac_test/")
+```
+
+Create a process graph calculating maximum NDVI but download as GTiff
+```{r}
+graph2 = process_graph_builder(con = eurac)
+
+data2 = graph2$load_collection(id = graph2$data$openEO_S2_32632_10m_L2A, 
+                              spatial_extent = list(west = 11.2792, 
+                                                    south = 46.4643, 
+                                                    east = 11.4072, 
+                                                    north = 46.5182), 
+                              temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"))
+
+
+ndvi = graph2$ndvi(data = data2)
+max_t = graph2$max_time(data = ndvi)
+final = graph2$save_result(data = max_t,format = "GTiff")
+
+graph2$setFinalNode(node = final)
+
+
+compute_result(con = eurac,graph=graph2, format="GTiff",output_file = "eurac_test.tif")
+```
+
+# Min EVI example
+
+```{r}
+library(openeo)
+library(tibble)
+
+# enter valid credentials!
+user = ""
+pwd = ""
+
+host_url = "https://openeo.eurac.edu"
+
+eurac = connect(host = host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+```
+
+```{r}
+coll = describe_collection(id = "openEO_S2_32632_10m_L2A")
+names(dimensions(coll))
+```
+
+
+```{r}
+p = processes()
+
+# creating the graph
+data = p$load_collection(id = p$data$openEO_S2_32632_10m_L2A, 
+                              spatial_extent = list(west = 11.2792, 
+                                                    south = 46.4643, 
+                                                    east = 11.4072, 
+                                                    north = 46.5182), 
+                              temporal_extent = c("2018-06-04T00:00:00Z","2018-06-23T00:00:00Z"),
+                              bands = c("B08","B02","B04"))
+
+spectral_reduce = p$reduce(data=data, dimension = "spectral",reducer = function(x) {
+  B08 = x[1] / 10000
+  B02 = x[2] / 10000
+  B04 = x[3] / 10000
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02,1)
+})
+
+temporal_reduce = p$reduce(data=spectral_reduce, dimension = "DATE", reducer = function(x) {
+  min(x,na.rm=TRUE)
+})
+
+result = p$save_result(data = temporal_reduce,format="GTiff")
+
+
+# print as JSON
+graph = as(result,"Graph")
+
+# client side graph validation
+graph$validate()
+
+compute_result(graph = graph, format = "GTiff",output_file = "min_evi.tif")
+```
+

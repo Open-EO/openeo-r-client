@@ -4,7 +4,7 @@
 \alias{variables}
 \title{Lists the defined variables for a graph}
 \usage{
-variables(graph)
+variables(final_node)
 }
 \arguments{
 \item{graph}{a process graph object}

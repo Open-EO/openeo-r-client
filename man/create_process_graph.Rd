@@ -4,10 +4,11 @@
 \alias{create_process_graph}
 \title{Stores a graph on the back-end}
 \usage{
-create_process_graph(con, graph, title = NULL, description = NULL)
+create_process_graph(con = NULL, graph, title = NULL, description = NULL)
 }
 \arguments{
-\item{con}{connected and authorized openeo client object}
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{graph}{a process graph definition}
 

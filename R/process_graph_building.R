@@ -17,7 +17,7 @@ library(lubridate)
 #' @field data a named list of collection ids or callback parameters depending on the context
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(processes, data = list())}}{The object creator created from processes and available data. 
+#'    \item{\code{$new(con = NULL, data = list(), final_node=NULL)}}{The object creator created from processes and available data. 
 #'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
 #'    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
 #'    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
@@ -36,8 +36,9 @@ library(lubridate)
 #' }
 #' @section Arguments:
 #' \describe{
-#'    \item{processes}{a list of Process objects}
+#'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
 #'    \item{data}{optional a named list of available data}
+#'    \item{final_node}{optional the final node (end node) that was used to create a graph}
 #'    \item{node_id}{the id of a process node}
 #'    \item{node}{process node or  its node id}
 #'    \item{parameter}{the name of a parameter in a process}
@@ -55,68 +56,85 @@ Graph = R6Class(
   public = list(
     data = list(),
     
-    initialize = function(con, data = list()) {
+    initialize = function(con=NULL, data = list(),final_node=NULL) {
+      con = .assure_connection(con)
+      
       private$connection = con
       
-      processes = lapply(con$processes, processFromJson)
-      
-      if (!is.list(processes)) stop("Processes are not provided as list")
-      
-      self$data = data
-      
-      for (index in 1:length(processes)) {
+      if (is.null(final_node)) {
+        processes = lapply(con$processes, processFromJson)
         
-        pid = processes[[index]]$getId()
-        function_formals = processes[[index]]$getFormals()
+        if (!is.list(processes)) stop("Processes are not provided as list")
         
-        f = function() {}
-        formals(f) = function_formals
+        self$data = data
         
-        # probably do a deep copy of the object
-        # for the body we have the problem that index is addressed as variable in the parent environment. This
-        # causes a problem at call time, where index is resolve and this means that usually the last element
-        # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
-        # and then as.call
-        body(f) = quote({
-          process = processes[[index]]$clone(deep=TRUE)
-          # find new node id:
-          node_id = .randomNodeId(process$getId(),sep="_")
-          
-          while (node_id %in% private$getNodeIds()) {
-            node_id = .randomNodeId(process$getId(),sep="_")
+        for (index in 1:length(processes)) {
+          if (is.null(processes[[index]])) {
+            next
           }
           
-          #map given parameter of this function to the process parameter / arguments and set value
-          arguments = process$parameters
-          # parameter objects should be updated directly, since there is a real object reference
-          this_param_names = names(formals())
+          pid = processes[[index]]$getId()
+          function_formals = processes[[index]]$getFormals()
           
-          # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
-          this_arguments = lapply(this_param_names, function(param) get(param))
-          names(this_arguments) = this_param_names
+          f = function() {}
+          formals(f) = function_formals
           
-          lapply(names(this_arguments), function(param_name, arguments){
-            call_arg = this_arguments[[param_name]]
+          
+          # probably do a deep copy of the object
+          # for the body we have the problem that index is addressed as variable in the parent environment. This
+          # causes a problem at call time, where index is resolve and this means that usually the last element
+          # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+          # and then as.call
+          body(f) = quote({
+            exec_process = processes[[index]]$clone(deep=TRUE)
+            # find new node id:
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
             
-            #TODO maybe check here for is.list and then try the assignable
-            arguments[[param_name]]$setValue(call_arg)
-          }, arguments = arguments)
+            while (node_id %in% private$getNodeIds()) {
+              node_id = .randomNodeId(exec_process$getId(),sep="_")
+            }
+            
+            #map given parameter of this function to the process parameter / arguments and set value
+            arguments = exec_process$parameters
+            
+            # parameter objects should be updated directly, since there is a real object reference
+            this_param_names = names(formals())
+            
+            # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+            this_arguments = lapply(this_param_names, function(param) get(param))
+            names(this_arguments) = this_param_names
+            
+            # special case: value is of type Argument
+            
+            node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+            
+            lapply(names(this_arguments), function(param_name, arguments){
+              call_arg = this_arguments[[param_name]]
+              arguments[[param_name]]$setProcess(node)
+              #TODO maybe check here for is.list and then try the assignable
+              arguments[[param_name]]$setValue(call_arg)
+            }, arguments = arguments)
+            
+            private$nodes = append(private$nodes,node)
+            
+            return(node)
+          })
+          # replace index with the actual number!
+          tmp = gsub(body(f),pattern="index",replacement = eval(index))
+          body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
           
-          # special case: value is of type Argument
-          
-          node = ProcessNode$new(node_id = node_id,process=process)
-          
-          private$nodes = append(private$nodes,node)
-          
-          return(node)
-        })
-        # replace index with the actual number!
-        tmp = gsub(body(f),pattern="index",replacement = eval(index))
-        body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
-        
-        # register the ProcessNode creator functions on the Graph class
-        self[[pid]] = f
+          # register the ProcessNode creator functions on the Graph class
+          self[[pid]] = f
+        }
+      } else if ("ProcessNode" %in% class(final_node)) {
+        node_list = .final_node_serializer(final_node)
+        private$nodes=unname(node_list)
+        private$final_node_id = final_node$getNodeId()
+        private$variables = variables(final_node)
+        #TODO check for variables and assign them
       }
+      
+      invisible(self)
     },
     
     getNodes = function() {
@@ -124,45 +142,42 @@ Graph = R6Class(
     },
     
     clean = function() {
-      # run through the nodes and clean them
-      
       # start at the end -> if multiple end nodes throw an error
+      # take the final node
       suppressMessages({
         endnode = self$getFinalNode()
       })
       
       if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
       
-      # traverse over nested process nodes and extract their node ids from the final node
-      final_path = unname(unlist(private$extractUsedNodeIds(endnode)))
       
+      # get all the available process nodes of that graph
+      used_nodes = .final_node_serializer(endnode)
       
-      unvisitedNodes = setdiff(private$getNodeIds(),final_path)
-      map = lapply(unvisitedNodes, function(node_id) {
-        return(unname(private$extractUsedNodeIds(self$getNode(node_id))))
-      })
-      
-      # now we need to check the remaining nodes if they connect in their downward traversion to an already visited node
-      # therefore list also the ids again
-      # remove found ids from temporary list
-      removeables = character()
-      if (length(map) > 0) {
-        for (index in 1:length(map)) {
-          if (any(map[[index]] %in% final_path)) {
-            # they are connected to the final_path -> add new elements to final_path
-            final_path = union(setdiff(map[[index]],final_path),final_path)
-          } else {
-            # add to removeables
-            removeables = union(map[[index]],removeables)
+      void = lapply(used_nodes,function(node){
+        # check all parameter
+        void2 = lapply(node$parameters,function(param) {
+          # if we find a graph (maybe also in a list or in an anyof) then clean them too
+          if ("Graph" %in% class(param)) {
+            param$clean() #should not be...
           }
-        }
+          
+          if ("callback" %in% class(param)) {
+            value = param$getValue()
+            
+            if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+              if ("Graph" %in% class(value)) {
+                value$clean()
+              }
+            }
+          }
+          return(TRUE)
+        })
         
-        removeables = unique(removeables)
-        
-        # now, the remaining nodes are not connected -> remove them from private$nodes
-        private$nodes[private$getNodeIds() == removeables] = NULL
-      }
-      
+        return(TRUE)
+      })
+      # set the used nodes as nodes
+      private$nodes = unname(used_nodes)
       
       invisible(self)
     },
@@ -171,7 +186,6 @@ Graph = R6Class(
       # iterate over all nodes and serialize their process (not the node it self, since this serializes it as argument)
       # before clean the nodes, remove those that are not connected
       self$clean()
-      
       result = lapply(private$nodes, function(node) {
         return(node$serialize())
       })
@@ -188,7 +202,7 @@ Graph = R6Class(
         
         # for each process node call their processes parameters validate function
         results = unname(unlist(lapply(private$nodes, function(node) {
-          node$validate(node_id=node$getNodeId())
+          node$validate()
         })))
         
         
@@ -211,6 +225,10 @@ Graph = R6Class(
       private$assertNodeExists(node_id)
       return(private$nodes[[which(private$getNodeIds() == node_id)]])
     },
+    addNode = function(node) {
+      if (!"ProcessNode" %in% class(node)) stop("Input object is no ProcessNode")
+      private$nodes = c(private$nodes,node)
+    },
     
     removeNode = function(node_id) {
       private$assertNodeExists(node_id)
@@ -224,7 +242,7 @@ Graph = R6Class(
         message("No final node set in this graph.")
         invisible(NULL)
       } else {
-        return(private$nodes[[which(private$getNodeIds() == private$final_node_id)]])
+        return(private$nodes[[which(private$getNodeIds() == private$final_node_id)[1]]])
       }
       
       
@@ -255,24 +273,59 @@ Graph = R6Class(
       return(params[[parameter]]$validate()) # TODO decide if this is useful
     },
     
-    getVariables = function() {
+    getVariables = function(final_node=NULL) {
+      # TODO rebuild
       return(private$variables)
+      # if (is.null(final_node)) {
+      #   # get final node
+      #   suppressMessages({
+      #     final_node = self$getFinalNode()
+      #   })
+      # }
+      # 
+      # if (is.null(final_node)) stop("No final node defined in this graph. Please set a final node.")
+      # 
+      # 
+      # # get all the available process nodes of that graph
+      # used_nodes = .final_node_serializer(final_node)
+      # 
+      # variables = lapply(used_nodes,function(node){
+      #   # check all parameter
+      #   node_variables = lapply(node$parameters,function(param) {
+      # 
+      #     value = param$getValue()
+      # 
+      #     if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+      #       if ("Graph" %in% class(value)) {
+      #         return(value$getVariables())
+      #       } else if ("variable" %in% class(value)) {
+      #         return(value)
+      #       } else if (is.list(value)) {
+      #         return(
+      #           lapply(value, function(array_elem) {
+      #             if ("variable" %in% class(array_elem)) {
+      #               return(array_elem)
+      #             }
+      # 
+      #             return(NULL)
+      #           })
+      #         )
+      #       }
+      # 
+      #       # if list / array check also
+      #     }
+      # 
+      # 
+      # 
+      #     return(NULL)
+      #   })
+      # 
+      # 
+      # })
+      # return(unlist(variables))
+
     },
-    
-    createVariable = function(id,description=NULL,type="string",default=NULL) {
-      var = Variable$new(id=id, description=description,type=type,default=default)
-      
-      temp_list= list(var)
-      names(temp_list) = var$getName()
-      private$variables = append(private$variables, temp_list)
-      
-      return(var)
-    },
-    
-    removeVariable = function(variable_id) {
-      private$variables[[variable_id]] = NULL
-    },
-    
+
     getConnection = function() {
       return(private$connection)
     }
@@ -288,42 +341,100 @@ Graph = R6Class(
     
     getNodeIds = function() {
       return(sapply(private$nodes, function(node)node$getNodeId()))
-    },
-    
-    extractUsedNodeIds = function(node) {
-      
-      nodeParams = unlist(lapply(node$parameters, function (param) {
-        #check if the argument contains a ProcessNode in a list
-      
-        if (!is.null(param$getValue()) && all("list" %in% class(param$getValue()))) {
-          nodesInList = lapply(param$getValue(), function(listArg) {
-            
-            if ("ProcessNode" %in% class(listArg)) return(listArg)
-            
-            return(NULL)
-          })
-          return(nodesInList)
-        }
-        
-        # check if the argument contains a ProcessNode in itself
-        if ("ProcessNode" %in% class(param$getValue())) return(param$getValue())
-        
-        # if no node return NULL which will be removed with unlist()
-        return(NULL)
-      }))
-      
-      if (is.null(nodeParams)) return(node$getNodeId())
-      if (length(nodeParams) == 0) return(node$getNodeId())
-      
-      return(c(node$getNodeId(),sapply(nodeParams,private$extractUsedNodeIds)))
-      
     }
-    
   )
 )
 
 #'@export
 setOldClass(c("Graph","R6"))
+
+# ProcessCollection ====
+#' Process Collection
+#' 
+#' Similarly to the Graph object this object contains template functions for process graph building, 
+#' but without the overload of creating a Graph object, which contains ProcessNodes.
+ProcessCollection = R6Class(
+  "ProcessCollection",
+  lock_objects = FALSE,
+  public = list(
+    data = list(),
+    initialize = function(con=NULL, data = list()) {
+      con = .assure_connection(con)
+      
+      private$connection = con
+      
+      private$processes = lapply(con$processes, processFromJson)
+      
+      if (!is.list(private$processes)) stop("Processes are not provided as list")
+      
+      self$data = data
+      
+      for (index in 1:length(private$processes)) {
+        if (is.null(private$processes[[index]])) {
+          next
+        }
+        
+        pid = private$processes[[index]]$getId()
+        function_formals = private$processes[[index]]$getFormals()
+        
+        f = function() {}
+        formals(f) = function_formals
+        
+        
+        # probably do a deep copy of the object
+        # for the body we have the problem that index is addressed as variable in the parent environment. This
+        # causes a problem at call time, where index is resolve and this means that usually the last element
+        # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+        # and then as.call
+        body(f) = quote({
+          exec_process = private$processes[[index]]$clone(deep=TRUE)
+          # find new node id:
+          node_id = .randomNodeId(exec_process$getId(),sep="_")
+          
+          while (node_id %in% private$getNodeIds()) {
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
+          }
+          
+          private$node_ids = c(private$node_ids,node_id)
+          
+          #map given parameter of this function to the process parameter / arguments and set value
+          arguments = exec_process$parameters
+          
+          # parameter objects should be updated directly, since there is a real object reference
+          this_param_names = names(formals())
+          
+          # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+          this_arguments = lapply(this_param_names, function(param) get(param))
+          names(this_arguments) = this_param_names
+          
+          # special case: value is of type Argument
+          node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+          
+          lapply(names(this_arguments), function(param_name, arguments){
+            call_arg = this_arguments[[param_name]]
+            arguments[[param_name]]$setProcess(node)
+            #TODO maybe check here for is.list and then try the assignable
+            arguments[[param_name]]$setValue(call_arg)
+          }, arguments = arguments)
+          
+          return(node)
+        })
+        # replace index with the actual number!
+        tmp = gsub(body(f),pattern="index",replacement = eval(index))
+        body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
+        
+        # register the ProcessNode creator functions on the Graph class
+        self[[pid]] = f
+      }
+    }
+  ),
+  private = list(
+    conection = NULL,
+    node_ids = character(),
+    processes = list(),
+    getNodeIds = function() {private$node_ids}
+  )
+)
 
 # Process ====
 #' Process object
@@ -416,9 +527,24 @@ Process = R6Class(
     },
     
     getFormals = function() {
-      #TODO set also default values
-      result = rep(NA,length(self$parameters))
-      names(result) = names(self$parameters)
+      if (length(self$parameters) == 0) return(list())
+      
+      result = as.list(rep(NA,length(self$parameters)))
+      
+      # set also default values
+      
+      for (i in 1:length(self$parameters)) {
+        
+        default_value = self$parameters[[i]]$getDefault()
+
+        if (!is.null(default_value)) {
+          result[[i]] = default_value
+        }
+        # otherwise leave it as NA
+      }
+      
+      
+      names(result) = sapply(self$parameters, function(param)param$getName())
       
       return(result)
     },
@@ -440,25 +566,31 @@ Process = R6Class(
       return(private$parameter_order)
     },
     serialize = function() {
-      serializedArgList = lapply(self$parameters, 
-                                 function(arg){
-                                   if(!arg$isEmpty()) arg$serialize()
-                                 })
-      
-      serializedArgList[sapply(serializedArgList,is.null)] = NULL
-      
-      results = list(process_id=private$id,
-                     arguments = serializedArgList
-      )
+      if (length(self$parameters) > 0) {
+        serializedArgList = lapply(self$parameters, 
+                                   function(arg){
+                                     arg$serialize()
+                                   })
+        
+        serializedArgList[sapply(serializedArgList,is.null)] = NULL
+        
+        results = list(process_id=private$id,
+                       arguments = serializedArgList
+        )
+      } else {
+        results = list(process_id=private$id,
+                       arguments = NA
+        )
+      }
       
       if (length(private$description)>0) results$description = private$description
       
       return(results)
     },
-    validate = function(node_id=NULL) {
-      return(unname(unlist(lapply(self$parameters,function(arg, node_id){
-        arg$validate(node_id = node_id)
-      },node_id = node_id))))
+    validate = function() {
+      return(unname(unlist(lapply(self$parameters,function(arg){
+        arg$validate()
+      }))))
     },
     
     getCharacteristics = function() {
@@ -496,6 +628,10 @@ Process = R6Class(
     .parameters = list(),
     
     deep_clone = function(name, value) {
+      if (name == "process") {
+        return(value)
+      }
+      
       # also check if it is a list of R6 objects
       if (name == ".parameters") {
         
@@ -554,11 +690,23 @@ ProcessNode = R6Class(
   public = list(
     
     # initialized in the graph$<function> call  together with is argument values
-    initialize = function(node_id=character(),process) {
+    initialize = function(node_id=character(),process,graph=NULL) {
       private$node_id = node_id
       
       if (!"Process" %in% class(process)) stop("Process is not of type 'Process'")
+      
+      if(length(graph) > 0) {
+        private$graph = graph
+      }
+      
       private$copyAttributes(process)
+      
+      # all arguments need a reference to their parent process, this also counts for callback
+      # values!
+      # lapply(private$.parameters,function(param)  {
+      #   param$setProcess(self)
+      # })
+      return(self)
     },
     
     getNodeId = function() {
@@ -571,11 +719,19 @@ ProcessNode = R6Class(
       return(list(
         from_node=private$node_id
       ))
+    },
+    getGraph = function() {
+      return(private$graph)
+    },
+    setGraph = function(g) {
+      private$graph = g
+      invisible(self)
     }
   ),
   
   private = list(
     node_id = character(),
+    graph = NULL,
     
     copyAttributes = function(process) {
       #extract names that are no function
@@ -591,6 +747,8 @@ ProcessNode = R6Class(
   )
 )
 
+setOldClass(c("ProcessNode","Process","R6"))
+
 .randomNodeId = function(name,n = 1,...) {
   a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
   paste(name,paste0(a, sprintf("%04d", sample(9999, n, TRUE)), sample(LETTERS, n, TRUE)),...)
@@ -603,12 +761,15 @@ ProcessNode = R6Class(
 #' The function reads and parses the given json text and creates based on the information of the
 #' text a Graph object.
 #' 
-#' @param con a connected openeo client
+#' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
-#' @param graph a already created process graph (probably empty) for callback graphs
+#' @param graph an already created process graph (probably empty) for callback graphs
 #' @return Graph object
 #' @export
-parse_graph = function(con, json, graph=NULL) {
+parse_graph = function(con=NULL, json, graph=NULL) {
+  con = .assure_connection(con)
+  
   if (is.list(json)) {
     parsed_json = json
   } else {
@@ -716,12 +877,8 @@ parse_graph = function(con, json, graph=NULL) {
 #' @return a \code{\link{Variable}} object
 #' 
 #' @export
-create_variable = function(graph, id,description=NULL,type="string",default=NULL) {
-  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
-  
-  if (length(id) == 0) stop("Variable id was not set.")
-  
-  return(graph$createVariable(id,description,type,default))
+create_variable = function(id,description=NULL,type="string",default=NULL) {
+    return(Variable$new(id=id, description=description,type=type,default=default))
 }
 
 #' Lists the defined variables for a graph
@@ -732,12 +889,54 @@ create_variable = function(graph, id,description=NULL,type="string",default=NULL
 #' @return a named list of Variables
 #' 
 #' @export
-variables = function(graph) {
-  if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
+variables = function(final_node) {
+  if ("Graph" %in% class(final_node)) {
+    # get final node
+    suppressMessages({
+      final_node = final_node$getFinalNode()
+    })
+  }
   
-  return(graph$getVariables())
+  if (length(final_node) == 0 || 
+      !"ProcessNode" %in% class(final_node)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
+  
+  
+  # get all the available process nodes of that graph
+  used_nodes = .final_node_serializer(final_node)
+  
+  variables = lapply(used_nodes,function(node){
+    # check all parameter
+    node_variables = lapply(node$parameters,function(param) {
+      
+      value = param$getValue()
+      
+      if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+        if ("Graph" %in% class(value)) {
+          return(value$getVariables())
+        } else if ("variable" %in% class(value)) {
+          return(value)
+        } else if (is.list(value)) {
+          return(
+            lapply(value, function(array_elem) {
+              if ("variable" %in% class(array_elem)) {
+                return(array_elem)
+              }
+              
+              return(NULL)
+            })
+          )
+        }
+      } 
+      
+      return(NULL)
+    })
+    
+    
+  })
+  return(unname(unlist(variables)))
 }
-
+  
+  
 #' Removes a variable from the Graph
 #' 
 #' The function removes a selected variable from the graph. It only removes it from the list of defined 
@@ -749,10 +948,44 @@ variables = function(graph) {
 #' @return TRUE
 #' @export
 remove_variable = function(graph, variable) {
+  if ("ProcessNode" %in% class(graph)){
+    # final node!
+    graph = Graph$new(final_node = graph)
+  }
+  
   if (!all(c("Graph","R6") %in% class(graph))) stop("Parameter graph is no Graph object")
   
   if (length(variable) == 0) stop("Parameter 'variable' cannot be NULL or empty")
   if (all(c("variable","Argument","R6") == class(variable))) variable = variable$getName()
   
   return(graph$removeVariable(variable_id = variable))
+}
+
+.final_node_serializer = function(node,graph=list()) {
+  add = list(node)
+  names(add) = node$getNodeId()
+  
+  paramValues = unname(unlist(lapply(node$parameters,function(param) {
+    if ("anyOf" %in% class(param)) {
+      param = param$getValue()
+    }
+    
+    param$getValue()
+  })))
+  nodeSelectors = sapply(paramValues,function(v) {
+    "ProcessNode" %in% class(v)
+  })
+  selectedNodes = paramValues[nodeSelectors]
+  
+  if(length(selectedNodes)==0) {
+    return(add)
+  } else {
+    temp = unlist(c(lapply(selectedNodes,function(node){
+      .final_node_serializer(node,graph)
+    }),add))
+    
+    unames = unique(names(temp))
+    
+    return(temp[unames])
+  } 
 }

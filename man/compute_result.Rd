@@ -4,10 +4,11 @@
 \alias{compute_result}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-compute_result(con, graph, format = NULL, output_file = NULL, ...)
+compute_result(con = NULL, graph, format = NULL, output_file = NULL, ...)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client}
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{graph}{A process graph}
 

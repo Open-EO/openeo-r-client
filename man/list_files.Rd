@@ -4,10 +4,11 @@
 \alias{list_files}
 \title{Lists workspace files}
 \usage{
-list_files(con)
+list_files(con = NULL)
 }
 \arguments{
-\item{con}{authorized connection}
+\item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a tibble of for filenames and their sizes

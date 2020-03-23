@@ -4,14 +4,15 @@
 \alias{parse_graph}
 \title{Parses a JSON openeo graph into a R graph}
 \usage{
-parse_graph(con, json, graph = NULL)
+parse_graph(con = NULL, json, graph = NULL)
 }
 \arguments{
-\item{con}{a connected openeo client}
+\item{con}{a connected openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{json}{the json graph in a textual representation or an already parsed list object}
 
-\item{graph}{a already created process graph (probably empty) for callback graphs}
+\item{graph}{an already created process graph (probably empty) for callback graphs}
 }
 \value{
 Graph object

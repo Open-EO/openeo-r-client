@@ -4,10 +4,13 @@
 #'
 #' lists the jobs that a user has uploaded or in execution
 #'
-#' @param con the authenticated Connection
+#' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @export
-list_jobs = function(con) {
+list_jobs = function(con=NULL) {
     tryCatch({
+        con=.assure_connection(con)
+        
         tag = "user_jobs"
         
         listOfJobs = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
@@ -45,15 +48,18 @@ list_jobs = function(con) {
 #' Executes a job directly on the connected openEO back-end and returns the data. It relates to
 #' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
 #'
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph A process graph
 #' @param format The inteded format of the data to be returned
 #' @param output_file Where to store the retrieved data under
 #' @param ... additional configuration parameter for output generation
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
+compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ...) {
     tryCatch({
+        con = .assure_connection(con)
+        
         # former sync evaluation
         if (is.null(format)) {
             stop("Parameter \"format\" is not set. Please provide a valid format.")
@@ -65,14 +71,20 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
         
-        if ("Graph" %in% class(graph)) 
+        if ("Graph" %in% class(graph))  {
             graph = graph$serialize()
-        
-        if (is.list(graph)) {
-            job = list(process_graph = graph, output = output)
+        } else if (is.list(graph)) {
+            graph = list(process_graph = graph, output = output)
+        } else if ("ProcessNode" %in% class(graph)){
+            # final node!
+            graph = Graph$new(final_node = graph)$serialize()
         } else {
             stop("Parameter graph is not a Graph object. Awaiting a list.")
         }
+        
+        job = list(
+            process_graph = graph
+        )
         
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE)
@@ -101,7 +113,8 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
 #' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
 #' back-end provider.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param graph A Graph object
 #' @param title Optional title of a job to be found
 #' @param description Optional a more detailed information about a job
@@ -112,8 +125,9 @@ compute_result = function(con, graph, format = NULL, output_file = NULL, ...) {
 #' 
 #' @return the id of the job
 #' @export
-create_job = function(con, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
+        con = .assure_connection(con)
         
         create_options = list(...)
         output = list()
@@ -127,6 +141,9 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
                 job = list(process_graph = graph$serialize(), output = output)
             } else if (is.list(graph)) {
                 job = list(process_graph = toJSON(graph, force = TRUE), output = output)
+            } else if ("ProcessNode" %in% class(graph)){
+                # final node!
+                job = list(process_graph = Graph$new(final_node = graph)$serialize(), output = output)
             } else {
                 stop("Parameter task is not a task object. Awaiting a list.")
             }
@@ -158,12 +175,15 @@ create_job = function(con, graph = NULL, title = NULL, description = NULL, plan 
 #' The function sends a start signal to the backend in order to start processing the results
 #' for a defined job.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the job id of the defined job
 #' 
 #' @return the job_id of the defined job
 #' @export 
-start_job = function(con, job) {
+start_job = function(con=NULL, job) {
+    con = .assure_connection(con)
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -197,7 +217,8 @@ start_job = function(con, job) {
 #' e.g. if you just want to update the output format. 
 #' To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
 #' 
-#' @param con connected and authenticated openeo client
+#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param id the job id of a created job
 #' @param title update title for the job
 #' @param description update description
@@ -207,8 +228,10 @@ start_job = function(con, job) {
 #' @param format the output format
 #' @param ... The create options parameter you want to change. See Details for more information
 #' @export
-update_job = function(con, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+update_job = function(con=NULL, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
     tryCatch({
+        con = .assure_connection(con)
+        
         if (is.null(id)) {
             stop("No job i was specified.")
         }
@@ -226,6 +249,10 @@ update_job = function(con, id, title = NULL, description = NULL, process_graph =
             patch$output = output
         
         if (!is.null(process_graph)) {
+            if ("ProcessNode" %in% class(process_graph)){
+                # final node!
+                process_graph = Graph$new(final_node = process_graph)$serialize()
+            }
             patch$process_graph = process_graph
         }
         
@@ -260,24 +287,30 @@ update_job = function(con, id, title = NULL, description = NULL, process_graph =
 #'
 #' Opens up a websocket to the openEO back-end to fetch updates about a running job.
 #'
-#' @param con An authenticated connection
+#' @param con An authenticated connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job_id the id of the job on the server the user wants to connect to
 #' @return a WebSocket connection
 #' @export
-follow_job = function(con, job_id) {
+follow_job = function(con=NULL, job_id) {
     .not_implemented_yet()
+    
+    con = .assure_connection(con)
 }
 
 #' Creates a list of download paths
 #' 
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
-#' @param con connected and authenticated openeo client object
+#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of the job
 #' 
 #' @return result object containing of URLs for download
 #' @export
-list_results = function(con, job) {
+list_results = function(con=NULL, job) {
+    con = .assure_connection(con)
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -296,7 +329,8 @@ list_results = function(con, job) {
 #' The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
 #' 'folder' will be the target location on the local computer.
 #' 
-#' @param con a connected and authenticated OpenEO connection
+#' @param con a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
 #' 
@@ -304,7 +338,8 @@ list_results = function(con, job) {
 #' 
 #' @importFrom utils download.file
 #' @export
-download_results = function(con, job, folder) {
+download_results = function(con=NULL, job, folder) {
+    con = .assure_connection(con)
     
     if (!dir.exists(folder)) 
         dir.create(folder, recursive = TRUE)
@@ -333,11 +368,14 @@ download_results = function(con, job, folder) {
 #' Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
 #' further executions and related costs.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of job that will be canceled
 #' @return a success / failure notification
 #' @export
-stop_job = function(con, job) {
+stop_job = function(con=NULL, job) {
+    con = .assure_connection(con)
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -364,11 +402,14 @@ stop_job = function(con, job) {
 #'
 #' Returns a detailed description about a specified job. For example to check the status of a job.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job object or the id of the job
 #' @return a detailed description about the job
 #' @export
-describe_job = function(con, job) {
+describe_job = function(con=NULL, job) {
+    con = .assure_connection(con)
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
@@ -392,16 +433,18 @@ describe_job = function(con, job) {
 #'
 #' Deletes a job from the backend.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job or the id of the job
 #' @return logical with state of success
 #' @export
-delete_job = function(con, job) {
+delete_job = function(con=NULL, job) {
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {
         job_id = job
     }
+    con = .assure_connection(con)
     
     tryCatch({
         tag = "jobs_delete"
@@ -421,11 +464,14 @@ delete_job = function(con, job) {
 #' will be required to finish the job and whether or not the job owners data download is already
 #' included in the monetary costs.
 #'
-#' @param con authenticated Connection
+#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @param job the job or the id of the job
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
-estimate_job = function(con, job) {
+estimate_job = function(con=NULL, job) {
+    con = .assure_connection(con)
+    
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
     } else {

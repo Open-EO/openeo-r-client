@@ -4,10 +4,11 @@
 \alias{list_file_types}
 \title{Returns the output formats}
 \usage{
-list_file_types(con)
+list_file_types(con = NULL)
 }
 \arguments{
-\item{con}{openeo client object}
+\item{con}{openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter

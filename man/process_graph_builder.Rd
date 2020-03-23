@@ -4,10 +4,11 @@
 \alias{process_graph_builder}
 \title{Get a process graph builder from the connection}
 \usage{
-process_graph_builder(con)
+process_graph_builder(con = NULL)
 }
 \arguments{
-\item{con}{a connection to an openeo back-end}
+\item{con}{a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a Graph object with the offered processes of the backend

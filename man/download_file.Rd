@@ -4,10 +4,11 @@
 \alias{download_file}
 \title{Downloads a file from the users workspace}
 \usage{
-download_file(con, src, dst = NULL)
+download_file(con = NULL, src, dst = NULL)
 }
 \arguments{
-\item{con}{authorized connection}
+\item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{src}{the relative filepath of the source file on the openeo back-end}
 

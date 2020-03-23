@@ -4,10 +4,11 @@
 \alias{list_features}
 \title{List the openeo endpoints}
 \usage{
-list_features(con)
+list_features(con = NULL)
 }
 \arguments{
-\item{con}{A connected OpenEO client}
+\item{con}{A connected OpenEO client (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 data.frame or tibble (if available)

@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.6.1] - 2020-03-23
+
+### Fixed
+- fixed #46 were the process link of arguments was not set correctly
+
+### Removed
+- package dependency `commonmark`
+
+## [0.6.0] - 2020-02-27 Usability update
+
+### Added
+- added a collection visualization in a HTML viewer based on "openEO JS commons"
+- bridging towards the "openEO JS commons" by reusing the process viewer, a new function `process_viewer` spawns now a viewer in RStudio and renders a beautiful website containing the process information
+- function `processes` that will create an object that has the processes that are available on the connected openEO service. It is quite similar to the return value of `process_graph_builder` which will create a `Graph` object with basically the same functionality plus the graph related functions
+- transferred a function to directly interact with UDF services from an example script of R UDF service repository `send_udf` and added documentation to the function
+- added an example script for the new callback functions
+- added a Rmd for the new callback behavior
+
+### Changed
+- variables are decoupled from the graph object which means more flexibility when dealing with variables, they will be parsed from the Graph / end node
+- it is no longer needed to create a `Graph` object explicitly, passing the end node of the defined workflow is now possible.
+- connection is not required to be passed into the functions that directly interact with the openEO service, `active_connection` now gets and sets the latest connected service into a package variable
+- the mathematical constants `pi` and `e` (in R `pi` and `exp(1)`) are parsed from the data and translated into the corresponding openEO processes in order to avoid errors due to rounded values
+- overloaded mathematical operators for `ProcessNode` and `callback-value` classes
+- allowed functions as "callbacks" for reducer function, e.g. in reduce or apply (not only for band arithmetics)
+- processes can now be created from any graph in callbacks provided as functions
+- slight change for indirect parameter order in processes (backward compatible)
+
+### Fixed
+- fixed the server sided validation response handling (HTTP 200 were always OK, despite having errors)
+- fixed bad ordering of bounding box parameter
+
+### Removed
+- removed the `markdownViewer` function in favour of `process_viewer` and `collection_viewer`
+- removed the function `band_arithmetics`, because callbacks can now be functions
+
 ## [0.5.0] - 2019-12-03
 
 ### Added

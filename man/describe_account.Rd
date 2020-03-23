@@ -4,10 +4,11 @@
 \alias{describe_account}
 \title{Retrieves the current users account information}
 \usage{
-describe_account(con)
+describe_account(con = NULL)
 }
 \arguments{
-\item{con}{authenticated client object}
+\item{con}{authenticated client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 object of type user

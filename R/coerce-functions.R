@@ -172,3 +172,13 @@ as.data.frame.FileTypesList = function(x, ...) {
     
     return(table)
 }
+
+#' @export
+as.Graph.ProcessNode = function(from) {
+    return(Graph$new(final_node=from))
+}
+
+suppressWarnings({
+    setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
+})
+
