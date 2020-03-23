@@ -275,6 +275,43 @@ Argument = R6Class(
       }
       
       
+    },
+    deep_clone = function(name, value) {
+      
+      if (name == "process") {
+        return(value)
+      }
+      
+      # this is the anyOf case
+      if (name == "parameter_choice") {
+        new_list = list()
+        if (is.null(names(value))) {
+          iterable = 1:length(value)
+        } else {
+          iterable = names(value)
+        }
+        
+        for (list_name in iterable) {
+          list_elem = value[[list_name]]
+          
+          if ("R6" %in% class(list_elem)) {
+            list_elem = list_elem$clone(deep=TRUE)
+          }
+          
+          entry = list(list_elem)
+          names(entry) = list_name
+          new_list = append(new_list,entry)
+        }
+        
+        return(new_list)
+        
+      }
+      
+      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
+        return(value$clone(deep = TRUE))
+      }
+      
+      return(value)
     }
     
   )
@@ -1408,6 +1445,15 @@ Callback = R6Class(
       
       private$value = value
     },
+    setProcess = function(p) {
+      private$process = p
+      
+      lapply(private$parameters, function(cbv) {
+        cbv$setProcess(p)
+      })
+      
+      return(invisible(self))
+    },
     
     setCallbackParameters = function(parameters) {
       private$parameters = parameters
@@ -1905,6 +1951,16 @@ AnyOf = R6Class(
       private$schema$type = "anyOf"
       private$parameter_choice = parameter_list
     },
+    setProcess = function(p) {
+      private$process = p
+      
+      lapply(private$parameter_choice, function(choice) {
+        choice$setProcess(p)
+      })
+      
+      return(invisible(self))
+
+    },
     setValue = function(value) {
       if (is.null(value)) {
         private$value =NULL
@@ -1993,9 +2049,10 @@ AnyOf = R6Class(
     },
     
     getChoice = function() {
-      return(lapply(private$parameter_choice,function(choice){
+      param_copies = lapply(private$parameter_choice,function(choice){
         choice$clone(deep=TRUE)
-      }))
+      })
+      return(param_copies)
     }
   ),
   active = list(
@@ -2049,39 +2106,6 @@ AnyOf = R6Class(
         else return(val)
         
       }
-    },
-    deep_clone = function(name, value) {
-      
-      # also check if it is a list of R6 objects
-      if (name == "parameter_choice") {
-        new_list = list()
-        if (is.null(names(value))) {
-          iterable = 1:length(value)
-        } else {
-          iterable = names(value)
-        }
-        
-        for (list_name in iterable) {
-          list_elem = value[[list_name]]
-          
-          if ("R6" %in% class(list_elem)) {
-            list_elem = list_elem$clone(deep=TRUE)
-          }
-          
-          entry = list(list_elem)
-          names(entry) = list_name
-          new_list = append(new_list,entry)
-        }
-        
-        return(new_list)
-        
-      }
-      
-      if (is.environment(value) && !is.null(value$`.__enclos_env__`)) {
-        return(value$clone(deep = TRUE))
-      }
-      
-      value
     }
   )
 )

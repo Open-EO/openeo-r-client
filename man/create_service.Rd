@@ -4,9 +4,17 @@
 \alias{create_service}
 \title{Prepares and publishes a service on the back-end}
 \usage{
-create_service(con = NULL, type, graph, title = NULL,
-  description = NULL, enabled = NULL, parameters = NULL,
-  plan = NULL, budget = NULL)
+create_service(
+  con = NULL,
+  type,
+  graph,
+  title = NULL,
+  description = NULL,
+  enabled = NULL,
+  parameters = NULL,
+  plan = NULL,
+  budget = NULL
+)
 }
 \arguments{
 \item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}

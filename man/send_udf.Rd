@@ -4,8 +4,15 @@
 \alias{send_udf}
 \title{Test a UDF operation}
 \usage{
-send_udf(data, code, host = "http://localhost", port = NULL,
-  language = "R", debug = FALSE, download_info = FALSE)
+send_udf(
+  data,
+  code,
+  host = "http://localhost",
+  port = NULL,
+  language = "R",
+  debug = FALSE,
+  download_info = FALSE
+)
 }
 \arguments{
 \item{data}{file path or a list object with the UDF-API data object}

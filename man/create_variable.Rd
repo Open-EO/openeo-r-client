@@ -4,8 +4,7 @@
 \alias{create_variable}
 \title{Creates a variable in a process graph}
 \usage{
-create_variable(id, description = NULL, type = "string",
-  default = NULL)
+create_variable(id, description = NULL, type = "string", default = NULL)
 }
 \arguments{
 \item{id}{the id of the variable}

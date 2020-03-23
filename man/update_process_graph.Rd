@@ -4,8 +4,13 @@
 \alias{update_process_graph}
 \title{Modify the current graph with a given}
 \usage{
-update_process_graph(con = NULL, id, graph = NULL, title = NULL,
-  description = NULL)
+update_process_graph(
+  con = NULL,
+  id,
+  graph = NULL,
+  title = NULL,
+  description = NULL
+)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
