@@ -75,8 +75,6 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
     }    
   }
   
-  
-  
   payload = list(
     code = list(
       source = code,
@@ -94,7 +92,12 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
   
   options(digits.secs=3)
   start = Sys.time()
-  res = httr::POST(url,config=add_headers(Date=start),body=toJSON(payload,auto_unbox = TRUE),encode=c("json"))
+  res = httr::POST(url = url,
+                   config=add_headers(Date=start),
+                   content_type_json(),
+                   body=toJSON(payload,auto_unbox = T),
+                   encode="raw")
+  
   end = Sys.time()
   if (debug) {
     print(end-start)
@@ -105,10 +108,11 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
     print(end-as_datetime(res$date,tz=Sys.timezone()))
   }
   
-  if (res$status > 400) {
-    message(paste0("[Server-ERROR] ",content(res,as = "parsed")$message))
+  if (res$status_code >= 400) {
+    return(content(res,as = "parsed",type="application/json"))
   } else {
-    return(content(res,as = "text",encoding = "UTF-8"))
+    return(content(res,as = "parsed",type="application/json",simplifyVector=TRUE))
   }
   
 }
+
