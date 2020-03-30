@@ -11,7 +11,8 @@ send_udf(
   port = NULL,
   language = "R",
   debug = FALSE,
-  download_info = FALSE
+  download_info = FALSE,
+  ...
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ send_udf(
 
 \item{download_info}{(optional) logical. Whether or not to print the time taken separately for 
 the download}
+
+\item{...}{parameters passed on to httr::content or to be more precise to jsonlite::fromJSON}
 }
 \value{
 the textual JSON representation of the result

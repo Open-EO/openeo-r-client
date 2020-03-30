@@ -7,37 +7,24 @@
 Similarly to the Graph object this object contains template functions for process graph building, 
 but without the overload of creating a Graph object, which contains ProcessNodes.
 }
-\section{Methods}{
-\subsection{Public methods}{
-\itemize{
-\item \href{#method-new}{\code{ProcessCollection$new()}}
-\item \href{#method-clone}{\code{ProcessCollection$clone()}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
-\subsection{Method \code{new()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ProcessCollection$new(con = NULL, data = list())}\if{html}{\out{</div>}}
-}
+\section{Fields}{
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ProcessCollection$clone(deep = FALSE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{deep}}{Whether to make a deep clone.}
+\item{\code{data}}{a named list of collection ids or callback parameters depending on the context}
+}}
+
+\section{Methods}{
+
+\describe{
+   \item{\code{$new(con = NULL, data = list())}}{The object creator created from processes and available data. 
+   If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
 }
-\if{html}{\out{</div>}}
+}
+
+\section{Arguments}{
+
+\describe{
+   \item{data}{optional a named list of available data}
 }
 }
-}
+

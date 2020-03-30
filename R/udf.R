@@ -36,6 +36,7 @@ list_udf_runtimes = function(con=NULL) {
 #' @param debug (optional) logical. Switch on / off debugging information for time taken
 #' @param download_info (optional) logical. Whether or not to print the time taken separately for 
 #' the download
+#' @param ... parameters passed on to httr::content or to be more precise to jsonlite::fromJSON
 #' 
 #' @return the textual JSON representation of the result
 #' 
@@ -61,7 +62,8 @@ list_udf_runtimes = function(con=NULL) {
 #' 
 #' }
 #' @export
-send_udf = function(data, code, host="http://localhost", port=NULL, language="R", debug = FALSE, download_info = FALSE) {
+send_udf = function(data, code, host="http://localhost", port=NULL, language="R", 
+                    debug = FALSE, download_info = FALSE, ...) {
   if (is.character(data)) {
     data = read_json(data, simplifyVector = TRUE)
   }
@@ -109,9 +111,9 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
   }
   
   if (res$status_code >= 400) {
-    return(content(res,as = "parsed",type="application/json"))
+    return(content(res,as = "parsed",type="application/json", ...))
   } else {
-    return(content(res,as = "parsed",type="application/json",simplifyVector=TRUE))
+    return(content(res,as = "parsed",type="application/json",...))
   }
   
 }

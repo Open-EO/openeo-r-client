@@ -353,6 +353,21 @@ setOldClass(c("Graph","R6"))
 #' 
 #' Similarly to the Graph object this object contains template functions for process graph building, 
 #' but without the overload of creating a Graph object, which contains ProcessNodes.
+#' 
+#' @name ProcessCollection
+#' @field data a named list of collection ids or callback parameters depending on the context
+#' 
+#' @section Methods:
+#' \describe{
+#'    \item{\code{$new(con = NULL, data = list())}}{The object creator created from processes and available data. 
+#'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
+#' } 
+#' @section Arguments:
+#' \describe{
+#'    \item{data}{optional a named list of available data}
+#' }
+NULL 
+
 ProcessCollection = R6Class(
   "ProcessCollection",
   lock_objects = FALSE,
