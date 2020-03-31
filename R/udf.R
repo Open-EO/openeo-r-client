@@ -34,6 +34,8 @@ list_udf_runtimes = function(con=NULL) {
 #' @param port optional port of the UDF service host
 #' @param language programming language (R or Python) of the source code
 #' @param debug (optional) logical. Switch on / off debugging information for time taken
+#' @param user_context list. Context parameter that are shipped from the user into the udf_service
+#' @param server_context list. Context usually sent from the back-end to trigger certain settings.
 #' @param download_info (optional) logical. Whether or not to print the time taken separately for 
 #' the download
 #' @param ... parameters passed on to httr::content or to be more precise to jsonlite::fromJSON
@@ -63,7 +65,7 @@ list_udf_runtimes = function(con=NULL) {
 #' }
 #' @export
 send_udf = function(data, code, host="http://localhost", port=NULL, language="R", 
-                    debug = FALSE, download_info = FALSE, ...) {
+                    debug = FALSE, user_context = NA,server_context=NA, download_info = FALSE, ...) {
   if (is.character(data)) {
     data = read_json(data, simplifyVector = TRUE)
   }
@@ -83,6 +85,14 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
       language = language),
     data = data
   )
+  
+  if (length(user_context) > 0 && !is.na(user_context)) {
+    payload$data$user_context = user_context
+  }
+  
+  if (length(server_context) > 0 && !is.na(server_context)) {
+    payload$data$server_context = server_context
+  }
   
   if (is.null(port)) {
     url = paste0(host,"/udf")

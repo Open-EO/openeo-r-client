@@ -11,6 +11,8 @@ send_udf(
   port = NULL,
   language = "R",
   debug = FALSE,
+  user_context = NA,
+  server_context = NA,
   download_info = FALSE,
   ...
 )
@@ -27,6 +29,10 @@ send_udf(
 \item{language}{programming language (R or Python) of the source code}
 
 \item{debug}{(optional) logical. Switch on / off debugging information for time taken}
+
+\item{user_context}{list. Context parameter that are shipped from the user into the udf_service}
+
+\item{server_context}{list. Context usually sent from the back-end to trigger certain settings.}
 
 \item{download_info}{(optional) logical. Whether or not to print the time taken separately for 
 the download}
