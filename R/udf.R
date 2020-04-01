@@ -38,6 +38,7 @@ list_udf_runtimes = function(con=NULL) {
 #' @param server_context list. Context usually sent from the back-end to trigger certain settings.
 #' @param download_info (optional) logical. Whether or not to print the time taken separately for 
 #' the download
+#' @param legacy logical. Whether or not the legacy endpoint shall be used (default: FALSE)
 #' @param ... parameters passed on to httr::content or to be more precise to jsonlite::fromJSON
 #' 
 #' @return the textual JSON representation of the result
@@ -65,7 +66,7 @@ list_udf_runtimes = function(con=NULL) {
 #' }
 #' @export
 send_udf = function(data, code, host="http://localhost", port=NULL, language="R", 
-                    debug = FALSE, user_context = NA,server_context=NA, download_info = FALSE, ...) {
+                    debug = FALSE, user_context = NA,server_context=NA, download_info = FALSE, legacy = FALSE, ...) {
   if (is.character(data)) {
     data = read_json(data, simplifyVector = TRUE)
   }
@@ -86,18 +87,22 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
     data = data
   )
   
-  if (length(user_context) > 0 && !is.na(user_context)) {
-    payload$data$user_context = user_context
+  if (!legacy) {
+    if (length(user_context) > 0 && !is.na(user_context)) {
+      payload$data$user_context = user_context
+    }
+    
+    if (length(server_context) > 0 && !is.na(server_context)) {
+      payload$data$server_context = server_context
+    }
   }
   
-  if (length(server_context) > 0 && !is.na(server_context)) {
-    payload$data$server_context = server_context
-  }
   
+  endpoint = if (legacy) "/udf_legacy" else "/udf"
   if (is.null(port)) {
-    url = paste0(host,"/udf")
+    url = paste0(host,endpoint)
   } else {
-    url = paste0(host,":",port,"/udf")
+    url = paste0(host,":",port,endpoint)
   }
   
   

@@ -14,6 +14,7 @@ send_udf(
   user_context = NA,
   server_context = NA,
   download_info = FALSE,
+  legacy = FALSE,
   ...
 )
 }
@@ -36,6 +37,8 @@ send_udf(
 
 \item{download_info}{(optional) logical. Whether or not to print the time taken separately for 
 the download}
+
+\item{legacy}{logical. Whether or not the legacy endpoint shall be used (default: FALSE)}
 
 \item{...}{parameters passed on to httr::content or to be more precise to jsonlite::fromJSON}
 }
