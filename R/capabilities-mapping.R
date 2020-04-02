@@ -5,7 +5,6 @@ load_api = function(version) {
         stop("Unsupported API version.")
     
     api = read.csv2(system.file("extdata", "api_0.4.1.csv", package = "openeo"), stringsAsFactors = FALSE)
-    
     if (isNamespaceLoaded("tibble")) 
         api = tibble::as_tibble(api)
     

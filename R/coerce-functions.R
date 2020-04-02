@@ -59,43 +59,6 @@
     return(table)
 }
 
-.listObjectsToTibble = function(x) {
-    # extract types
-    template = do.call(c, lapply(x, function(col) {
-        lapply(col, function(row) {
-            if (is.null(row)) {
-                return(NULL)
-            }
-            
-            if (is.list(row)) {
-                return(list())
-            }
-            
-            return(do.call(class(row), list(length = 0)))
-        })
-    }))
-    template = template[unique(names(template))]
-    
-    table = do.call("tibble", args = template)
-    
-    for (index in seq_along(x)) {
-        entry = x[[index]]
-        
-        if (length(entry) > 0) {
-            for (i in seq_along(entry)) {
-                val = entry[[i]]
-                if (is.list(val)) {
-                  entry[[i]] = list(val)
-                }
-            }
-            args = append(list(.data = table), entry)
-            table = do.call("add_row", args = args)
-        }
-        
-    }
-    return(table)
-}
-
 #' Coercions into data.frame objects
 #' 
 #' The openeo package offers functions to transform list objects obtained from JSON
