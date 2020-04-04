@@ -259,7 +259,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
-    version = "0.4.2", # implemented api version
+    version = "1.0.0-rc.2", # implemented api version
     general_auth_type = "bearer",
     exchange_token="access_token",
     
@@ -562,5 +562,5 @@ OpenEOClient <- R6Class(
 #' 
 #' @return the client version
 client_version = function() {
-  return("0.6.1")
+  return("0.7.0")
 }
