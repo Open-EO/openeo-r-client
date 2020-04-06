@@ -296,11 +296,19 @@ print.OpenEOCapabilities = function(x, ...) {
     description = capabilities$description
     
     version = capabilities$api_version
+    stac_version = capabilities$stac_version
+    stac_id = capabilities$id
     endpoints = capabilities$endpoints
     billing = capabilities$billing  #not used right now
     
-    cat(paste0("Back-end:\t\t", title), paste0("Back-end version: \t", backend_version), paste0("Description:\t\t", description), paste0("API-version:\t\t", 
-        version), sep = "\n")
+    cat(paste0("Back-end:\t\t", title), 
+        paste0("Back-end version: \t", backend_version), 
+        paste0("Description:\t\t", description), 
+        paste0("API-version:\t\t", version),
+        paste0("STAC"),
+        if(length(stac_id) > 0 || is.na(stac_id)) paste0("   ID:\t\t\t",stac_id) else "   ID:\t\t\t---",
+        paste0("   Version:\t\t",stac_version), sep = "\n")
+        
     
     server_offering = .listObjectsToDataFrame(endpoints)
     

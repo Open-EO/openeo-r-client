@@ -249,6 +249,19 @@ OpenEOClient <- R6Class(
     
     getAuthClient = function() {
       return(private$auth_client)
+    },
+    
+    getCapabilities = function() {
+      if (is.null(private$capabilities)) {
+        endpoint = "/"
+        tryCatch({
+          private$capabilities = private$GET(endpoint = endpoint)
+            
+          class(private$capabilities) = "OpenEOCapabilities"
+        }, error = .capturedErrorToMessage)
+      }
+      
+      return(private$capabilities)
     }
 
   ),
@@ -262,6 +275,7 @@ OpenEOClient <- R6Class(
     version = "1.0.0-rc.2", # implemented api version
     general_auth_type = "bearer",
     exchange_token="access_token",
+    capabilities=NULL,
     
     # functions ====
     loginOIDC = function(external=NULL) {

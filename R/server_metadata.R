@@ -41,14 +41,16 @@ api_versions = function(url) {
 #' 
 #' @export
 capabilities = function(con=NULL) {
-    endpoint = "/"
     tryCatch({
         con = .assure_connection(con)
         con$stopIfNotConnected()
-        capabilities = content(httr::GET(url = paste0(con$getHost(), endpoint)))
-        class(capabilities) = "OpenEOCapabilities"
-        return(capabilities)
-    }, error = .capturedErrorToMessage)
+        return(con$getCapabilities())
+    }, 
+    error = function(e) {
+        warning(e$message)
+        return(invisible(e$message))
+    })
+    
 }
 
 #' List the openeo endpoints
@@ -128,4 +130,74 @@ list_service_types = function(con=NULL) {
     }, error = .capturedErrorToMessage)
     
     return(con$list_service_types())
+}
+
+#' Visualizes the terms of service
+#' 
+#' If the service provides information in their capabilities about their terms of service, the function opens a new RStudio 
+#' viewer panel and visualizes the HTML content of the link.
+#' 
+#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' @return a list of the link identifying the terms of service from the service capabilities or NULL
+#' @export
+terms_of_service = function(con = NULL) {
+    tryCatch({
+        con = .assure_connection(con)
+        
+        con$stopIfNotConnected()
+        capabilities = con$getCapabilities()
+        
+        sel = lapply(capabilities$links, function(link) {
+            if (link$rel == "terms-of-service") {
+                return(link)
+            } else {
+                return(NULL)
+            }
+        })
+        sel = as.list(unlist(sel))
+        if (length(sel) == 0) {
+            openeo:::.no_information_by_backend("terms of service")
+            return(invisible(NULL))
+        } else {
+            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            return(invisible(sel))
+        }
+        
+    }, error = .capturedErrorToMessage)
+}
+
+#' Visualizes the privacy policy
+#' 
+#' If the service provides information in their capabilities about their privacy policy, the function opens a new RStudio 
+#' viewer panel and visualizes the HTML content of the link.
+#' 
+#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' @return a list of the link identifying the privacy policy from the service capabilities or NULL
+#' @export
+privacy_policy = function(con = NULL) {
+    tryCatch({
+        con = .assure_connection(con)
+        
+        con$stopIfNotConnected()
+        
+        capabilities = con$getCapabilities()
+        sel = lapply(capabilities$links, function(link) {
+            if (link$rel == "privacy-policy") {
+                return(link)
+            } else {
+                return(NULL)
+            }
+        })
+        sel = as.list(unlist(sel))
+        if (length(sel) == 0) {
+            openeo:::.no_information_by_backend("privacy policy")
+            return(invisible(NULL))
+        } else {
+            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            return(invisible(sel))
+        }
+        
+    }, error = .capturedErrorToMessage)
 }

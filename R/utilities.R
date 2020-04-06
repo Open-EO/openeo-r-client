@@ -11,6 +11,10 @@
     warning("The function is not supported by the current back-end version.")
 }
 
+.no_information_by_backend = function(what) {
+    warning(paste0("There are no information about ",what," available at the service."))
+}
+
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
