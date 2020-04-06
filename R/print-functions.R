@@ -82,26 +82,27 @@ print.CollectionInfo = function(x, ...) {
         x$title = "---"
     title = paste("Title:\t\t\t\t", x$title, sep = "")
     
-    description = paste("Description:\t\t\t", x$description, sep = "")
+    description = paste0("Description:\t\t\t", x$description)
+    deprecated = if(!is.null(x$deprecated) && !as.logical(x$deprecated)) paste0("Deprecated:\t\t\t",x$deprecated) else NULL
     
-    if (is.null(x$provider)) 
-        x$provider = list(list(name = "---"))
-    source = paste("Source:\t\t\t\t", paste(sapply(x$provider, function(p) {
+    if (is.null(x$providers)) 
+        x$providers = list(list(name = "---"))
+    source = paste("Source:\t\t\t\t", paste(sapply(x$providers, function(p) {
         p$name
     }), sep = "", collapse = ", "), sep = "")
     
-    if (!is.null(x$properties)) {
-        if (is.null(x$properties$`eo:platform`)) 
-            x$properties$`eo:platform` = "---"
-        platform = paste("Platform:\t\t\t", x$properties$`eo:platform`, sep = "")
-        if (is.null(x$properties$`eo:constellation`)) 
-            x$properties$`eo:constellation` = "---"
-        constellation = paste("Constellation:\t\t\t", x$properties$`eo:constellation`, sep = "")
-        if (is.null(x$properties$`eo:instrument`)) 
-            x$properties$`eo:instrument` = "---"
-        instrument = paste("Instrument:\t\t\t", x$properties$`eo:instrument`, sep = "")
+    if (!is.null(x$summaries)) {
+        if (is.null(x$summaries$`eo:platform`)) 
+            x$summaries$`eo:platform` = "---"
+        platform = paste("Platform:\t\t\t", x$summaries$`eo:platform`, sep = "")
+        if (is.null(x$summaries$`eo:constellation`)) 
+            x$summaries$`eo:constellation` = "---"
+        constellation = paste("Constellation:\t\t\t", x$summaries$`eo:constellation`, sep = "")
+        if (is.null(x$summaries$`eo:instrument`)) 
+            x$summaries$`eo:instrument` = "---"
+        instrument = paste("Instrument:\t\t\t", x$summaries$`eo:instrument`, sep = "")
         
-        crs = paste("Data SRS (EPSG-code):\t\t", x$properties$`eo:epsg`, sep = "")
+        crs = paste("Data SRS (EPSG-code):\t\t", x$summaries$`eo:epsg`, sep = "")
     }
     
     
@@ -120,14 +121,14 @@ print.CollectionInfo = function(x, ...) {
     })
 
     
-    cat(c(id, title, description, source, platform, constellation, instrument, extent, crs, time), sep = "\n")
+    cat(unlist(list(id, title, description,if (!is.null(deprecated)) deprecated else NULL, source, platform, constellation, instrument, extent, crs, time)), sep = "\n")
     
-    if (!is.null(x$properties$`eo:bands`)) {
+    if (!is.null(x$summaries$`eo:bands`)) {
         cat("Bands:\n")
-        print(as.data.frame(x$properties$`eo:bands`))
-    } else if (!is.null(x$properties$`sar:bands`)) {
+        print(as.data.frame(x$summaries$`eo:bands`))
+    } else if (!is.null(x$summaries$`sar:bands`)) {
         cat("Bands:\n")
-        print(as.data.frame(x$properties$`sar:bands`))
+        print(as.data.frame(x$summaries$`sar:bands`))
     }
     
 }
@@ -252,10 +253,9 @@ print.JobCostsEstimation = function(x, ...) {
 
 #' @export
 print.CollectionList = function(x, ...) {
-    
-    df = as.data.frame(x, extract = c("id", "title", "description"))
+    df = as.data.frame(x, extract = c("id", "title", "description","deprecated"))
     if (isNamespaceLoaded("tibble")) 
-        print(tibble::as_tibble(df)[, c("id", "title", "description")]) else print(df)
+        print(tibble::as_tibble(df)[, c("id", "title", "description","deprecated")]) else print(df)
 }
 
 #' @export

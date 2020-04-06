@@ -579,7 +579,7 @@ String = R6Class(
         if (file.exists(private$value)) {
           # if valid file path open file and attach
           return(readChar(private$value, file.info(private$value)$size))
-        }    
+        }  
       } else {
         return(as.character(private$value))
       }

@@ -26,5 +26,5 @@ dimensions = function(x, ...) {
 #' 
 #' @export
 dimensions.CollectionInfo = function(x, ...) {
-    return(x$properties$`cube:dimensions`)
+    return(x$`cube:dimensions`)
 }
