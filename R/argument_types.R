@@ -579,15 +579,12 @@ String = R6Class(
         if (file.exists(private$value)) {
           # if valid file path open file and attach
           return(readChar(private$value, file.info(private$value)$size))
-        }  
+        } else {
+          return(private$value)
+        } 
       } else {
         return(as.character(private$value))
       }
-      # additional options?
-      # TODO value is URL
-      # TODO value is function -> decompose?
-      
-      
     }
   )
 )
@@ -628,6 +625,8 @@ URI = R6Class(
         if (file.exists(private$value)) {
           # if valid file path open file and attach
           return(readChar(private$value, file.info(private$value)$size))
+        } else {
+          return(private$value)
         }    
       } else {
         return(as.character(private$value))
