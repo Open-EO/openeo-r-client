@@ -22,12 +22,12 @@ callback = function(con=NULL, process, parameter = NULL, choice_index=NULL) {
     
     # iterate over parameters and state callback possibilities
     callbacksParameterNames = unname(unlist(sapply(process$parameters, function(param) {
-        if ("callback" %in% class(param)) 
+        if ("GraphParameter" %in% class(param)) 
             return(param$getName())
         
         if ("anyOf" %in% class(param)) {
             if (any(sapply(param$getChoice(), function(p) {
-                return("callback" %in% class(p))
+                return("GraphParameter" %in% class(p))
             }))) return(param$getName())
         }
     })))

@@ -40,7 +40,8 @@ process_viewer = function(x,con=NULL) {
     if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
-    doc_gen_version = "@1.0.0-beta.2"
+    # doc_gen_version = "@1.0.0-beta.2"
+    doc_gen_version = "@latest"
     
     if (is.function(x)) {
       x=do.call(x,args=list())

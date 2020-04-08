@@ -73,12 +73,12 @@ Parameter = R6Class(
       return(private$schema$default)
     },
     matchesSchema = function(schema) {
-      sel = c("type","format")
+      sel = c("type","subtype")
       
       if (is.null(schema$type)) schema$type = character()
-      if (is.null(schema$format)) schema$format = character()
+      if (is.null(schema$subtype)) schema$subtype = character()
       
-      if (length(schema$type) == 0 && length(schema$format) == 0) return(TRUE) # TODO add unchecked warning?
+      if (length(schema$type) == 0 && length(schema$subtype) == 0) return(TRUE) # TODO add unchecked warning?
       
       return(setequal(private$schema[sel], schema[sel]))
     },
@@ -107,7 +107,7 @@ Parameter = R6Class(
     nullable = FALSE,
     schema = list(
       type=character(),
-      format = character(),
+      subtype = character(),
       pattern = character(),
       parameters = list(), # potential callback parameter
       default = character(),
@@ -173,7 +173,7 @@ Argument = R6Class(
       }
       
       if ("Graph" %in% class(private$value)) {
-        if (!"callback" %in% class(self)) {
+        if (!"GraphParameter" %in% class(self)) {
           return(private$value$serialize())
         } 
       }
@@ -442,7 +442,7 @@ EPSGCode = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "integer"
-      private$schema$format = "epsg-code"
+      private$schema$subtype = "epsg-code"
     }
   ),
   private = list(
@@ -600,7 +600,7 @@ URI = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "uri"
+      private$schema$subtype = "uri"
     }
   ),
   private = list(
@@ -662,7 +662,7 @@ OutputFormat = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "output-format"
+      private$schema$subtype = "output-format"
     }
   ),
   private = list(
@@ -711,7 +711,7 @@ CollectionId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "collection-id"
+      private$schema$subtype = "collection-id"
     }
   ),
   private = list(
@@ -764,7 +764,7 @@ JobId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "job-id"
+      private$schema$subtype = "job-id"
     }
   ),
   private = list(
@@ -817,7 +817,7 @@ ProcessGraphId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "process-graph-id"
+      private$schema$subtype = "process-graph-id"
     }
   ),
   private = list(
@@ -870,7 +870,7 @@ ProjDefinition = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "proj-definition"
+      private$schema$subtype = "proj-definition"
     }
   ),
   private = list(
@@ -921,7 +921,7 @@ BoundingBox = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "bounding-box"
+      private$schema$subtype = "bounding-box"
     }
   ),
   private = list(
@@ -1076,7 +1076,7 @@ Date = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "date"
+      private$schema$subtype = "date"
     }
   ),
   private = list(
@@ -1125,7 +1125,7 @@ DateTime = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "date-time"
+      private$schema$subtype = "date-time"
     }
   ),
   private = list(
@@ -1174,7 +1174,7 @@ Time = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "time"
+      private$schema$subtype = "time"
     },
     setValue = function(value) {
       # the value will be a posixct where we just return the time component
@@ -1235,7 +1235,7 @@ GeoJson = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "geojson"
+      private$schema$subtype = "geojson"
     }
   ),
   private = list(
@@ -1275,7 +1275,7 @@ OutputFormatOptions = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "output-format-options"
+      private$schema$subtype = "output-format-options"
     }
   ),
   private = list(
@@ -1315,7 +1315,7 @@ ProcessGraphVariables = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "process-graph-variables"
+      private$schema$subtype = "process-graph-variables"
     }
   ),
   private = list(
@@ -1356,7 +1356,7 @@ RasterCube = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "raster-cube"
+      private$schema$subtype = "raster-cube"
     }
   ),
   private = list(
@@ -1404,7 +1404,7 @@ VectorCube = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "vector-cube"
+      private$schema$subtype = "vector-cube"
     }
   ),
   private = list(
@@ -1461,8 +1461,8 @@ VectorCube = R6Class(
 #' @return Object of \code{\link{R6Class}} which represents a callback.
 NULL
 
-Callback = R6Class(
-  "callback",
+GraphParameter = R6Class(
+  "GraphParameter",
   inherit=Argument,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
@@ -1470,7 +1470,7 @@ Callback = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "callback"
+      private$schema$subtype = "process-graph"
     },
     
     setValue = function(value) {
@@ -1585,7 +1585,7 @@ CallbackValue = R6Class(
       private$description = description
       private$required = required
       private$schema$type = type
-      private$schema$format = format
+      private$schema$subtype = format
     },
     print = function() {
       cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
@@ -1649,7 +1649,7 @@ Array = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = format
+      private$schema$subtype = format
       
       private$schema$items = items
     },
@@ -1886,7 +1886,7 @@ Kernel = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "kernel"
+      private$schema$subtype = "kernel"
       private$schema$items = items
     }
   )
@@ -1924,7 +1924,7 @@ TemporalInterval = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "temporal-interval"
+      private$schema$subtype = "temporal-interval"
       private$schema$items = items
       private$schema$maxItems = 2
       private$schema$minItems = 2
@@ -1966,7 +1966,7 @@ TemporalIntervals = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "temporal-intervals"
+      private$schema$subtype = "temporal-intervals"
       private$schema$items = items
     }
   )
@@ -2188,7 +2188,7 @@ findParameterGenerator = function(schema) {
                                ProjDefinition,
                                OutputFormat,
                                OutputFormatOptions,
-                               Callback,
+                               GraphParameter,
                                Array,
                                Kernel,
                                Date,
@@ -2201,14 +2201,13 @@ findParameterGenerator = function(schema) {
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
   }))
-  
   if (is.null(matches) || length(matches) == 0) matches = list(Argument) # if we don't find anything simply use this, since it is not restricted
   
   return(matches)
 }
 
 parameterFromJson = function(param_def, nullable = FALSE) {
-  if (is.null(param_def$schema$format)) param_def$schema$format = character()
+  if (is.null(param_def$schema$subtype)) param_def$schema$subtype = character()
   if (is.null(param_def$required)) param_def$required = FALSE
   
   type = param_def$schema$type
@@ -2281,7 +2280,7 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   
   # this will be the normal case for simple schemas?
   gen=findParameterGenerator(param_def$schema)[[1]]
-  param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
+  param = gen$new(name=param_def$name, description=param_def$description,required = !param_def$optional)
   
   # in general also reolve null cases
   param$isNullable = nullable
@@ -2289,22 +2288,18 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   # TODO change in 1.0.0 to param_def$default
   param$setDefault(param_def$schema$default)
   
-  if ("callback" %in% class(param)) {
+  if ("GraphParameter" %in% class(param)) {
     # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
     # value has to be assigned by user, then switch name and value during serialization
     
     cb_params = lapply(names(param_def$schema$parameters), function(param_name) {
       param_json = param_def$schema$parameters[[param_name]]
-      if (is.null(param_json[["format"]])) param_json[["format"]] = character()
-      
-      # param_type = findParameterGenerator(param_json[c("type","format")])$new()
-      
-      
+      if (is.null(param_json[["subtype"]])) param_json[["subtype"]] = character()
       
       cb = CallbackValue$new(name = param_name,
                              description = param_json$description,
                              type = param_json[["type"]],
-                             format = param_json[["format"]],
+                             format = param_json[["subtype"]],
                              required = TRUE)
       
       if(!is.null(param_json[["pattern"]])) cb$setPattern(param_json[["pattern"]])
@@ -2312,8 +2307,6 @@ parameterFromJson = function(param_def, nullable = FALSE) {
       return(cb)
     })
     names(cb_params) = names(param_def$schema$parameters)
-    
-    # note: later all CBs need to be bound by the user
     
     param$setCallbackParameters(cb_params)
   }
@@ -2331,16 +2324,13 @@ parameterFromJson = function(param_def, nullable = FALSE) {
 
 processFromJson=function(json) {
   if (is.null(json$summary)) json$summary = character()
-  if (is.null(json$parameter_order)) json$parameter_order = character()
   
   tryCatch({
     #map parameters!
+    parameter_names = sapply(json$parameters, function(p)p$name)
+    
     parameters = lapply(
-      names(json$parameters), function(name) {
-        pdef = json$parameters[[name]]
-        if (is.null(pdef$name)) {
-          pdef$name = name
-        }
+      json$parameters, function(pdef) {
         
         # set param if it is contained in the schema
         param = parameterFromJson(pdef)
@@ -2352,13 +2342,14 @@ processFromJson=function(json) {
         return(param)
       }
     )
-  
+    
+    names(parameters) = parameter_names
+    
     Process$new(id=json$id,
                 description = json$description,
                 summary=json$summary,
                 parameters = parameters,
-                returns = json$returns,
-                parameter_order = json$parameter_order)
+                returns = json$returns)
   }, error = function(e) {
     warning(paste0("Invalid process description for '",json$id,"'"))
     NULL

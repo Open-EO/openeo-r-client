@@ -162,7 +162,7 @@ Graph = R6Class(
             param$clean() #should not be...
           }
           
-          if ("callback" %in% class(param)) {
+          if ("GraphParameter" %in% class(param)) {
             value = param$getValue()
             
             if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
@@ -486,7 +486,6 @@ ProcessCollection = R6Class(
 #'    \item{parameters}{a list of Argument objects}
 #'    \item{description}{the process description}
 #'    \item{summary}{the summary of a process}
-#'    \item{parameter_order}{the order in which the parameters have to be returned to the backend}
 #'    \item{returns}{the schema part of the result definition}
 #'    \item{name}{a parameter name}
 #'    \item{value}{the value for a parameter or the description text}
@@ -496,11 +495,10 @@ NULL
 Process = R6Class(
   "Process",
   public=list(
-    initialize = function(id,parameters,description=character(), summary = character(), parameter_order=character(),returns) {
+    initialize = function(id,parameters,description=character(), summary = character(),returns) {
       private$id = id
       private$description = description
       private$summary=summary
-      private$parameter_order=parameter_order
       
       if (! is.list(parameters)) stop("Parameters are not provided as list")
       
@@ -526,6 +524,8 @@ Process = R6Class(
       }
       
       private$returns = returns
+      
+      return(self)
     },
     
     getId = function() {
@@ -576,8 +576,6 @@ Process = R6Class(
       if (!name %in% names(self$parameters)) stop("Cannot find parameter")
       
       return(self$parameters[[name]])
-    },
-    getParameterOrder = function() {
       return(private$parameter_order)
     },
     serialize = function() {
@@ -635,7 +633,6 @@ Process = R6Class(
     id = character(),
     connection=NULL, # the openeo backend connection to which this graph belongs to
     returns = NULL, # the object that is returend Parameter or Argument
-    parameter_order = character(), # a vector of string corresponding to the parameter order
     summary = character(),
     description = character(),
     categories = character(), # probably more than 1 string -> so it is a vector of strings
@@ -864,7 +861,7 @@ parse_graph = function(con=NULL, json, graph=NULL) {
         return(param_name)
       }
       
-      if ("callback" %in% names(value)) {
+      if ("GraphParameter" %in% names(value)) {
         cb_graph = callback(con,process,param_name)
         parse_graph(con,value[["callback"]],cb_graph)
       
