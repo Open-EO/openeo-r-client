@@ -201,3 +201,15 @@ privacy_policy = function(con = NULL) {
         
     }, error = .capturedErrorToMessage)
 }
+
+#' @export
+conformance = function(con=NULL) {
+    tryCatch({
+        con = .assure_connection(con)
+        
+        con$stopIfNotConnected()
+        
+        tag = "ogc_conformance"
+        return(con$request(tag = tag))
+    }, error = .capturedErrorToMessage)
+}

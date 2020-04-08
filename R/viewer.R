@@ -144,7 +144,7 @@ collection_viewer = function(x,con=NULL) {
         x = escaper(x)
     }
     
-    x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE)
+    x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE,null="null")
     
     html="<!DOCTYPE html>
 <html>
@@ -154,22 +154,24 @@ collection_viewer = function(x,con=NULL) {
 		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
 		<meta charset='UTF-8'>
 		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<script src='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.js'></script>
 		<script src='https://cdn.jsdelivr.net/npm/vue'></script>
 		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.umd.min.js'></script>
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.css' />
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
 		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.css'>
 		<style>html, body { height: 100%; margin: 1em; font-family: sans-serif; }</style>
 	</head>
 
-	<body>
+	<body class='docgen'>
 		<div id='app'></div>
 		<script>
-			var { Collection } = window['openeo-vue'];
-			new Vue({
+		  new Vue({
 				el: '#app',
-				render: h => h(Collection, { 
+				render: h => h(window['openeo-vue'].Collection, { 
 					props: {
 						collectionData: %collection_info%,
-						version: %api_version%
+						version: '1.0.0'
 					}
 				})
 			});

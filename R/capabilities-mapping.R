@@ -1,10 +1,10 @@
 #' @include zzz.R
 #' @importFrom utils read.csv2
 load_api = function(version) {
-    if (!version %in% c("0.0.2", "0.3.1", "0.4.1")) 
+    if (!version %in% c("0.0.2", "0.3.1", "0.4.1", "0.4.2","1.0.0-rc.2")) 
         stop("Unsupported API version.")
     
-    api = read.csv2(system.file("extdata", "api_0.4.1.csv", package = "openeo"), stringsAsFactors = FALSE)
+    api = read.csv2(system.file("extdata", paste0("api_",version,".csv"), package = "openeo"), stringsAsFactors = FALSE)
     if (isNamespaceLoaded("tibble")) 
         api = tibble::as_tibble(api)
     
@@ -16,7 +16,7 @@ endpoint_mapping = function(con) {
     
     endpoints = capabilities(con)$endpoints
     
-    api = load_api(version = "0.4.1") # also valid for 0.4.2
+    api = load_api(version = "1.0.0-rc.2")
     
     backend_df = data.frame(endpoint = unlist(sapply(endpoints, function(entry) {
         return(rep(entry$path, length(entry$methods)))

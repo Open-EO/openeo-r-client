@@ -63,8 +63,8 @@ describe_collection = function(con=NULL, id = NA) {
                 class(info$summaries$`sar:bands`) = "BandList"
             }
             
-            if (!is.null(info$summaries$`cube:dimensions`)) {
-                class(info$summaries$`cube:dimensions`) = "CubeDimensions"
+            if (!is.null(info$`cube:dimensions`)) {
+                class(info$`cube:dimensions`) = "CubeDimensions"
             } else {
                 warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
             }
