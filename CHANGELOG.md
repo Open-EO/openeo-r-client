@@ -8,6 +8,19 @@
 
 ### Removed
 
+## [0.6.2] - 2020-04-09
+
+### Fixed
+- interpretation of send_udf response into correct json
+- tibble version 3.0.0 issue, when searching for endpoints in the endpoint mapping [#49]
+
+### Changed
+- `send_udf` can now handle user_context
+- `send_udf` has now a parameter for legacy support (which calls the legacy endpoint of a UDF service with API version 0.1.0)
+- String parameter can now handle file paths and calls (in context with `run_udf` openEO process) [#48]
+
+### Added
+- URI parameter
 
 ## [0.6.1] - 2020-03-23
 
