@@ -38,14 +38,6 @@ graphToJSON = function(graph) {
     
 }
 
-#' @importFrom utils URLencode
-.urlHardEncode = function(text) {
-    text = URLencode(text)
-    text = gsub("\\/", "%2F", text)
-    text = gsub("\\.", "%2E", text)
-    return(text)
-}
-
 .capturedErrorToMessage = function(e) {
     message(e)
     invisible(NULL)

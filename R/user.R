@@ -63,9 +63,6 @@ upload_file = function(con=NULL, content, target, encode = "raw", mime = "applic
     }
     
     tryCatch({
-        target = URLencode(target, reserved = TRUE)
-        target = gsub("\\.", "%2E", target)
-        
         con = .assure_connection(con)
         
         if (is.null(con$isLoggedIn())) {
@@ -96,8 +93,6 @@ download_file = function(con=NULL, src, dst = NULL) {
     tryCatch({
         if (!is.character(src)) {
             stop("Cannot download file with a source statement that is no character")
-        } else {
-            src = .urlHardEncode(src)
         }
         
         if (is.null(dst)) {
@@ -131,9 +126,7 @@ download_file = function(con=NULL, src, dst = NULL) {
 #' @export
 delete_file = function(con=NULL, src) {
     tryCatch({
-        if (is.character(src)) {
-            src = .urlHardEncode(src)
-        } else {
+        if (!is.character(src)) {
             stop("Cannot interprete parameter 'src' during delete request")
         }
         
