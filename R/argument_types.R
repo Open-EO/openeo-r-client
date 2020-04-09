@@ -572,13 +572,21 @@ String = R6Class(
       }
     },
     typeSerialization = function() {
-      
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
         if (file.exists(private$value)) {
           # if valid file path open file and attach
-          return(readChar(private$value, file.info(private$value)$size))
+          tryCatch({
+            suppressWarnings({
+              content = readChar(private$value, file.info(private$value)$size)
+              return(content)
+            })
+            
+          }, error = function(e) {
+            return(private$value)
+          })
+          
         } else {
           return(private$value)
         } 
