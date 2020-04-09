@@ -16,7 +16,7 @@ list_files = function(con=NULL) {
         
         con = .assure_connection(con)
         
-        files = con$request(tag = tag, parameters = list(con$user_id), TRUE, type = "application/json")
+        files = con$request(tag = tag, authorized = TRUE, type = "application/json")
         files = files$files
         if (is.null(files) || length(files) == 0) {
             message("The user workspace at this host is empty.")
@@ -68,12 +68,12 @@ upload_file = function(con=NULL, content, target, encode = "raw", mime = "applic
         
         con = .assure_connection(con)
         
-        if (is.null(con$user_id)) {
-            stop("User id is not set. Either login or set the id manually.")
+        if (is.null(con$isLoggedIn())) {
+            stop("User is not logged in.")
         }
         
         tag = "user_file_upload"
-        m = con$request(tag = tag, parameters = list(con$user_id, target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
+        m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
         message("Upload of user data was successful.")
         return(m)
     }, error = .capturedErrorToMessage)
@@ -109,7 +109,7 @@ download_file = function(con=NULL, src, dst = NULL) {
         con = .assure_connection(con)
         
         file_connection = file(dst, open = "wb")
-        writeBin(object = con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE, as = "raw"), con = file_connection)
+        writeBin(object = con$request(tag = tag, parameters = list(src), authorized = TRUE, as = "raw"), con = file_connection)
         
         message("Successfully downloaded the requested file.")
         
@@ -141,7 +141,7 @@ delete_file = function(con=NULL, src) {
         
         con = .assure_connection(con)
         
-        return(con$request(tag = tag, parameters = list(con$user_id, src), authorized = TRUE))
+        return(con$request(tag = tag, parameters = list(src), authorized = TRUE))
     }, error = .capturedErrorToMessage)
 }
 
