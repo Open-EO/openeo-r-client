@@ -88,8 +88,7 @@ OpenEOClient <- R6Class(
     },
     
     request = function(tag,parameters=NULL, authorized=FALSE, ...) {
-      
-      http_operation=toupper(self$api.mapping[self$api.mapping[,"tag"] == tag,"operation"][[1]])
+      http_operation=toupper(self$api.mapping[as.vector(self$api.mapping[,"tag"] == tag),"operation"][[1]])
       
       if (length(parameters) >0 && !is.na(parameters)) {
         endpoint= do.call(replace_endpoint_parameter, append(list(self$getBackendEndpoint(tag)),as.list(parameters)))
@@ -563,5 +562,5 @@ OpenEOClient <- R6Class(
 #' 
 #' @return the client version
 client_version = function() {
-  return("0.6.1")
+  return("0.6.2")
 }

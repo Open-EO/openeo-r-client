@@ -11,7 +11,11 @@ send_udf(
   port = NULL,
   language = "R",
   debug = FALSE,
-  download_info = FALSE
+  user_context = NA,
+  server_context = NA,
+  download_info = FALSE,
+  legacy = FALSE,
+  ...
 )
 }
 \arguments{
@@ -27,8 +31,16 @@ send_udf(
 
 \item{debug}{(optional) logical. Switch on / off debugging information for time taken}
 
+\item{user_context}{list. Context parameter that are shipped from the user into the udf_service}
+
+\item{server_context}{list. Context usually sent from the back-end to trigger certain settings.}
+
 \item{download_info}{(optional) logical. Whether or not to print the time taken separately for 
 the download}
+
+\item{legacy}{logical. Whether or not the legacy endpoint shall be used (default: FALSE)}
+
+\item{...}{parameters passed on to httr::content or to be more precise to jsonlite::fromJSON}
 }
 \value{
 the textual JSON representation of the result

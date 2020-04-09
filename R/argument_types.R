@@ -223,7 +223,7 @@ Argument = R6Class(
     },
     
     isEmpty = function() {
-      return(!is.environment(private$value) && (
+      return(!is.environment(private$value) && !is.call(private$value) && (
                 is.null(private$value) ||
                 is.na(private$value) ||
                 length(private$value) == 0))
@@ -572,7 +572,65 @@ String = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.character(private$value))
+      
+      if (is.call(private$value)) {
+        return(paste(deparse(private$value),collapse = "\n"))
+      } else if (is.character(private$value)) {
+        if (file.exists(private$value)) {
+          # if valid file path open file and attach
+          return(readChar(private$value, file.info(private$value)$size))
+        } else {
+          return(private$value)
+        } 
+      } else {
+        return(as.character(private$value))
+      }
+    }
+  )
+)
+
+# URI ====
+
+URI = R6Class(
+  "uri",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$format = "uri"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+        # correct value if you can
+        private$value = coerced
+      }
+      
+      if (!file.exists(private$value) || !grepl(private$value,pattern="\\w+:(\\/?\\/?)[^\\s]+")) stop("Value is not an URI or file.")
+    },
+    typeSerialization = function() {
+      
+      if (is.character(private$value)) {
+        if (file.exists(private$value)) {
+          # if valid file path open file and attach
+          return(readChar(private$value, file.info(private$value)$size))
+        } else {
+          return(private$value)
+        }    
+      } else {
+        return(as.character(private$value))
+      }
     }
   )
 )
@@ -2137,7 +2195,8 @@ findParameterGenerator = function(schema) {
                                DateTime,
                                TemporalInterval,
                                TemporalIntervals,
-                               Time)
+                               Time,
+                               URI)
   
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
