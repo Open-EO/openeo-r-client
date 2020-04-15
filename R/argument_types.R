@@ -41,14 +41,10 @@ NULL
 Parameter = R6Class(
   "Parameter",
   public = list(
-    initialize=function(name, description,required=FALSE) {
+    initialize=function(name=character(), description=character(),required=FALSE) {
       private$name = name
       private$description = description
       private$required = FALSE
-    },
-    
-    isRequired = function() {
-      return(private$required)
     },
     
     getName = function() {
@@ -57,6 +53,14 @@ Parameter = R6Class(
     
     setName = function(value) {
       private$name = value
+    },
+    
+    getDescription = function() {
+      return(private$description)
+    },
+    setDescription = function(value) {
+      private$description = value
+      invisible(self)
     },
     
     getPattern = function() {
@@ -74,7 +78,6 @@ Parameter = R6Class(
     },
     matchesSchema = function(schema) {
       sel = c("type","subtype")
-      
       if (is.null(schema$type)) schema$type = character()
       if (is.null(schema$subtype)) schema$subtype = character()
       
@@ -99,6 +102,20 @@ Parameter = R6Class(
         }
         
         private$nullable = value
+      }
+    },
+    isRequired = function(value) {
+      if (missing(value)) {
+        return(private$required)
+      } else {
+        value = as.logical(value)
+        
+        if (is.na(value)) {
+          warning("Cannot cast value to logical. Assume FALSE.")
+          value = FALSE
+        }
+        
+        private$required = value
       }
     }
   ),
@@ -2214,124 +2231,9 @@ findParameterGenerator = function(schema) {
   return(matches)
 }
 
-parameterFromJson = function(param_def, nullable = FALSE) {
-  if (is.null(param_def$schema$subtype)) param_def$schema$subtype = character()
-  if (is.null(param_def$required)) param_def$required = FALSE
-  
-  type = param_def$schema$type
-  
-  if (is.null(type) && !is.null(param_def$schema$anyOf)) {
-    #anyOf case
-    # scan list for type: null
-    types = sapply(param_def$schema$anyOf, function(schema)schema$type)
-    
-    # if present set nullable = TRUE and throw it out
-    if ("null" %in% types) {
-      nullable = TRUE
-      param_def$schema$anyOf[[which(types=="null")]] = NULL
-    }
-    
-    params = lapply(
-      #create anyOf object
-      
-      param_def$schema$anyOf,
-      function(anyOf_schema) {
-        param_copy = param_def
-        param_copy$schema = anyOf_schema
-        return(parameterFromJson(param_copy))
-      }
-    )
-    
-    if (length(params) > 1) {
-      choice = AnyOf$new(name=param_def$name, 
-                         description=param_def$description,
-                         required = param_def$required, 
-                         parameter_list = params)
-      
-      choice$isNullable = nullable
-    } else {
-      nullableParameter = params[[1]]
-      nullableParameter$isNullable = nullable
-      return(nullableParameter)
-    }
-    
-    return(choice)
-  }
-  
-  if (is.list(type)) {
-    # if is array and we have only null and one other, then only use the one prior parameter and make it nullable
-    nullable = "null" %in% type
-    if (nullable) {
-      type[[which(type == "null")]] = NULL # remove this entry
-    }
-    
-    if (length(type) > 1) {
-      # create an anyOf
-      param_template = param_def$schema
-      types = param_template$type
-      param_template$type = NULL
-      
-      schemas = lapply(types, function(type_name) {
-        res = param_template
-        res$type = type_name
-        return(res)
-      })
-      
-      param_def$schema = list(anyOf=schemas) # create new anyOf element with the schemas
-      
-      # recursive call -> in the next iteration it will be an anyOf case (nullable is passed on)
-      return(parameterFromJson(param_def,nullable))
-    } else {
-      param_def$schema$type = unname(unlist(type))
-    }
-  }
-  
-  # this will be the normal case for simple schemas?
-  gen=findParameterGenerator(param_def$schema)[[1]]
-  param = gen$new(name=param_def$name, description=param_def$description,required = !param_def$optional)
-  
-  # in general also reolve null cases
-  param$isNullable = nullable
-  
-  # TODO change in 1.0.0 to param_def$default
-  param$setDefault(param_def$schema$default)
-  
-  if ("GraphParameter" %in% class(param)) {
-    # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
-    # value has to be assigned by user, then switch name and value during serialization
-    
-    cb_params = lapply(names(param_def$schema$parameters), function(param_name) {
-      param_json = param_def$schema$parameters[[param_name]]
-      if (is.null(param_json[["subtype"]])) param_json[["subtype"]] = character()
-      
-      cb = CallbackValue$new(name = param_name,
-                             description = param_json$description,
-                             type = param_json[["type"]],
-                             format = param_json[["subtype"]],
-                             required = TRUE)
-      
-      if(!is.null(param_json[["pattern"]])) cb$setPattern(param_json[["pattern"]])
-      
-      return(cb)
-    })
-    names(cb_params) = names(param_def$schema$parameters)
-    
-    param$setCallbackParameters(cb_params)
-  }
-  
-  if ("array" %in% class(param)) {
-    if (!"kernel" %in% class(param)) {
-      param$setItemSchema(param_def$schema$items)
-    } else {
-      param$setItemSchema(param_def$schema$items)
-    }
-    
-  }
-  return(param)
-}
-
 processFromJson=function(json) {
   if (is.null(json$summary)) json$summary = character()
+  
   
   tryCatch({
     #map parameters!
@@ -2339,13 +2241,8 @@ processFromJson=function(json) {
     
     parameters = lapply(
       json$parameters, function(pdef) {
-        
         # set param if it is contained in the schema
         param = parameterFromJson(pdef)
-        pattern = pdef$schema$pattern
-        if (!is.null(pattern)) {
-          param$setPattern(pattern)
-        }
         
         return(param)
       }
@@ -2362,5 +2259,96 @@ processFromJson=function(json) {
     warning(paste0("Invalid process description for '",json$id,"'"))
     NULL
   })
+  
+}
 
+parameterFromJson = function(param_def, nullable = FALSE) {
+  
+  if (length(param_def$schema) == 0) stop("Invalid parameter description, because of missing schema")
+  
+  if (length(param_def$schema$type) > 0) {
+    # box it
+    param_def$schema = list(param_def$schema)
+  }
+  
+  # now we have a list over which we can lapply
+  nullable = sapply(param_def$schema, function(schema) {
+    return(!is.null(schema$type) && schema$type == "null")
+  })
+  
+  param_nullable = any(nullable)
+  
+  # delete the null parameter
+  if (param_nullable) {
+    param_def$schema[[which(nullable)]] = NULL
+  }
+  
+  is_choice = length(param_def$schema) > 1
+  
+  
+  #create a list of parameters / find from schema
+  params = lapply(param_def$schema, function(schema) {
+    # this will be the normal case for simple schemas?
+    gen=findParameterGenerator(schema)[[1]]
+    param = gen$new()
+    
+    
+    
+    if ("GraphParameter" %in% class(param)) {
+      # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
+      # value has to be assigned by user, then switch name and value during serialization
+      
+      cb_params = lapply(names(schema$parameters), function(param_name) {
+        param_json = schema$parameters[[param_name]]
+        if (is.null(param_json[["subtype"]])) param_json[["subtype"]] = character()
+        
+        cb = CallbackValue$new(name = param_name,
+                               description = param_json$description,
+                               type = param_json[["type"]],
+                               format = param_json[["subtype"]],
+                               required = TRUE)
+        
+        if(!is.null(param_json[["pattern"]])) cb$setPattern(param_json[["pattern"]])
+        
+        return(cb)
+      })
+      names(cb_params) = names(schema$parameters)
+      
+      param$setCallbackParameters(cb_params)
+    }
+    
+    if ("array" %in% class(param)) {
+      if (!"kernel" %in% class(param)) {
+        param$setItemSchema(schema$items)
+      } else {
+        param$setItemSchema(schema$items)
+      }
+      
+    }
+    return(param)
+  })
+  
+  # if choice then create an anyOf
+  if (is_choice) {
+    #build an anyOf
+    param = AnyOf$new(parameter_list = params)
+  } else {
+    param = params[[1]]
+  }
+  
+  
+  # in general also reolve null cases
+  param$isNullable = param_nullable
+  param$setDefault(param_def$default)
+  param$setName(param_def$name)
+  param$setDescription(param_def$name)
+  param$isRequired = !is.null(param_def$optional) && !param_def$optional
+  
+  pattern = param_def$schema$pattern
+  if (!is.null(pattern)) {
+    param$setPattern(pattern)
+  }
+  
+  return(param)
+  
 }
