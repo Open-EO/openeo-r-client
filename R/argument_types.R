@@ -185,7 +185,7 @@ Argument = R6Class(
           (length(self$getValue()) == 0 || 
            (!is.environment(self$getValue()) && 
             is.na(self$getValue()))) && 
-          self$isRequired()) {
+          self$isRequired) {
         return(NA)
       }
       
@@ -219,7 +219,7 @@ Argument = R6Class(
         {
           private$checkRequiredNotSet()
           
-          if (!self$isRequired() && 
+          if (!self$isRequired && 
               !is.environment(private$value) && 
               self$isEmpty()) {
             
@@ -984,11 +984,11 @@ BoundingBox = R6Class(
         }
         
       })
-      
+
       # check if crs is set (either proj string or epsg code)
       if ("crs" %in% obj_names) {
         crs_value = private$value[["crs"]]
-        if (!is.integer(crs_value)) {
+        if (!is.integer(crs_value) && !is.numeric(crs_value)) {
           if (!is.character(crs_value)) stop("CRS is not an EPSG identifier or a PROJ string")
           
           # automatical conversion in this EPSG cases
@@ -2223,6 +2223,11 @@ findParameterGenerator = function(schema) {
                                Time,
                                URI)
   
+  # resolve the any parameter (no specification)
+  if (length(schema$type) == 0 && length(schema$subtype) == 0) {
+    return(list(Argument))
+  }
+  
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
   }))
@@ -2266,8 +2271,8 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   
   if (length(param_def$schema) == 0) stop("Invalid parameter description, because of missing schema")
   
-  if (length(param_def$schema$type) > 0) {
-    # box it
+  # if it is no unnamed object list, then box it
+  if (length(names(param_def$schema)) > 0) {
     param_def$schema = list(param_def$schema)
   }
   
