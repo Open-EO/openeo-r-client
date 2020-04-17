@@ -21,6 +21,6 @@ a \code{\link{Graph}} object with the callback parameters as 'data'
 }
 \description{
 The callback function creates a callback graph for a parameter of a process if the parameter needs
-a \code{\link{CallbackArgument}} as a value. If the parameter is omitted it shows possible parameter names which require
+a \code{\link{ProcessGraph}} as a value. If the parameter is omitted it shows possible parameter names which require
 a callback.
 }

@@ -320,8 +320,7 @@
 # [ (subset) ====
 #' @export
 `[.ProcessGraphParameter` <- function(x,i,...,drop=TRUE) {
-  # TODO think if i is a vector?
-  
+  # TODO think if it is a vector?
   # check x for being an array
   if (! isTRUE(x$getSchema()$type == "array")) stop("Non-array ProcessGraph value cannot be addressed by index. Check if the ProcessGraph requires a binary operator")
   graph = x$getProcess()$getGraph()
@@ -785,7 +784,17 @@
   
   e1 = .checkMathConstants(e1,graph)
   e2 = .checkMathConstants(e2,graph)
-  graph[[FUN]](data = c(e1,e2)) 
+  
+  p = as.list(formals(graph[[FUN]]))
+  
+  if (length(p) == 1) {
+    p[[1]] = c(e1,e2)
+  } else {
+    p[[1]] = e1
+    p[[2]] = e2
+  }
+  
+  do.call(graph[[FUN]],args = p)
 }
 
 .genericAggregationFunction = function(x, ..., FUN) {

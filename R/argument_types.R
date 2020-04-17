@@ -1511,8 +1511,11 @@ ProcessGraph = R6Class(
         # then all newly created process nodes go into the new graph
         private$process$setGraph(process_collection)
         
-        # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
         process_graph_parameter = private$parameters
+        
+        # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
+        if (length(formals(value)) != length(process_graph_parameter)) stop("Function parameter do not match ProcessGraph parameter(s)")
+        
         names(process_graph_parameter) = names(formals(value))
         
         lapply(process_graph_parameter, function(cb){cb$setProcess(private$process)})
@@ -2305,15 +2308,17 @@ parameterFromJson = function(param_def, nullable = FALSE) {
       # iterate over all ProcessGraph parameters and create ProcessGraphParameters, but name = property name (what the process exports to ProcessGraph)
       # value has to be assigned by user, then switch name and value during serialization
       pg_params = lapply(schema$parameters, function(param_json) {
-        if (is.null(param_json[["subtype"]])) param_json[["subtype"]] = character()
+        if (is.null(param_json$schema[["subtype"]])) param_json$schema[["subtype"]] = character()
         
         cb = ProcessGraphParameter$new(name = param_json$name,
                                description = param_json$description,
-                               type = param_json[["type"]],
-                               format = param_json[["subtype"]],
+                               type = param_json$schema[["type"]],
+                               format = param_json$schema[["subtype"]],
                                required = TRUE)
         
-        if(!is.null(param_json[["pattern"]])) cb$setPattern(param_json[["pattern"]])
+        if(!is.null(param_json$schema[["pattern"]])) cb$setPattern(param_json$schema[["pattern"]])
+        
+        cb$isRequired = isFALSE(param_json$optional)
         
         return(cb)
       })

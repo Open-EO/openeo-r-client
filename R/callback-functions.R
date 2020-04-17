@@ -3,7 +3,7 @@
 #' Creates a callback
 #' 
 #' The callback function creates a callback graph for a parameter of a process if the parameter needs
-#' a \code{\link{CallbackArgument}} as a value. If the parameter is omitted it shows possible parameter names which require
+#' a \code{\link{ProcessGraph}} as a value. If the parameter is omitted it shows possible parameter names which require
 #' a callback.
 #' 
 #' @param con a connected \code{\link{OpenEOClient}} (optional) otherwise \code{\link{active_connection}}
