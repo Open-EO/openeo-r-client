@@ -1,4 +1,5 @@
 
+# TODO rework or remove
 #' Creates a callback
 #' 
 #' The callback function creates a callback graph for a parameter of a process if the parameter needs
@@ -22,12 +23,12 @@ callback = function(con=NULL, process, parameter = NULL, choice_index=NULL) {
     
     # iterate over parameters and state callback possibilities
     callbacksParameterNames = unname(unlist(sapply(process$parameters, function(param) {
-        if ("GraphParameter" %in% class(param)) 
+        if ("ProcessGraph" %in% class(param)) 
             return(param$getName())
         
         if ("anyOf" %in% class(param)) {
             if (any(sapply(param$getChoice(), function(p) {
-                return("GraphParameter" %in% class(p))
+                return("ProcessGraph" %in% class(p))
             }))) return(param$getName())
         }
     })))
@@ -49,7 +50,7 @@ callback = function(con=NULL, process, parameter = NULL, choice_index=NULL) {
                 process$setParameter(name=parameter, value=callback_arg)
             }
             
-            cb_parameters = callback_arg$getCallbackParameters()  # all the possible data exports offered by the argument
+            cb_parameters = callback_arg$getProcessGraphParameters()  # all the possible data exports offered by the argument
             
             cb_graph = Graph$new(con, cb_parameters)
             

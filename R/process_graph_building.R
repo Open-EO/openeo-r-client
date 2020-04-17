@@ -162,7 +162,7 @@ Graph = R6Class(
             param$clean() #should not be...
           }
           
-          if ("GraphParameter" %in% class(param)) {
+          if ("ProcessGraph" %in% class(param)) {
             value = param$getValue()
             
             if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
@@ -856,14 +856,14 @@ parse_graph = function(con=NULL, json, graph=NULL) {
       
       if ("from_argument" %in% names(value)) {
         
-        cb_val = CallbackValue$new(name=value[["from_argument"]])
+        cb_val = ProcessGraphParameter$new(name=value[["from_parameter"]])
         process$setParameter(param_name, cb_val)
         return(param_name)
       }
       
-      if ("GraphParameter" %in% names(value)) {
+      if ("ProcessGraph" %in% names(value)) {
         cb_graph = callback(con,process,param_name)
-        parse_graph(con,value[["callback"]],cb_graph)
+        parse_graph(con,value[["process-graph"]],cb_graph)
       
         # no extra setting because in callback function the link between the object environments have
         # already been set

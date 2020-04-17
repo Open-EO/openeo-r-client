@@ -1,6 +1,6 @@
 # Definitions for operators to make it easier to create arithmetic callbacks
 
-# it works on process nodes and callback-value
+# it works on process nodes and ProcessGraphParameter
 
 
 # 1. Group
@@ -13,7 +13,7 @@
 `abs.ProcessNode` <- .abs
 
 #' @export
-`abs.callback-value` <- .abs
+`abs.ProcessGraphParameter` <- .abs
 
 
 .sign = function(x) {
@@ -22,7 +22,7 @@
 #' @export
 `sign.ProcessNode` <- .sign
 #' @export
-`sign.callback-value` <- .sign
+`sign.ProcessGraphParameter` <- .sign
 
 .sqrt <- function(x) {
   .genericUnaryFunction(x,"sqrt")
@@ -31,7 +31,7 @@
 `sqrt.ProcessNode` <- .sqrt
 
 #' @export
-`sqrt.callback-value` <- .sqrt
+`sqrt.ProcessGraphParameter` <- .sqrt
 
 .trunc = function(x) {
   .genericUnaryFunction(x,"int")
@@ -40,7 +40,7 @@
 `trunc.ProcessNode` <- .trunc
 
 #' @export
-`trunc.callback-value` <- .trunc
+`trunc.ProcessGraphParameter` <- .trunc
 
 .floor = function(x) {
   .genericUnaryFunction(x,"floor")
@@ -49,7 +49,7 @@
 `floor.ProcessNode` <- .floor
 
 #' @export
-`floor.callback-value` <- .floor
+`floor.ProcessGraphParameter` <- .floor
 
 .ceiling = function(x) {
   .genericUnaryFunction(x,"ceil")
@@ -58,7 +58,7 @@
 `ceiling.ProcessNode` <- .ceiling
 
 #' @export
-`ceiling.callback-value` <- .ceiling
+`ceiling.ProcessGraphParameter` <- .ceiling
 
 .round = function(x,digits=0) {
   graph = .getGraph(x)
@@ -74,7 +74,7 @@
 `round.ProcessNode` <- .round
 
 #' @export
-`round.callback-value` <- .round
+`round.ProcessGraphParameter` <- .round
 
 
 .exp = function(x) {
@@ -85,7 +85,7 @@
 `exp.ProcessNode` <- .exp
 
 #' @export
-`exp.callback-value` <- .exp
+`exp.ProcessGraphParameter` <- .exp
 
 
 .log = function(x,base=exp(1)) {
@@ -114,7 +114,7 @@
 `log.ProcessNode` <- .log
 
 #' @export
-`log.callback-value` <- .log
+`log.ProcessGraphParameter` <- .log
 
 
 .log10 = function(x) {
@@ -124,7 +124,7 @@
 `log10.ProcessNode` <- .log10
 
 #' @export
-`log10.callback-value` <- .log10
+`log10.ProcessGraphParameter` <- .log10
 
 # trigonometric functions ----
 .cos = function(x) {
@@ -135,7 +135,7 @@
 `cos.ProcessNode` <- .cos
 
 #' @export
-`cos.callback-value` <- .cos
+`cos.ProcessGraphParameter` <- .cos
 
 
 .sin = function(x) {
@@ -145,7 +145,7 @@
 `sin.ProcessNode` <- .sin
 
 #' @export
-`sin.callback-value` <- .sin
+`sin.ProcessGraphParameter` <- .sin
 
 
 .tan = function(x) {
@@ -155,7 +155,7 @@
 `tan.ProcessNode` <- .tan
 
 #' @export
-`tan.callback-value` <- .tan
+`tan.ProcessGraphParameter` <- .tan
 
 
 .cosh = function(x) {
@@ -166,7 +166,7 @@
 `cosh.ProcessNode` <- .cosh
 
 #' @export
-`cosh.callback-value` <- .cosh
+`cosh.ProcessGraphParameter` <- .cosh
 
 
 .sinh = function(x) {
@@ -177,7 +177,7 @@
 `sinh.ProcessNode` <- .sinh
 
 #' @export
-`sinh.callback-value` <- .sinh
+`sinh.ProcessGraphParameter` <- .sinh
 
 
 .tanh = function(x) {
@@ -188,7 +188,7 @@
 `tanh.ProcessNode` <- .tanh
 
 #' @export
-`tanh.callback-value` <- .tanh
+`tanh.ProcessGraphParameter` <- .tanh
 
 
 .acos = function(x) {
@@ -199,7 +199,7 @@
 `acos.ProcessNode` <- .acos
 
 #' @export
-`acos.callback-value` <- .acos
+`acos.ProcessGraphParameter` <- .acos
 
 
 .asin = function(x) {
@@ -210,7 +210,7 @@
 `asin.ProcessNode` <- .asin
 
 #' @export
-`asin.callback-value` <- .asin
+`asin.ProcessGraphParameter` <- .asin
 
 
 .atan = function(x) {
@@ -221,7 +221,7 @@
 `atan.ProcessNode` <- .atan
 
 #' @export
-`atan.callback-value` <- .atan
+`atan.ProcessGraphParameter` <- .atan
 
 
 .acosh = function(x) {
@@ -231,7 +231,7 @@
 `acosh.ProcessNode` <- .acosh
 
 #' @export
-`acosh.callback-value` <- .acosh
+`acosh.ProcessGraphParameter` <- .acosh
 
 
 .asinh = function(x) {
@@ -241,7 +241,7 @@
 `asinh.ProcessNode` <- .asinh
 
 #' @export
-`asinh.callback-value` <- .asinh
+`asinh.ProcessGraphParameter` <- .asinh
 
 
 .atanh = function(x) {
@@ -251,7 +251,7 @@
 `atanh.ProcessNode` <- .atanh
 
 #' @export
-`atanh.callback-value` <- .atanh
+`atanh.ProcessGraphParameter` <- .atanh
 
 
 # internal function does not work
@@ -271,7 +271,7 @@
 # `atan2.ProcessNode` <- .atan2
 # 
 # @export
-# `atan2.callback-value` <- .atan2
+# `atan2.ProcessGraphParameter` <- .atan2
 
 # cummulative ----
 .cumsum <- function(x) {
@@ -281,7 +281,7 @@
 `cumsum.ProcessNode` <- .cumsum
 
 #' @export
-`cumsum.callback-value` <- .cumsum
+`cumsum.ProcessGraphParameter` <- .cumsum
 
 
 .cummin <- function(x) {
@@ -292,7 +292,7 @@
 `cummin.ProcessNode` <- .cummin
 
 #' @export
-`cummin.callback-value` <- .cummin
+`cummin.ProcessGraphParameter` <- .cummin
 
 
 .cummax <- function(x) {
@@ -303,7 +303,7 @@
 `cummax.ProcessNode` <- .cummax
 
 #' @export
-`cummax.callback-value` <- .cummax
+`cummax.ProcessGraphParameter` <- .cummax
 
 
 .cumprod <- function(x) {
@@ -314,12 +314,12 @@
 `cumprod.ProcessNode` <- .cumprod
 
 #' @export
-`cumprod.callback-value` <- .cumprod
+`cumprod.ProcessGraphParameter` <- .cumprod
 
 # 2. Group
 # [ (subset) ====
 #' @export
-`[.callback-value` <- function(x,i,...,drop=TRUE) {
+`[.ProcessGraphParameter` <- function(x,i,...,drop=TRUE) {
   # TODO think if i is a vector?
   
   # check x for being an array
@@ -340,7 +340,7 @@
 `+.ProcessNode` <- .plus
 
 #' @export
-`+.callback-value` <- .plus
+`+.ProcessGraphParameter` <- .plus
 
 
 .minus = function(e1,e2) {
@@ -356,7 +356,7 @@
 `-.ProcessNode` <- .minus
 
 #' @export
-`-.callback-value` <- .minus
+`-.ProcessGraphParameter` <- .minus
 
 
 .multiply = function(e1,e2) {
@@ -378,7 +378,7 @@
 `*.ProcessNode` <- .multiply
 
 #' @export
-`*.callback-value` <- .multiply
+`*.ProcessGraphParameter` <- .multiply
 
 
 .divide = function(e1,e2) {
@@ -389,7 +389,7 @@
 `/.ProcessNode` <- .divide
 
 #' @export
-`/.callback-value` <- .divide
+`/.ProcessGraphParameter` <- .divide
 
 
 .power = function(e1,e2) {
@@ -400,7 +400,7 @@
 `^.ProcessNode` <- .power
 
 #' @export
-`^.callback-value` <- .power
+`^.ProcessGraphParameter` <- .power
 
 
 .mod = function(e1,e2) {
@@ -411,7 +411,7 @@
 `%%.ProcessNode` <- .mod
 
 #' @export
-`%%.callback-value` <- .mod
+`%%.ProcessGraphParameter` <- .mod
 
 # logical operators ----
 
@@ -422,7 +422,7 @@
 `!.ProcessNode` <- .not
 
 #' @export
-`!.callback-value` <- .not
+`!.ProcessGraphParameter` <- .not
 
 
 .and = function(e1,e2) {
@@ -439,7 +439,7 @@
 `&.ProcessNode` <- .and
 
 #' @export
-`&.callback-value` <- .and
+`&.ProcessGraphParameter` <- .and
 
 
 .or = function(e1, e2) {
@@ -456,7 +456,7 @@
 `|.ProcessNode` <- .or
 
 #' @export
-`|.callback-value` <- .or
+`|.ProcessGraphParameter` <- .or
 
 
 .xor = function(x,y) {
@@ -471,7 +471,7 @@
 `xor.ProcessNode` <- .xor
 
 #' @export
-`xor.callback-value` <- .xor
+`xor.ProcessGraphParameter` <- .xor
 
 
 .equals = function(e1,e2) {
@@ -485,7 +485,7 @@
 `==.ProcessNode` <- .equals
 
 #' @export
-`==.callback-value` <- .equals
+`==.ProcessGraphParameter` <- .equals
 
 
 .notequal = function(e1, e2) {
@@ -499,7 +499,7 @@
 `!=.ProcessNode` <- .notequal
 
 #' @export
-`!=.callback-value` <- .notequal
+`!=.ProcessGraphParameter` <- .notequal
 
 
 .smaller = function(e1, e2) {
@@ -513,7 +513,7 @@
 `<.ProcessNode` <- .smaller
 
 #' @export
-`<.callback-value` <- .smaller
+`<.ProcessGraphParameter` <- .smaller
 
 
 .smaller_eq = function(e1, e2) {
@@ -527,7 +527,7 @@
 `<=.ProcessNode` <- .smaller_eq
 
 #' @export
-`<=.callback-value` <- .smaller_eq
+`<=.ProcessGraphParameter` <- .smaller_eq
 
 
 .greater_eq = function(e1, e2) {
@@ -541,7 +541,7 @@
 `>=.ProcessNode` <- .greater_eq
 
 #' @export
-`>=.callback-value` <- .greater_eq
+`>=.ProcessGraphParameter` <- .greater_eq
 
 
 .greater = function(e1, e2) {
@@ -556,7 +556,7 @@
 `>.ProcessNode` <- .greater
 
 #' @export
-`>.callback-value` <- .greater
+`>.ProcessGraphParameter` <- .greater
 
 # 3. group
 # summary operators ----
@@ -567,7 +567,7 @@
 #' @export
 `sum.ProcessNode` <- .sum
 #' @export
-`sum.callback-value` <- .sum
+`sum.ProcessGraphParameter` <- .sum
 #' @export
 `sum.list` <- .sum
 
@@ -579,7 +579,7 @@
 #' @export
 `prod.ProcessNode` <- .prod
 #' @export
-`prod.callback-value` <- .prod
+`prod.ProcessGraphParameter` <- .prod
 #' @export
 `prod.list` <- .prod
 
@@ -591,7 +591,7 @@
 #' @export
 `min.ProcessNode` <- .min
 #' @export
-`min.callback-value` <- .min
+`min.ProcessGraphParameter` <- .min
 #' @export
 `min.list` <- .min
 
@@ -604,7 +604,7 @@
 `max.ProcessNode` <- .max
 
 #' @export
-`max.callback-value` <- .max
+`max.ProcessGraphParameter` <- .max
 
 #' @export
 `max.list` <- .max
@@ -619,7 +619,7 @@
 `range.ProcessNode` <- .range
 
 #' @export
-`range.callback-value` <- .range
+`range.ProcessGraphParameter` <- .range
 
 #' @export
 `range.list` <- .range
@@ -633,7 +633,7 @@
 `mean.ProcessNode` <- .mean
 
 #' @export
-`mean.callback-value` <- .mean
+`mean.ProcessGraphParameter` <- .mean
 
 #' @export
 `mean.list` <- .mean
@@ -648,7 +648,7 @@
 `median.ProcessNode`<- .median
 
 #' @export
-`median.callback-value`<- .median
+`median.ProcessGraphParameter`<- .median
 
 #' @export
 `median.list`<- .median
@@ -660,7 +660,7 @@
 #' @export
 `sd.ProcessNode`  <- .sd
 #' @export
-`sd.callback-value`  <- .sd
+`sd.ProcessGraphParameter`  <- .sd
 
 #' @export
 `sd.list`  <- .sd
@@ -673,7 +673,7 @@
 #' @export
 `var.ProcessNode` <- .var
 #' @export
-`var.callback-value` <- .var
+`var.ProcessGraphParameter` <- .var
 
 #' @export
 `var.list` <- .var
@@ -694,15 +694,15 @@
 #' @export
 `quantile.ProcessNode` <- .quantile
 #' @export
-`quantile.callback-value` <- .quantile
+`quantile.ProcessGraphParameter` <- .quantile
 
 
 # utility functions ====
 .getGraph = function(e1,e2) {
-  if (!missing(e1) && any(c("callback-value","ProcessNode") %in% class(e1))) {
+  if (!missing(e1) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e1))) {
     if ("ProcessNode" %in% class(e1)) {
       return(e1$getGraph())
-    } else { # callback-value
+    } else { # ProcessGraphParameter
       return(e1$getProcess()$getGraph())
     }
   }
@@ -710,15 +710,15 @@
   if (!missing(e1) && "list" %in% class(e1)) {
     if ("ProcessNode" %in% class(e1[[1]])) {
       return(e1[[1]]$getGraph())
-    } else { # callback-value
+    } else { # ProcessGraphParameter
       return(e1[[1]]$getProcess()$getGraph())
     }
   }
   
-  if (!missing(e2) && any(c("callback-value","ProcessNode") %in% class(e2))) {
+  if (!missing(e2) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e2))) {
     if ("ProcessNode" %in% class(e2)) {
       return(e2$getGraph())
-    } else { # callback-value
+    } else { # ProcessGraphParameter
       return(e2$getProcess()$getGraph())
     } 
     
@@ -752,7 +752,7 @@
 }
 
 .autoArraySubset = function(x) {
-  if ("callback-value" %in% class(x)) {
+  if ("ProcessGraphParameter" %in% class(x)) {
     
     if (length(x$getSchema()$type) > 0 && x$getSchema()$type == "array") {
       x = x[1]
@@ -779,7 +779,7 @@
   
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a callback graph via the function 'openeo::callback'."))
   
-  # if callback-value, then check if array or single value
+  # if ProcessGraphParameter, then check if array or single value
   e1 = .autoArraySubset(e1)
   e2 = .autoArraySubset(e2)
   
@@ -798,7 +798,7 @@
     }
     
     # check x
-    if ("callback-value" %in% class(x)) {
+    if ("ProcessGraphParameter" %in% class(x)) {
       
     }
     
