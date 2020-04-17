@@ -14,7 +14,7 @@ library(lubridate)
 #' @name Graph
 #' @return Object of \code{\link{R6Class}} with methods for building an openeo process graph
 #' 
-#' @field data a named list of collection ids or callback parameters depending on the context
+#' @field data a named list of collection ids or process graph parameters depending on the context
 #' @section Methods:
 #' \describe{
 #'    \item{\code{$new(con = NULL, data = list(), final_node=NULL)}}{The object creator created from processes and available data. 
@@ -355,7 +355,7 @@ setOldClass(c("Graph","R6"))
 #' but without the overload of creating a Graph object, which contains ProcessNodes.
 #' 
 #' @name ProcessCollection
-#' @field data a named list of collection ids or callback parameters depending on the context
+#' @field data a named list of collection ids or process graph parameters depending on the context
 #' 
 #' @section Methods:
 #' \describe{
@@ -713,11 +713,6 @@ ProcessNode = R6Class(
       
       private$copyAttributes(process)
       
-      # all arguments need a reference to their parent process, this also counts for callback
-      # values!
-      # lapply(private$.parameters,function(param)  {
-      #   param$setProcess(self)
-      # })
       return(self)
     },
     
@@ -776,7 +771,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
-#' @param graph an already created process graph (probably empty) for callback graphs
+#' @param graph an already created process graph (probably empty) for process graphs
 #' @return Graph object
 #' @export
 parse_graph = function(con=NULL, json, graph=NULL) {
@@ -861,6 +856,7 @@ parse_graph = function(con=NULL, json, graph=NULL) {
         return(param_name)
       }
       
+      #TODO adapt
       if ("ProcessGraph" %in% names(value)) {
         cb_graph = callback(con,process,param_name)
         parse_graph(con,value[["process-graph"]],cb_graph)

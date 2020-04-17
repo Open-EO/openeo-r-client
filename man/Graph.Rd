@@ -15,7 +15,7 @@ mapped dynamically after creation.
 \section{Fields}{
 
 \describe{
-\item{\code{data}}{a named list of collection ids or callback parameters depending on the context}
+\item{\code{data}}{a named list of collection ids or process graph parameters depending on the context}
 }}
 
 \section{Methods}{

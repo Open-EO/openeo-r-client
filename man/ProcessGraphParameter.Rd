@@ -4,10 +4,10 @@
 \alias{ProcessGraphParameter}
 \title{ProcessGraphParameter}
 \value{
-Object of \code{\link{R6Class}} which represents a callback value.
+Object of \code{\link{R6Class}} which represents a ProcessGraph value.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent the available data within a callback graph.
+Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
 Hints from the openeo api documention:
 \itemize{
   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}

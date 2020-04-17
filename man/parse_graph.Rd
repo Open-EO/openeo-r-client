@@ -12,7 +12,7 @@ is used.}
 
 \item{json}{the json graph in a textual representation or an already parsed list object}
 
-\item{graph}{an already created process graph (probably empty) for callback graphs}
+\item{graph}{an already created process graph (probably empty) for process graphs}
 }
 \value{
 Graph object

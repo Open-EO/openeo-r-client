@@ -126,7 +126,7 @@ Parameter = R6Class(
       type=character(),
       subtype = character(),
       pattern = character(),
-      parameters = list(), # potential callback parameter
+      parameters = list(), # potential ProcessGraph parameter
       default = character(),
       
       # items are relevant for arrays
@@ -1456,7 +1456,7 @@ VectorCube = R6Class(
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
-#' single value. The value of a callback is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
+#' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
 #' injected data. Hints from the openeo api documention:
 # TODO change
 #' \itemize{
@@ -1467,7 +1467,7 @@ VectorCube = R6Class(
 #' @section Methods:
 #' \describe{
 #'   \item{\code{$getProcessGraphParameters()}}{returns the available list \code{\link{ProcessGraphParameter}}}
-#'   \item{\code{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link{ProcessGraphParameter}} to the callback}
+#'   \item{\code{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link{ProcessGraphParameter}} to the ProcessGraph}
 #' }
 #' 
 #' @section Arguments:
@@ -1484,7 +1484,7 @@ VectorCube = R6Class(
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a callback.
+#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph.
 NULL
 
 ProcessGraph = R6Class(
@@ -1501,7 +1501,7 @@ ProcessGraph = R6Class(
     
     setValue = function(value) {
       if ("function" %in% class(value)) {
-        # if value is a function -> then make a call with the function and a suitable callback 
+        # if value is a function -> then make a call with the function and a suitable ProcessGraph 
         # parameter
         # create a new graph
         
@@ -1511,7 +1511,7 @@ ProcessGraph = R6Class(
         # then all newly created process nodes go into the new graph
         private$process$setGraph(process_collection)
         
-        # find suitable callback parameter (mostly array or binary) -> check for length of formals
+        # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
         process_graph_parameter = private$parameters
         names(process_graph_parameter) = names(formals(value))
         
@@ -1552,8 +1552,8 @@ ProcessGraph = R6Class(
     parameters = list(),
     
     typeCheck = function() {
-      # check the value (graph) for the same callback parameters (ProcessGraphParameters)
-      if (!"Graph" %in% class(private$value)) stop("The value of a callback argument is usually a graph.")
+      # check the value (graph) for the same ProcessGraph parameters (ProcessGraphParameters)
+      if (!"Graph" %in% class(private$value)) stop("The value of a ProcessGraph argument is usually a graph.")
       
       errors = private$value$validate()
       
@@ -1567,6 +1567,7 @@ ProcessGraph = R6Class(
     typeSerialization = function() {
       if(!is.null(private$value)) {
         # serialize the graph
+        # TODO add correct serialization
         return(list(callback=private$value$serialize()))
       }
     }
@@ -1576,7 +1577,7 @@ ProcessGraph = R6Class(
 # ProcessGraphParameter ====
 #' ProcessGraphParameter
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent the available data within a callback graph.
+#' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
 #' Hints from the openeo api documention:
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
@@ -1592,7 +1593,7 @@ ProcessGraph = R6Class(
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a callback value.
+#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph value.
 NULL
 
 # in case the ProcessGraphParameter is an arry - which it will be in most cases - we have to store
@@ -2062,7 +2063,7 @@ AnyOf = R6Class(
         choice_index = unname(which(number_of_params == length(signature)))
         
         if (length(choice_index) == 0) {
-          stop("Cannot match function to any of the callback parameter.")
+          stop("Cannot match function to any of the ProcessGraph parameter.")
         }
         choice = private$parameter_choice[[choice_index]]
         
@@ -2075,8 +2076,8 @@ AnyOf = R6Class(
         return(self)
       }
       
-      if ("callback" %in% class(value)) {
-        # This is mostly for callbacks
+      if ("ProcessGraph" %in% class(value)) {
+        # This is mostly for ProcessGraphs
         arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
               length(setdiff(class(value),class(argument))) == 0
@@ -2214,7 +2215,7 @@ findParameterGenerator = function(schema) {
                                ProjDefinition,
                                OutputFormat,
                                OutputFormatOptions,
-                               GraphParameter,
+                               ProcessGraph,
                                Array,
                                Kernel,
                                Date,
@@ -2301,7 +2302,7 @@ parameterFromJson = function(param_def, nullable = FALSE) {
     
     
     if ("ProcessGraph" %in% class(param)) {
-      # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
+      # iterate over all ProcessGraph parameters and create ProcessGraphParameters, but name = property name (what the process exports to ProcessGraph)
       # value has to be assigned by user, then switch name and value during serialization
       pg_params = lapply(schema$parameters, function(param_json) {
         if (is.null(param_json[["subtype"]])) param_json[["subtype"]] = character()
