@@ -2,9 +2,20 @@
 
 ## unreleased
 
+### Added
+- function `conformance` operated on the new corresponding api endpoint
+- new functions `privacy_policy()` and `terms_of_service()` to view the privacy policy and the terms of service
+
 ### Fixed
 
 ### Changed
+- `format` was dropped was a parameter and is replaced by `subtype` when parsing process definitions
+- Callback was renamed into ProcessGraph (Graph is still a different Concept)
+- callback-values have been replaced by ProcessGraphParameters
+- anyOf was dropped as a top-level parameter definition schema, now a list of parameter is evaluated into an `anyOf` parameter object to maintain to intended behavior
+- modified viewer scripts to visualize collection and processes following the new api definition
+- `ProcessGraph` as a parameter requires a function wrapping - meaning you should not pass an openeo process like `p$min` directly, because with the elaborated `ProcessGraphParameter` we cannot do a reliable automatic variable matching, e.g. often the ProcessGraphParameter "context" is misinterpreted
+- serialization of `ProcessGraphParameter` from_argument -> from_parameter
 
 ### Removed
 

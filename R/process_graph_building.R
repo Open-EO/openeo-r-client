@@ -826,8 +826,8 @@ parse_graph = function(con=NULL, json, graph=NULL) {
       # identifiers:
       # node ref - list of length 1 with name "from_node"
       # callback - list of length >= 1 with name "callback"
-      # callback parameters/values - list with name "from_argument"
-      # variable - list with at least at least name "variable_id" (optional description and type)
+      # callback parameters/values - list with name "from_parameter"
+      # variable - list with at least at least name "variable_id" (optional description and type) #TODO remove,because that is the same as the process graph parameter
       # lists might be parsed as named vector, so don't check for list
       if ("from_node" %in% names(value)) {
         process$setParameter(param_name,graph$getNode(value))
@@ -849,7 +849,7 @@ parse_graph = function(con=NULL, json, graph=NULL) {
         return(param_name)
       }
       
-      if ("from_argument" %in% names(value)) {
+      if ("from_parameter" %in% names(value)) {
         
         cb_val = ProcessGraphParameter$new(name=value[["from_parameter"]])
         process$setParameter(param_name, cb_val)
@@ -858,7 +858,7 @@ parse_graph = function(con=NULL, json, graph=NULL) {
       
       #TODO adapt
       if ("ProcessGraph" %in% names(value)) {
-        cb_graph = callback(con,process,param_name)
+        cb_graph = callback(con,process,param_name) 
         parse_graph(con,value[["process-graph"]],cb_graph)
       
         # no extra setting because in callback function the link between the object environments have

@@ -1624,7 +1624,7 @@ ProcessGraphParameter = R6Class(
   ),
   private = list(
     typeSerialization = function() {
-      res = list(from_argument=private$name)
+      res = list(from_parameter=private$name)
       return(res)
     }
   )
