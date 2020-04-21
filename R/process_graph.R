@@ -89,12 +89,17 @@ delete_process_graph = function(con=NULL, id) {
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph a process graph definition
-#' @param title the title of the process graph (optional)
+#' @param id the title of the process graph (optional)
 #' @param description the description of a process graph (optional)
 #' @export
-create_process_graph = function(con=NULL, graph, title = NULL, description = NULL) {
+create_process_graph = function(con=NULL, graph, id = NULL, summary=NA, description = NULL) {
     tryCatch({
         con = .assure_connection(con)
+        
+        if (is.function(graph)) {
+            # TODO evaluate
+            stop("in development")
+        }
         
         if ("ProcessNode" %in% class(graph)){
             # final node!
@@ -105,7 +110,20 @@ create_process_graph = function(con=NULL, graph, title = NULL, description = NUL
             stop("The graph information is missing or not a list")
         }
         
-        requestBody = list(title = title, description = description, process_graph = graph$serialize())
+        #TODO replace empty lists
+        if (length(graph$getVariables()) == 0) {
+            graph_params = NA
+        } else {
+            graph_params = lapply(graph$getVariables(),function(p) {
+                p$serialize()
+            })
+        }
+        
+        requestBody = list(id = id, 
+                           description = description, 
+                           process_graph = graph$serialize(),
+                           returns = graph$getFinalNode()$getReturns()$serialize(), 
+                           parameters = graph_params)
         
         tag = "new_graph"
         response = con$request(tag = tag, authorized = TRUE, data = requestBody, raw = TRUE)
@@ -113,7 +131,9 @@ create_process_graph = function(con=NULL, graph, title = NULL, description = NUL
         message("Graph was sucessfully stored on the backend.")
         locationHeader = headers(response)$location
         split = unlist(strsplit(locationHeader, "/"))
-        return(trimws(split[length(split)]))
+        return(trimws(split[length(split)])) 
+        
+        
     }, error = .capturedErrorToMessage)
 }
 

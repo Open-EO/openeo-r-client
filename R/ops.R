@@ -348,6 +348,7 @@
   if (missing(e2)) {
     return(-1 * e1)
   }
+  
   .genericBinaryFunction(e1,e2,"subtract")
 }
 
@@ -697,33 +698,59 @@
 
 
 # utility functions ====
+# returns the graph / or better the process collection used to create the process
 .getGraph = function(e1,e2) {
-  if (!missing(e1) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e1))) {
-    if ("ProcessNode" %in% class(e1)) {
-      return(e1$getGraph())
-    } else { # ProcessGraphParameter
-      return(e1$getProcess()$getGraph())
+  tryCatch({
+    if (!missing(e1) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e1))) {
+      if ("ProcessNode" %in% class(e1)) {
+        return(e1$getGraph())
+      } else { # ProcessGraphParameter
+        return(e1$getProcess()$getGraph())
+      }
     }
-  }
-  
-  if (!missing(e1) && "list" %in% class(e1)) {
-    if ("ProcessNode" %in% class(e1[[1]])) {
-      return(e1[[1]]$getGraph())
-    } else { # ProcessGraphParameter
-      return(e1[[1]]$getProcess()$getGraph())
-    }
-  }
-  
-  if (!missing(e2) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e2))) {
-    if ("ProcessNode" %in% class(e2)) {
-      return(e2$getGraph())
-    } else { # ProcessGraphParameter
-      return(e2$getProcess()$getGraph())
-    } 
     
-  } else {
-    # should not happen
+    if (!missing(e1) && "list" %in% class(e1)) {
+      if ("ProcessNode" %in% class(e1[[1]])) {
+        return(e1[[1]]$getGraph())
+      } else { # ProcessGraphParameter
+        return(e1[[1]]$getProcess()$getGraph())
+      }
+    }
+    
+    if (!missing(e2) && any(c("ProcessGraphParameter","ProcessNode") %in% class(e2))) {
+      if ("ProcessNode" %in% class(e2)) {
+        return(e2$getGraph())
+      } else { # ProcessGraphParameter
+        return(e2$getProcess()$getGraph())
+      } 
+      
+    } else {
+      # should not happen
+    }
+  }, error = function(e) {
+    var = .getVariable(varname = ".__process_collection__")
+    return(var)
+  })
+}
+
+.getVariable = function(varname, env) {
+  # no recursion
+  if(missing(env) || is.null(env)) {
+    env = parent.frame()
   }
+  
+  pos = 1
+  while(!(all(names(env) %in% names(.GlobalEnv)) && 
+          all(names(.GlobalEnv) %in% names(env)))) {
+    if (varname %in% names(env)) {
+      return(get(x = varname,envir = env))
+    } else {
+      pos = pos+1
+      env = parent.frame(n=pos)
+    }
+  }
+
+  return(NULL) # variable not found
 }
 
 .checkMathConstants = function(x, graph) {

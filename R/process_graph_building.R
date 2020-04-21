@@ -997,3 +997,35 @@ remove_variable = function(graph, variable) {
     return(temp[unames])
   } 
 }
+
+# this function will be used when transforming a function into a submitable process graph (user defined process)
+#
+# process_collection: the object from processes()
+.function_to_graph = function(value, process_collection) {
+  if (!is.function(value)) stop("Value is no function")
+  
+  process_graph_parameter = lapply(names(formals(value)), function(param_name) {
+    v = ProcessGraphParameter$new(name=param_name)
+    
+    return(v)
+  })
+  # if value is a function -> then make a call with the function and a suitable ProcessGraph 
+  # parameter
+  # create a new graph
+  
+  # probably switch temporarily the graph of the parent process
+  # then all newly created process nodes go into the new graph
+  
+  # create new variables with name from formals
+  
+  # make call
+  call_env = new.env()
+  assign(x = ".__process_collection__",value = process_collection,envir = call_env)
+  final_node = do.call(value,args = process_graph_parameter,envir = call_env)
+  
+  # then serialize it via the final node
+  
+  # assign new graph as value
+  value = Graph$new(final_node = final_node)
+
+}
