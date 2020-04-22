@@ -275,7 +275,7 @@ Graph = R6Class(
     
     getVariables = function(final_node=NULL) {
       # TODO rebuild
-      return(private$variables)
+      return(unique(private$variables))
       # if (is.null(final_node)) {
       #   # get final node
       #   suppressMessages({
@@ -921,12 +921,14 @@ variables = function(final_node) {
       if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
         if ("Graph" %in% class(value)) {
           return(value$getVariables())
-        } else if ("variable" %in% class(value)) {
+        # } else if ("variable" %in% class(value)) {
+        } else if ("ProcessGraphParameter" %in% class(value) && length(value$getValue()) == 0) {
           return(value)
         } else if (is.list(value)) {
           return(
             lapply(value, function(array_elem) {
-              if ("variable" %in% class(array_elem)) {
+              # if ("variable" %in% class(array_elem)) {
+              if ("ProcessGraphParameter" %in% class(array_elem) && length(array_elem$getValue()) == 0) {
                 return(array_elem)
               }
               
@@ -941,7 +943,7 @@ variables = function(final_node) {
     
     
   })
-  return(unname(unlist(variables)))
+  return(unname(unlist(unique(variables))))
 }
   
   
@@ -1027,5 +1029,7 @@ remove_variable = function(graph, variable) {
   
   # assign new graph as value
   value = Graph$new(final_node = final_node)
+  
+  return(value)
 
 }

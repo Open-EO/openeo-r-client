@@ -90,9 +90,13 @@ delete_process_graph = function(con=NULL, id) {
 #' is used.
 #' @param graph a process graph definition
 #' @param id the title of the process graph (optional)
+#' @param summary the summary of the process graph (optional)
 #' @param description the description of a process graph (optional)
+#' @param submit whether to create a process_graph at the service or to create it for local use
+#' 
+#' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_process_graph = function(con=NULL, graph, id = NULL, summary=NA, description = NULL) {
+create_process_graph = function(con=NULL, graph, id = NULL, summary=NULL, description = NULL, submit=TRUE) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -119,19 +123,25 @@ create_process_graph = function(con=NULL, graph, id = NULL, summary=NA, descript
             })
         }
         
-        requestBody = list(id = id, 
-                           description = description, 
-                           process_graph = graph$serialize(),
-                           returns = graph$getFinalNode()$getReturns()$serialize(), 
-                           parameters = graph_params)
+        process_graph_description = list(id = id, 
+                 description = description, 
+                 summary = summary,
+                 process_graph = graph$serialize(),
+                 returns = graph$getFinalNode()$getReturns()$serialize(), 
+                 parameters = graph_params)
         
-        tag = "new_graph"
-        response = con$request(tag = tag, authorized = TRUE, data = requestBody, raw = TRUE)
+        if (submit) {
+            tag = "new_graph"
+            response = con$request(tag = tag, authorized = TRUE, data = process_graph_description, raw = TRUE)
+            
+            message("Graph was sucessfully stored on the backend.")
+            locationHeader = headers(response)$location
+            split = unlist(strsplit(locationHeader, "/"))
+            return(trimws(split[length(split)])) 
+        } else {
+            return(process_graph_description)
+        }
         
-        message("Graph was sucessfully stored on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader, "/"))
-        return(trimws(split[length(split)])) 
         
         
     }, error = .capturedErrorToMessage)

@@ -203,6 +203,12 @@ Argument = R6Class(
         return(self$getValue()$serialize())
       }
       
+      # if (is.list(self$getValue())) {
+      #   return(lapply(self$getValue(),function(val) {
+      #     val$serialize()
+      #   }))
+      # }
+      
       # for format specific conversion overwrite this by children
       tryCatch({
         return(private$typeSerialization())
@@ -1313,6 +1319,8 @@ OutputFormatOptions = R6Class(
   )
 )
 
+
+# TODO remove and use ProcessGraphParameter instead?
 # ProcessGraphVariables ====
 #' ProcessGraphVariables
 #' 
@@ -1514,6 +1522,7 @@ ProcessGraph = R6Class(
         process_graph_parameter = private$parameters
         
         # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
+        # the issue can no longer been resolved automatically
         if (length(formals(value)) != length(process_graph_parameter)) stop("Function parameter do not match ProcessGraph parameter(s)")
         
         names(process_graph_parameter) = names(formals(value))
@@ -1571,7 +1580,8 @@ ProcessGraph = R6Class(
       if(!is.null(private$value)) {
         # serialize the graph
         # TODO add correct serialization
-        return(list(callback=private$value$serialize()))
+        
+        return(private$value$serialize())
       }
     }
   )
@@ -1864,24 +1874,14 @@ Array = R6Class(
         return(NA)
       }
       
-      if ("ProcessGraphParameter" %in% class(self$getValue()[[1]])) {
-        serialized = lapply(self$getValue(),function(arg)arg$serialize())
-        if (length(serialized) == 1) {
-          serialized = serialized[[1]]        
-        } 
-        return(serialized)
-      } else {
-        return(
-          lapply(self$getValue(), function(value) {
-            
-            if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
-            
-            if ("Argument" %in% class(value)) return(value$serialize())
-            
-            return(value)
-          })
-        )
-      }
+      lapply(self$getValue(), function(value) {
+        
+        if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
+        
+        if ("Argument" %in% class(value)) return(value$serialize())
+        
+        return(value)
+      })
     })
 )
 
