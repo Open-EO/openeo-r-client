@@ -922,13 +922,13 @@ variables = function(final_node) {
         if ("Graph" %in% class(value)) {
           return(value$getVariables())
         # } else if ("variable" %in% class(value)) {
-        } else if ("ProcessGraphParameter" %in% class(value) && length(value$getValue()) == 0) {
+        } else if ("ProcessGraphParameter" %in% class(value) && length(value$getProcess()) == 0) {
           return(value)
         } else if (is.list(value)) {
           return(
             lapply(value, function(array_elem) {
               # if ("variable" %in% class(array_elem)) {
-              if ("ProcessGraphParameter" %in% class(array_elem) && length(array_elem$getValue()) == 0) {
+              if ("ProcessGraphParameter" %in% class(array_elem) && length(array_elem$getProcess()) == 0) {
                 return(array_elem)
               }
               
