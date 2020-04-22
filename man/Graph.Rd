@@ -34,9 +34,6 @@ mapped dynamically after creation.
    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
    \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
-   \item{$createVariable(id,description=NULL,type="string",default=NULL)}{creates a variable and registers 
-   it internally as defined variable}
-   \item{$removeVariable(variable_id)}{removes a variable}
 }
 }
 

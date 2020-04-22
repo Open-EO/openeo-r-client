@@ -70,11 +70,11 @@ Parameter = R6Class(
       private$schema$pattern = pattern
     },
     setDefault = function(value) {
-      private$schema$default = value
+      private$default = value
       invisible(self)
     },
     getDefault = function() {
-      return(private$schema$default)
+      return(private$default)
     },
     matchesSchema = function(schema) {
       sel = c("type","subtype")
@@ -122,12 +122,12 @@ Parameter = R6Class(
   private = list(
     name=character(),
     nullable = FALSE,
+    default = character(),
     schema = list(
       type=character(),
       subtype = character(),
       pattern = character(),
       parameters = list(), # potential ProcessGraph parameter
-      default = character(),
       
       # items are relevant for arrays
       items = list(
@@ -199,7 +199,7 @@ Argument = R6Class(
         return(private$value$serializeAsReference())
       }
       
-      if (any(c("ProcessGraphParameter","variable") %in% class(self$getValue()))) {
+      if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
       }
       
@@ -230,7 +230,7 @@ Argument = R6Class(
               self$isEmpty()) {
             
           } else {
-            if (!any(c("ProcessGraphParameter","variable") %in% class(self$getValue()))) private$typeCheck()
+            if (!any(c("ProcessGraphParameter") %in% class(self$getValue()))) private$typeCheck()
           }
           
           invisible(NULL)
@@ -340,56 +340,6 @@ Argument = R6Class(
   )
 )
 
-# Variable ====
-
-#' Variable class
-#' 
-#' This class reflects a variable that can be used within a process graph. It inherits all fields and functions
-#' from \code{\link{Argument}}. If the value is not set, the variable is serialized as a variable, but if it is, 
-#' then the variable is replaced with the set value. The variable is created by \code{\link{create_variable}}.
-#' 
-#' @name Variable
-#' 
-#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
-#' 
-#' @return Object of \code{\link{R6Class}} which represents a variable.
-#'
-NULL
-
-Variable = R6Class(
-  "variable",
-  inherit=Argument,
-  public = list(
-    initialize=function(id=character(),description=character(),type="string",default=NULL) {
-      private$name = id
-      private$description = description
-      private$schema$default = default
-      private$schema$type = type
-    }
-  ),
-  private = list(
-    typeSerialization = function() {
-      # if we want to bulk set a variable with setValue, e.g. an often used collection replace the variable with the set value
-      if (is.null(private$value)) {
-        res = list(variable_id = private$name)
-        
-        if (length(private$description) > 0 && !is.na(private$description)) res = append(res,list(description=private$description))
-        if (length(private$schema$type) > 0 && ! is.na(private$schema$type)) res= append(res, list(type=private$schema$type))
-        if (length(private$schema$default) > 0 && !is.na(private$schema$default)) res = append(res, list(default=private$schema$default))
-        
-        return(res)
-      } else {
-        return(private$value)
-      }
-      
-    }
-  )
-)
 
 # Integer ====
 #' Integer class
@@ -400,7 +350,7 @@ Variable = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -448,7 +398,7 @@ Integer = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -497,7 +447,7 @@ EPSGCode = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -561,7 +511,7 @@ Number = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -676,7 +626,7 @@ URI = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -725,7 +675,7 @@ OutputFormat = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -778,7 +728,7 @@ CollectionId = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -831,7 +781,7 @@ JobId = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -884,7 +834,7 @@ ProcessGraphId = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -935,7 +885,7 @@ ProjDefinition = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1042,7 +992,7 @@ BoundingBox = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1090,7 +1040,7 @@ Boolean = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1139,7 +1089,7 @@ Date = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1188,7 +1138,7 @@ DateTime = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1249,7 +1199,7 @@ Time = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1289,7 +1239,7 @@ GeoJson = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1319,48 +1269,6 @@ OutputFormatOptions = R6Class(
   )
 )
 
-
-# TODO remove and use ProcessGraphParameter instead?
-# ProcessGraphVariables ====
-#' ProcessGraphVariables
-#' 
-#' Inheriting from \code{\link{Argument}} in order to represent the process graph variables that enable a mapping. 
-#' When the already stored Graph that contains variables is loaded for execution.
-#' 
-#' @name ProcessGraphVariables
-#' 
-#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
-#' 
-#' @return Object of \code{\link{R6Class}} which represents the mapping of variables and values at runtime.
-NULL
-
-ProcessGraphVariables = R6Class(
-  "process-graph-variables",
-  inherit=Argument,
-  public = list(
-    initialize=function(name=character(),description=character(),required=FALSE) {
-      private$name = name
-      private$description = description
-      private$required = required
-      private$schema$type = "object"
-      private$schema$subtype = "process-graph-variables"
-    }
-  ),
-  private = list(
-    typeCheck = function() {
-      #TODO implement! object == list in R
-    },
-    typeSerialization = function() {
-      return(as.list(private$value))
-    }
-  )
-)
-
 # RasterCube ====
 #' RasterCube
 #' 
@@ -1372,7 +1280,7 @@ ProcessGraphVariables = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1420,7 +1328,7 @@ RasterCube = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1487,7 +1395,7 @@ VectorCube = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1601,7 +1509,7 @@ ProcessGraph = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1619,13 +1527,15 @@ ProcessGraphParameter = R6Class(
     initialize=function(name=character(),
                         description=character(),
                         type=character(),
-                        format=character(),
+                        subtype=character(),
+                        default=character(),
                         required=FALSE) {
       private$name = name
       private$description = description
       private$required = required
       private$schema$type = type
-      private$schema$subtype = format
+      private$schema$subtype = subtype
+      private$default = default
     },
     print = function() {
       cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
@@ -1667,7 +1577,7 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1894,7 +1804,7 @@ Array = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1932,7 +1842,7 @@ Kernel = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -1974,7 +1884,7 @@ TemporalInterval = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -2020,7 +1930,7 @@ TemporalIntervals = R6Class(
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
 #' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
-#' \code{\link{ProcessGraphParameter}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
@@ -2201,7 +2111,7 @@ AnyOf = R6Class(
 # parse functions ----
 findParameterGenerator = function(schema) {
   # TODO adapt this if I add some parameter/argument
-  # variables are not listed since they are created at the graph
+  # ProcessGraphParameter are not listed since they are created at the graph (as "variables")
   parameter_constructor = list(Integer,
                                EPSGCode,
                                Number, 
@@ -2214,7 +2124,6 @@ findParameterGenerator = function(schema) {
                                CollectionId,
                                JobId,
                                ProcessGraphId,
-                               ProcessGraphVariables,
                                ProjDefinition,
                                OutputFormat,
                                OutputFormatOptions,
@@ -2313,7 +2222,7 @@ parameterFromJson = function(param_def, nullable = FALSE) {
         cb = ProcessGraphParameter$new(name = param_json$name,
                                description = param_json$description,
                                type = param_json$schema[["type"]],
-                               format = param_json$schema[["subtype"]],
+                               subtype = param_json$schema[["subtype"]],
                                required = TRUE)
         
         if(!is.null(param_json$schema[["pattern"]])) cb$setPattern(param_json$schema[["pattern"]])

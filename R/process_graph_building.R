@@ -30,9 +30,6 @@ library(lubridate)
 #'    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
 #'    \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
 #'    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
-#'    \item{$createVariable(id,description=NULL,type="string",default=NULL)}{creates a variable and registers 
-#'    it internally as defined variable}
-#'    \item{$removeVariable(variable_id)}{removes a variable}
 #' }
 #' @section Arguments:
 #' \describe{
@@ -104,7 +101,7 @@ Graph = R6Class(
             this_arguments = lapply(this_param_names, function(param) get(param))
             names(this_arguments) = this_param_names
             
-            # special case: value is of type Argument
+            # special case: value is of type Argument (meaning the Any parameter)
             
             node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
             
@@ -260,7 +257,7 @@ Graph = R6Class(
       private$final_node_id = node
       return(TRUE)
     },
-    
+    # TODO check if this is used / required
     setArgumentValue = function(node_id, parameter, value) {
       private$assertNodeExists(node_id)
       
@@ -273,57 +270,8 @@ Graph = R6Class(
       return(params[[parameter]]$validate()) # TODO decide if this is useful
     },
     
-    getVariables = function(final_node=NULL) {
-      # TODO rebuild
+    getVariables = function() {
       return(unique(private$variables))
-      # if (is.null(final_node)) {
-      #   # get final node
-      #   suppressMessages({
-      #     final_node = self$getFinalNode()
-      #   })
-      # }
-      # 
-      # if (is.null(final_node)) stop("No final node defined in this graph. Please set a final node.")
-      # 
-      # 
-      # # get all the available process nodes of that graph
-      # used_nodes = .final_node_serializer(final_node)
-      # 
-      # variables = lapply(used_nodes,function(node){
-      #   # check all parameter
-      #   node_variables = lapply(node$parameters,function(param) {
-      # 
-      #     value = param$getValue()
-      # 
-      #     if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
-      #       if ("Graph" %in% class(value)) {
-      #         return(value$getVariables())
-      #       } else if ("variable" %in% class(value)) {
-      #         return(value)
-      #       } else if (is.list(value)) {
-      #         return(
-      #           lapply(value, function(array_elem) {
-      #             if ("variable" %in% class(array_elem)) {
-      #               return(array_elem)
-      #             }
-      # 
-      #             return(NULL)
-      #           })
-      #         )
-      #       }
-      # 
-      #       # if list / array check also
-      #     }
-      # 
-      # 
-      # 
-      #     return(NULL)
-      #   })
-      # 
-      # 
-      # })
-      # return(unlist(variables))
-
     },
 
     getConnection = function() {
@@ -775,6 +723,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @return Graph object
 #' @export
 parse_graph = function(con=NULL, json, graph=NULL) {
+  #TODO redo this without process_graph_builder
   con = .assure_connection(con)
   
   if (is.list(json)) {
@@ -835,15 +784,18 @@ parse_graph = function(con=NULL, json, graph=NULL) {
         return(param_name)
       }
       
+      # TODO adapt for ProcessGraphParameter (variable_id is no more)
       if ("variable_id" %in% names(value)) {
         description = if ("description" %in% names(value)) value[["description"]] else character()
         type = if ("type" %in% names(value)) value[["type"]] else "string"
+        subtype = if ("subtype" %in% names(value)) value[["subtype"]] else NULL
         default = if ("default" %in% names(value)) value[["default"]] else NULL
         
-        variable = Variable$new(id =value[["variable_id"]],
-                                description = description,
-                                type = type,
-                                default = default)
+        variable = ProcessGraphParameter$new(id =value[["variable_id"]],
+                                             description = description,
+                                             type = type,
+                                             subtype = subtype,
+                                             default = default)
         
         process$setParameter(param_name, variable)
         return(param_name)
@@ -877,16 +829,20 @@ parse_graph = function(con=NULL, json, graph=NULL) {
 #' 
 #' This function will create a variable to be used in the designated process graph with additional optional information.
 #' 
-#' @param graph a process graph object
-#' @param id the id of the variable
+#' @param name the name of the variable
 #' @param description an optional description of the variable
 #' @param type the type of the value that is replaced on runtime, default 'string'
+#' @param subtype the subtype of the type (as specified by openEO types)
 #' @param default the default value for this variable
-#' @return a \code{\link{Variable}} object
+#' @return a \code{\link{ProcessGraphParameter}} object
 #' 
 #' @export
-create_variable = function(id,description=NULL,type="string",default=NULL) {
-    return(Variable$new(id=id, description=description,type=type,default=default))
+create_variable = function(name,description=NULL,type="string",subtype=NULL,default=NULL) {
+    return(ProcessGraphParameter$new(name=name, 
+                                     description=description,
+                                     type=type,
+                                     subtype=subtype,
+                                     default=default))
 }
 
 #' Lists the defined variables for a graph

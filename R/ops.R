@@ -728,12 +728,12 @@
       # should not happen
     }
   }, error = function(e) {
-    var = .getVariable(varname = ".__process_collection__")
+    var = .find_var_in_stack(varname = ".__process_collection__")
     return(var)
   })
 }
 
-.getVariable = function(varname, env) {
+.find_var_in_stack = function(varname, env) {
   # no recursion
   if(missing(env) || is.null(env)) {
     env = parent.frame()
