@@ -89,20 +89,19 @@ delete_process_graph = function(con=NULL, id) {
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph a process graph definition
-#' @param id the title of the process graph (optional)
+#' @param id the title of the process graph
 #' @param summary the summary of the process graph (optional)
 #' @param description the description of a process graph (optional)
 #' @param submit whether to create a process_graph at the service or to create it for local use
 #' 
 #' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_process_graph = function(con=NULL, graph, id = NULL, summary=NULL, description = NULL, submit=TRUE) {
+create_process_graph = function(con=NULL, graph, id, summary=NULL, description = NULL, submit=TRUE) {
     tryCatch({
         con = .assure_connection(con)
         
         if (is.function(graph)) {
-            # TODO evaluate
-            stop("in development")
+            graph = as(graph,"Graph")
         }
         
         if ("ProcessNode" %in% class(graph)){
@@ -119,7 +118,7 @@ create_process_graph = function(con=NULL, graph, id = NULL, summary=NULL, descri
             graph_params = NA
         } else {
             graph_params = lapply(graph$getVariables(),function(p) {
-                p$serialize()
+                p$asParameterInfo()
             })
         }
         

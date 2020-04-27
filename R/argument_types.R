@@ -110,6 +110,12 @@ Parameter = R6Class(
         info$schema = lapply(self$getChoice(), function(param) {
           param$asParameterInfo()
         })
+        
+        if (self$isNullable) {
+          info$schema = append(info$schema, list(list(type = "null")))
+        }
+      } else if (self$isNUllable) {
+        info$schema$type = list(info$schema$type,"null") #TODO array?
       }
       return(info)
       
