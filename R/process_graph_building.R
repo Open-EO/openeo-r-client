@@ -131,6 +131,8 @@ Graph = R6Class(
         #TODO check for variables and assign them
       }
       
+      
+      
       invisible(self)
     },
     
@@ -837,7 +839,7 @@ parse_graph = function(con=NULL, json, graph=NULL) {
 #' @return a \code{\link{ProcessGraphParameter}} object
 #' 
 #' @export
-create_variable = function(name,description=NULL,type="string",subtype=NULL,default=NULL) {
+create_variable = function(name,description=NULL,type=NULL,subtype=NULL,default=NULL) {
     return(ProcessGraphParameter$new(name=name, 
                                      description=description,
                                      type=type,
@@ -849,24 +851,24 @@ create_variable = function(name,description=NULL,type="string",subtype=NULL,defa
 #' 
 #' The function creates a list of the defined (not necessarily used) variables of a process graph.
 #' 
-#' @param graph a process graph object
+#' @param x a process graph object or a process node
 #' @return a named list of Variables
 #' 
 #' @export
-variables = function(final_node) {
-  if ("Graph" %in% class(final_node)) {
+variables = function(x) {
+  if ("Graph" %in% class(x)) {
     # get final node
     suppressMessages({
-      final_node = final_node$getFinalNode()
+      x = x$getFinalNode()
     })
   }
   
-  if (length(final_node) == 0 || 
-      !"ProcessNode" %in% class(final_node)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
+  if (length(x) == 0 || 
+      !"ProcessNode" %in% class(x)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
   
   
   # get all the available process nodes of that graph
-  used_nodes = .final_node_serializer(final_node)
+  used_nodes = .final_node_serializer(x)
   
   variables = lapply(used_nodes,function(node){
     # check all parameter
@@ -961,6 +963,7 @@ remove_variable = function(graph, variable) {
 # process_collection: the object from processes()
 .function_to_graph = function(value, process_collection) {
   if (!is.function(value)) stop("Value is no function")
+  if (missing(process_collection) || length(process_collection) == 0) process_collection = processes()
   
   process_graph_parameter = lapply(names(formals(value)), function(param_name) {
     v = ProcessGraphParameter$new(name=param_name)
@@ -969,22 +972,87 @@ remove_variable = function(graph, variable) {
   })
   # if value is a function -> then make a call with the function and a suitable ProcessGraph 
   # parameter
-  # create a new graph
-  
-  # probably switch temporarily the graph of the parent process
-  # then all newly created process nodes go into the new graph
-  
-  # create new variables with name from formals
   
   # make call
   call_env = new.env()
+  
+  # we need the assignment since we might have basic mathematical operation that are overloaded
   assign(x = ".__process_collection__",value = process_collection,envir = call_env)
   final_node = do.call(value,args = process_graph_parameter,envir = call_env)
   
-  # then serialize it via the final node
-  
   # assign new graph as value
   value = Graph$new(final_node = final_node)
+  
+  # TODO find out where the ProcessParameter are set (the ones without process) and list their types
+  # then build a subset of all parameters and some types should match over all instances found, so we
+  # can estimate which parameter to choose (or at least copy their description)
+  
+  list_of_all_params = unlist(lapply(value$getNodes(), function(n) {
+    # anyof: value is the chosen parameter
+    
+    params = unname(n$parameters)
+    params = lapply(params, function(p) {
+      if ("anyOf" %in% class(p)) {
+        return(p$getValue())
+      } else {
+        return(p)
+      }
+    })
+  }))
+  
+  # find all the parameters where the ProcessGraphParameter a.k.a. variable were set as value
+  matches = lapply(process_graph_parameter,function(graph_param) {
+    unlist(lapply(list_of_all_params, function(p,n) {
+      if (length(p$getValue()) != 0 && !is.list(p$getValue()) && identical(p$getValue(),n)) {
+        return(p)
+      } else if (length(p$getValue()) != 0 && is.list(p$getValue())) {
+        array = p$getValue()
+        match = sapply(array, function(p) {
+          if (is.null(p)) return(FALSE)
+          
+          return(identical(p,n))
+        })
+        
+        if (any(match)) {
+          return(array[match])
+        } else {
+          return(NULL)
+        }
+      } else {
+        return(NULL)
+      }
+    },n=graph_param))
+  })
+  
+  # now find the most picked argument per process graph parameter (p)
+  most_probable_types = lapply(matches, function(variable) {
+    # variable is a list
+    class_matches = sapply(variable, function(p) {
+      class(p)[[1]]
+    })
+    
+    # determine most picked
+    unique_types = unique(class_matches)
+    counts = sapply(unique_types, function(class) {
+      sum(class_matches == class)
+    })
+  
+    most_probable = unique_types[which(counts==max(counts,na.rm = TRUE))]
+    
+    # find first occurence in class_matches to get an index
+    # use the index on variable (list) to get the parameter, from which we will later obtain the schema
+    var = variable[class_matches == most_probable][1]
+    
+    
+    return(var)
+  })
+  
+  # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
+  # TODO think about this and/or implement it
+  
+  
+  
+  
   
   return(value)
 

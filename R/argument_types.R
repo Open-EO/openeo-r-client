@@ -87,6 +87,32 @@ Parameter = R6Class(
     },
     getSchema = function() {
       return(private$schema)
+    },
+    asParameterInfo = function() {
+      # the function will serialize a parameter as in a process definition, which will be used
+      # when describing a parameter as some sort of a variable
+      
+      info = list()
+      info$name = self$getName()
+      info$description = self$getDescription()
+      
+      if (self$isNullable) {
+        info$optional = TRUE
+        info$default = NA
+      } else if (self$isRequired){
+        info$optional = FALSE
+      }
+      
+      if (all(c("Argument","Parameter","R6") %in% class(self)) && all(class(self) %in% c("Argument","Parameter","R6"))) {
+        # this is an object where anything goes in (Any)
+        info$schema = list(description = "Any data type")
+      } else if (all(c("anyOf","Argument","Parameter","R6") %in% class(self))) {
+        info$schema = lapply(self$getChoice(), function(param) {
+          param$asParameterInfo()
+        })
+      }
+      return(info)
+      
     }
   ),
   active = list(
@@ -2187,8 +2213,21 @@ parameterFromJson = function(param_def, nullable = FALSE) {
   
   # if it is no unnamed object list, then box it
   if (length(names(param_def$schema)) > 0) {
-    param_def$schema = list(param_def$schema)
+    if (!is.null(param_def$schema$type) && is.list(param_def$schema$type)) {
+      param_def$schema = lapply(param_def$schema$type, function(type,original_param_schema) {
+        original_param_schema$type = type
+        return(original_param_schema)
+      },original_param_schema = param_def$schema)
+    } else {
+      param_def$schema = list(param_def$schema)
+    }
+    
   }
+  
+  #special case a simple type + null, which mean a type that is a list and schema not
+  # then dissolve the parameter into multiple instances
+  
+  
   
   # now we have a list over which we can lapply
   nullable = sapply(param_def$schema, function(schema) {

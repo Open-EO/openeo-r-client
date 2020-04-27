@@ -7,7 +7,7 @@
 create_variable(
   name,
   description = NULL,
-  type = "string",
+  type = NULL,
   subtype = NULL,
   default = NULL
 )

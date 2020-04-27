@@ -141,7 +141,13 @@ as.Graph.ProcessNode = function(from) {
     return(Graph$new(final_node=from))
 }
 
+#' @export
+as.Graph.function = function(from) {
+    return(.function_to_graph(value=from))
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
+    setAs(from="function",to="Graph",as.Graph.function)
 })
 
