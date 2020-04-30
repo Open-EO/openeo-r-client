@@ -7,7 +7,7 @@
 create_process_graph(
   con = NULL,
   graph,
-  id = NULL,
+  id,
   summary = NULL,
   description = NULL,
   submit = TRUE
@@ -19,7 +19,7 @@ is used.}
 
 \item{graph}{a process graph definition}
 
-\item{id}{the title of the process graph (optional)}
+\item{id}{the title of the process graph}
 
 \item{summary}{the summary of the process graph (optional)}
 

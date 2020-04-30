@@ -113,7 +113,6 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
             stop("The graph information is missing or not a list")
         }
         
-        #TODO replace empty lists
         if (length(graph$getVariables()) == 0) {
             graph_params = NA
         } else {
@@ -126,7 +125,7 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
                  description = description, 
                  summary = summary,
                  process_graph = graph$serialize(),
-                 returns = graph$getFinalNode()$getReturns()$serialize(), 
+                 returns = graph$getFinalNode()$getReturns()$asParameterInfo(), 
                  parameters = graph_params)
         
         if (submit) {

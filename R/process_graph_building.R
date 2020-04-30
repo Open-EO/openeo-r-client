@@ -59,6 +59,7 @@ Graph = R6Class(
       private$connection = con
       
       if (is.null(final_node)) {
+        # TODO this should deprecate soon! use ProcessCollection instead as builder and remove self$data and the lock_objects
         processes = lapply(con$processes, processFromJson)
         
         if (!is.list(processes)) stop("Processes are not provided as list")
@@ -128,7 +129,6 @@ Graph = R6Class(
         private$nodes=unname(node_list)
         private$final_node_id = final_node$getNodeId()
         private$variables = variables(final_node)
-        #TODO check for variables and assign them
       }
       
       
@@ -274,6 +274,10 @@ Graph = R6Class(
     
     getVariables = function() {
       return(unique(private$variables))
+    },
+    setVariables = function(list_of_vars) {
+      private$variables=list_of_vars
+      invisible(self)
     },
 
     getConnection = function() {
@@ -436,7 +440,7 @@ ProcessCollection = R6Class(
 #'    \item{parameters}{a list of Argument objects}
 #'    \item{description}{the process description}
 #'    \item{summary}{the summary of a process}
-#'    \item{returns}{the schema part of the result definition}
+#'    \item{returns}{the returns part of the process definition or an already evaluated parameter}
 #'    \item{name}{a parameter name}
 #'    \item{value}{the value for a parameter or the description text}
 #' }
@@ -466,14 +470,12 @@ Process = R6Class(
       
       self$parameters = parameters
       
-      if (any(returns$schema$type=="null")) {
-        returns$schema$type[returns$schema$type=="null"] = NULL
-        returns$schema$type = unlist(returns$schema$type)
-        
-        returns$nullable = TRUE
+      # case returns as list(schema=list())
+      if (is.list(returns) && "schema" %in% names(returns)) {
+        private$returns = parameterFromJson(param_def = returns)  
+      } else {
+        private$returns = returns
       }
-      
-      private$returns = returns
       
       return(self)
     },
@@ -901,7 +903,87 @@ variables = function(x) {
     
     
   })
-  return(unname(unlist(unique(variables))))
+  variables = unname(unlist(unique(variables)))
+  
+  # if variables are NULL then there are no unbound variables
+  if (is.null(variables)) {
+    return(list())
+  } else {
+    list_of_all_params = unlist(lapply(used_nodes, function(n) {
+      # anyof: value is the chosen parameter
+      
+      params = unname(n$parameters)
+      params = lapply(params, function(p) {
+        if ("anyOf" %in% class(p)) {
+          return(p$getValue())
+        } else {
+          return(p)
+        }
+      })
+    }))
+    
+    # find all the parameters where the ProcessGraphParameter a.k.a. variable were set as value
+    matches = lapply(variables,function(graph_param) {
+      unlist(lapply(list_of_all_params, function(p,n) {
+        if (length(p$getValue()) != 0 && !is.list(p$getValue()) && identical(p$getValue(),n)) {
+          return(p)
+        } else if (length(p$getValue()) != 0 && is.list(p$getValue())) {
+          array = p$getValue()
+          match = sapply(array, function(p) {
+            if (is.null(p)) return(FALSE)
+            
+            return(identical(p,n))
+          })
+          
+          if (any(match)) {
+            return(array[match])
+          } else {
+            return(NULL)
+          }
+        } else {
+          return(NULL)
+        }
+      },n=graph_param))
+    })
+    
+    # now find the most picked argument per process graph parameter (p)
+    most_probable_types = lapply(matches, function(variable) {
+      # variable is a list
+      class_matches = sapply(variable, function(p) {
+        class(p)[[1]]
+      })
+      
+      # determine most picked
+      unique_types = unique(class_matches)
+      counts = sapply(unique_types, function(class) {
+        sum(class_matches == class)
+      })
+      
+      most_probable = unique_types[which(counts==max(counts,na.rm = TRUE))]
+      
+      # find first occurence in class_matches to get an index
+      # use the index on variable (list) to get the parameter, from which we will later obtain the schema
+      var = variable[class_matches == most_probable][1]
+      
+      
+      return(var)
+    })
+    
+    # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
+    # TODO think about this and/or implement it
+    
+    for (i in 1:length(variables)) {
+      if (! "Argument" %in% class(variables[[i]])) {
+        browser()
+      }
+      variables[[i]]$adaptType(most_probable_types[[i]])
+      
+    }
+    
+    return(variables)
+  }
+  
+  
 }
   
   
@@ -987,72 +1069,76 @@ remove_variable = function(graph, variable) {
   # then build a subset of all parameters and some types should match over all instances found, so we
   # can estimate which parameter to choose (or at least copy their description)
   
-  list_of_all_params = unlist(lapply(value$getNodes(), function(n) {
-    # anyof: value is the chosen parameter
-    
-    params = unname(n$parameters)
-    params = lapply(params, function(p) {
-      if ("anyOf" %in% class(p)) {
-        return(p$getValue())
-      } else {
-        return(p)
-      }
-    })
-  }))
+  # list_of_all_params = unlist(lapply(value$getNodes(), function(n) {
+  #   # anyof: value is the chosen parameter
+  #   
+  #   params = unname(n$parameters)
+  #   params = lapply(params, function(p) {
+  #     if ("anyOf" %in% class(p)) {
+  #       return(p$getValue())
+  #     } else {
+  #       return(p)
+  #     }
+  #   })
+  # }))
+  # 
+  # # find all the parameters where the ProcessGraphParameter a.k.a. variable were set as value
+  # matches = lapply(process_graph_parameter,function(graph_param) {
+  #   unlist(lapply(list_of_all_params, function(p,n) {
+  #     if (length(p$getValue()) != 0 && !is.list(p$getValue()) && identical(p$getValue(),n)) {
+  #       return(p)
+  #     } else if (length(p$getValue()) != 0 && is.list(p$getValue())) {
+  #       array = p$getValue()
+  #       match = sapply(array, function(p) {
+  #         if (is.null(p)) return(FALSE)
+  #         
+  #         return(identical(p,n))
+  #       })
+  #       
+  #       if (any(match)) {
+  #         return(array[match])
+  #       } else {
+  #         return(NULL)
+  #       }
+  #     } else {
+  #       return(NULL)
+  #     }
+  #   },n=graph_param))
+  # })
+  # 
+  # # now find the most picked argument per process graph parameter (p)
+  # most_probable_types = lapply(matches, function(variable) {
+  #   # variable is a list
+  #   class_matches = sapply(variable, function(p) {
+  #     class(p)[[1]]
+  #   })
+  #   
+  #   # determine most picked
+  #   unique_types = unique(class_matches)
+  #   counts = sapply(unique_types, function(class) {
+  #     sum(class_matches == class)
+  #   })
+  # 
+  #   most_probable = unique_types[which(counts==max(counts,na.rm = TRUE))]
+  #   
+  #   # find first occurence in class_matches to get an index
+  #   # use the index on variable (list) to get the parameter, from which we will later obtain the schema
+  #   var = variable[class_matches == most_probable][1]
+  #   
+  #   
+  #   return(var)
+  # })
+  # 
+  # # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
+  # # TODO think about this and/or implement it
+  # 
+  # for (i in 1:length(process_graph_parameter)) {
+  #   process_graph_parameter[[i]]$adaptType(most_probable_types[[i]])
+  # }
   
-  # find all the parameters where the ProcessGraphParameter a.k.a. variable were set as value
-  matches = lapply(process_graph_parameter,function(graph_param) {
-    unlist(lapply(list_of_all_params, function(p,n) {
-      if (length(p$getValue()) != 0 && !is.list(p$getValue()) && identical(p$getValue(),n)) {
-        return(p)
-      } else if (length(p$getValue()) != 0 && is.list(p$getValue())) {
-        array = p$getValue()
-        match = sapply(array, function(p) {
-          if (is.null(p)) return(FALSE)
-          
-          return(identical(p,n))
-        })
-        
-        if (any(match)) {
-          return(array[match])
-        } else {
-          return(NULL)
-        }
-      } else {
-        return(NULL)
-      }
-    },n=graph_param))
-  })
-  
-  # now find the most picked argument per process graph parameter (p)
-  most_probable_types = lapply(matches, function(variable) {
-    # variable is a list
-    class_matches = sapply(variable, function(p) {
-      class(p)[[1]]
-    })
-    
-    # determine most picked
-    unique_types = unique(class_matches)
-    counts = sapply(unique_types, function(class) {
-      sum(class_matches == class)
-    })
-  
-    most_probable = unique_types[which(counts==max(counts,na.rm = TRUE))]
-    
-    # find first occurence in class_matches to get an index
-    # use the index on variable (list) to get the parameter, from which we will later obtain the schema
-    var = variable[class_matches == most_probable][1]
-    
-    
-    return(var)
-  })
-  
-  # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
-  # TODO think about this and/or implement it
-  
-  
-  
-  
+  # maybe irrelevant due to graph constructor
+  # process_graph_parameter = variables(final_node)
+  # value$setVariables(process_graph_parameter)
   
   return(value)
 

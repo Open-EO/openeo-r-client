@@ -103,7 +103,8 @@ Parameter = R6Class(
         info$optional = FALSE
       }
       
-      if (all(c("Argument","Parameter","R6") %in% class(self)) && all(class(self) %in% c("Argument","Parameter","R6"))) {
+      if (all(c("Argument","Parameter","R6") %in% class(self)) && 
+          all(class(self) %in% c("Argument","Parameter","R6"))) {
         # this is an object where anything goes in (Any)
         info$schema = list(description = "Any data type")
       } else if (all(c("anyOf","Argument","Parameter","R6") %in% class(self))) {
@@ -112,10 +113,12 @@ Parameter = R6Class(
         })
         
         if (self$isNullable) {
-          info$schema = append(info$schema, list(list(type = "null")))
+          info$schema = append(private$schema, list(list(type = "null")))
         }
-      } else if (self$isNUllable) {
-        info$schema$type = list(info$schema$type,"null") #TODO array?
+      } else if (self$isNullable) {
+        info$schema$type = list(private$schema$type,"null") #TODO array?
+      } else {
+        info$schema = private$schema
       }
       return(info)
       
@@ -315,19 +318,20 @@ Argument = R6Class(
     },
     
     checkMultiResults = function() {
-      if ("ProcessNode" %in% class(private$value)) {
-        returns = private$value$getReturns()
-        
-        if (!is.null(returns$schema)) {
-          if (!is.null(returns$schema$anyOf)) {
-            output_candidated = returns$schema$anyOf
-            
-            if (!any(sapply(output_candidated,function(schema){self$matchesSchema(schema)}))) {
-              stop("Cannot match any of the provided returns of the prior process to this parameter")
-            }
-          }
-        }
-      }
+      #TODO adapt or remove
+      # if ("ProcessNode" %in% class(private$value)) {
+      #   returns = private$value$getReturns()
+      #   
+      #   if (!is.null(returns$schema)) {
+      #     if (!is.null(returns$schema$anyOf)) {
+      #       output_candidated = returns$schema$anyOf
+      #       
+      #       if (!any(sapply(output_candidated,function(schema){self$matchesSchema(schema)}))) {
+      #         stop("Cannot match any of the provided returns of the prior process to this parameter")
+      #       }
+      #     }
+      #   }
+      # }
       
       
     },
@@ -507,11 +511,10 @@ Number = R6Class(
     typeCheck = function() {
       
       if ("ProcessNode" %in% class(private$value)) {
-        # check return value?
-        return_schema = private$value$getReturns()$schema
+        if (!any(c("number","integer") %in% class(private$value$getReturns()))) stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
         
-        if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
-          stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+        # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
+          
       } else if (!is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
@@ -1571,6 +1574,19 @@ ProcessGraphParameter = R6Class(
     },
     print = function() {
       cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      invisible(self)
+    },
+    adaptType = function(fromParameter) {
+      if (is.list(fromParameter) && length(fromParameter) == 1) {
+        fromParameter = fromParameter[[1]]
+        private$schema = fromParameter$getSchema()
+        private$default = fromParameter$getDefault()
+        private$required = fromParameter$isRequired
+        private$nullable = fromParameter$isNullable
+      } else {
+        stop("Not considered yet")
+      }
+      
       invisible(self)
     }
   ),
