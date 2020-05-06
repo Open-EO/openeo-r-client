@@ -327,7 +327,15 @@
   
   FUN = "array_element"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
-  graph[[FUN]](data=x,index=i-1) # do index shift because javascript / JSON addresses an element of an array from 0 to n-1
+  
+  if (is.numeric(i)) {
+    graph[[FUN]](data=x,index=i-1) # do index shift because javascript / JSON addresses an element of an array from 0 to n-1
+  } else if (is.character(i)) {
+    graph[[FUN]](data=x,label=i) # do index shift because javascript / JSON addresses an element of an array from 0 to n-1
+  } else {
+    stop("Subsetting is neither done by integer nor with a label/character.")
+  }
+  
 }
 
 # mathematical operators ----

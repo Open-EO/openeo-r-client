@@ -152,6 +152,9 @@ Parameter = R6Class(
         
         private$required = value
       }
+    },
+    isAny = function() {
+      length(private$schema$type) == 0
     }
   ),
   private = list(
@@ -219,24 +222,31 @@ Argument = R6Class(
       if (self$isNullable && 
           (length(self$getValue()) == 0 || 
            (!is.environment(self$getValue()) && 
-            is.na(self$getValue()))) && 
-          self$isRequired) {
-        return(NA)
+            is.na(self$getValue()))) 
+          ) {
+        if (self$isRequired) {
+          return(NA)
+        } else {
+          return(NULL)
+        }
+        
       }
       
-      if ("Graph" %in% class(private$value)) {
-        if (!"ProcessGraph" %in% class(self)) {
-          return(private$value$serialize())
-        } 
-      }
+      # if ("Graph" %in% class(private$value)) {
+      #   if (!"ProcessGraph" %in% class(self)) {
+      #     return(private$value$serialize())
+      #   } 
+      # }
       
-      if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serializeAsReference())
-      }
-      
-      if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) {
+      if (any(c("ProcessGraphParameter","Graph") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
       }
+      
+      if ("ProcessNode" %in% class(self$getValue())) {
+        return(self$getValue()$serializeAsReference())
+      }
+      
+      
       
       # if (is.list(self$getValue())) {
       #   return(lapply(self$getValue(),function(val) {
@@ -265,7 +275,13 @@ Argument = R6Class(
               self$isEmpty()) {
             
           } else {
-            if (!any(c("ProcessGraphParameter") %in% class(self$getValue()))) private$typeCheck()
+            # ProcessGraphParameter -> variable
+            # schema$type length == 0 -> ANY
+            if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) return(invisible(NULL)) 
+                
+            if ("ProcessNode" %in% class(self$getValue()) && self$getValue()$getReturns()$isAny) return(invisible(NULL))
+              
+            private$typeCheck()
           }
           
           invisible(NULL)
@@ -332,7 +348,7 @@ Argument = R6Class(
       #     }
       #   }
       # }
-      
+      return(invisible(NULL))
       
     },
     deep_clone = function(name, value) {
@@ -407,7 +423,7 @@ Integer = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.integer(private$value)) {
+      if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -417,10 +433,14 @@ Integer = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
         # correct value if you can
         private$value = coerced
+        
+        
       }
+      return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.integer(private$value))
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(as.integer(private$value))
     }
   )
 )
@@ -456,7 +476,7 @@ EPSGCode = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.integer(private$value)) {
+      if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -466,6 +486,8 @@ EPSGCode = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
         # correct value if you can
         private$value = coerced
+        
+        return(invisible(NULL))
       }
     },
     typeSerialization = function() {
@@ -511,11 +533,16 @@ Number = R6Class(
     typeCheck = function() {
       
       if ("ProcessNode" %in% class(private$value)) {
-        if (!any(c("number","integer") %in% class(private$value$getReturns()))) stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+        return_value = private$value$getReturns()
+        if (!any(c("number","integer") %in% class(return_value) && 
+                 length(return_value$getSchema()$type)) != 0) {
+          
+          stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+        }
         
         # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
           
-      } else if (!is.numeric(private$value)) {
+      } else if (!is.na(private$value) && !is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -526,10 +553,14 @@ Number = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if ("ProcessNode" %in% class(private$value)) {
         return(private$value$serialize())
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
       } else {
         return(as.numeric(private$value))
       }
@@ -567,7 +598,7 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -578,6 +609,8 @@ String = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (is.call(private$value)) {
@@ -598,6 +631,10 @@ String = R6Class(
         } else {
           return(private$value)
         } 
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
+      } else if (is.na(private$value)) {
+        return(NA)
       } else {
         return(as.character(private$value))
       }
@@ -621,7 +658,7 @@ URI = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -634,6 +671,8 @@ URI = R6Class(
       }
       
       if (!file.exists(private$value) || !grepl(private$value,pattern="\\w+:(\\/?\\/?)[^\\s]+")) stop("Value is not an URI or file.")
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       
@@ -683,7 +722,7 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -694,6 +733,8 @@ OutputFormat = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -732,7 +773,7 @@ CollectionId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -747,6 +788,8 @@ CollectionId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -785,7 +828,7 @@ JobId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -800,6 +843,7 @@ JobId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -838,7 +882,7 @@ ProcessGraphId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -853,6 +897,8 @@ ProcessGraphId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -891,7 +937,7 @@ ProjDefinition = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -902,6 +948,8 @@ ProjDefinition = R6Class(
         # correct value if you can
         private$value = coerced
       } 
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -1007,6 +1055,8 @@ BoundingBox = R6Class(
           }
         })
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (length(self$getValue()) == 0) {
@@ -1048,7 +1098,7 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.logical(private$value)) {
+      if (!is.na(private$value) && !is.logical(private$value)) {
         suppressWarnings({
           coerced = as.logical(private$value)
         })
@@ -1059,6 +1109,8 @@ Boolean = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.logical(private$value))
@@ -1097,7 +1149,7 @@ Date = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.Date(private$value)) {
+      if (!is.na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
         })
@@ -1108,6 +1160,8 @@ Date = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%Y-%m-%d")))
@@ -1146,7 +1200,7 @@ DateTime = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.POSIXct(private$value)) {
+      if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
         })
@@ -1157,6 +1211,8 @@ DateTime = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M%SZ")))
@@ -1206,7 +1262,7 @@ Time = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.POSIXct(private$value)) {
+      if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
         })
@@ -1217,6 +1273,8 @@ Time = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%H:%M:%SZ")))
@@ -1516,6 +1574,7 @@ ProcessGraph = R6Class(
         stop(paste("Errors in subgraph:",paste(errors,collapse=";")))
       }
 
+      return(invisible(NULL))
       
     },
     
@@ -1703,7 +1762,7 @@ Array = R6Class(
       if (itemType == "any") {
         # this can be anything so we shift the responsibility to the back-end
         #TODO maybe give a warning that it is unchecked
-        return() 
+        return(invisible(NULL)) 
       }
       
       if (length(private$schema$minItems) == 1 && 
@@ -1826,6 +1885,8 @@ Array = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (length(self$getValue()) == 0 || is.na(self$getValue())) {
@@ -2053,7 +2114,6 @@ AnyOf = R6Class(
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
         validated = sapply(choice_copies, function(param) {
-          
           param$setValue(value)
           
           tryCatch(
@@ -2288,7 +2348,7 @@ parameterFromJson = function(param_def, nullable = FALSE) {
         
         if(!is.null(param_json$schema[["pattern"]])) cb$setPattern(param_json$schema[["pattern"]])
         
-        cb$isRequired = isFALSE(param_json$optional)
+        cb$isRequired = !isTRUE(param_json$optional) # isTRUE is only true if not false and not null
         
         return(cb)
       })

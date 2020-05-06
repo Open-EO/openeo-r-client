@@ -221,6 +221,8 @@ validate_process_graph = function(con=NULL, graph) {
             graph = graph$serialize()
         } else if ("ProcessNode" %in% class(graph)) {
             graph = Graph$new(final_node = graph)$serialize()
+        } else if ("function" %in% class(graph)) {
+            graph = as(graph,"Graph")$serialize()
         }
             
         if (!is.list(graph) || is.null(graph)) {
