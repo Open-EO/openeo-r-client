@@ -129,7 +129,8 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
                  parameters = graph_params)
         
         if (submit) {
-            tag = "new_graph"
+            tag = "graph_create_replace"
+            #TODO create custom id
             response = con$request(tag = tag, authorized = TRUE, data = process_graph_description, raw = TRUE)
             
             message("Graph was sucessfully stored on the backend.")
@@ -195,7 +196,7 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
             }
         }
         
-        tag = "graph_replace"
+        tag = "graph_create_replace"
         
         message = con$request(tag = tag, parameters = list(id), authorized = TRUE, data = requestBody, encodeType = "json")
         

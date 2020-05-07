@@ -42,6 +42,7 @@ process_viewer = function(x,con=NULL) {
     api_version = paste0("'",con$api_version(),"'")
     # doc_gen_version = "@1.0.0-beta.2"
     doc_gen_version = "@latest"
+    css_version = "@latest"
     
     if (is.function(x)) {
       x=do.call(x,args=list())
@@ -84,7 +85,7 @@ process_viewer = function(x,con=NULL) {
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <script src='https://cdn.jsdelivr.net/npm/vue'></script>
   <script src='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.umd.min.js'></script>
-  <link rel='stylesheet'' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
+  <link rel='stylesheet'' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%css_version%/dist/DocGen.css'>
   <style>html, body { height: 100%; margin: 0; }</style>
   </head>
   
@@ -108,6 +109,7 @@ process_viewer = function(x,con=NULL) {
   </html>"
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
+    html = gsub(x=html,pattern = "%css_version%",replacement = css_version)
     html = gsub(x=html,pattern = "%processes%",replacement=x,fixed=TRUE)
     html = gsub(x=html,pattern = "%navigator%",replacement=navigator)
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
@@ -130,6 +132,8 @@ collection_viewer = function(x,con=NULL) {
     
     api_version = paste0("'",con$api_version(),"'")
     doc_gen_version = "@latest"
+    vue_version = "@latest"
+    vue_css_version = "@latest"
     
     if (is.character(x)) {
       x = describe_collection(con=con,id=x)
@@ -157,10 +161,10 @@ collection_viewer = function(x,con=NULL) {
 		<meta name='viewport' content='width=device-width, initial-scale=1'>
 		<script src='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.js'></script>
 		<script src='https://cdn.jsdelivr.net/npm/vue'></script>
-		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.umd.min.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_version%/assets/openeo-vue.umd.min.js'></script>
 		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.css' />
 		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
-		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.css'>
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_css_version%/assets/openeo-vue.css'>
 		<style>html, body { height: 100%; margin: 1em; font-family: sans-serif; }</style>
 	</head>
 
@@ -183,6 +187,8 @@ collection_viewer = function(x,con=NULL) {
 </html>"
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
+    html = gsub(x=html,pattern = "%vue_version%",replacement = vue_version)
+    html = gsub(x=html,pattern = "%vue_css_version%",replacement = vue_css_version)
     html = gsub(x=html,pattern = "%collection_info%",replacement=x,fixed=TRUE)
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
