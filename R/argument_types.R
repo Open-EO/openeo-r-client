@@ -238,7 +238,7 @@ Argument = R6Class(
       #   } 
       # }
       
-      if (any(c("ProcessGraphParameter","Graph") %in% class(self$getValue()))) {
+      if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
       }
       
@@ -778,7 +778,10 @@ CollectionId = R6Class(
           coerced = as.character(private$value)
         })
         
-        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        if (length(private$schema$pattern) > 0) {
+          if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        }
+        
         
         if (is.null(coerced) || 
             is.na(coerced) ||
@@ -1581,9 +1584,8 @@ ProcessGraph = R6Class(
     typeSerialization = function() {
       if(!is.null(private$value)) {
         # serialize the graph
-        # TODO add correct serialization
-        
-        return(private$value$serialize())
+        return(list(
+          process_graph = private$value$serialize()))
       }
     }
   )
@@ -2335,7 +2337,9 @@ parameterFromJson = function(param_def, nullable = FALSE) {
     gen=findParameterGenerator(schema)[[1]]
     param = gen$new()
     
-    
+    if (length(schema$pattern) != 0) {
+      param$setPattern(schema$pattern)
+    }
     
     if ("ProcessGraph" %in% class(param)) {
       # iterate over all ProcessGraph parameters and create ProcessGraphParameters, but name = property name (what the process exports to ProcessGraph)
