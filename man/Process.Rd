@@ -43,7 +43,7 @@ JSON object for a single process, after the arguments of the process have been t
    \item{parameters}{a list of Argument objects}
    \item{description}{the process description}
    \item{summary}{the summary of a process}
-   \item{returns}{the schema part of the result definition}
+   \item{returns}{the returns part of the process definition or an already evaluated parameter}
    \item{name}{a parameter name}
    \item{value}{the value for a parameter or the description text}
 }

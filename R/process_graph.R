@@ -114,7 +114,7 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
         }
         
         if (length(graph$getVariables()) == 0) {
-            graph_params = NA
+            graph_params = list()
         } else {
             graph_params = lapply(graph$getVariables(),function(p) {
                 p$asParameterInfo()
@@ -154,10 +154,10 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
 #' is used.
 #' @param id process graph id
 #' @param graph a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder
-#' @param title title of the process graph (optional)
+#' @param summary summary of the process graph (optional)
 #' @param description description of the process graph (optional)
 #' @export
-update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, description = NULL) {
+update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, description = NULL) {
     tryCatch({
         if (is.null(id)) {
             stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
@@ -168,24 +168,41 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
         requestBody = list()
         
         if (!is.null(graph)) {
+            
+            
             if (is.na(graph)) {
                 stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
-            } else if (!is.list(graph)) {
-                stop("The graph information is missing or not a list")
+            } else if (is.function(graph)) {
+                graph = as(graph,"Graph")
+            } else if ("ProcessNode" %in% class(graph)){
+                # final node!
+                graph = Graph$new(con=con,final_node = graph)
+            } else if ("Graph" %in% class(graph)) {
+                
             } else {
-                if ("ProcessNode" %in% class(graph)){
-                    # final node!
-                    graph = Graph$new(con=con,final_node = graph)$serialize()
-                } 
-                requestBody[["process_graph"]] = graph
+                stop("Graph is neither final node, graph nor function.")
             }
+            
+            # set or update variables and return
+            requestBody[["process_graph"]] = graph$serialize()
+            
+            if (length(graph$getVariables()) == 0) {
+                graph_params = list()
+            } else {
+                graph_params = lapply(graph$getVariables(),function(p) {
+                    p$asParameterInfo()
+                })
+            }
+            requestBody[["parameters"]] = graph_params
+            
+            requestBody[["returns"]] = graph$getFinalNode()$getReturns()$asParameterInfo()
         }
         
-        if (!is.null(title)) {
-            if (is.na(title)) {
-                requestBody[["title"]] = NULL
+        if (!is.null(summary)) {
+            if (is.na(summary)) {
+                requestBody[["summary"]] = NULL
             } else {
-                requestBody[["title"]] = title
+                requestBody[["summary"]] = summary
             }
         }
         if (!is.null(description)) {

@@ -8,7 +8,7 @@ update_process_graph(
   con = NULL,
   id,
   graph = NULL,
-  title = NULL,
+  summary = NULL,
   description = NULL
 )
 }
@@ -20,7 +20,7 @@ is used.}
 
 \item{graph}{a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder}
 
-\item{title}{title of the process graph (optional)}
+\item{summary}{summary of the process graph (optional)}
 
 \item{description}{description of the process graph (optional)}
 }
