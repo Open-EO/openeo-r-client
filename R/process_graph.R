@@ -218,6 +218,8 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
 #' @export
 validate_process_graph = function(con=NULL, graph) {
     tryCatch({
+        con = .assure_connection(con)
+        
         if ("Graph" %in% class(graph)) {
             graph = graph$serialize()
         } else if ("ProcessNode" %in% class(graph)) {
@@ -230,9 +232,8 @@ validate_process_graph = function(con=NULL, graph) {
             stop("The graph information is missing or not a list")
         }
         
-        con = .assure_connection(con)
-        
-        requestBody = list(process_graph = graph)
+        requestBody = list(
+            process_graph = graph)
         
         tag = "process_graph_validate"
         response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json")
@@ -280,11 +281,5 @@ process_graph_builder = function(con=NULL) {
 #' @export
 processes = function(con = NULL) {
     con = .assure_connection(con)
-    
-    collections = list_collections(con)$collections
-    cids = sapply(collections, function(coll) coll$id)
-    collections = as.list(cids)
-    names(collections) = cids
-    
-    return(ProcessCollection$new(con = con, data = collections))
+    return(con$getProcessCollection())
 }

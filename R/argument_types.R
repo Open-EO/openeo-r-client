@@ -1513,37 +1513,43 @@ ProcessGraph = R6Class(
     
     setValue = function(value) {
       if ("function" %in% class(value)) {
-        # if value is a function -> then make a call with the function and a suitable ProcessGraph 
+        # if value is a function -> then make a call with the function and a suitable ProcessGraph
         # parameter
         # create a new graph
-        
+
         process_collection = private$process$getGraph()
-        
+
         # probably switch temporarily the graph of the parent process
         # then all newly created process nodes go into the new graph
         private$process$setGraph(process_collection)
-        
+
         process_graph_parameter = private$parameters
-        
+
         # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
         # the issue can no longer been resolved automatically
         if (length(formals(value)) != length(process_graph_parameter)) stop("Function parameter do not match ProcessGraph parameter(s)")
-        
+
         names(process_graph_parameter) = names(formals(value))
-        
+
         lapply(process_graph_parameter, function(cb){cb$setProcess(private$process)})
-        
+
         # make call
         final_node = do.call(value,args = process_graph_parameter)
-        
+
         # then serialize it via the final node
-        
+
         # assign new graph as value
-        value = Graph$new(final_node = final_node)
+        private$value = Graph$new(final_node = final_node)
+      } else if ("ProcessNode" %in% class(value)) {
+        private$value = Graph$new(final_node = value)
+      } else if ("Graph" %in% class(value)) {
+        private$value = value
+      } else {
+        stop("Assigned value for process graph is neiter function, Graph nor a final process node.")
       }
       
       
-      private$value = value
+      
     },
     setProcess = function(p) {
       private$process = p

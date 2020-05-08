@@ -262,7 +262,31 @@ OpenEOClient <- R6Class(
       }
       
       return(private$capabilities)
+    },
+    getDataCollection=function() {
+      if (is.null(private$data_collection)) {
+        private$data_collection = list_collections(self)$collections
+      }
+      
+      return(private$data_collection)
+    },
+    getCollectionNames = function() {
+      collections = self$getDataCollection()
+      cids = sapply(collections, function(coll) coll$id)
+      collections = as.list(cids)
+      names(collections) = cids
+      
+      return(collections)
+    },
+    getProcessCollection=function() {
+      if (is.null(private$process_collection)) {
+        private$process_collection = ProcessCollection$new(con = self)
+      }
+      
+      return(private$process_collection)
     }
+    
+    
 
   ),
   # private ----
@@ -276,6 +300,8 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     exchange_token="access_token",
     capabilities=NULL,
+    process_collection=NULL,
+    data_collection=NULL,
     
     # functions ====
     loginOIDC = function(external=NULL) {
