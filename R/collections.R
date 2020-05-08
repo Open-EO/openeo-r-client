@@ -8,13 +8,7 @@
 list_collections = function(con=NULL) {
     con = .assure_connection(con)
     
-    tryCatch({
-        tag = "data_overview"
-        
-        listOfProducts = con$request(tag = tag, authorized = con$isLoggedIn(), type = "application/json")
-        class(listOfProducts) = "CollectionList"
-        return(listOfProducts)
-    }, error = .capturedErrorToMessage)
+    return(con$getDataCollection())
     
 }
 

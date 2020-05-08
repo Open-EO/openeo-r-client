@@ -265,13 +265,22 @@ OpenEOClient <- R6Class(
     },
     getDataCollection=function() {
       if (is.null(private$data_collection)) {
-        private$data_collection = list_collections(self)$collections
+        
+        tryCatch({
+          tag = "data_overview"
+          
+          listOfProducts = self$request(tag = tag, authorized = self$isLoggedIn(), type = "application/json")
+          class(listOfProducts) = "CollectionList"
+          private$data_collection = listOfProducts
+        }, error = .capturedErrorToMessage)
+        
+        # private$data_collection = list_collections(self)$collections
       }
       
       return(private$data_collection)
     },
     getCollectionNames = function() {
-      collections = self$getDataCollection()
+      collections = self$getDataCollection()$collections
       cids = sapply(collections, function(coll) coll$id)
       collections = as.list(cids)
       names(collections) = cids
