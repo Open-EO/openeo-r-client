@@ -14,20 +14,13 @@ list_process_graphs = function(con=NULL) {
         
         con = .assure_connection(con)
         
-        listOfGraphShortInfos = con$request(tag = tag, authorized = TRUE)
-        listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
+        listOfUserDefinedProcesses = con$request(tag = tag, authorized = TRUE)$processes
         
-        table = .listObjectsToDataFrame(listOfGraphShortInfos)
-        if (ncol(table) == 0 || nrow(table) == 0) {
-            message("No process graphs are currently stored on the back-end.")
-            invisible(table)
-        }
+        return(lapply(listOfUserDefinedProcesses, function(process) {
+                class(process) = "ProcessInfo"
+                return(process)
+            }))
         
-        table = table[, c("id", "title", "description")]
-        if (isNamespaceLoaded("tibble")) 
-            table = tibble::as_tibble(table)
-        
-        return(table)
     }, error = .capturedErrorToMessage)
 }
 

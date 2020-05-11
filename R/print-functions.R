@@ -35,13 +35,29 @@ print.ProcessInfo <- function(x, ...) {
     result = paste("Returns:\t", x$returns$description, sep = "")
     
     if (length(x$parameters) > 0) {
-        d = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Required = sapply(x$parameters, function(arg) {
-            if (!is.null(arg$required)) {
-                return(arg$required)
+        parameter_names = sapply(x$parameters, function(x)x$name)
+        parameter_descriptions = sapply(x$parameters, function(arg) {
+            if (length(arg$description) == 1) {
+                return(arg$description)
+            } else if (length(arg$description) > 1) {
+                return(arg$description[[1]])
+            } else {
+                return("")
+            }
+            
+        })
+        parameter_optional = sapply(x$parameters, function(arg) {
+            if (!is.null(arg$optional)) {
+                return(arg$optional)
             } else {
                 return(FALSE)
             }
-        }), stringsAsFactors = FALSE)
+        })
+        
+        d = data.frame(Parameter = parameter_names, 
+                       Description = parameter_descriptions, 
+                       Optional = parameter_optional, 
+                       stringsAsFactors = FALSE)
         rownames(d) <- NULL
         cat(paste(title, summary, description, result, "", sep = "\n"))
         cat("\n")
@@ -274,6 +290,7 @@ print.Json_Graph = function(x, ...) {
 }
 
 #' @export
+# TODO might be deprecated, check removal
 print.ProcessGraphInfo = function(x, ...) {
     id = paste("Job ID:\t\t", x$id, sep = "")
     if (is.null(x$title)) 
