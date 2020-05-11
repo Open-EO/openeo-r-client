@@ -130,13 +130,13 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
         
         if (submit) {
             tag = "graph_create_replace"
-            #TODO create custom id
-            response = con$request(tag = tag, authorized = TRUE, data = process_graph_description, raw = TRUE)
+            
+            response = con$request(tag = tag, parameters = list(
+                process_graph_id = id
+            ), authorized = TRUE, data = process_graph_description, raw = TRUE)
             
             message("Graph was sucessfully stored on the backend.")
-            locationHeader = headers(response)$location
-            split = unlist(strsplit(locationHeader, "/"))
-            return(trimws(split[length(split)])) 
+            return(id) 
         } else {
             return(process_graph_description)
         }
@@ -219,7 +219,7 @@ update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, desc
         
         if (is.null(message)) {
             message(paste("Process graph '", id, "' was successfully modified.", sep = ""))
-            invisible(TRUE)
+            return(id)
         }
     }, error = .capturedErrorToMessage)
 }

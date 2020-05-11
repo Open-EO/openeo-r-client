@@ -90,7 +90,13 @@ OpenEOClient <- R6Class(
     request = function(tag,parameters=NULL, authorized=FALSE, ...) {
       http_operation=toupper(self$api.mapping[as.vector(self$api.mapping[,"tag"] == tag),"operation"][[1]])
       
-      if (length(parameters) >0 && !is.na(parameters)) {
+      endpoint_requires_path_params = requires_endpoint_parameter(self$getBackendEndpoint(tag))
+      
+      if (endpoint_requires_path_params && !is.na(parameters) && length(parameters) == 0) {
+        stop(paste0("Endpoint '",self$getBackendEndpoint(tag),"' requires parameters, which are not set."))
+      }
+      
+      if (length(parameters) >0 && !is.na(parameters) && endpoint_requires_path_params) {
         endpoint= do.call(replace_endpoint_parameter, append(list(self$getBackendEndpoint(tag)),as.list(parameters)))
       } else  {
         endpoint= self$getBackendEndpoint(tag)
@@ -496,7 +502,7 @@ OpenEOClient <- R6Class(
         stop("Cannot interprete data - data is no list that can be transformed into json")
       }
     },
-    PUT = function(endpoint, authorized=FALSE, data, encodeType = NULL, ...) {
+    PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
@@ -504,13 +510,24 @@ OpenEOClient <- R6Class(
         header = private$addAuthorization(header)
       }
       
-      params = list(url=url, 
-                    config = header, 
-                    body=data)
-      if (!is.null(encodeType)) {
-        params = append(params, list(encode = encodeType))
-      }
-      response = do.call("PUT", args = params)
+
+      # create json and prepare to send graph as post body
+
+      response=PUT(
+        url= url,
+        config = header,
+        query = query,
+        body = data,
+        encode = encodeType
+      )
+
+      # params = list(url=url, 
+      #               config = header, 
+      #               body=data)
+      # if (!is.null(encodeType)) {
+      #   params = append(params, list(encode = encodeType))
+      # }
+      # response = do.call("PUT", args = params)
       
       if (is.debugging()) {
         print(response)

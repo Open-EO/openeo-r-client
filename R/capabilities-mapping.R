@@ -37,6 +37,23 @@ endpoint_mapping = function(con) {
     
 }
 
+requires_endpoint_parameter = function(endpoint) {
+    if (startsWith(endpoint, "/")) {
+        coll = unlist(strsplit(endpoint, split = "/"))[-1]
+    } else {
+        coll = unlist(strsplit(endpoint, split = "/"))
+    }
+    
+    endsWithSlash = endsWith(endpoint, "/")
+    
+    # get parameter
+    variable_pattern = "^[\\{|<|\\[|%].*[\\}|>|\\]|%]$"
+    
+    param_names = grepl(pattern = variable_pattern, x = coll)
+    
+    return(any(param_names))
+}
+
 replace_endpoint_parameter = function(endpoint, ...) {
     if (startsWith(endpoint, "/")) {
         coll = unlist(strsplit(endpoint, split = "/"))[-1]
@@ -49,7 +66,7 @@ replace_endpoint_parameter = function(endpoint, ...) {
     # get parameter
     variable_pattern = "^[\\{|<|\\[|%].*[\\}|>|\\]|%]$"
     
-    param_names = grepl(variable_pattern, coll)
+    param_names = grepl(pattern=variable_pattern, x = coll)
     
     params = list(...)
     # replace those parameter by given ... parameter (based on order)
