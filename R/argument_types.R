@@ -232,12 +232,6 @@ Argument = R6Class(
         
       }
       
-      # if ("Graph" %in% class(private$value)) {
-      #   if (!"ProcessGraph" %in% class(self)) {
-      #     return(private$value$serialize())
-      #   } 
-      # }
-      
       if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
       }
@@ -245,14 +239,6 @@ Argument = R6Class(
       if ("ProcessNode" %in% class(self$getValue())) {
         return(self$getValue()$serializeAsReference())
       }
-      
-      
-      
-      # if (is.list(self$getValue())) {
-      #   return(lapply(self$getValue(),function(val) {
-      #     val$serialize()
-      #   }))
-      # }
       
       # for format specific conversion overwrite this by children
       tryCatch({

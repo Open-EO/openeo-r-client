@@ -41,7 +41,6 @@ mapped dynamically after creation.
 
 \describe{
    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
-   \item{data}{optional a named list of available data}
    \item{final_node}{optional the final node (end node) that was used to create a graph}
    \item{node_id}{the id of a process node}
    \item{node}{process node or  its node id}

@@ -34,7 +34,6 @@ library(lubridate)
 #' @section Arguments:
 #' \describe{
 #'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
-#'    \item{data}{optional a named list of available data}
 #'    \item{final_node}{optional the final node (end node) that was used to create a graph}
 #'    \item{node_id}{the id of a process node}
 #'    \item{node}{process node or  its node id}
@@ -49,86 +48,24 @@ NULL
 
 Graph = R6Class(
   "Graph",
-  lock_objects = FALSE,
   public = list(
-    data = list(),
-    
-    initialize = function(con=NULL, data = list(),final_node=NULL) {
+
+    initialize = function(con=NULL,final_node=NULL) {
       con = .assure_connection(con)
       
       private$connection = con
       
       if (is.null(final_node)) {
-        # TODO this should deprecate soon! use ProcessCollection instead as builder and remove self$data and the lock_objects
-        processes = lapply(con$processes, processFromJson)
+        stop("The final node (endpoint of the graph) has to be set.")
+      }
         
-        if (!is.list(processes)) stop("Processes are not provided as list")
-        
-        self$data = data
-        
-        for (index in 1:length(processes)) {
-          if (is.null(processes[[index]])) {
-            next
-          }
-          
-          pid = processes[[index]]$getId()
-          function_formals = processes[[index]]$getFormals()
-          
-          f = function() {}
-          formals(f) = function_formals
-          
-          
-          # probably do a deep copy of the object
-          # for the body we have the problem that index is addressed as variable in the parent environment. This
-          # causes a problem at call time, where index is resolve and this means that usually the last element
-          # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
-          # and then as.call
-          body(f) = quote({
-            exec_process = processes[[index]]$clone(deep=TRUE)
-            # find new node id:
-            node_id = .randomNodeId(exec_process$getId(),sep="_")
-            
-            while (node_id %in% private$getNodeIds()) {
-              node_id = .randomNodeId(exec_process$getId(),sep="_")
-            }
-            
-            #map given parameter of this function to the process parameter / arguments and set value
-            arguments = exec_process$parameters
-            
-            # parameter objects should be updated directly, since there is a real object reference
-            this_param_names = names(formals())
-            
-            # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
-            this_arguments = lapply(this_param_names, function(param) get(param))
-            names(this_arguments) = this_param_names
-            
-            # special case: value is of type Argument (meaning the Any parameter)
-            
-            node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
-            
-            lapply(names(this_arguments), function(param_name, arguments){
-              call_arg = this_arguments[[param_name]]
-              arguments[[param_name]]$setProcess(node)
-              #TODO maybe check here for is.list and then try the assignable
-              arguments[[param_name]]$setValue(call_arg)
-            }, arguments = arguments)
-            
-            private$nodes = append(private$nodes,node)
-            
-            return(node)
-          })
-          # replace index with the actual number!
-          tmp = gsub(body(f),pattern="index",replacement = eval(index))
-          body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
-          
-          # register the ProcessNode creator functions on the Graph class
-          self[[pid]] = f
-        }
-      } else if ("ProcessNode" %in% class(final_node)) {
+      if ("ProcessNode" %in% class(final_node)) {
         node_list = .final_node_serializer(final_node)
         private$nodes=unname(node_list)
         private$final_node_id = final_node$getNodeId()
         private$variables = variables(final_node)
+      } else {
+        stop("The final node has to be a ProcessNode.")
       }
       
       
@@ -627,6 +564,8 @@ Process = R6Class(
     
   )
 )
+
+setOldClass(c("Graph","R6"))
 
 # ProcessNode ====
 #' Process Node object

@@ -261,33 +261,17 @@ validate_process_graph = function(con=NULL, graph) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Get a process graph builder from the connection
+
+
+#' Get a process graph builder / process collection from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a Graph object to model a process graph in R. To get a better overview about the process graph building, please have
+#' a ProcessCollection object to build a process graph in R. To get a better overview about the process graph building, please have
 #' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 #' 
 #' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return a Graph object with the offered processes of the backend
-#' @export
-process_graph_builder = function(con=NULL) {
-    tryCatch({
-        con = .assure_connection(con)
-        
-        if (is.null(con$processes)) {
-            temp = list_processes(con)
-        }
-        
-        collections = list_collections(con)$collections
-        cids = sapply(collections, function(coll) coll$id)
-        collections = as.list(cids)
-        names(collections) = cids
-        
-        return(Graph$new(con, collections))
-    }, error = .capturedErrorToMessage)
-}
-
+#' @return a ProcessCollection object with the offered processes of the backend
 #' @export
 processes = function(con = NULL) {
     con = .assure_connection(con)

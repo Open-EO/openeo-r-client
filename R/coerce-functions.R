@@ -1,3 +1,6 @@
+#' @include process_graph_building.R
+NULL
+
 .removeNullEntries = function(list) {
     list[-which(sapply(list, is.null))]
 }
