@@ -45,7 +45,7 @@ describe_process_graph = function(con=NULL, id) {
         tag = "graph_details"
         graph = con$request(tag = tag, parameters = list(id), authorized = TRUE, type = "application/json", auto_unbox = TRUE)
         
-        class(graph) = "ProcessGraphInfo"
+        class(graph) = "ProcessInfo"
         class(graph$process_graph) = "Json_Graph"
         return(graph)
     }, error = .capturedErrorToMessage)

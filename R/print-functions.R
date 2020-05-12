@@ -59,9 +59,22 @@ print.ProcessInfo <- function(x, ...) {
                        Optional = parameter_optional, 
                        stringsAsFactors = FALSE)
         rownames(d) <- NULL
-        cat(paste(title, summary, description, result, "", sep = "\n"))
-        cat("\n")
-        print(d)
+        
+        if (length(x$process_graph) > 0) {
+            cat(paste(title, summary, description, result, "", sep = "\n"))
+            cat("\n")
+            print(d)
+            cat("\n")
+            cat("Stored process graph:\n")
+            print(x$process_graph)
+        } else {
+            cat(paste(title, summary, description, result, "", sep = "\n"))
+            cat("\n")
+            print(d)
+        }
+        
+        
+        
     }
 }
 
@@ -287,21 +300,6 @@ print.ProcessNode = function(x, ...) {
 #' @export
 print.Json_Graph = function(x, ...) {
     print(toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE))
-}
-
-#' @export
-# TODO might be deprecated, check removal
-print.ProcessGraphInfo = function(x, ...) {
-    id = paste("Job ID:\t\t", x$id, sep = "")
-    if (is.null(x$title)) 
-        x$title = "---"
-    title = paste("Title:\t\t", x$title, sep = "")
-    if (is.null(x$description)) 
-        x$description = "---"
-    description = paste("Description:\t", x$description, sep = "")
-    graph = "Process graph:"
-    cat(id, title, description, graph, sep = "\n")
-    print(x$process_graph)
 }
 
 #' @export
