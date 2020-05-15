@@ -106,20 +106,8 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
             stop("The graph information is missing or not a list")
         }
         
-        if (length(graph$getVariables()) == 0) {
-            graph_params = list()
-        } else {
-            graph_params = lapply(graph$getVariables(),function(p) {
-                p$asParameterInfo()
-            })
-        }
-        
-        process_graph_description = list(id = id, 
-                 description = description, 
-                 summary = summary,
-                 process_graph = graph$serialize(),
-                 returns = graph$getFinalNode()$getReturns()$asParameterInfo(), 
-                 parameters = graph_params)
+        p = Process$new(id = id, summary = summary, description = description, process_graph = graph)
+        process_graph_description = p$serialize()
         
         if (submit) {
             tag = "graph_create_replace"
@@ -157,6 +145,8 @@ update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, desc
         }
         
         con = .assure_connection(con)
+        
+        #TODO get process_graph via id, then substitue updated stuff and PUT back
         
         requestBody = list()
         

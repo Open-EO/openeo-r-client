@@ -1528,7 +1528,7 @@ ProcessGraph = R6Class(
         private$value = Graph$new(final_node = final_node)
       } else if ("ProcessNode" %in% class(value)) {
         private$value = Graph$new(final_node = value)
-      } else if ("Graph" %in% class(value)) {
+      } else if ("Graph" %in% class(value) || is.na(value)) {
         private$value = value
       } else {
         stop("Assigned value for process graph is neiter function, Graph nor a final process node.")
@@ -2278,7 +2278,8 @@ processFromJson=function(json) {
                 description = json$description,
                 summary=json$summary,
                 parameters = parameters,
-                returns = json$returns)
+                returns = json$returns,
+                process_graph = json$process_graph)
   }, error = function(e) {
     warning(paste0("Invalid process description for '",json$id,"'"))
     NULL
@@ -2286,7 +2287,7 @@ processFromJson=function(json) {
   
 }
 
-parameterFromJson = function(param_def, nullable = FALSE) {
+parameterFromJson = function(param_def) {
   
   if (length(param_def$schema) == 0) stop("Invalid parameter description, because of missing schema")
   
