@@ -16,24 +16,31 @@ list_jobs = function(con=NULL) {
         listOfJobs = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
         class(listOfJobs$jobs) = "JobList"
         listOfJobs = listOfJobs$jobs
-        # list to tibble
         
-        df = as.data.frame(listOfJobs)
+        showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
+        
+        # list to tibble
+        if (length(listOfJobs) > 0) {
+            df = as.data.frame(listOfJobs)
+            
+            missing_columns = showed_columns[!showed_columns %in% colnames(df)]
+            if (length(missing_columns) > 0) {
+                nas = rep(NA, length(missing_columns))
+                names(nas) = missing_columns
+                df = do.call("cbind", append(list(df), as.list(nas)))
+            }
+            df = df[, showed_columns]
+            
+        } else {
+            df = data.frame(id = character(),title=character(),status = character(),
+                            created = character(), updated = character(), costs=integer(),
+                            budget=integer(), plan=character(),stringsAsFactors = FALSE)
+        }
         
         if (nrow(df) == 0 || ncol(df) == 0) {
             message("No jobs stored on the back-end.")
             invisible(df)
         }
-        
-        showed_columns = c("id", "title", "status", "submitted", "updated", "costs", "budget", "plan")
-        
-        missing_columns = showed_columns[!showed_columns %in% colnames(df)]
-        if (length(missing_columns) > 0) {
-            nas = rep(NA, length(missing_columns))
-            names(nas) = missing_columns
-            df = do.call("cbind", append(list(df), as.list(nas)))
-        }
-        df = df[, showed_columns]
         
         if (isNamespaceLoaded("tibble")) {
             df = tibble::as_tibble(df)
