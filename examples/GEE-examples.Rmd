@@ -54,7 +54,7 @@ list_processes()
 ```
 
 ```{r}
-reduce_info = describe_process(id = "reduce")
+reduce_info = describe_process(id = "reduce_dimension")
 reduce_info
 ```
 
@@ -269,7 +269,8 @@ pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
+# con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd,login_type = "basic")
 ```
 
 Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
@@ -281,7 +282,7 @@ p = processes()
 In order to showcase another feature, the `variable`, we substitute the collection name with a such a variable. We can then later set the specific value in order to run the code.
 
 ```{r}
-var1 = create_variable(id = "collection_name", type = "string")
+var1 = create_variable(name = "collection_name", type = "string")
 var1$serialize()
 ```
 
@@ -300,16 +301,19 @@ data = p$load_collection(id = var1,
                              ),
                              bands=list("B8","B4","B2"))
 
-spectral_reduce = p$reduce(data = data, dimension = "bands",reducer = function(x) {
-  B08 = x[1]
-  B04 = x[2]
-  B02 = x[3]
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
   (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
 })
 
-temporal_reduce = p$reduce(data=spectral_reduce,dimension = "temporal", reducer = p$min)
+# temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "temporal", reducer = p$min)
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "temporal", reducer = function(x,y){
+  p$min(x)
+})
 
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value) {
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
   p$linear_scale_range(x = value, 
                            inputMin = -1, 
                            inputMax = 1, 

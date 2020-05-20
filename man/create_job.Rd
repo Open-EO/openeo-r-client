@@ -11,7 +11,6 @@ create_job(
   description = NULL,
   plan = NULL,
   budget = NULL,
-  format = NULL,
   ...
 )
 }
@@ -29,9 +28,9 @@ is used.}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
 
-\item{format}{The inteded format of the data to be returned}
-
 \item{...}{additional configuration parameter for output generation}
+
+\item{format}{The inteded format of the data to be returned}
 }
 \value{
 the id of the job

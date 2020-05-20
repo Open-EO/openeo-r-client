@@ -385,7 +385,6 @@ Process = R6Class(
       private$id = id
       private$description = description
       private$summary=summary
-      
       if (length(process_graph) > 0) {
         self$setProcessGraph(process_graph = process_graph)
       } else {
@@ -476,9 +475,9 @@ Process = R6Class(
         } else if ("Graph" %in% class(process_graph)) {
           private$process_graph = process_graph
         } else if (is.list(process_graph) || class(process_graph) == "Json_Graph"){
-          # when we read it from JSON basically
-          # TODO implement or update
-          warning("Setting a process graph via list (from json) is not implemented, currently")
+          # when we read it from JSON basically 
+          # TODO process_graph should be ProcessInfo actually
+          private$process_graph = parse_graph(json=process_graph)
         }
 
         if (length(private$process_graph) > 0) {
@@ -496,6 +495,7 @@ Process = R6Class(
     },
     serialize = function() {
       results = list(id=private$id)
+      # class(results) = "ProcessInfo"
       
       if (length(private$description)>0) results$description = private$description
       
@@ -505,7 +505,7 @@ Process = R6Class(
         results$process_graph
         
         results$process_graph = private$process_graph$serialize()
-        class(results$process_graph) = "Json_Graph"
+        # class(results$process_graph) = "Json_Graph"
         
       } 
         
@@ -730,7 +730,6 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @return Graph object
 #' @export
 parse_graph = function(con=NULL, json, parameters = NULL) {
-  
   con = .assure_connection(con)
   processes = con$getProcessCollection()
   

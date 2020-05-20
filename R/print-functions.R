@@ -172,16 +172,12 @@ print.JobInfo = function(x, ...) {
         x$description = "---"
     description = paste("Description:\t", x$description, "\n", sep = "")
     status = paste("Status:\t\t", x$status, "\n", sep = "")
-    submitted = paste("Submitted:\t", x$submitted, "\n", sep = "")
+    created = paste("Created:\t", x$created, "\n", sep = "")
     updated = paste("Updated:\t", x$updated, "\n", sep = "")
     
     if (is.null(x$progress)) 
         x$progress = "---"
     progress = paste("Progress:\t", x$progress, "\n", sep = "")
-    
-    if (is.null(x$error))  
-        x$error$message = "---"
-    error = paste("Error:\t\t", x$error$message, "\n", sep = "")
     
     if (is.null(x$plan)) 
         x$plan = "---"
@@ -191,21 +187,13 @@ print.JobInfo = function(x, ...) {
         x$budget = "---"
     budget = paste("Budget:\t\t", x$budget, "\n", sep = "")
     
-    cat(id, title, description, status, submitted, updated, progress, error, plan, costs, budget, sep = "")
-    
-    output = "Output:"
-    cat(output)
-    if (is.null(x$output)) {
-        cat("\t\t---\n")
-    } else {
-        cat("\n")
-        cat(toJSON(x$output, pretty = TRUE, auto_unbox = TRUE))
-        cat("\n")
-    }
-    
-    process_graph = "Process graph:\n"
+    cat(id, title, description, status, created, updated, progress, plan, costs, budget, sep = "")
+
+    process_graph = "User defined process:\n"
     cat(process_graph)
-    print(x$process_graph)
+    process = x$process$serialize()
+    browser()
+    print(process)
 }
 
 #' @export

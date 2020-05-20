@@ -7,6 +7,7 @@
 #' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @export
+# updated
 list_jobs = function(con=NULL) {
     tryCatch({
         con=.assure_connection(con)
@@ -132,31 +133,11 @@ compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ..
 #' 
 #' @return the id of the job
 #' @export
-create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
-        create_options = list(...)
-        output = list()
-        output$format = format
-        if (length(create_options) > 0) {
-            output$parameters = create_options
-        }
-        
-        if (!is.null(graph)) {
-            if ("Graph" %in% class(graph)) {
-                job = list(process_graph = graph$serialize(), output = output)
-            } else if (is.list(graph)) {
-                job = list(process_graph = toJSON(graph, force = TRUE), output = output)
-            } else if ("ProcessNode" %in% class(graph)){
-                # final node!
-                job = list(process_graph = Graph$new(final_node = graph)$serialize(), output = output)
-            } else {
-                stop("Parameter task is not a task object. Awaiting a list.")
-            }
-        } else {
-            stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
-        }
+        job = list()
         
         if (!is.null(title)) 
             job$title = title
@@ -167,11 +148,25 @@ create_job = function(con=NULL, graph = NULL, title = NULL, description = NULL, 
         if (!is.null(budget)) 
             job$budget = budget
         
+        # build an empty process
+        if (!is.null(graph)) {
+            process = Process$new(id=NA,description = NA,
+                                  summary = NA,
+                                  process_graph=graph)
+            job$process = process$serialize()
+            
+            job$process$process_graph=unclass(job$process$process_graph)
+        } else {
+            stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
+        }
+        
         # endpoint,authorized=FALSE,data,encodeType = 'json',query = list(),...
         tag = "jobs_define"
+        
         response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE)
         
         message("Job was sucessfully registered on the backend.")
+        
         job_id = headers(response)$`openeo-identifier`
         return(job_id)
     }, error = .capturedErrorToMessage)
@@ -429,7 +424,9 @@ describe_job = function(con=NULL, job) {
         info = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, type = "application/json", auto_unbox = TRUE)
         
         class(info) = "JobInfo"
-        class(info$process_graph) = "Json_Graph"
+        class(info$process) = "ProcessInfo"
+        class(info$process$process_graph) = "Json_Graph"
+        # info$process = processFromJson(info$process)
         
         return(info)
     }, error = .capturedErrorToMessage)

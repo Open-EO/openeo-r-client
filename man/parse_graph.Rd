@@ -4,7 +4,7 @@
 \alias{parse_graph}
 \title{Parses a JSON openeo graph into a R graph}
 \usage{
-parse_graph(con = NULL, json, graph = NULL)
+parse_graph(con = NULL, json, parameters = NULL)
 }
 \arguments{
 \item{con}{a connected openeo client (optional) otherwise \code{\link{active_connection}}

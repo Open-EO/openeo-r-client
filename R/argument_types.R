@@ -2263,23 +2263,34 @@ processFromJson=function(json) {
     #map parameters!
     parameter_names = sapply(json$parameters, function(p)p$name)
     
-    parameters = lapply(
-      json$parameters, function(pdef) {
-        # set param if it is contained in the schema
-        param = parameterFromJson(pdef)
-        
-        return(param)
-      }
-    )
+    if (length(parameter_names) > 0) {
+      parameters = lapply(
+        json$parameters, function(pdef) {
+          # set param if it is contained in the schema
+          param = parameterFromJson(pdef)
+          
+          return(param)
+        }
+      )
+      
+      names(parameters) = parameter_names
+    } else {
+      parameters = list()
+    }
     
-    names(parameters) = parameter_names
+    if (length(json$process_graph) > 0) {
+      graph = parse_graph(json=json)  
+    } else {
+      graph = NULL
+    }
+    
     
     Process$new(id=json$id,
                 description = json$description,
                 summary=json$summary,
                 parameters = parameters,
                 returns = json$returns,
-                process_graph = json$process_graph)
+                process_graph = graph)
   }, error = function(e) {
     warning(paste0("Invalid process description for '",json$id,"'"))
     NULL
