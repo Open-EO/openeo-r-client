@@ -176,7 +176,8 @@ OpenEOClient <- R6Class(
         }
         
         self$api.mapping = endpoint_mapping(self)
-        cat("Connected to host\n")
+        cat("Connected to service: ",private$host,"\n")
+        cat("Please check the terms of service (terms_of_service()) and the privacy policy (privacy_policy()). By further usage of this service, you acknowledge and agree to those terms and policies.\n")
         
         tryCatch({
           if (is.null(self$processes)) {
