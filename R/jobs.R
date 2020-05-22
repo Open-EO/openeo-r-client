@@ -426,7 +426,6 @@ describe_job = function(con=NULL, job) {
         class(info) = "JobInfo"
         class(info$process) = "ProcessInfo"
         class(info$process$process_graph) = "Json_Graph"
-        # info$process = processFromJson(info$process)
         
         return(info)
     }, error = .capturedErrorToMessage)

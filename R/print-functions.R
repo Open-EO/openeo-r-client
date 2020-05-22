@@ -34,6 +34,9 @@ print.ProcessInfo <- function(x, ...) {
     description = paste("Description:\t", x$description, sep = "")
     result = paste("Returns:\t", x$returns$description, sep = "")
     
+    cat(paste(title, summary, description, result, "", sep = "\n"))
+    cat("\n")
+    
     if (length(x$parameters) > 0) {
         parameter_names = sapply(x$parameters, function(x)x$name)
         parameter_descriptions = sapply(x$parameters, function(arg) {
@@ -60,21 +63,14 @@ print.ProcessInfo <- function(x, ...) {
                        stringsAsFactors = FALSE)
         rownames(d) <- NULL
         
-        if (length(x$process_graph) > 0) {
-            cat(paste(title, summary, description, result, "", sep = "\n"))
-            cat("\n")
-            print(d)
-            cat("\n")
-            cat("Stored process graph:\n")
-            print(x$process_graph)
-        } else {
-            cat(paste(title, summary, description, result, "", sep = "\n"))
-            cat("\n")
-            print(d)
-        }
-        
-        
-        
+        print(d)
+        cat("\n")
+            
+    }
+    
+    if (length(x$process_graph) > 0) {
+        cat("Stored process graph:\n")
+        print(x$process_graph)
     }
 }
 
@@ -191,9 +187,8 @@ print.JobInfo = function(x, ...) {
 
     process_graph = "User defined process:\n"
     cat(process_graph)
-    process = x$process$serialize()
-    browser()
-    print(process)
+    
+    print(x$process)
 }
 
 #' @export
