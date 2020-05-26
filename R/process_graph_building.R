@@ -476,7 +476,6 @@ Process = R6Class(
           private$process_graph = process_graph
         } else if (is.list(process_graph) || class(process_graph) == "Json_Graph"){
           # when we read it from JSON basically 
-          # TODO process_graph should be ProcessInfo actually
           private$process_graph = parse_graph(json=process_graph)
         }
 

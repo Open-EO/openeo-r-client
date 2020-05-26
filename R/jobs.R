@@ -217,65 +217,53 @@ start_job = function(con=NULL, job) {
 #' 'format' will change the desired output format.
 #' All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 #' e.g. if you just want to update the output format. 
-#' To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
+#' To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.
 #' 
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param id the job id of a created job
 #' @param title update title for the job
 #' @param description update description
-#' @param process_graph a Graph object created with the process_graph_builder
+#' @param process a Graph object created with the process_graph_builder
 #' @param plan replaces plan with the set value
 #' @param budget replaces or sets the credits that can be spent at maximum
-#' @param format the output format
-#' @param ... The create options parameter you want to change. See Details for more information
 #' @export
-update_job = function(con=NULL, id, title = NULL, description = NULL, process_graph = NULL, plan = NULL, budget = NULL, format = NULL, ...) {
+update_job = function(con=NULL, id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL) {
     tryCatch({
         con = .assure_connection(con)
         
-        if (is.null(id)) {
-            stop("No job i was specified.")
+        if (is.null(id) || missing(id) || is.na(id)) {
+            stop("No job was specified.")
         }
         
         patch = list()
-        create_options = list(...)
-        output = list()
-        if (length(create_options) > 0) {
-            output$parameters = create_options
-        }
-        if (!is.null(format)) 
-            output$format = format
         
-        if (length(output) > 0) 
-            patch$output = output
-        
-        if (!is.null(process_graph)) {
-            if ("ProcessNode" %in% class(process_graph)){
+        if (!is.null(process)) {
+            if (!is.environment(process) && is.na(process)) stop("Cannot delete a process graph from a job. Either replace it or delete the whole job.")
+            
+            if (any(c("ProcessNode","function","Graph") %in% class(process))) {
                 # final node!
-                process_graph = Graph$new(final_node = process_graph)$serialize()
+                process = Process$new(id = NA, process_graph=process)
+                
+                patch$process = process$serialize()
             }
-            patch$process_graph = process_graph
+            
         }
         
         if (!is.null(title)) {
-            if (is.na(title)) 
-                patch$title = NULL else patch$title = title
+            patch$title = title
         }
         
         if (!is.null(description)) {
-            if (is.na(description)) 
-                patch$description = NULL else patch$description = description
+            patch$description = description
         }
         
         if (!is.null(plan)) {
-            if (is.na(plan)) 
-                patch$plan = NULL else patch$plan = plan
+            patch$plan = plan
         }
         
         if (!is.null(budget)) {
-            if (is.na(budget)) 
-                patch$budget = NULL else patch$budget = budget
+            patch$budget = budget
         }
         
         tag = "jobs_update"

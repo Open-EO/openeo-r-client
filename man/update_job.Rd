@@ -9,11 +9,9 @@ update_job(
   id,
   title = NULL,
   description = NULL,
-  process_graph = NULL,
+  process = NULL,
   plan = NULL,
-  budget = NULL,
-  format = NULL,
-  ...
+  budget = NULL
 )
 }
 \arguments{
@@ -26,15 +24,11 @@ is used.}
 
 \item{description}{update description}
 
-\item{process_graph}{a Graph object created with the process_graph_builder}
+\item{process}{a Graph object created with the process_graph_builder}
 
 \item{plan}{replaces plan with the set value}
 
 \item{budget}{replaces or sets the credits that can be spent at maximum}
-
-\item{format}{the output format}
-
-\item{...}{The create options parameter you want to change. See Details for more information}
 }
 \description{
 The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
@@ -47,5 +41,5 @@ keys.
 'format' will change the desired output format.
 All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 e.g. if you just want to update the output format. 
-To leave parameter unchanged, then don't mention it in the ... parameter. If you want to delete some, then set them to NULL.
+To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.
 }
