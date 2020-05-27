@@ -239,12 +239,11 @@ update_job = function(con=NULL, id, title = NULL, description = NULL, process = 
         patch = list()
         
         if (!is.null(process)) {
-            if (!is.environment(process) && is.na(process)) stop("Cannot delete a process graph from a job. Either replace it or delete the whole job.")
+            if (!is.environment(process) && !is.function(process) && is.na(process)) stop("Cannot delete a process graph from a job. Either replace it or delete the whole job.")
             
             if (any(c("ProcessNode","function","Graph") %in% class(process))) {
                 # final node!
                 process = Process$new(id = NA, process_graph=process)
-                
                 patch$process = process$serialize()
             }
             

@@ -450,8 +450,14 @@ Process = R6Class(
       return(result)
     },
     setDescription = function(value) {
-      if (is.null(value) || is.na(value)) value = character()
-      private$description = value
+      if (!is.null(value)) {
+        private$description = value
+      }
+    },
+    setSummary = function(value) {
+      if (!is.null(value)) {
+        private$summary = value
+      }
     },
     setParameter= function(name,value) {
       if (!name %in% names(private$.parameters)) stop("Cannot find parameter")
@@ -763,6 +769,7 @@ parse_graph = function(con=NULL, json, parameters = NULL) {
   process_graph_parameters_names = sapply(json$parameters, function(param) {
     param$name
   })
+  
   process_graph_parameters = lapply(json$parameters,function(param){
     potential_param = parameterFromJson(param)
     p = ProcessGraphParameter$new(name = param$name,
@@ -816,6 +823,21 @@ parse_graph = function(con=NULL, json, parameters = NULL) {
         value = process_graph_parameters[[parameter_name]]
       } else if ("from_node" %in% names(value)) {
         value = process_lookup[[value$from_node]]
+      } else if (is.list(value) && length(value) > 0) {
+        # iterate through list and look for lists with from_node or from_parameter and replace them with the correct items
+        value = lapply(value, function(array_elem) {
+          if (is.list(array_elem)) {
+            if ("from_node" %in% names(array_elem)) {
+              return(process_lookup[[array_elem$from_node]])
+            } else if ("from_parameter" %in% names(array_elem)) {
+              return(process_graph_parameters[[array_elem$from_parameter]])
+            } else {
+              return(array_elem)
+            }
+          } else {
+            return(array_elem)
+          }
+        })
       }
       
       argument$setValue(value)
@@ -987,7 +1009,7 @@ variables = function(x) {
     
     for (i in 1:length(variables)) {
       if (! "Argument" %in% class(variables[[i]])) {
-        browser()
+        warning("Can't translate process graph parameter into R object")
       }
       variables[[i]]$adaptType(most_probable_types[[i]])
       

@@ -147,54 +147,65 @@ update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, desc
         con = .assure_connection(con)
         
         #TODO get process_graph via id, then substitue updated stuff and PUT back
-        
-        requestBody = list()
+        graph_info = describe_process_graph(con = con, id = id)
+        process = processFromJson(json=graph_info)
+         # = list()
         
         if (!is.null(graph)) {
             
             
             if (is.na(graph)) {
                 stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
-            } else if (is.function(graph)) {
-                graph = as(graph,"Graph")
-            } else if ("ProcessNode" %in% class(graph)){
-                # final node!
-                graph = Graph$new(con=con,final_node = graph)
-            } else if ("Graph" %in% class(graph)) {
+            } else {
+                process$setProcessGraph(process_graph = graph)
+            }
                 
-            } else {
-                stop("Graph is neither final node, graph nor function.")
-            }
-            
-            # set or update variables and return
-            requestBody[["process_graph"]] = graph$serialize()
-            
-            if (length(graph$getVariables()) == 0) {
-                graph_params = list()
-            } else {
-                graph_params = lapply(graph$getVariables(),function(p) {
-                    p$asParameterInfo()
-                })
-            }
-            requestBody[["parameters"]] = graph_params
-            
-            requestBody[["returns"]] = graph$getFinalNode()$getReturns()$asParameterInfo()
+                
+            #     if (is.function(graph)) {
+            #     graph = as(graph,"Graph")
+            # } else if ("ProcessNode" %in% class(graph)){
+            #     # final node!
+            #     graph = Graph$new(con=con,final_node = graph)
+            # } else if ("Graph" %in% class(graph)) {
+            #     
+            # } else {
+            #     stop("Graph is neither final node, graph nor function.")
+            # }
+            # 
+            # # set or update variables and return
+            # requestBody[["process_graph"]] = graph$serialize()
+            # 
+            # if (length(graph$getVariables()) == 0) {
+            #     graph_params = list()
+            # } else {
+            #     graph_params = lapply(graph$getVariables(),function(p) {
+            #         p$asParameterInfo()
+            #     })
+            # }
+            # requestBody[["parameters"]] = graph_params
+            # 
+            # requestBody[["returns"]] = graph$getFinalNode()$getReturns()$asParameterInfo()
         }
         
-        if (!is.null(summary)) {
-            if (is.na(summary)) {
-                requestBody[["summary"]] = NULL
-            } else {
-                requestBody[["summary"]] = summary
-            }
-        }
-        if (!is.null(description)) {
-            if (is.na(description)) {
-                requestBody[["description"]] = NULL
-            } else {
-                requestBody[["description"]] = description
-            }
-        }
+        process$setSummary(summary)
+        process$setDescription(description)
+        
+        # if (!is.null(summary)) {
+        #     if (is.na(summary)) {
+        #         requestBody[["summary"]] = NULL
+        #     } else {
+        #         requestBody[["summary"]] = summary
+        #     }
+        # }
+        # if (!is.null(description)) {
+        #     if (is.na(description)) {
+        #         requestBody[["description"]] = NULL
+        #     } else {
+        #         requestBody[["description"]] = description
+        #     }
+        # }
+        
+        requestBody = process$serialize()
         
         tag = "graph_create_replace"
         
