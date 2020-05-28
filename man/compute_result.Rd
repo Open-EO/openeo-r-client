@@ -4,7 +4,13 @@
 \alias{compute_result}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-compute_result(con = NULL, graph, format = NULL, output_file = NULL, ...)
+compute_result(
+  con = NULL,
+  graph,
+  output_file = NULL,
+  budget = NULL,
+  plan = NULL
+)
 }
 \arguments{
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
@@ -12,11 +18,11 @@ is used.}
 
 \item{graph}{A process graph}
 
-\item{format}{The inteded format of the data to be returned}
-
 \item{output_file}{Where to store the retrieved data under}
 
-\item{...}{additional configuration parameter for output generation}
+\item{budget}{numeric, how much to spend at maximum on testing}
+
+\item{plan}{character, selection of a service plan}
 }
 \value{
 a connection to file if output was provided, the raw data if not

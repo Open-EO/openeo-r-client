@@ -59,40 +59,44 @@ list_jobs = function(con=NULL) {
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph A process graph
-#' @param format The inteded format of the data to be returned
 #' @param output_file Where to store the retrieved data under
-#' @param ... additional configuration parameter for output generation
+#' @param budget numeric, how much to spend at maximum on testing
+#' @param plan character, selection of a service plan
 #' @return a connection to file if output was provided, the raw data if not
 #' @export
-compute_result = function(con=NULL, graph, format = NULL, output_file = NULL, ...) {
+compute_result = function(con=NULL, graph, output_file = NULL, budget=NULL, plan=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
-        # former sync evaluation
-        if (is.null(format)) {
-            stop("Parameter \"format\" is not set. Please provide a valid format.")
-        }
-        
-        output = list(...)
-        output = append(output, list(format = format))
+        output = list()
         
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
         
         if ("Graph" %in% class(graph))  {
-            graph = graph$serialize()
+            # OK
         } else if (is.list(graph)) {
-            graph = list(process_graph = graph, output = output)
-        } else if ("ProcessNode" %in% class(graph)){
-            # final node!
-            graph = Graph$new(final_node = graph)$serialize()
+            graph = parse_graph(json=graph)
+        } else if (any(c("function","ProcessNode") %in% class(graph))){
+            graph = as(graph, "Graph")
         } else {
             stop("Parameter graph is not a Graph object. Awaiting a list.")
         }
         
+        process = Process$new(id=NA,description = NA,
+                              summary = NA,process_graph=graph)
+        
         job = list(
-            process_graph = graph
+            process = process$serialize()
         )
+        
+        if (length(budget) > 0) {
+            job$budget = budget
+        }
+        
+        if (length(plan) > 0) {
+            job$plan = plan
+        }
         
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE)
