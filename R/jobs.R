@@ -464,7 +464,7 @@ delete_job = function(con=NULL, job) {
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
 estimate_job = function(con=NULL, job) {
-    con = .assure_connection(con)
+    
     
     if (!is.null(job) && "JobInfo" %in% class(job)) {
         job_id = job$id
@@ -480,6 +480,46 @@ estimate_job = function(con=NULL, job) {
         
         success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE)
         class(success) = "JobCostsEstimation"
+        return(success)
+    }, error = .capturedErrorToMessage)
+}
+
+#' Job log
+#' 
+#' Attempts to open the log of job.
+#' 
+#' @param job the job or the job_id
+#' @param offset the start line from which to read
+#' @param limit the limit of lines to be shown
+#' @param con an optional connection if you want to address a specific service
+#' @param a JobLog object or an Error
+#' @export
+log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
+    con = .assure_connection(con)
+    
+    if (!is.null(job) && "JobInfo" %in% class(job)) {
+        job_id = job$id
+    } else {
+        job_id = job
+    }
+    
+    query_params = list()
+    if (length(offset) > 0) {
+        query_params$offset = offset
+    }
+    
+    if (length(limit) > 0) {
+        query_params$limit = limit
+    }
+    
+    tryCatch({
+        if (is.null(job_id)) {
+            stop("No job id specified.")
+        }
+        tag = "job_log"
+        
+        success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, query=query_params)
+        class(success) = "JobLog"
         return(success)
     }, error = .capturedErrorToMessage)
 }
