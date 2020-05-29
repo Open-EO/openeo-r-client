@@ -139,6 +139,15 @@ as.data.frame.FileTypesList = function(x, ...) {
     return(table)
 }
 
+as.data.frame.AssetList = function(x, ...) {
+    params = list(...)
+    x = lapply(names(x), function(asset) {
+        return(c(asset_name=asset,x[[asset]]))
+    })
+    table = .listObjectsToDataFrame(x, extract = params$extract)
+    return(table)
+}
+
 #' @export
 as.Graph.ProcessNode = function(from) {
     return(Graph$new(final_node=from))

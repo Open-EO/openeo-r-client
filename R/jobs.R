@@ -313,6 +313,9 @@ list_results = function(con=NULL, job) {
     tryCatch({
         tag = "jobs_download"
         listOfResults = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, type = "application/json")
+        class(listOfResults) = "ResultList"
+        class(listOfResults$assets) = "AssetList"
+        
         return(listOfResults)
     }, error = .capturedErrorToMessage)
 }
@@ -338,15 +341,16 @@ download_results = function(con=NULL, job, folder) {
         dir.create(folder, recursive = TRUE)
     results = list_results(con, job)
     
-    target_files = lapply(results$links, function(link) {
+    target_files = lapply(names(results$assets), function(file_name) {
+        link = results$assets[[file_name]]
+        
         href = link$href
         type = link$type
         
         if (!endsWith(x = folder, suffix = "/")) 
             folder = paste0(folder, "/")
-        filename = basename(href)
         
-        file_path = paste0(folder, filename)
+        file_path = paste0(folder, file_name)
         
         download.file(href, file_path, mode = "wb")
         

@@ -314,3 +314,28 @@ print.OpenEOCapabilities = function(x, ...) {
         server_offering = tibble::as_tibble(server_offering)
     print(server_offering)
 }
+
+#' @export
+print.ResultList = function(x, ...) {
+    cat("Results for job: ",x$id,"\n")
+    if (length(x$properties$expires) > 0) {
+        cat("Links expire on: ",x$properties$expires,"\n")
+    }
+    
+    if (length(x$assets) > 0) {
+        cat("\n")
+        assets = as.data.frame(x$assets)
+        
+        if (isNamespaceLoaded("tibble")) {
+            assets = tibble::as_tibble(assets)
+        }
+        
+        print(assets)
+    } else {
+        cat("\n")
+        cat("No assests found.\n")
+    }
+    
+    # assets overview
+    
+}
