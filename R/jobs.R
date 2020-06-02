@@ -276,21 +276,6 @@ update_job = function(con=NULL, id, title = NULL, description = NULL, process = 
     }, error = .capturedErrorToMessage)
 }
 
-#' Follow an executed Job
-#'
-#' Opens up a websocket to the openEO back-end to fetch updates about a running job.
-#'
-#' @param con An authenticated connection (optional) otherwise \code{\link{active_connection}}
-#' is used.
-#' @param job_id the id of the job on the server the user wants to connect to
-#' @return a WebSocket connection
-#' @export
-follow_job = function(con=NULL, job_id) {
-    .not_implemented_yet()
-    
-    con = .assure_connection(con)
-}
-
 #' Creates a list of download paths
 #' 
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
