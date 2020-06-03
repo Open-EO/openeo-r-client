@@ -101,6 +101,28 @@ print.ServiceType = function(x, ...) {
 }
 
 #' @export
+print.FileFormat = function(x, ...) {
+    if (length(x$title) == 0) {
+        cat("Format: \t\t\t",x$name,"\n",sep="")
+    } else {
+        cat("Format: \t\t\t",x$title,"\n",sep="")   
+    }
+    cat("Format ID: \t\t\t",x$name,"\n",sep="")
+    cat("Applicable GIS data types: \t",paste0(x$gis_data_types,collapse=", "),"\n",sep="")
+    
+    param_names = names(x$parameter)
+    
+    if (length(param_names) > 0) {
+        cat("Creation options:\n")
+        params = data.frame(name=param_names,
+                            descriptions = sapply(x$parameter, function(p)p$description),
+                            stringsAsFactors = FALSE)
+        row.names(params) = NULL
+        print(params)
+    }
+}
+
+#' @export
 print.CollectionInfo = function(x, ...) {
     id = paste(x$id)
     if (is.null(x$title)) 

@@ -77,7 +77,7 @@ list_features = function(con=NULL) {
 #' is used.
 #' @return a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
 #' @export
-list_file_types = function(con=NULL) {
+list_file_formats = function(con=NULL) {
     tryCatch({
         tag = "formats"
         
@@ -86,15 +86,37 @@ list_file_types = function(con=NULL) {
         # optional sending of bearer otherwise no authentication required
         formats = con$request(tag = tag, authorized = con$isLoggedIn())
         
-        class(formats) = "FileTypesList"
+        class(formats) = "FileFormatList"
         
-        table = as.data.frame(formats)
-        
-        if (isNamespaceLoaded("tibble")) {
-            table = tibble::as_tibble(table)
+        if (length(formats$input) > 0) {
+            input_formats = names(formats$input)
+            modified_input_formats = lapply(input_formats, function(format_name) {
+                f = formats$input[[format_name]]
+                f$name = format_name
+                class(f) = "FileFormat"
+                return(f)
+            })
+            names(modified_input_formats) = input_formats
         }
         
-        return(table)
+        if (length(formats$output) > 0) {
+            output_formats = names(formats$output)
+            modified_output_formats = lapply(output_formats, function(format_name) {
+                f = formats$output[[format_name]]
+                f$name = format_name
+                class(f) = "FileFormat"
+                return(f)
+            })
+            names(modified_output_formats) = output_formats 
+            formats$output = modified_output_formats
+        }
+        # table = as.data.frame(formats)
+        # 
+        # if (isNamespaceLoaded("tibble")) {
+        #     table = tibble::as_tibble(table)
+        # }
+        
+        return(formats)
     }, error = .capturedErrorToMessage)
 }
 

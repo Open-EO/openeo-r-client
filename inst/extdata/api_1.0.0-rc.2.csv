@@ -1,6 +1,6 @@
 "";"endpoint";"operation";"tag"
 "1";"/";"GET";"capabilities"
-"2";"/output_formats";"GET";"formats"
+"2";"/file_formats";"GET";"formats"
 "3";"/service_types";"GET";"ogc_services"
 "4";"/udf_runtimes";"GET";"udf_runtimes"
 "5";"/collections";"GET";"data_overview"

@@ -709,21 +709,31 @@ OutputFormat = R6Class(
   private = list(
     typeCheck = function() {
       if (!is.na(private$value) && !is.character(private$value)) {
-        suppressWarnings({
-          coerced = as.character(private$value)
-        })
         
-        if (is.null(coerced) || 
-            is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
-        # correct value if you can
-        private$value = coerced
+        if ("FileFormat" %in% class(private$value)) {
+          # what to do?
+        } else {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          
+          private$value = coerced
+        }
       }
       
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.character(private$value))
+      if ("FileFormat" %in% class(private$value)) {
+        return(private$value$name)
+      } else {
+        return(as.character(private$value))
+      }
     }
   )
 )

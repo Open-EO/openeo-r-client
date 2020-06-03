@@ -123,18 +123,15 @@ as.data.frame.VersionsList = function(x, ...) {
 
 #' @rdname as.data.frame
 #' @export
-as.data.frame.FileTypesList = function(x, ...) {
-    names = names(x)
-    datatypes = unname(lapply(x, function(format) {
-        return(format$gis_data_types)
-    }))
+as.data.frame.FileFormatList = function(x, ...) {
+    # this will just be an overview
+    output = .listObjectsToDataFrame(x$output,extract = c("name","title"))
+    output$direction = "output"
     
-    parameters = unname(lapply(x, function(format) {
-        return(format$parameters)
-    }))
+    input = .listObjectsToDataFrame(x$input,extract = c("name","title"))
+    input$direction = "input"
     
-    table = as.data.frame(cbind(format = names, type = datatypes, parameters = parameters))
-    table$format = unlist(table$format)
+    table = rbind(output,input)
     
     return(table)
 }
