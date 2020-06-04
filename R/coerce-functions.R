@@ -136,6 +136,7 @@ as.data.frame.FileFormatList = function(x, ...) {
     return(table)
 }
 
+#' @export
 as.data.frame.AssetList = function(x, ...) {
     params = list(...)
     x = lapply(names(x), function(asset) {

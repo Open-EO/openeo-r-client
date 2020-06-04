@@ -75,32 +75,6 @@ print.ProcessInfo <- function(x, ...) {
 }
 
 #' @export
-print.ServiceType = function(x, ...) {
-    service_type = paste(x$service, "\n")
-    parameters = paste("Parameters", "(used on service creation)\n")
-    
-    d1 = data.frame(Parameter = names(x$parameters), Description = sapply(x$parameters, function(arg) arg$description), Type = sapply(x$parameters, function(arg) arg$type), 
-        default = sapply(x$parameters, function(arg) arg$default), example = sapply(x$parameters, function(arg) {
-            enum = arg$enum
-            return(paste("[", paste(enum, sep = "", collapse = ", "), "]", sep = ""))
-        }), stringsAsFactors = FALSE)
-    row.names(d1) = NULL
-    
-    attributes = paste("Attributes", "(used during request)\n")
-    
-    d2 = data.frame(Attributes = names(x$attributes), Description = sapply(x$attributes, function(arg) arg$description), example = sapply(x$attributes, function(arg) {
-        example = arg$example
-        return(paste("[", paste(example, sep = "", collapse = ", "), "]", sep = ""))
-    }), stringsAsFactors = FALSE)
-    row.names(d2) = NULL
-    
-    cat(service_type, parameters)
-    print(d1)
-    cat(attributes)
-    print(d2)
-}
-
-#' @export
 print.FileFormat = function(x, ...) {
     if (length(x$title) == 0) {
         cat("Format: \t\t\t",x$name,"\n",sep="")
@@ -120,6 +94,30 @@ print.FileFormat = function(x, ...) {
         row.names(params) = NULL
         print(params)
     }
+}
+
+#' @export
+print.ServiceType = function(x, ...) {
+    # name is set in list_service_types not in specification
+    cat("Service: \t\t",x$name,"\n",sep="")
+    if (length(x$configuration) > 0) {
+        cat("Configuration parameter:\n")
+        config_params = data.frame(name = names(x$configuration),description = sapply(x$configuration, function(cparam) {
+            cparam$description
+        }),stringsAsFactors = FALSE)
+        row.names(config_params) = NULL
+        print(config_params)
+    }
+    
+    if (length(x$process_parameters) > 0) {
+        cat("Process parameter:\n")
+        process_parameters = data.frame(name = sapply(x$process_parameters, function(p)p$name), 
+                                        description = sapply(x$process_parameters, function(p)p$description),
+                                        stringsAsFactors = FALSE)
+        row.names(process_parameters) = NULL
+        print(process_parameters)
+    }
+    
 }
 
 #' @export

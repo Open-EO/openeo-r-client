@@ -137,18 +137,20 @@ list_service_types = function(con=NULL) {
         tag = "ogc_services"
         
         services = con$request(tag = tag, authorized = con$isLoggedIn())
+        class(services) = "ServiceTypeList"
         
-        updated_services = list()
-        for (key in names(services)) {
-            service = services[[key]]
-            service$service = key
-            
-            updated_services = c(updated_services, list(service))
-        }
-        return(lapply(updated_services, function(service) {
+        services_type_names = names(services)
+        
+        services = lapply(services_type_names, function(service_name) {
+            service = services[[service_name]]
+            service$name = service_name
             class(service) = "ServiceType"
+            
             return(service)
-        }))
+        })
+        
+        names(services) = services_type_names
+        return(services)
     }, error = .capturedErrorToMessage)
     
     return(con$list_service_types())
