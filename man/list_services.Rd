@@ -11,7 +11,7 @@ list_services(con = NULL)
 is used.}
 }
 \value{
-list of services lists
+list of services (class ServiceList)
 }
 \description{
 Queries the back-end to retrieve a list of services that the current user owns. Services are 

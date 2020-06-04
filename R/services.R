@@ -8,7 +8,7 @@
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return list of services lists
+#' @return list of services (class ServiceList)
 #' @export
 list_services = function(con=NULL) {
     tryCatch(suppressWarnings({
@@ -19,13 +19,12 @@ list_services = function(con=NULL) {
         listOfServices = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
         listOfServices = listOfServices$services
         
-        table = .listObjectsToDataFrame(listOfServices)
+        class(listOfServices) = "ServiceList"
         
-        if (isNamespaceLoaded("tibble")) 
-            table = tibble::as_tibble(table)
+        service_ids = sapply(listOfServices, function(service)service$id)
+        names(listOfServices) = service_ids
         
-        
-        return(table)
+        return(listOfServices)
     }), error = .capturedErrorToMessage)
 }
 
@@ -193,7 +192,7 @@ describe_service = function(con=NULL, id) {
         
         tag = "services_details"
         service = con$request(tag = tag, parameters = list(id), authorized = TRUE)
-        class(service) = "ServiceInfo"
+        class(service) = "Service"
         return(service)
     }, error = .capturedErrorToMessage)
 }

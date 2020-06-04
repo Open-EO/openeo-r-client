@@ -85,6 +85,15 @@ as.data.frame.JobList = function(x, ...) {
 
 #' @rdname as.data.frame
 #' @export
+as.data.frame.ServiceList = function(x, ...) {
+    x = unname(x)
+    params = list(...)
+    table = .listObjectsToDataFrame(x, extract = params$extract)
+    return(table)
+}
+
+#' @rdname as.data.frame
+#' @export
 as.data.frame.BandList = function(x, ...) {
     x = unname(x)
     params = list(...)

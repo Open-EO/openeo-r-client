@@ -212,7 +212,19 @@ print.JobInfo = function(x, ...) {
 }
 
 #' @export
-print.ServiceInfo = function(x, ...) {
+print.ServiceList = function(x, ...) {
+    df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
+    row.names(df) = NULL
+    
+    if (isNamespaceLoaded("tibble"))
+        df = tibble::as_tibble(df)
+    
+    print(df)
+}
+
+
+#' @export
+print.Service = function(x, ...) {
     
     id = paste("ID:\t\t", x$id, "\n", sep = "")
     
@@ -220,7 +232,7 @@ print.ServiceInfo = function(x, ...) {
     
     enabled = paste("Enabled:\t", x$enabled, "\n", sep = "")
     
-    submitted = paste("Submitted:\t", x$submitted, "\n", sep = "")
+    created = paste("Submitted:\t", x$created, "\n", sep = "")
     
     if (is.null(x$title) || is.na(x$title)) 
         x$title = "---"
@@ -242,7 +254,7 @@ print.ServiceInfo = function(x, ...) {
         x$budget = "---"
     budget = paste("Budget:\t\t", x$budget, "\n", sep = "")
     
-    cat(id, type, enabled, title, submitted, description, url, plan, costs, budget, sep = "")
+    cat(id, type, enabled, title, created, description, url, plan, costs, budget, sep = "")
     
     # parameters, attributes, process_graph
     if (is.null(x$parameters)) {
