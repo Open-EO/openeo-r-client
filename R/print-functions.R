@@ -213,13 +213,19 @@ print.JobInfo = function(x, ...) {
 
 #' @export
 print.ServiceList = function(x, ...) {
-    df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
-    row.names(df) = NULL
+    if (length(x) > 0) {
+        df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
+        row.names(df) = NULL
+        
+        if (isNamespaceLoaded("tibble"))
+            df = tibble::as_tibble(df)
+        
+        print(df) 
+    } else {
+        message("No secondary services published.")
+    }
     
-    if (isNamespaceLoaded("tibble"))
-        df = tibble::as_tibble(df)
     
-    print(df)
 }
 
 
