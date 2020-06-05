@@ -4,13 +4,13 @@
 \alias{delete_service}
 \title{Deletes a service function for a job}
 \usage{
-delete_service(con = NULL, id)
+delete_service(con = NULL, service)
 }
 \arguments{
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{id}{the service id}
+\item{service}{the Service or its id}
 }
 \description{
 Queries the back-end and removes the current set service function of job.

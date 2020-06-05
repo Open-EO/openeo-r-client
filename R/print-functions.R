@@ -263,28 +263,28 @@ print.Service = function(x, ...) {
     cat(id, type, enabled, title, created, description, url, plan, costs, budget, sep = "")
     
     # parameters, attributes, process_graph
-    if (is.null(x$parameters)) {
-        x$parameters = "---"
-        cat(paste("Parameters:\t", x$parameters, "\n", sep = ""))
+    if (length(x$configuration) == 0) {
+        x$configuration = "---"
+        cat(paste("Configuration:\t", x$configuration, "\n", sep = ""))
     } else {
-        x$parameters = toJSON(x$parameters, pretty = TRUE, auto_unbox = TRUE)
-        cat(paste("Parameters:\n", x$parameters, "\n", sep = ""))
+        x$configuration = toJSON(x$configuration, pretty = TRUE, auto_unbox = TRUE)
+        cat(paste("Configuration:\n", x$configuration, "\n", sep = ""))
     }
     
-    if (is.null(x$attributes)) {
-        x$attributes = "---"
-        cat(paste("Attributes:\t", x$attributes, "\n", sep = ""))
-    } else {
+    if (length(x$attributes) > 0) {
         x$attributes = toJSON(x$attributes, pretty = TRUE, auto_unbox = TRUE)
         cat(paste("Attributes:\n", x$attributes, "\n", sep = ""))
     }
     
-    if (is.null(x$process_graph)) {
-        x$process_graph = "---"
-        cat(paste("Process graph:\t", x$process_graph, "\n", sep = ""))
-    } else {
-        x$process_graph = toJSON(x$process_graph, pretty = TRUE, auto_unbox = TRUE)
-        cat(paste("Process graph:\n", x$process_graph, "\n", sep = ""))
+    if (length(x$process) > 0) {
+        if ("Process" %in% class(x$process)) {
+            pg = unclass(x$process$serialize())
+        } else {
+            pg = x$process
+        }
+        
+        pg = toJSON(pg, pretty = TRUE, auto_unbox = TRUE)
+        cat(paste("Process graph:\n", pg, "\n", sep = ""))
     }
 }
 

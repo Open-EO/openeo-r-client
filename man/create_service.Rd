@@ -11,7 +11,7 @@ create_service(
   title = NULL,
   description = NULL,
   enabled = NULL,
-  parameters = NULL,
+  configuration = NULL,
   plan = NULL,
   budget = NULL
 )
@@ -20,9 +20,9 @@ create_service(
 \item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{type}{character the ogc web service type name to be created}
+\item{type}{character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()}
 
-\item{graph}{A process graph object}
+\item{graph}{A graph object, a ProcessNode (result node) or function returning a ProcessNode}
 
 \item{title}{character (optional) the title in human readabled form for the service}
 
@@ -30,7 +30,7 @@ is used.}
 
 \item{enabled}{logical}
 
-\item{parameters}{a list of service creation parameters}
+\item{configuration}{a named list specifying the configuration parameter}
 
 \item{plan}{character the billing plan}
 

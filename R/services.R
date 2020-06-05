@@ -16,8 +16,12 @@ list_services = function(con=NULL) {
         
         con = .assure_connection(con)
         
-        listOfServices = con$request(tag = tag, parameters = list(con$user_id), authorized = TRUE, type = "application/json")
-        listOfServices = listOfServices$services
+        listOfServices = con$request(tag = tag, authorized = TRUE, type = "application/json")
+        
+        listOfServices = lapply(listOfServices$services,function(service) {
+            class(service) = "Service"
+            return(service)
+        })
         
         class(listOfServices) = "ServiceList"
         
@@ -35,17 +39,17 @@ list_services = function(con=NULL) {
 #' 
 #' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param type character the ogc web service type name to be created
-#' @param graph A process graph object
+#' @param type character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()
+#' @param graph A graph object, a ProcessNode (result node) or function returning a ProcessNode
 #' @param title character (optional) the title in human readabled form for the service
 #' @param description character (optional) the description for the service
 #' @param enabled logical 
-#' @param parameters a list of service creation parameters
+#' @param configuration a named list specifying the configuration parameter
 #' @param plan character the billing plan
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' @export
-create_service = function(con=NULL, type, graph, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
+create_service = function(con=NULL, type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL) {
     tryCatch({
         if (is.null(type)) {
             stop("No type specified.")
@@ -53,13 +57,35 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
         
         con = .assure_connection(con)
         
-        if ("ProcessNode" %in% class(graph)){
-            # final node!
-            graph = Graph$new(final_node = graph)
+        # type and process are added later
+        service_request_object = list(title = title, 
+                                      description = description, 
+                                      enabled = enabled, 
+                                      configuration = configuration, 
+                                      plan = plan, 
+                                      budget = budget)
+        
+        # build an empty process
+        if (!is.null(graph)) {
+            process = Process$new(id=NA,description = NA,
+                                  summary = NA,
+                                  process_graph=graph)
+            service_request_object$process = process$serialize()
+            
+            service_request_object$process$process_graph=unclass(service_request_object$process$process_graph)
+        } else {
+            stop("No process graph was defined. Please provide either a process graph id or a process graph description.")
         }
         
-        service_request_object = list(type = type, process_graph = graph$serialize(), title = title, description = description, enabled = enabled, parameters = parameters, 
-            plan = plan, budget = budget)
+        if ("ServiceType" %in% class(type)) {
+            service_request_object$type = type$name
+        } else if (is.character(type)) {
+            service_request_object$type = type
+        } else {
+            stop("Type is neither ServiceType nor a character string.")
+        }
+        
+        
         
         tag = "service_publish"
         response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE)
@@ -79,19 +105,19 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
 #' 
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id the service id
+#' @param service the Service or its ID
 #' @param type character the ogc web service type name to be created
 #' @param process_graph list of processes composed as a process graph
 #' @param title character (optional) the title in human readabled form for the service
 #' @param description character (optional) the description for the service
 #' @param enabled logical 
-#' @param parameters a list of service creation parameters
+#' @param configuration a list of service creation configuration
 #' @param plan character the billing plan
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @return service representation as list
 #' 
 #' @export
-update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title = NULL, description = NULL, enabled = NULL, parameters = NULL, plan = NULL, budget = NULL) {
+update_service = function(con=NULL, service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL) {
     
     tryCatch({
         patch = list()
@@ -99,20 +125,33 @@ update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title
         con = .assure_connection(con)
         
         if (!is.null(type)) {
-            patch[["type"]] = type
+            if ("ServiceType" %in% class(type)) {
+                patch[["type"]] = type$name
+            } else if (is.character(type)) {
+                patch[["type"]] = type
+            } else {
+                stop("Type is neither ServiceType nor a character string.")
+            }
+            
         }
         
-        if (!is.null(process_graph)) {
-            if (length(process_graph) > 0) {
-                if ("ProcessNode" %in% class(process_graph)){
-                    # final node!
-                    process_graph = Graph$new(final_node = process_graph)
-                } 
+        if (!is.null(graph)) {
+            if (any(c("Graph","function","ProcessNode") %in% class(graph))) {
+                process = Process$new(id=NA,description = NA,
+                                      summary = NA,
+                                      process_graph=graph)
+                process = process$serialize()
                 
-                patch[["process_graph"]] = process_graph
+                process = unclass(process)
+                
+                patch[["process"]] = process
             } else {
                 stop("Process graph cannot be set to be empty.")
             }
+        }
+        
+        if ("Service" %in% class(service)) {
+            service = service$id
         }
         
         if (!is.null(title)) {
@@ -139,13 +178,13 @@ update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title
             }
         }
         
-        if (!is.null(parameters)) {
-            if (is.na(parameters)) {
-                patch[["parameters"]] = NULL
-            } else if (is.list(parameters)) {
-                patch[["parameters"]] = parameters
+        if (!is.null(configuration)) {
+            if (is.na(configuration)) {
+                patch[["configuration"]] = NULL
+            } else if (is.list(configuration)) {
+                patch[["configuration"]] = configuration
             } else {
-                stop("No valid data for parameter 'parameters'. It has to be a list")
+                stop("No valid data for parameter 'configuration'. It has to be a list")
             }
         }
         
@@ -167,8 +206,8 @@ update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title
         }
         
         tag = "services_update"
-        res = con$request(tag = tag, parameters = list(id), authorized = TRUE, encodeType = "json", data = patch)
-        message(paste("Service '", id, "' was successfully updated.", sep = ""))
+        res = con$request(tag = tag, parameters = list(service), authorized = TRUE, encodeType = "json", data = patch)
+        message(paste("Service '", service, "' was successfully updated.", sep = ""))
         invisible(TRUE)
     }, error = .capturedErrorToMessage)
 }
@@ -179,14 +218,23 @@ update_service = function(con=NULL, id, type = NULL, process_graph = NULL, title
 #' 
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id the service id
+#' @param service the Service object or its id
 #' @return service as a list
 #' @export
-describe_service = function(con=NULL, id) {
+describe_service = function(con=NULL, service) {
     tryCatch({
-        if (is.null(id)) {
+        if (is.null(service)) {
             stop("No service id specified.")
         }
+        
+        if ("Service" %in% class(service)) {
+            id = service$id
+        } else if (is.character(service)) {
+            id = service
+        } else {
+            stop("No service id provided. Please pass a 'Service' object or the service id.")
+        }
+        
         
         con = .assure_connection(con)
         
@@ -203,13 +251,19 @@ describe_service = function(con=NULL, id) {
 #' 
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id the service id
+#' @param service the Service or its id
 #' @export
-delete_service = function(con=NULL, id) {
+delete_service = function(con=NULL, service) {
     tryCatch({
         tag = "services_delete"
         
         con = .assure_connection(con)
+        
+        if (is.character(service)) {
+            id = service
+        } else if ("Service" %in% class(service)) {
+            id = service$id
+        }
         
         msg = con$request(tag = tag, parameters = list(id), authorized = TRUE)
         message("Service '", id, "' successfully removed.")
