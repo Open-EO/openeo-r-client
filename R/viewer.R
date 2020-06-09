@@ -122,7 +122,7 @@ process_viewer = function(x,con=NULL) {
 #' The function opens up a viewer panel in RStudio which renders the collection information
 #' nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
 #' 
-#' @param x character with the name of a collection or the \code{\link{CollectionInfo}} obtained
+#' @param x character with the name of a collection or the \code{\link{Collection}} obtained
 #' with \code{\link{describe_collection}}.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
@@ -143,8 +143,13 @@ collection_viewer = function(x,con=NULL) {
       return(invisible(NULL))
     }
     
-    if (!"CollectionInfo" %in% class(x)) {
+    if (!"Collection" %in% class(x)) {
+      if (length(x$`cube:dimensions`) > 0) {
         x = unname(escaper(x))
+      } else {
+        x = unname(escaper(describe_collection(id = x$id)))
+      }
+        
     } else {
         x = escaper(x)
     }

@@ -7,7 +7,7 @@
 collection_viewer(x, con = NULL)
 }
 \arguments{
-\item{x}{character with the name of a collection or the \code{\link{CollectionInfo}} obtained
+\item{x}{character with the name of a collection or the \code{\link{Collection}} obtained
 with \code{\link{describe_collection}}.}
 
 \item{con}{a specific connection (optional), last connected service if omitted.}

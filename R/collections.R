@@ -9,7 +9,6 @@ list_collections = function(con=NULL) {
     con = .assure_connection(con)
     
     return(con$getDataCollection())
-    
 }
 
 #' Describe a product
@@ -41,7 +40,7 @@ describe_collection = function(con=NULL, id = NA) {
             
             info = con$request(tag = tag, parameters = list(id), authorized = con$isLoggedIn(), type = "application/json", auto_unbox = TRUE)
             
-            class(info) = "CollectionInfo"
+            class(info) = "Collection"
             
             if (!is.null(info$summaries$`eo:bands`)) {
                 if (length(info$summaries$`eo:bands`) == 1 && is.null(info$summaries$`eo:bands`[[1]]$name)) {
@@ -63,10 +62,16 @@ describe_collection = function(con=NULL, id = NA) {
                 warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
             }
             
+            info$extent$spatial = unlist(info$extent$spatial$bbox)
+            
             # replace null in temporal extent with NA (which will be transformed into JSON null)
-            info$extent$temporal = lapply(info$extent$temporal, function(t) {
-                if (is.null(t)) return(NA)
-                else return(t)
+            info$extent$temporal = lapply(info$extent$temporal$interval, function(t) {
+                # t is list
+                return(lapply(t,function(elem) {
+                    if (is.null(elem)) return(NA)
+                    else return(elem)
+                }))
+                
             })
             
             return(info)

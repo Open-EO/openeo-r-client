@@ -276,12 +276,34 @@ OpenEOClient <- R6Class(
         tryCatch({
           tag = "data_overview"
           
-          listOfProducts = self$request(tag = tag, authorized = self$isLoggedIn(), type = "application/json")
-          class(listOfProducts) = "CollectionList"
-          private$data_collection = listOfProducts
+          collection_list = self$request(tag = tag, authorized = self$isLoggedIn(), type = "application/json")
+          collection_list = collection_list$collections
+          
+          collection_list = lapply(collection_list, function(coll) {
+            coll$extent$spatial = unlist(coll$extent$spatial$bbox)
+            coll$extent$temporal = lapply(coll$extent$temporal$interval, function(t) {
+              # t is list
+              return(lapply(t,function(elem) {
+                if (is.null(elem)) return(NA)
+                else return(elem)
+              }))
+              
+            })
+              
+            class(coll) = "Collection"
+            return(coll)
+          })
+          
+          class(collection_list) = "CollectionList"
+          
+          collection_names = sapply(collection_list, function(coll) {
+            return(coll$id)
+          })
+          
+          names(collection_list) = collection_names
+          
+          private$data_collection = collection_list
         }, error = .capturedErrorToMessage)
-        
-        # private$data_collection = list_collections(self)$collections
       }
       
       return(private$data_collection)

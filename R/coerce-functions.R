@@ -104,7 +104,7 @@ as.data.frame.BandList = function(x, ...) {
 #' @rdname as.data.frame
 #' @export
 as.data.frame.CollectionList = function(x, ...) {
-    colls = x$collections
+    colls = x
     
     params = list(...)
     

@@ -121,7 +121,7 @@ print.ServiceType = function(x, ...) {
 }
 
 #' @export
-print.CollectionInfo = function(x, ...) {
+print.Collection = function(x, ...) {
     id = paste(x$id)
     if (is.null(x$title)) 
         x$title = "---"
@@ -136,18 +136,23 @@ print.CollectionInfo = function(x, ...) {
         p$name
     }), sep = "", collapse = ", "), sep = "")
     
-    if (!is.null(x$summaries)) {
-        if (is.null(x$summaries$`eo:platform`)) 
-            x$summaries$`eo:platform` = "---"
-        platform = paste("Platform:\t\t\t", x$summaries$`eo:platform`, sep = "")
-        if (is.null(x$summaries$`eo:constellation`)) 
-            x$summaries$`eo:constellation` = "---"
-        constellation = paste("Constellation:\t\t\t", x$summaries$`eo:constellation`, sep = "")
-        if (is.null(x$summaries$`eo:instrument`)) 
-            x$summaries$`eo:instrument` = "---"
-        instrument = paste("Instrument:\t\t\t", x$summaries$`eo:instrument`, sep = "")
+    if (length(x$summaries) > 0) {
+        if (is.null(x$summaries$platform)) 
+            x$summaries$platform = "---"
+        platform = paste("Platform:\t\t\t", x$summaries$platform, sep = "")
+        if (is.null(x$summaries$constellation)) 
+            x$summaries$constellation = "---"
+        constellation = paste("Constellation:\t\t\t", x$summaries$constellation, sep = "")
+        if (is.null(x$summaries$instruments)) 
+            x$summaries$instruments = "---"
+        instrument = paste("Instrument:\t\t\t", x$summaries$instruments, sep = "")
         
-        crs = paste("Data SRS (EPSG-code):\t\t", x$summaries$`eo:epsg`, sep = "")
+        if (length(x$summaries$`proj:epsg`) > 0) {
+            crs = paste("Data SRS (EPSG-code):\t\t", x$summaries$`proj:epsg`, sep = "")
+        } else {
+            crs = NULL
+        }
+        
     }
     
     
@@ -155,18 +160,28 @@ print.CollectionInfo = function(x, ...) {
     extent = paste("Spatial extent (lon,lat):\t", spatial.extent, sep = "")
     
     time = tryCatch({
-        paste("Temporal extent:\t\t", paste(sapply(x$extent$temporal, function(obj) {
-            if (is.null(obj) || is.na(obj) || length(obj) == 0) 
-                return(NA) 
-            else 
-                return(format(as_datetime(obj), format = "%Y-%m-%dT%H:%M:%SZ"))
-        }), collapse = "/"), sep = "")
+        paste0("Temporal extent:\t\t", paste0(lapply(x$extent$temporal, function(obj) {
+            if (length(obj[[1]]) > 0 && !is.na(obj[[1]])) {
+                start = format(as_datetime(obj[[1]]), format = "%Y-%m-%dT%H:%M:%SZ")
+            } else {
+                start = NA
+            }
+            
+            if (length(obj[[2]]) > 0 && !is.na(obj[[2]])) {
+                end = format(as_datetime(obj[[2]]), format = "%Y-%m-%dT%H:%M:%SZ")
+            } else {
+                end = NA
+            }
+            
+            
+            return(paste(start, "/", end))
+        }), collapse = ", "))
     }, error = function(e) {
         paste("Temporal extent:\t\t***parsing error***")
     })
 
     
-    cat(unlist(list(id, title, description,if (!is.null(deprecated)) deprecated else NULL, source, platform, constellation, instrument, extent, crs, time)), sep = "\n")
+    cat(unlist(list(id, title, description,if (!is.null(deprecated)) deprecated else NULL, source, if (length(x$summaries) > 0) list(platform, constellation, instrument) else NULL, extent, if (length(x$summaries) > 0) crs else NULL, time)), sep = "\n")
     
     if (!is.null(x$summaries$`eo:bands`)) {
         cat("Bands:\n")
