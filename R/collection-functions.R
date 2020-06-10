@@ -29,7 +29,7 @@ dimensions.Collection = function(x, ...) {
   if (length(x$`cube:dimensions`) > 0) {
     return(x$`cube:dimensions`)
   } else {
-    return(dimensions(describe_collection(id=x$id)))
+    return(dimensions(describe_collection(collection=x$id)))
   }
   
     
