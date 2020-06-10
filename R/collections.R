@@ -15,30 +15,35 @@ list_collections = function(con=NULL) {
 #' 
 #' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
 #' 
+#' @param collection Collection object or the collections id
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id id of a product/collection to be described
 #' 
 #' @return a list of detailed information about a product/collection
 #' @export
-describe_collection = function(con=NULL, id = NA) {
+describe_collection = function(collection = NA, con=NULL) {
     con = .assure_connection(con)
     
-    missing_id = !missing(id) && !is.na(id)
+    missing_collection = missing(collection) || length(collection) == 0 || is.na(collection) || nchar(collection) == 0
     
-    if (!missing_id) {
+    if (missing_collection) {
         message("No or invalid collection id(s)")
         invisible(NULL)
     }
-    if (length(id) > 1) {
-        return(lapply(id, function(cid) {
+    
+    if (length(collection) > 1 && !"Collection" %in% class(collection)) {
+        return(lapply(collection, function(cid) {
             describe_collection(con, cid)
         }))
     } else {
         tryCatch({
             tag = "data_details"
             
-            info = con$request(tag = tag, parameters = list(id), authorized = con$isLoggedIn(), type = "application/json", auto_unbox = TRUE)
+            if ("Collection" %in% class(collection)) {
+                collection = collection$id
+            }
+            
+            info = con$request(tag = tag, parameters = list(collection), authorized = con$isLoggedIn(), type = "application/json", auto_unbox = TRUE)
             
             class(info) = "Collection"
             

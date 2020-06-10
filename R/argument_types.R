@@ -770,20 +770,29 @@ CollectionId = R6Class(
   private = list(
     typeCheck = function() {
       if (!is.na(private$value) && !is.character(private$value)) {
-        suppressWarnings({
-          coerced = as.character(private$value)
-        })
         
-        if (length(private$schema$pattern) > 0) {
-          if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+        if (!"Collection" %in% class(private$value)) {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (length(private$schema$pattern) > 0) {
+            if (!grepl(pattern=private$schema$pattern,x=coerced,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+          }
+          
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          private$value = coerced
+        } else {
+          coerced = private$value$id
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Collection ID obtained from service is not valid, please contact the openEO service support."))
         }
-        
-        
-        if (is.null(coerced) || 
-            is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
-        # correct value if you can
-        private$value = coerced
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
@@ -791,7 +800,12 @@ CollectionId = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.character(private$value))
+      if (!"Collection" %in% class(private$value)) {
+        return(as.character(private$value))
+      } else {
+        return(private$value$id)
+      }
+      
     }
   )
 )
