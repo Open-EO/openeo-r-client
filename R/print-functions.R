@@ -194,7 +194,41 @@ print.Collection = function(x, ...) {
 }
 
 #' @export
-print.JobInfo = function(x, ...) {
+print.JobList = function(x, ...) {
+    showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
+    x = unname(x)
+    # list to tibble
+    if (length(x) > 0) {
+        df = as.data.frame(x)
+        
+        missing_columns = showed_columns[!showed_columns %in% colnames(df)]
+        if (length(missing_columns) > 0) {
+            nas = rep(NA, length(missing_columns))
+            names(nas) = missing_columns
+            df = do.call("cbind", append(list(df), as.list(nas)))
+        }
+        df = df[, showed_columns]
+        
+    } else {
+        df = data.frame(id = character(),title=character(),status = character(),
+                        created = character(), updated = character(), costs=integer(),
+                        budget=integer(), plan=character(),stringsAsFactors = FALSE)
+    }
+    
+    if (nrow(df) == 0 || ncol(df) == 0) {
+        message("No jobs stored on the back-end.")
+        invisible(df)
+    }
+    
+    if (isNamespaceLoaded("tibble")) {
+        df = tibble::as_tibble(df)
+    }
+    
+    print(df)
+}
+
+#' @export
+print.Job = function(x, ...) {
     id = paste("Job ID:\t\t", x$id, "\n", sep = "")
     if (is.null(x$title)) 
         x$title = "---"
@@ -206,9 +240,9 @@ print.JobInfo = function(x, ...) {
     created = paste("Created:\t", x$created, "\n", sep = "")
     updated = paste("Updated:\t", x$updated, "\n", sep = "")
     
-    if (is.null(x$progress)) 
-        x$progress = "---"
-    progress = paste("Progress:\t", x$progress, "\n", sep = "")
+    # if (is.null(x$progress)) 
+    #     x$progress = "---"
+    # progress = paste("Progress:\t", x$progress, "\n", sep = "")
     
     if (is.null(x$plan)) 
         x$plan = "---"
@@ -218,12 +252,18 @@ print.JobInfo = function(x, ...) {
         x$budget = "---"
     budget = paste("Budget:\t\t", x$budget, "\n", sep = "")
     
-    cat(id, title, description, status, created, updated, progress, plan, costs, budget, sep = "")
-
-    process_graph = "User defined process:\n"
-    cat(process_graph)
+    cat(id, title, description, status, created, updated, 
+        if (!is.null(x$progress)) paste("Progress:\t", x$progress, "\n", sep = "") else NULL, 
+        plan, costs, budget, sep = "")
     
-    print(x$process)
+    if (length(x$process) > 0) {
+        process_graph = "User defined process:\n"
+        cat(process_graph)
+        print(x$process)
+    }
+    
+    
+    
 }
 
 #' @export

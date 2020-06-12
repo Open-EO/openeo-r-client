@@ -37,8 +37,6 @@ list_services = function(con=NULL) {
 #' The function will send a configuration object to the back-end to create a webservice from a job considering
 #' additional parameter.
 #' 
-#' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
-#' is used.
 #' @param type character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()
 #' @param graph A graph object, a ProcessNode (result node) or function returning a ProcessNode
 #' @param title character (optional) the title in human readabled form for the service
@@ -47,9 +45,12 @@ list_services = function(con=NULL) {
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character the billing plan
 #' @param budget numeric the amount of credits that can be spent for this service
-#' @return service representation as list
+#' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#'  
+#' @return Service object
 #' @export
-create_service = function(con=NULL, type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL) {
+create_service = function(type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL) {
     tryCatch({
         if (is.null(type)) {
             stop("No type specified.")
@@ -85,15 +86,16 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
             stop("Type is neither ServiceType nor a character string.")
         }
         
-        
-        
         tag = "service_publish"
         response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE)
         
         message("Service was successfully created.")
         locationHeader = headers(response)$location
         split = unlist(strsplit(locationHeader, "/"))
-        return(trimws(split[length(split)]))
+        
+        id = trimws(split[length(split)])
+        service = describe_service(con=con, service = id)
+        return(service)
     }, error = .capturedErrorToMessage)
 }
 
@@ -103,8 +105,6 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
 #' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
 #' will be deleted and also set to NULL.
 #' 
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
-#' is used.
 #' @param service the Service or its ID
 #' @param type character the ogc web service type name to be created
 #' @param process_graph list of processes composed as a process graph
@@ -114,10 +114,13 @@ create_service = function(con=NULL, type, graph, title = NULL, description = NUL
 #' @param configuration a list of service creation configuration
 #' @param plan character the billing plan
 #' @param budget numeric the amount of credits that can be spent for this service
-#' @return service representation as list
+#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' 
+#' @return Service object
 #' 
 #' @export
-update_service = function(con=NULL, service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL) {
+update_service = function(service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL) {
     
     tryCatch({
         patch = list()
@@ -208,7 +211,11 @@ update_service = function(con=NULL, service, type = NULL, graph = NULL, title = 
         tag = "services_update"
         res = con$request(tag = tag, parameters = list(service), authorized = TRUE, encodeType = "json", data = patch)
         message(paste("Service '", service, "' was successfully updated.", sep = ""))
-        invisible(TRUE)
+        
+        
+        service = describe_service(con = con, service = service)
+        
+        return(service)
     }, error = .capturedErrorToMessage)
 }
 
@@ -216,12 +223,13 @@ update_service = function(con=NULL, service, type = NULL, graph = NULL, title = 
 #' 
 #' Queries the server and returns information about a particular service
 #' 
+#' @param service the Service object or its id
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param service the Service object or its id
-#' @return service as a list
+#' 
+#' @return Service object
 #' @export
-describe_service = function(con=NULL, service) {
+describe_service = function(service, con=NULL) {
     tryCatch({
         if (is.null(service)) {
             stop("No service id specified.")
@@ -249,11 +257,11 @@ describe_service = function(con=NULL, service) {
 #' 
 #' Queries the back-end and removes the current set service function of job.
 #' 
+#' @param service the Service or its id
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param service the Service or its id
 #' @export
-delete_service = function(con=NULL, service) {
+delete_service = function(service, con=NULL) {
     tryCatch({
         tag = "services_delete"
         
@@ -267,6 +275,6 @@ delete_service = function(con=NULL, service) {
         
         msg = con$request(tag = tag, parameters = list(id), authorized = TRUE)
         message("Service '", id, "' successfully removed.")
-        invisible(msg)
+        invisible(TRUE)
     }, error = .capturedErrorToMessage)
 }

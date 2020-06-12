@@ -5,19 +5,16 @@
 \title{Modifies a job with given parameter}
 \usage{
 update_job(
-  con = NULL,
   id,
   title = NULL,
   description = NULL,
   process = NULL,
   plan = NULL,
-  budget = NULL
+  budget = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{id}{the job id of a created job}
 
 \item{title}{update title for the job}
@@ -29,6 +26,9 @@ is used.}
 \item{plan}{replaces plan with the set value}
 
 \item{budget}{replaces or sets the credits that can be spent at maximum}
+
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \description{
 The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values

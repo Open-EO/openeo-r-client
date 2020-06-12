@@ -4,16 +4,16 @@
 \alias{describe_service}
 \title{Describes a service}
 \usage{
-describe_service(con = NULL, service)
+describe_service(service, con = NULL)
 }
 \arguments{
+\item{service}{the Service object or its id}
+
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{service}{the Service object or its id}
 }
 \value{
-service as a list
+Service object
 }
 \description{
 Queries the server and returns information about a particular service

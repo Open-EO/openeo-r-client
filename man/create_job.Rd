@@ -5,19 +5,16 @@
 \title{Creates a job on the back-end from a Graph object}
 \usage{
 create_job(
-  con = NULL,
   graph = NULL,
   title = NULL,
   description = NULL,
   plan = NULL,
   budget = NULL,
+  con = NULL,
   ...
 )
 }
 \arguments{
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{graph}{A Graph object}
 
 \item{title}{Optional title of a job to be found}
@@ -27,6 +24,9 @@ is used.}
 \item{plan}{An optional execution plan offered by the back-end, determining how the job will be executed}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
+
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{...}{additional configuration parameter for output generation}
 

@@ -5,17 +5,14 @@
 \title{Executes a job directly and returns the data immediately}
 \usage{
 compute_result(
-  con = NULL,
   graph,
   output_file = NULL,
   budget = NULL,
-  plan = NULL
+  plan = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{graph}{A process graph}
 
 \item{output_file}{Where to store the retrieved data under}
@@ -23,6 +20,9 @@ is used.}
 \item{budget}{numeric, how much to spend at maximum on testing}
 
 \item{plan}{character, selection of a service plan}
+
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a connection to file if output was provided, the raw data if not

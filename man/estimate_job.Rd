@@ -4,13 +4,13 @@
 \alias{estimate_job}
 \title{Estimates job costs}
 \usage{
-estimate_job(con = NULL, job)
+estimate_job(job, con = NULL)
 }
 \arguments{
+\item{job}{the job or the id of the job}
+
 \item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{job}{the job or the id of the job}
 }
 \value{
 JobCostsEstimation containing information how much money and time will be spent

@@ -4,13 +4,13 @@
 \alias{delete_job}
 \title{Delete a job}
 \usage{
-delete_job(con = NULL, job)
+delete_job(job, con = NULL)
 }
 \arguments{
+\item{job}{the job or the id of the job}
+
 \item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{job}{the job or the id of the job}
 }
 \value{
 logical with state of success

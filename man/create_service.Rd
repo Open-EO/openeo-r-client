@@ -5,7 +5,6 @@
 \title{Prepares and publishes a service on the back-end}
 \usage{
 create_service(
-  con = NULL,
   type,
   graph,
   title = NULL,
@@ -13,13 +12,11 @@ create_service(
   enabled = NULL,
   configuration = NULL,
   plan = NULL,
-  budget = NULL
+  budget = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{type}{character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()}
 
 \item{graph}{A graph object, a ProcessNode (result node) or function returning a ProcessNode}
@@ -35,9 +32,12 @@ is used.}
 \item{plan}{character the billing plan}
 
 \item{budget}{numeric the amount of credits that can be spent for this service}
+
+\item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
-service representation as list
+Service object
 }
 \description{
 The function will send a configuration object to the back-end to create a webservice from a job considering
