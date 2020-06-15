@@ -222,7 +222,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
         return()
     }
     
-    return(con)
+    return(invisible(con))
 }
 
 #' Function to login to a specific backend
@@ -254,6 +254,18 @@ login = function(con=NULL, user = NULL, password = NULL, login_type = NULL, exte
     con = .assure_connection(con)
     
     return(con$login(user = user, password = password, login_type = login_type, external = external))
+}
+
+#' Logout
+#' 
+#' Logs out or closes the active connection to an openEO service.
+#' 
+#' @export
+logout = function(con=NULL) {
+    con = .assure_connection(con)
+    
+    con$logout()
+    return(TRUE)
 }
 
 #' Active Connection
