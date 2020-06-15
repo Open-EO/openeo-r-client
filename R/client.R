@@ -129,7 +129,6 @@ OpenEOClient <- R6Class(
     },
 
     connect = function(url,version,exchange_token="access_token") {
-      
       tryCatch({
         if (missing(url)) {
           message("Note: Host-URL is missing")
@@ -162,17 +161,97 @@ OpenEOClient <- R6Class(
             private$host = url
           }
         } else {
-          hostInfo=private$backendVersions()$versions
-          hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
           
-          for (i in 1:ncol(hostInfo)) {
-            hostInfo[,i] = unlist(hostInfo[,i])
+          if ("versions" %in% names(private$backendVersions())) {
+            hostInfo=private$backendVersions()$versions
+            hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
+            
+            for (i in 1:ncol(hostInfo)) {
+              hostInfo[,i] = unlist(hostInfo[,i])
+            }
+            
+            # select highest API version that is production ready. if none is production
+            # ready, then select highest version
+            hostInfo = .version_sort(hostInfo)
+            private$host = hostInfo[1,"url"]
           }
-          
-          # select highest API version that is production ready. if none is production
-          # ready, then select highest version
-          hostInfo = .version_sort(hostInfo)
-          private$host = hostInfo[1,"url"]
+        }
+        
+        observer = getOption("connectionObserver")
+        
+        if (!is.null(observer)) {
+          observer$connectionOpened(type="OpenEO Service",
+                                    displayName="active service", 
+                                    host=url, 
+                                    listObjectTypes = function() {
+                                      list(
+                                        resource = list(
+                                          contains = list(
+                                            collection = list(
+                                              contains="data"
+                                            )
+                                          )
+                                        )
+                                      )
+                                      
+                                    },
+                                    connectCode = paste0("openeo::connect(host=\"",url,"\")"),
+                                    disconnect = function() {
+                                      logout()
+                                    },
+                                    listObjects = function() {
+                                      
+                                      
+                                      if (!is.null(active_connection())) {
+                                          cids = self$getCollectionNames()
+                                          types = rep("collection",times=length(cids))
+                                          
+                                          df = data.frame(name=cids,type=types,stringsAsFactors = FALSE)
+                                          return(df)
+                                      } else {
+                                        return(list())
+                                      }
+                                      
+                                      
+                                      
+                                      
+                                    },
+                                    listColumns = function(collection=NULL) {
+                                      if (!is.null(collection)) {
+                                        coll = describe_collection(collection=collection)
+                                        dim_names = names(dimensions(coll))
+                                        
+                                        types = sapply(dimensions(coll), function(dim) {
+                                          type = dim$type
+                                          
+                                          if ("axis" %in% names(dim)) {
+                                            type = paste0(type,", axis: ",dim$axis)
+                                          }
+                                          
+                                          if ("extent" %in% names(dim)) {
+                                            type = paste0(type,", extent: [",dim$extent[1],",",dim$extent[2],"]")
+                                          }
+                                          
+                                          if ("values" %in% names(dim)) {
+                                            type = paste0(type,", enum: [",paste(dim$values,collapse=","),"]")
+                                          }
+                                          
+                                          return(type)
+                                        })
+                                        
+                                        df = data.frame(name=dim_names, type=types, stringsAsFactors = FALSE)
+                                        
+                                        df = rbind(df,list(name="value",type="numeric"))
+                                        return(df)
+                                      }
+                                    },
+                                    previewObject = function(rowLimit=1,collection=NULL) {
+                                      if (!is.null(collection)) {
+                                        collection_viewer(x=collection)
+                                      }
+                                      return(data.frame())
+                                    },
+                                    connectionObject = self)
         }
         
         self$api.mapping = endpoint_mapping(self)
@@ -252,6 +331,12 @@ OpenEOClient <- R6Class(
       if (!is.null(private$auth_client)){
         private$auth_client$logout()
       }
+      
+      assign(x = "active_connection", value = NULL, envir = pkgEnvironment)
+      
+      observer = getOption("connectionObserver")
+      
+      if (!is.null(observer)) observer$connectionClosed(type="OpenEO Service",host=private$host)
     },
     
     getAuthClient = function() {
@@ -309,12 +394,7 @@ OpenEOClient <- R6Class(
       return(private$data_collection)
     },
     getCollectionNames = function() {
-      collections = self$getDataCollection()$collections
-      cids = sapply(collections, function(coll) coll$id)
-      collections = as.list(cids)
-      names(collections) = cids
-      
-      return(collections)
+      return(names(self$getDataCollection()))
     },
     getProcessCollection=function() {
       if (is.null(private$process_collection)) {
@@ -418,7 +498,10 @@ OpenEOClient <- R6Class(
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
         
         return(info)
-      },error=.capturedErrorToMessage)
+      },error= function(e) {
+        # .capturedErrorToMessage(e) 
+        return(list())
+      })
       
     },
 
