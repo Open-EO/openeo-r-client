@@ -7,12 +7,6 @@
 Similarly to the Graph object this object contains template functions for process graph building, 
 but without the overload of creating a Graph object, which contains ProcessNodes.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{data}}{a named list of collection ids or process graph parameters depending on the context}
-}}
-
 \section{Methods}{
 
 \describe{

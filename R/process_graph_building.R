@@ -236,20 +236,18 @@ setOldClass(c("Graph","R6"))
 # ProcessCollection ====
 #' Process Collection
 #' 
-#' Similarly to the Graph object this object contains template functions for process graph building, 
-#' but without the overload of creating a Graph object, which contains ProcessNodes.
+#' This object contains template functions for process graph building from the processes offered by an openEO service
 #' 
 #' @name ProcessCollection
-#' @field data a named list of collection ids or process graph parameters depending on the context
 #' 
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(con = NULL, data = list())}}{The object creator created from processes and available data. 
-#'    If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
+#'    \item{\code{$new(con = NULL)}}{The object creator created an openEO connection. 
 #' } 
 #' @section Arguments:
 #' \describe{
-#'    \item{data}{optional a named list of available data}
+#'    \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.}
 #' }
 NULL 
 
@@ -257,7 +255,6 @@ ProcessCollection = R6Class(
   "ProcessCollection",
   lock_objects = FALSE,
   public = list(
-    data = list(),
     initialize = function(con=NULL) {
       con = .assure_connection(con)
       
