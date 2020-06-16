@@ -181,7 +181,7 @@ OpenEOClient <- R6Class(
         
         if (!is.null(observer)) {
           observer$connectionOpened(type="OpenEO Service",
-                                    displayName="active service", 
+                                    displayName= self$getTitle(), 
                                     host=url, 
                                     listObjectTypes = function() {
                                       list(
@@ -402,6 +402,18 @@ OpenEOClient <- R6Class(
       }
       
       return(private$process_collection)
+    },
+    
+    getId =function() {
+      cap = self$getCapabilities()
+      
+      return(cap$id)
+    },
+    
+    getTitle = function() {
+      cap = self$getCapabilities()
+      
+      return(cap$title)
     }
     
     
