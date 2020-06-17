@@ -12,7 +12,7 @@ print.User = function(x, ...) {
         cat(paste("Budget:", "\t", x$budget, "\n", sep = ""))
     }
     
-    if (!is.null(x$stroage)) {
+    if (!is.null(x$storage)) {
         cat("File Storage:\n")
         cat(paste("   Quota:", "\t", x$storage$quota, " Bytes", "\n", sep = ""))
         cat(paste("   Free:", "\t", x$storage$free, " Bytes", "\n", sep = ""))
@@ -431,4 +431,9 @@ print.ResultList = function(x, ...) {
     
     # assets overview
     
+}
+
+#' @export
+print.CubeDimensions = function(x,...) {
+    warning("Unimplemented!")
 }
