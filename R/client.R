@@ -303,7 +303,7 @@ OpenEOClient <- R6Class(
       error = .capturedErrorToMessage
       )
     },
-    login=function(login_type = NULL,user=NULL, password=NULL,external=NULL) {
+    login=function(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL) {
       self$stopIfNotConnected()
       if (is.null(login_type)) {
         return(invisible(self))
@@ -317,7 +317,7 @@ OpenEOClient <- R6Class(
         }
         
         if (login_type == "oidc") {
-            private$loginOIDC(external = external)
+            private$loginOIDC(provider = provider, config = config)
         } else if (login_type == "basic") {
           private$loginBasic(user=user, password = password)
         } 
@@ -341,6 +341,20 @@ OpenEOClient <- R6Class(
     
     getAuthClient = function() {
       return(private$auth_client)
+    },
+    
+    setAuthClient = function(value) {
+      if (is.null(value)) {
+        return(invisible(self))
+      }
+      
+      if (!"IAuth" %in% class(value)) {
+        stop("Value is no authentication class")
+      }
+      
+      private$auth_client = value
+      
+      return(invisible(self))
     },
     
     getCapabilities = function() {
@@ -434,52 +448,21 @@ OpenEOClient <- R6Class(
     data_collection=NULL,
     
     # functions ====
-    loginOIDC = function(external=NULL) {
-      if (!is.null(self$api.mapping)) {
-        tag = "oidc_login"
-        endpoint = self$getBackendEndpoint(tag)
-      } 
-      
-      
-      if (is.null(endpoint)) {
-        stop("Cannot find endpoint for OIDC login")
-      }
+    loginOIDC = function(provider=NULL, config = NULL) {
       suppressWarnings({
-        tryCatch(
-          {
-            tryCatch({
-              discovery_doc = private$GET(endpoint)
-              if (is.null(external)) {
-                private$auth_client = OIDCAuth$new(host=discovery_doc$issuer,
-                                                   discovery_document = discovery_doc)
-              } else {
-                switch(tolower(external),
-                       google = {
-                         discovery_doc = content(httr::GET("https://accounts.google.com/.well-known/openid-configuration"))
-                         private$auth_client = GoogleOIDCAuth$new(host=discovery_doc$issuer,
-                                                            discovery_document = discovery_doc)
-                       })
-              }
-              
-              
-              if (is.null(private$auth_client)) {
-                stop("OIDC client not initialized")
-              }
-              
-              private$auth_client$login()
-              cat("Login successful.")
-              
-              return(invisible(self))
-            },error=function(e){
-              private$auth_client = NULL
-              stop("Login failed.")
-            })
+        tryCatch({
+            private$auth_client = OIDCAuth$new(provider=provider,
+                                               config = config)
             
-          },
-          error=.capturedErrorToMessage
-        )
+            private$auth_client$login()
+            cat("Login successful.")
+            
+            return(invisible(self))
+        }, error=function(e){
+          private$auth_client = NULL
+          stop("Login failed.")
+        })
       })
-      
     },
     
     loginBasic = function(user, password) {

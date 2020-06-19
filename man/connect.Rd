@@ -11,7 +11,8 @@ connect(
   password = NULL,
   login_type = NULL,
   exchange_token = "access_token",
-  external = NULL
+  provider = NULL,
+  config = NULL
 )
 }
 \arguments{

@@ -76,18 +76,46 @@ OIDCAuth <- R6Class(
     # attributes ####
 
     # functions ####
-    initialize = function(host, discovery_document = NULL) {
-      if (is.null(private$client_id)) private$client_id = get(x = "client_id", envir = pkgEnvironment)
-      private$setHost(host)
-
-      if (is.null(discovery_document)) {
-        private$getEndpoints()
+    initialize = function(provider, config = NULL) {
+      private$setIssuer(provider$issuer)
+      
+      private$id = provider$id
+      private$title = provider$title
+      private$description = provider$description
+      
+      
+      if (length(provider$scopes) == 0) {
+        private$scopes = list("openid")
       } else {
-        private$endpoints <- discovery_document
+        private$scopes = provider$scopes
       }
+      
+      private$getEndpoints()
+      
+      # important for authorization_code flow
+      if (is.null(config) || !(is.character(config) && file.exists(config))) {
+        stop("Please provide any configuration details about the client_id and the secret. Either as list object or specify a valid file path.")
+      }
+      
+      if (is.character(config)) {
+        config = jsonlite::read_json(config)
+      }
+      
+      if (!(is.list(config) && all(c("client_id","secret") %in% names(config)))) {
+        stop("'client_id' and 'secret' are not present in the configuration.")
+      }
+      
+      private$client_id = config$client_id
+      private$secret = config$secret
+      
+      if (!is.null(config$grant_type)) {
+        private$grant_type = config$grant_type
+      }
+      
+      return(self)
     },
 
-    login = function(scope = c("openid", "email")) {
+    login = function() {
       openeo_endpoints <- structure(list(
         authorize = private$endpoints$authorization_endpoint,
         access = private$endpoints$token_endpoint
@@ -109,7 +137,7 @@ OIDCAuth <- R6Class(
           endpoint = openeo_endpoints,
           app = app,
           cache = FALSE,
-          scope = scope,
+          scope = unlist(private$scopes),
           user_params = user_params
         )
       )
@@ -123,15 +151,22 @@ OIDCAuth <- R6Class(
         message("Not logged in.")
         return(NULL)
       }
-      url <- parse_url(private$endpoints$end_session_endpoint)
-      response <- GET(url, query = list(id_token_hint = private$auth$credentials$id_token))
-      if (response$status < 400) {
-        message("Successfully logged out.")
+      
+      if (length(private$endpoints$end_session_endpoint) == 1) {
+        url <- parse_url(private$endpoints$end_session_endpoint)
+        response <- GET(url, query = list(id_token_hint = private$auth$credentials$id_token))
+        if (response$status < 400) {
+          message("Successfully logged out.")
+          private$auth <- NULL
+          invisible(TRUE)
+        } else {
+          return(content(response))
+        }
+      } else {
         private$auth <- NULL
         invisible(TRUE)
-      } else {
-        return(content(response))
       }
+      
     },
     # fetches the oidc user data
     getUserData = function() {
@@ -162,7 +197,7 @@ OIDCAuth <- R6Class(
             return(invisible(NULL))
           }
         }
-        return(paste("oidc","google",private$auth$credentials$access_token,sep="/"))
+        return(paste("oidc",private$id,private$auth$credentials$access_token,sep="/"))
       } else {
         stop("Please login first, in order to obtain an access token")
         return(invisible(NULL))
@@ -180,11 +215,15 @@ OIDCAuth <- R6Class(
   # private ====
   private = list(
     # attributes ####
-    host = NA, # the url of the endpoint in
+    id = NA,
+    title = NA,
+    description = NA,
+    scopes = list(),
+    issuer = NA, # the url of the endpoint in (issuer)
     client_id = NULL,
     secret = NULL,
     endpoints = list(),
-    grant_type=NULL,
+    grant_type = "authorization_code",
     token_expiry_time = NULL,
     
     auth = NULL, # httr oauth2.0 token object
@@ -205,7 +244,7 @@ OIDCAuth <- R6Class(
 
     getEndpoints = function() {
       endpoint <- ".well-known/openid-configuration"
-      url <- paste(private$host, endpoint, sep = "")
+      url <- paste(private$issuer, endpoint, sep = "")
 
       response <- GET(url)
       if (response$status < 400) {
@@ -217,24 +256,14 @@ OIDCAuth <- R6Class(
       invisible(self)
     },
 
-    setHost = function(host) {
-      if (!endsWith(host, "/")) {
-        private$host <- paste(host, "/", sep = "")
+    setIssuer = function(issuer) {
+      if (!endsWith(issuer, "/")) {
+        issuer <- paste(issuer, "/", sep = "")
       }
+      
+      private$issuer = issuer
       invisible(self)
     }
-  )
-)
-
-# Google OIDC Authentication ----
-GoogleOIDCAuth <- R6Class(
-  "GoogleOIDCAuth",
-  inherit = OIDCAuth,
-  
-  private = list(
-    client_id = "1089505860075-mb7kvcrvrit8h39pdn98rfasi8vfvkqb.apps.googleusercontent.com",
-    secret="7AF5YRhey8cxR7A8gCmeYHwO",
-    grant_type = "authorization_code"
   )
 )
 

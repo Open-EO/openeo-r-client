@@ -5,17 +5,14 @@
 \title{Function to login to a specific backend}
 \usage{
 login(
-  con = NULL,
   user = NULL,
   password = NULL,
   login_type = NULL,
-  external = NULL
+  external = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{user}{the user name}
 
 \item{password}{the password}
@@ -23,6 +20,9 @@ is used.}
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
 
 \item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
+
+\item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a connected and authenticated back-end connection

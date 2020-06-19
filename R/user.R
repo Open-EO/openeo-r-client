@@ -205,7 +205,7 @@ describe_account = function(con=NULL) {
 #'
 #' @seealso \code{\link{active_connection}}
 #' @export
-connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", external=NULL) {
+connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", provider=NULL, config = NULL) {
     con = OpenEOClient$new()
     if (is.null(user) && is.null(password) && is.null(login_type)) {
         con = con$connect(url = host, version = version,exchange_token=exchange_token)
@@ -216,7 +216,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
             con = con$connect(url = host, version = version,exchange_token=exchange_token)
         }
     } else if (login_type == "oidc") {
-        con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(login_type = login_type, external=external)
+        con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(login_type = login_type, provider=provider, config = NULL)
     } else {
         message("Incomplete credentials. Either username or password is missing")
         return()
@@ -250,10 +250,10 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' login(con=con,login_type='oidc')
 #' }
 #' @export
-login = function(user = NULL, password = NULL, login_type = NULL, external=NULL, con=NULL) {
+login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL, config=NULL, con=NULL) {
     con = .assure_connection(con)
     
-    return(con$login(user = user, password = password, login_type = login_type, external = external))
+    return(con$login(user = user, password = password, login_type = login_type, provider = provider, config=config))
 }
 
 #' Logout
@@ -294,4 +294,28 @@ active_connection = function(con=NULL) {
     } else {
         stop(paste0("Cannot set active connection with object of class '",head(class(con),1),"'"))
     }
+}
+
+
+#' @export
+list_oidc_providers = function(con = NULL) {
+    tryCatch({
+        con = .assure_connection(con)
+        tag = "oidc_login"
+        providers = con$request(tag = tag, authorized = FALSE, type = "application/json")
+        
+        providers = providers$providers
+        
+        provider_ids = sapply(providers,function(p)p$id)
+        
+        providers = lapply(providers, function(p) {
+            class(p) = "Provider"
+            return(p)
+        })
+        
+        names(providers) = provider_ids
+        class(providers) = "ProviderList"
+        
+        return(providers)
+    }, error = .capturedErrorToMessage)
 }
