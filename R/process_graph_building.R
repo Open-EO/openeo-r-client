@@ -726,10 +726,10 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
-#' @param graph an already created process graph (probably empty) for process graphs
+#' @param parameters optional parameters
 #' @return Graph object
 #' @export
-parse_graph = function(con=NULL, json, parameters = NULL) {
+parse_graph = function(json, parameters = NULL, con=NULL) {
   con = .assure_connection(con)
   processes = con$getProcessCollection()
   
@@ -747,8 +747,6 @@ parse_graph = function(con=NULL, json, parameters = NULL) {
     
     parsed_json = fromJSON(json)
   }
-  #TODO redo from here
-  
   
   
   # use processes id on processes (processes[[id]])

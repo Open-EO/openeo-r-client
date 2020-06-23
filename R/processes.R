@@ -15,15 +15,15 @@ list_processes = function(con=NULL) {
             tag = "process_overview"
             
             listOfProcesses = con$request(tag = tag, authorized=con$isLoggedIn(), type = "application/json")
-            con$processes = listOfProcesses$processes
+            con$processes = lapply(listOfProcesses$processes, function(process) {
+                class(process) = "ProcessInfo"
+                return(process)
+            })
             
             names(con$processes) = sapply(con$processes, function(p) p$id)
         }
         
-        return(lapply(con$processes, function(process) {
-            class(process) = "ProcessInfo"
-            return(process)
-        }))
+        return(con$processes)
     }, error = .capturedErrorToMessage)
 }
 

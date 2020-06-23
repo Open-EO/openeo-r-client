@@ -316,7 +316,7 @@ download_results = function(job, folder, con=NULL) {
     
     if (!dir.exists(folder)) 
         dir.create(folder, recursive = TRUE)
-    results = list_results(con, job)
+    results = list_results(con=con, job=job)
     
     target_files = lapply(names(results$assets), function(file_name) {
         link = results$assets[[file_name]]

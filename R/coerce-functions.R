@@ -165,8 +165,14 @@ as.Graph.function = function(from) {
     return(.function_to_graph(value=from))
 }
 
+#' @export
+as.Graph.ProcessInfo = function(from) {
+    return(parse_graph(json=from))
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
+    setAs(from="ProcessInfo",to="Graph",as.Graph.ProcessInfo)
 })
 

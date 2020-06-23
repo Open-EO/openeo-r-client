@@ -16,10 +16,14 @@ list_process_graphs = function(con=NULL) {
         
         listOfUserDefinedProcesses = con$request(tag = tag, authorized = TRUE)$processes
         
-        return(lapply(listOfUserDefinedProcesses, function(process) {
-                class(process) = "ProcessInfo"
-                return(process)
-            }))
+        listOfUserDefinedProcesses = lapply(listOfUserDefinedProcesses, function(process) {
+            class(process) = "ProcessInfo"
+            return(process)
+        })
+        
+        names(listOfUserDefinedProcesses) = sapply(listOfUserDefinedProcesses, function(p) p$id)
+        
+        return(listOfUserDefinedProcesses)
         
     }, error = .capturedErrorToMessage)
 }
