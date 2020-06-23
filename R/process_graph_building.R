@@ -265,8 +265,6 @@ ProcessCollection = R6Class(
       
       if (!is.list(private$processes)) stop("Processes are not provided as list")
       
-      self$data = con$getCollectionNames()
-      
       for (index in 1:length(private$processes)) {
         if (is.null(private$processes[[index]])) {
           next
