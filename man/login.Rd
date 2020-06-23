@@ -8,7 +8,8 @@ login(
   user = NULL,
   password = NULL,
   login_type = NULL,
-  external = NULL,
+  provider = NULL,
+  config = NULL,
   con = NULL
 )
 }
@@ -19,10 +20,10 @@ login(
 
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
 
-\item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
-
 \item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
 }
 \value{
 a connected and authenticated back-end connection

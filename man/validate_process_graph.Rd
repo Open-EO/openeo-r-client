@@ -4,13 +4,13 @@
 \alias{validate_process_graph}
 \title{Validates a process graph}
 \usage{
-validate_process_graph(con = NULL, graph)
+validate_process_graph(graph, con = NULL)
 }
 \arguments{
+\item{graph}{the process graph that will be sent to the back-end and is being validated}
+
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{graph}{the process graph that will be sent to the back-end and is being validated}
 }
 \description{
 Sends the process graph to the back-end and validates it against the offered processes by the backend.

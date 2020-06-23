@@ -5,18 +5,15 @@
 \title{Stores a graph on the back-end}
 \usage{
 create_process_graph(
-  con = NULL,
   graph,
   id,
   summary = NULL,
   description = NULL,
-  submit = TRUE
+  submit = TRUE,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{graph}{a process graph definition}
 
 \item{id}{the title of the process graph}
@@ -26,6 +23,9 @@ is used.}
 \item{description}{the description of a process graph (optional)}
 
 \item{submit}{whether to create a process_graph at the service or to create it for local use}
+
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a list assembling a process graph description or the graph id if send

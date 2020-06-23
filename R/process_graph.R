@@ -34,7 +34,7 @@ list_process_graphs = function(con=NULL) {
 #' 
 #' @return the process graph as list
 #' @export
-describe_process_graph = function(con=NULL, id) {
+describe_process_graph = function(id, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -61,7 +61,7 @@ describe_process_graph = function(con=NULL, id) {
 #' @param id the id of the graph
 #' 
 #' @export
-delete_process_graph = function(con=NULL, id) {
+delete_process_graph = function(id, con=NULL) {
     tryCatch({
         tag = "graph_delete"
         
@@ -89,7 +89,7 @@ delete_process_graph = function(con=NULL, id) {
 #' 
 #' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_process_graph = function(con=NULL, graph, id, summary=NULL, description = NULL, submit=TRUE) {
+create_process_graph = function(graph, id, summary=NULL, description = NULL, submit=TRUE, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -138,7 +138,7 @@ create_process_graph = function(con=NULL, graph, id, summary=NULL, description =
 #' @param summary summary of the process graph (optional)
 #' @param description description of the process graph (optional)
 #' @export
-update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, description = NULL) {
+update_process_graph = function(id, graph = NULL, summary = NULL, description = NULL, con=NULL) {
     tryCatch({
         if (is.null(id)) {
             stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
@@ -227,7 +227,7 @@ update_process_graph = function(con=NULL, id, graph = NULL, summary = NULL, desc
 #' @param graph the process graph that will be sent to the back-end and is being validated
 #' 
 #' @export
-validate_process_graph = function(con=NULL, graph) {
+validate_process_graph = function(graph, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
