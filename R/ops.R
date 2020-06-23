@@ -320,10 +320,15 @@
 # [ (subset) ====
 #' @export
 `[.ProcessGraphParameter` <- function(x,i,...,drop=TRUE) {
-  # TODO think if it is a vector?
   # check x for being an array
-  if (! isTRUE(x$getSchema()$type == "array")) stop("Non-array ProcessGraph value cannot be addressed by index. Check if the ProcessGraph requires a binary operator")
-  graph = x$getProcess()$getGraph()
+  if (length(x$getSchema()$type) > 0 && 
+      !isTRUE(x$getSchema()$type == "array")) stop("Non-array ProcessGraph value cannot be addressed by index. Check if the ProcessGraph requires a binary operator")
+  
+  if (is.null(x$getProcess())) {
+    graph = processes()
+  } else {
+    graph = x$getProcess()$getGraph()
+  }
   
   FUN = "array_element"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
@@ -713,7 +718,12 @@
       if ("ProcessNode" %in% class(e1)) {
         return(e1$getGraph())
       } else { # ProcessGraphParameter
-        return(e1$getProcess()$getGraph())
+        if (is.null(e1$getProcess())) { # will happen with untyped parameter (store a graph that is just a subgraph)
+          return(processes())
+        } else {
+          return(e1$getProcess()$getGraph())
+        }
+        
       }
     }
     
@@ -721,7 +731,12 @@
       if ("ProcessNode" %in% class(e1[[1]])) {
         return(e1[[1]]$getGraph())
       } else { # ProcessGraphParameter
-        return(e1[[1]]$getProcess()$getGraph())
+        if (is.null(e1[[1]]$getProcess())) { # will happen with untyped parameter (store a graph that is just a subgraph)
+          return(processes())
+        } else {
+          return(e1[[1]]$getProcess()$getGraph())
+        }
+        
       }
     }
     
@@ -730,6 +745,12 @@
         return(e2$getGraph())
       } else { # ProcessGraphParameter
         return(e2$getProcess()$getGraph())
+        if (is.null(e2$getProcess())) { # will happen with untyped parameter (store a graph that is just a subgraph)
+          return(processes())
+        } else {
+          return(e2$getProcess()$getGraph())
+        }
+        
       } 
       
     } else {
