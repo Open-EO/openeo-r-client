@@ -19,25 +19,32 @@ objects returned for the parameters in processes. Find a list of openEO specific
 
 \describe{
  \item{\code{$new(name, description,required=FALSE)}}{}
- \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
  \item{\code{$getName}}{returns the name of a parameter as string}
- \item{\code{$setName(value)}}{sets the name of a parameter}
+ \item{\code{$setName(name)}}{sets the name of a parameter}
+ \item{\code{$getDescription()}}{returns the description of a parameter}
+ \item{\code{$setDescription(description)}}{sets the description of a parameter}
  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
+ \item{\code{$getDefault()}}{returns the parameters default value}
+ \item{\code{$setDefault(default)}}{sets the default value of a parameter}
  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
  API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+ \item{\code{$getSchema()}}{returns the schema definition}
+ \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
+ \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
+ \item{\code{$isAny()}}{return TRUE if this parameter describes a choice of parameters}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{name}}{The name of a parameter}
-  \item{\code{description}}{}
+  \item{\code{name}}{character - The name of a parameter}
+  \item{\code{description}}{character - The description of a parameter}
   \item{\code{required}}{logical - whether or not }
-  \item{\code{value}}{In this case also the name of a parameter}
   \item{\code{pattern}}{the regexp as a string how to formulate the value}
+  \item{\code{default}}{the regexp as a string how to formulate the value}   
   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
 }
 }

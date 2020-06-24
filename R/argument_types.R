@@ -18,22 +18,29 @@
 #' @section Methods:
 #' \describe{
 #'  \item{\code{$new(name, description,required=FALSE)}}{}
-#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
 #'  \item{\code{$getName}}{returns the name of a parameter as string}
-#'  \item{\code{$setName(value)}}{sets the name of a parameter}
+#'  \item{\code{$setName(name)}}{sets the name of a parameter}
+#'  \item{\code{$getDescription()}}{returns the description of a parameter}
+#'  \item{\code{$setDescription(description)}}{sets the description of a parameter}
 #'  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
 #'  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
+#'  \item{\code{$getDefault()}}{returns the parameters default value}
+#'  \item{\code{$setDefault(default)}}{sets the default value of a parameter}
 #'  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
 #'  API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+#'  \item{\code{$getSchema()}}{returns the schema definition}
+#'  \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
 #'  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
+#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
+#'  \item{\code{$isAny()}}{return TRUE if this parameter describes a choice of parameters}
 #' }
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{name}}{The name of a parameter}
-#'   \item{\code{description}}{}
+#'   \item{\code{name}}{character - The name of a parameter}
+#'   \item{\code{description}}{character - The description of a parameter}
 #'   \item{\code{required}}{logical - whether or not }
-#'   \item{\code{value}}{In this case also the name of a parameter}
 #'   \item{\code{pattern}}{the regexp as a string how to formulate the value}
+#'   \item{\code{default}}{the regexp as a string how to formulate the value}   
 #'   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
 #' }
 NULL
@@ -51,15 +58,15 @@ Parameter = R6Class(
       return(private$name)
     },
     
-    setName = function(value) {
-      private$name = value
+    setName = function(name) {
+      private$name = name
     },
     
     getDescription = function() {
       return(private$description)
     },
-    setDescription = function(value) {
-      private$description = value
+    setDescription = function(description) {
+      private$description = description
       invisible(self)
     },
     
@@ -69,8 +76,8 @@ Parameter = R6Class(
     setPattern = function(pattern) {
       private$schema$pattern = pattern
     },
-    setDefault = function(value) {
-      private$default = value
+    setDefault = function(default) {
+      private$default = default
       invisible(self)
     },
     getDefault = function() {
@@ -180,7 +187,6 @@ Parameter = R6Class(
 )
 
 # Argument ====
-# should be abstract class
 #' Argument class
 #' 
 #' This class inherits all fields and functions from \code{\link{Parameter}} and augments this class for 
@@ -199,10 +205,13 @@ Parameter = R6Class(
 #'   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
 #'   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
 #'   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
+#'   \item{\code{$getProcess()}}{returns the process to which this parameter belongs to}
+#'   \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 #' }
 #' @section Arguments: 
 #' \describe{
 #'   \item{\code{value}}{The value for this argument.}
+#'   \item{\code{p}}{An object of class 'Process' or inheriting like 'ProcessNode'}
 #' }
 NULL
 
@@ -297,6 +306,7 @@ Argument = R6Class(
       return(invisible(self))
     }
   ),
+  # private =====
   private = list(
     value=NULL,
     process = NULL,
