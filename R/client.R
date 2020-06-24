@@ -19,13 +19,20 @@ NULL
 #'   \item{\code{$request(tag,parameters=NULL, authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
 #'   path parameters and whether or not authorization (access_token) has to be used.}
 #'   \item{\code{$isConnected()}}{whether or not the client has a host set}
+#'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
+#'   \item{\code{$getHost()}}{returns the host URL}
 #'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 #'   \item{\code{$connect(url,version)}}{connects to a specific version of a backend}
 #'   \item{\code{$api_version()}}{returns the openEO API version which this client complies to}
-#'   \item{\code{$register(user,password)}}{registers on the back-end via user and password (GEE only; legacy)}
 #'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
-#'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
+#'   \item{\code{$getAuthClient()}}{returns the Authentication client}
+#'   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
+#'   \item{\code{$getCapabilities()}}{}
+#'   \item{\code{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
+#'   \item{\code{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
+#'   \item{\code{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
+#'   \item{\code{$getTitle()}}{returns the title of the connection as stated in the getCapabilities document}
 #' }
 #' 
 #' @section Arguments:
@@ -40,6 +47,7 @@ NULL
 #'   \item{\code{user}}{the user name}
 #'   \item{\code{password}}{the users password}
 #'   \item{\code{login_type}}{'basic', 'oidc' or NULL to control the authentication}
+#'   \item{\code{value}}{an authentication object}
 #' }
 NULL
 
@@ -177,6 +185,7 @@ OpenEOClient <- R6Class(
           }
         }
         
+        # connections contract for RStudio
         observer = getOption("connectionObserver")
         
         if (!is.null(observer)) {
@@ -278,30 +287,6 @@ OpenEOClient <- R6Class(
     },
     api_version = function () {
       return(private$version)
-    },
-    
-    register = function(user=NULL,password) {
-      #currently this will be used for GEE only
-      tryCatch({
-        if (!self$isConnected()) {
-          stop("No host selected")
-        }
-        
-        tag = "registration"
-        endpoint = self$getBackendEndpoint(tag)
-        
-        private$password = password
-        
-        #function(endpoint,authorized=FALSE,data,encodeType = "json",query = list(), raw=FALSE,...) {
-        res = private$POST(endpoint=endpoint,
-                           data = list(password=password),
-                           authorized = FALSE)
-        
-        private$user = res$user_id
-        return(private$user)
-      },
-      error = .capturedErrorToMessage
-      )
     },
     login=function(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL) {
       self$stopIfNotConnected()

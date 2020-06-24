@@ -6,11 +6,10 @@
 \description{
 This object contains template functions for process graph building from the processes offered by an openEO service
 }
-\section{NA}{
+\section{Methods}{
 
 \describe{
-   \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
-is used.}
+   \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
 }
 }
 

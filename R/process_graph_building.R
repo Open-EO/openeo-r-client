@@ -242,7 +242,7 @@ setOldClass(c("Graph","R6"))
 #' 
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(con = NULL)}}{The object creator created an openEO connection. 
+#'    \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
 #' } 
 #' @section Arguments:
 #' \describe{
