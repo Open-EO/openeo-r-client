@@ -20,10 +20,12 @@ login(
 
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
 
+\item{provider}{provider object as obtained by 'list_oidc_providers()'}
+
+\item{config}{named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)}
+
 \item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
 }
 \value{
 a connected and authenticated back-end connection
@@ -36,11 +38,11 @@ register, then you need to log in afterwards.
 \examples{
 \dontrun{
 # simple connection without login to maybe explore the capabilities of a back-end first
-con = connect(host='http://example.openeo.org',version='0.4.2')
+con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 
-login(con=con, user='user',password='password',login_type='basic')
+login(user='user',password='password',login_type='basic', con=con)
 
 # or alternatively the oidc login
-login(con=con,login_type='oidc')
+login(login_type='oidc', provider=provider, config=config)
 }
 }

@@ -19,7 +19,8 @@ create_service(
 \arguments{
 \item{type}{character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()}
 
-\item{graph}{A graph object, a ProcessNode (result node) or function returning a ProcessNode}
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
 
 \item{title}{character (optional) the title in human readabled form for the service}
 

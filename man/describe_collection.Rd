@@ -13,7 +13,7 @@ describe_collection(collection = NA, con = NULL)
 is used.}
 }
 \value{
-a list of detailed information about a product/collection
+a Collection object with detailed information about a collection.
 }
 \description{
 Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end

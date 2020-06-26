@@ -22,6 +22,9 @@ update_service(
 
 \item{type}{character the ogc web service type name to be created}
 
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
+
 \item{title}{character (optional) the title in human readabled form for the service}
 
 \item{description}{character (optional) the description for the service}
@@ -36,8 +39,6 @@ update_service(
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{process_graph}{list of processes composed as a process graph}
 }
 \value{
 Service object

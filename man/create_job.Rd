@@ -15,7 +15,8 @@ create_job(
 )
 }
 \arguments{
-\item{graph}{A Graph object}
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
 
 \item{title}{Optional title of a job to be found}
 
@@ -29,8 +30,6 @@ create_job(
 is used.}
 
 \item{...}{additional configuration parameter for output generation}
-
-\item{format}{The inteded format of the data to be returned}
 }
 \value{
 the id of the job

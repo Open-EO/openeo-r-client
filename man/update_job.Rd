@@ -21,7 +21,8 @@ update_job(
 
 \item{description}{update description}
 
-\item{process}{a Graph object created with the process_graph_builder}
+\item{process}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint, the \code{\link{ProcessNode}} 
+will return the results or a self defined \code{\link{Process}}}
 
 \item{plan}{replaces plan with the set value}
 

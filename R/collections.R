@@ -1,9 +1,15 @@
 # data endpoint ----
 #' List Data on conected server
 #'
-#' List available collections stored on a openEO server
+#' List available collections stored on a openEO server and return them as a CollectionList which is a named list of Collection objects. 
+#' The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this functions result will contain
+#' lesser information than the detailed description received at the other function.
+#' 
 #' @param con Connection object (optional) otherwise \code{\link{active_connection}}
 #' is used.
+#' 
+#' @return object of class 'CollectionList'
+#' 
 #' @export
 list_collections = function(con=NULL) {
     con = .assure_connection(con)
@@ -19,7 +25,7 @@ list_collections = function(con=NULL) {
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return a list of detailed information about a product/collection
+#' @return a Collection object with detailed information about a collection.
 #' @export
 describe_collection = function(collection = NA, con=NULL) {
     con = .assure_connection(con)

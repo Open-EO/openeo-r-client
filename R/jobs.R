@@ -7,7 +7,6 @@
 #' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @export
-# updated
 list_jobs = function(con=NULL) {
     tryCatch({
         con=.assure_connection(con)
@@ -39,10 +38,14 @@ list_jobs = function(con=NULL) {
 
 #' Executes a job directly and returns the data immediately
 #'
-#' Executes a job directly on the connected openEO back-end and returns the data. It relates to
-#' POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
+#' Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
+#' the server remains open. The functions and enpoints main purpose is the debugging of code, where results can be immediately
+#' checked. Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+#' So make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
+#' e.g. not supporting UDFs at this endpoint.
 #'
-#' @param graph A process graph
+#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' will return the results
 #' @param output_file Where to store the retrieved data under
 #' @param budget numeric, how much to spend at maximum on testing
 #' @param plan character, selection of a service plan
@@ -111,12 +114,12 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 #' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
 #' back-end provider.
 #' 
-#' @param graph A Graph object
+#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' will return the results
 #' @param title Optional title of a job to be found
 #' @param description Optional a more detailed information about a job
 #' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
-#' @param format The inteded format of the data to be returned
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional configuration parameter for output generation
@@ -215,7 +218,8 @@ start_job = function(job, con=NULL) {
 #' @param id the job id of a created job
 #' @param title update title for the job
 #' @param description update description
-#' @param process a Graph object created with the process_graph_builder
+#' @param process A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint, the \code{\link{ProcessNode}} 
+#' will return the results or a self defined \code{\link{Process}}
 #' @param plan replaces plan with the set value
 #' @param budget replaces or sets the credits that can be spent at maximum
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}

@@ -162,9 +162,9 @@ describe_account = function(con=NULL) {
 }
 
 # authentication ----
-#' Connect to a openeEO back-end
+#' Connect to a openeEO service
 #'
-#' Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
+#' Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
 #' specific versions, then you should provide the versions parameter.
 #' 
 #' @details Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
@@ -178,28 +178,29 @@ describe_account = function(con=NULL) {
 #' When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
 #' which marks the latest service that was connected to.
 #' 
-#' @param host URL pointing to the openEO server back-end host
+#' @param host URL pointing to the openEO server service host
 #' @param version the version number as string (optional)
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
-#' @param external which external oidc provider shall be used (currently 'google' as allowed value)
+#' @param provider provider object as obtained by 'list_oidc_providers()'
+#' @param config named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)
 #'
 #' @examples 
 #' \dontrun{
 #' # connect to a host with specific version and without authentication
-#' con = connect(host='http://example.openeo.org',version='0.4.2')
+#' con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 #' 
 #' # connect to a host by direct url and basic login
-#' con = connect(host='http://example.openeo.org/v/0.4.2',
+#' con = connect(host='http://example.openeo.org/v1.0',
 #'               user='user',
 #'              password='password',
 #'              login_type='basic')
 #' 
 #' # connect to a host with open id connect authentication
 #' con = connect(host='http://example.openeo.org',
-#'               version='0.4.2',
+#'               version='1.0.0-rc.2',
 #'               login_type='oidc')
 #' }
 #'
@@ -207,6 +208,7 @@ describe_account = function(con=NULL) {
 #' @export
 connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", provider=NULL, config = NULL) {
     con = OpenEOClient$new()
+    
     if (is.null(user) && is.null(password) && is.null(login_type)) {
         con = con$connect(url = host, version = version,exchange_token=exchange_token)
     } else if (login_type == "basic") {
@@ -236,18 +238,19 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @param user the user name
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
-#' @param external character - 'google' whether Google is used as a Identity Provider for OIDC
+#' @param provider provider object as obtained by 'list_oidc_providers()'
+#' @param config named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)
 #' @return a connected and authenticated back-end connection
 #' 
 #' @examples 
 #' \dontrun{
 #' # simple connection without login to maybe explore the capabilities of a back-end first
-#' con = connect(host='http://example.openeo.org',version='0.4.2')
+#' con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 #' 
-#' login(con=con, user='user',password='password',login_type='basic')
+#' login(user='user',password='password',login_type='basic', con=con)
 #' 
 #' # or alternatively the oidc login
-#' login(con=con,login_type='oidc')
+#' login(login_type='oidc', provider=provider, config=config)
 #' }
 #' @export
 login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL, config=NULL, con=NULL) {
@@ -297,6 +300,15 @@ active_connection = function(con=NULL) {
 }
 
 
+#' Available OIDC provider
+#' 
+#' In case the openEO service provider supports OpenID connect authentication, this function will return a list
+#' of supported provider that can be used on this specific service.
+#' 
+#' @param con active openEO service connection (\code{\link{OpenEOClient}})
+#' 
+#' @return a \code{ProviderList} object which is a named list of \code{Provider} objects.
+#' 
 #' @export
 list_oidc_providers = function(con = NULL) {
     tryCatch({

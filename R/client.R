@@ -289,8 +289,19 @@ OpenEOClient <- R6Class(
       return(private$version)
     },
     login=function(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL) {
+      
+      if (!is.null(user) && !is.null(password) && is.null(login_type)) {
+        # then it should be "basic"
+        login_type = "basic"
+      }
+      
+      if (!is.null(provider) && !is.null(config) && is.null(login_type)) {
+        login_type = "oidc"
+      } 
+      
       self$stopIfNotConnected()
       if (is.null(login_type)) {
+        message("No login type specified. Use 'basic' or 'oidc'.")
         return(invisible(self))
       }
       
@@ -302,7 +313,7 @@ OpenEOClient <- R6Class(
         }
         
         if (login_type == "oidc") {
-            private$loginOIDC(provider = provider, config = config)
+          private$loginOIDC(provider = provider, config = config)
         } else if (login_type == "basic") {
           private$loginBasic(user=user, password = password)
         } 
@@ -710,10 +721,10 @@ OpenEOClient <- R6Class(
 
 #' Returns the client version
 #' 
-#' The function returns the client version.
+#' The function returns the client version. Wraps the call 'packageVersion("openeo")', which will return this packages version.
 #' 
 #' @return the client version
 #' @export
 client_version = function() {
-  return("0.7.0")
+  return(packageVersion("openeo"))
 }

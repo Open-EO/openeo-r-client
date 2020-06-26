@@ -10,6 +10,11 @@ list_collections(con = NULL)
 \item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
+\value{
+object of class 'CollectionList'
+}
 \description{
-List available collections stored on a openEO server
+List available collections stored on a openEO server and return them as a CollectionList which is a named list of Collection objects. 
+The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this functions result will contain
+lesser information than the detailed description received at the other function.
 }
