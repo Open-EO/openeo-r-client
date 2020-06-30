@@ -36,7 +36,7 @@ list_processes = function(con=NULL) {
 #'
 #' @return a list of detailed information
 #' @export
-describe_process = function(con=NULL, id = NA) {
+describe_process = function(id = NA, con=NULL) {
     con = .assure_connection(con)
     
     describeProcess = !missing(id) && !is.na(id)

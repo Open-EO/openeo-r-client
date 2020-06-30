@@ -8,9 +8,14 @@ Object of \code{\link{R6Class}} with methods for building an openeo process grap
 }
 \description{
 This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{Variable}}s. The 
-class as such offers also an environment where the offered processes of a back-end are made available on
-runtime. This means besides the functions mentioned here, there are also the processes of the back-end
-mapped dynamically after creation.
+creation of a Graph is not required in most cases, because this will otherwise be done automatically in those function that have
+to send a Graph representation to the openEO service. In those cases you can pass on a function that results a ProcessNode or a 
+result node itself.
+}
+\details{
+However, you might want to perform an explicit cast with \code{as(x,"Graph")} in order to obtain a Graph object. 'x' can be the afore
+mentioned function or ProcessNode, and also a ProcessGraph object that can be obtained by \code{\link{describe_process_graph}}, which
+parses the stored Graph representation into an openEO Graph object (\code{\link{parse_graph}}).
 }
 \section{Fields}{
 
@@ -21,19 +26,19 @@ mapped dynamically after creation.
 \section{Methods}{
 
 \describe{
-   \item{\code{$new(con = NULL, data = list(), final_node=NULL)}}{The object creator created from processes and available data. 
-   If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
+   \item{\code{$new(con = NULL, final_node=NULL)}}{The object creator created from processes and available data.}
    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
-   \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize} or 
-   \code{$serializeAsReference} on all graph elements that are connected to the graph}
+   \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize}} 
    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
+   \item{$addNode(node)}{}
    \item{$removeNode(node_id)}{removes a process node from the graph}
    \item{$getFinalNode()}{gets the result process node of a process graph}
    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
    \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
+   \item{$setVariables(list_of_vars)}{sets the process graph parameter (variables) of graph}
 }
 }
 
@@ -53,3 +58,22 @@ mapped dynamically after creation.
 }
 }
 
+\examples{
+\dontrun{
+con = connect(host="http://some.url.org/openeo")
+p = processes()
+...
+result = p$save_result(data = prior_step, format = "PNG")
+graph = as(result, "Graph")
+
+# alternative with a function (R primitve operator are translated into openEO processes)
+resulting_ndvi_function = function(x) {
+ B4 = x[1]
+ B8 = x[2]
+
+ return((B8-B4)/(B8+B4))
+} 
+
+graph = as(resulting_ndvi_function, "Graph")
+}
+}

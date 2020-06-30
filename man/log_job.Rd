@@ -17,6 +17,9 @@ log_job(job, offset = NULL, limit = NULL, con = NULL)
 
 \item{a}{JobLog object or an Error}
 }
+\value{
+a \code{JobLog} object
+}
 \description{
 Attempts to open the log of job.
 }

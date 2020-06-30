@@ -4,7 +4,8 @@
 \alias{ProcessCollection}
 \title{Process Collection}
 \description{
-This object contains template functions for process graph building from the processes offered by an openEO service
+This object contains template functions for process graph building from the processes offered by an openEO service. This object is
+an R6 object that is not locked, in order to add new functions at runtime.
 }
 \section{Methods}{
 

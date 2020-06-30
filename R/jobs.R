@@ -478,6 +478,8 @@ estimate_job = function(job, con=NULL) {
 #' @param limit the limit of lines to be shown
 #' @param con an optional connection if you want to address a specific service
 #' @param a JobLog object or an Error
+#' 
+#' @return a \code{JobLog} object
 #' @export
 log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
     con = .assure_connection(con)

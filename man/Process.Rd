@@ -7,13 +7,16 @@
 Object of \code{\link{R6Class}} with methods for storing meta data of back-end processes and user assigned data
 }
 \description{
-This object reflects the process offered by a back-end. It will be created with the information of a received 
-JSON object for a single process, after the arguments of the process have been translated into \code{\link{Argument}} objects.
+This object reflects a process offered by an openEO service in order to load and manipulate data collections. It will be created 
+with the information of a received JSON object for a single process, after the arguments of the process have been translated 
+into \code{\link{Argument}} objects.
 }
 \section{Fields}{
 
 \describe{
 \item{\code{parameters}}{a named list of Argument objects}
+
+\item{\code{isUserDefined}}{logical - depending if the process is offered by the openEO service or if it was user defined}
 }}
 
 \section{Methods}{
@@ -22,15 +25,17 @@ JSON object for a single process, after the arguments of the process have been t
    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
    \item{$getId()}{returns the id of a process which was defined on the back-end}
    \item{$getParameters()}{returns a named list of Arguments}
-   \item{$getParameterOrder()}{returns the order of the parameters for this process}
    \item{$getReturns()}{returns the schema for the return type as list}
    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
    corresponds to the parameter name}
+   \item{$setSummary(summary)}{sets the summary text}
+   \item{$setDescription(description)}{sets the description text}
+   \item{$setParameterValue(name,value)}{sets the value of a parameter}
+   \item{$getParameter(name)}{returns the Argument object with the provided name}
+   \item{$getProcessGraph()}{}
+   \item{$setProcessGraph(process_graph)}{}
    \item{$validate()}{validates the processes argument values}
    \item{$serialize()}{serializes the process - mainly used as primary serialization for a \code{\link{ProcessNode}}}
-   \item{$setParameter(name,value)}{sets the value of a parameter}
-   \item{$getParameter(name)}{returns the Argument object with the provided name}
-   \item{$setDescription(value)}{sets the description text}
    \item{$getCharacteristics()}{select all non functions of the private area, to be used when copying process 
    information into a process node}
 }

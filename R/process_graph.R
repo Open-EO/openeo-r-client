@@ -6,7 +6,7 @@
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return vector of process graph ids
+#' @return a list userdefined processes (\code{ProcessInfo})
 #' @export
 list_process_graphs = function(con=NULL) {
     tryCatch({
