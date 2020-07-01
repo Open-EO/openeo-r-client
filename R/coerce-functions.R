@@ -1,4 +1,5 @@
 #' @include process_graph_building.R
+#' @include process_graph.R
 NULL
 
 .removeNullEntries = function(list) {

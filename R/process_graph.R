@@ -282,3 +282,5 @@ processes = function(con = NULL) {
     con = .assure_connection(con)
     return(con$getProcessCollection())
 }
+
+setClass("ProcessInfo")
