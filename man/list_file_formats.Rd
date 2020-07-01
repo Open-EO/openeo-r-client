@@ -2,7 +2,7 @@
 % Please edit documentation in R/server_metadata.R
 \name{list_file_formats}
 \alias{list_file_formats}
-\title{Returns the output formats}
+\title{Supported Input/Output formats}
 \usage{
 list_file_formats(con = NULL)
 }
@@ -11,8 +11,12 @@ list_file_formats(con = NULL)
 is used.}
 }
 \value{
-a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
+a FileFormatList object
 }
 \description{
-The function queries the back-end for supported output formats.
+The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
+}
+\details{
+The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. At each category we have another
+named list with the \code{FileFormat} indexed by its format ID.
 }

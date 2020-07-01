@@ -2,11 +2,11 @@
 #' Returns the suppported OpenEO API versions
 #' 
 #' The function queries the back-end for its supported versions. The endpoint \href{https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get}{/.well-known/openeo} 
-#' is called and the JSON result is coerced into a tibble.
+#' is called on the given host URL and the JSON result is coerced into a tibble.
 #' 
 #' @param url the url as String pointing to the base host of the back-end
 #' 
-#' @return a tibble containing all supported API versions of the back-end
+#' @return a data.frame or a tibble containing all supported API versions of the back-end
 #' @export
 api_versions = function(url) {
     tryCatch({
@@ -31,9 +31,9 @@ api_versions = function(url) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Shows an overview about the capabilities of an OpenEO back-end
+#' Capabilities overview
 #' 
-#' Queries the back-end for its general capabilities.
+#' The function queries the openEO service to which was connected for general information about the service. 
 #' 
 #' @param con A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used
 #' 
@@ -69,13 +69,16 @@ list_features = function(con=NULL) {
     return(con$api.mapping[c("endpoint", "operation", "available")])
 }
 
-#' Returns the output formats
+#' Supported Input/Output formats
 #' 
-#' The function queries the back-end for supported output formats.
+#' The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
+#' 
+#' @details The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. At each category we have another
+#' named list with the \code{FileFormat} indexed by its format ID.
 #' 
 #' @param con openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return a data frame with formats, the applied output data type ('raster', 'vector', 'table' and/or 'other') and optional configuration parameter
+#' @return a FileFormatList object
 #' @export
 list_file_formats = function(con=NULL) {
     tryCatch({
@@ -110,11 +113,6 @@ list_file_formats = function(con=NULL) {
             names(modified_output_formats) = output_formats 
             formats$output = modified_output_formats
         }
-        # table = as.data.frame(formats)
-        # 
-        # if (isNamespaceLoaded("tibble")) {
-        #     table = tibble::as_tibble(table)
-        # }
         
         return(formats)
     }, error = .capturedErrorToMessage)
@@ -122,11 +120,13 @@ list_file_formats = function(con=NULL) {
 
 #' Returns the offered webservice types of the back-end
 #' 
-#' The function queries the back-end for the supported webservice types that can be used on the client.
+#' The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
+#' \code{ServiceType}, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
+#' out of the user defined process (process graph).
 #' 
 #' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return vector of identifier of supported webservice
+#' @return a \code{ServiceTypeList}
 #' @export
 list_service_types = function(con=NULL) {
     tryCatch({
@@ -226,6 +226,12 @@ privacy_policy = function(con = NULL) {
     }, error = .capturedErrorToMessage)
 }
 
+#' OGC conformance
+#' 
+#' Queries the openEO service for the conformance. As mentioned in the API it is highly optional and is only available if the service
+#' wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
+#' as a list object translated from JSON using the jsonlite package.
+#' 
 #' @export
 conformance = function(con=NULL) {
     tryCatch({

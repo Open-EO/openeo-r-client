@@ -11,8 +11,10 @@ list_service_types(con = NULL)
 is used.}
 }
 \value{
-vector of identifier of supported webservice
+a \code{ServiceTypeList}
 }
 \description{
-The function queries the back-end for the supported webservice types that can be used on the client.
+The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
+\code{ServiceType}, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
+out of the user defined process (process graph).
 }
