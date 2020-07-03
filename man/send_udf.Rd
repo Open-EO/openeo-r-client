@@ -56,7 +56,9 @@ you can debug your code.
 If you use a local R UDF service you might want to debug using the 'browser()' function.
 }
 \note{
-The debug options are only available for the R-UDF service.
+The debug options are only available for the R-UDF service. The R UDF-API version has to be of version 0.1.0 (not the old alpha 
+version). You might want to check \url{https://github.com/Open-EO/openeo-r-udf#running-the-api-locally} for setting up a local 
+service for debugging.
 }
 \examples{
 \dontrun{

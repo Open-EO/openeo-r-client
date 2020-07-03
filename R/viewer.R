@@ -75,38 +75,8 @@ process_viewer = function(x,con=NULL) {
     
     x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE)
     
-    html="<!DOCTYPE html>
-  <html>
-  
-  <head>
-  <title>openEO Processes</title>
-  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <script src='https://cdn.jsdelivr.net/npm/vue'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.umd.min.js'></script>
-  <link rel='stylesheet'' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%css_version%/dist/DocGen.css'>
-  <style>html, body { height: 100%; margin: 0; }</style>
-  </head>
-  
-  <body>
-  <div id='app'></div>
-  <script>
-    new Vue({
-      el: '#app',
-      render: h => h(DocGen, { 
-        props: {
-          document: %processes%,
-          apiVersion: %api_version%,
-          showTableOfContents: %navigator%
-        }
-      })
-    });
-  </script>
-  <noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
-  </body>
-  
-  </html>"
+    template_file = system.file("extdata", "process_viewer_template.html", package = "openeo")
+    html = readChar(template_file, nchars = file.info(template_file)$size)
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
     html = gsub(x=html,pattern = "%css_version%",replacement = css_version)
@@ -136,7 +106,7 @@ collection_viewer = function(x,con=NULL) {
     vue_css_version = "@latest"
     
     if (is.character(x)) {
-      x = describe_collection(con=con,id=x)
+      x = describe_collection(con=con,collection=x)
     }
     
     if (is.null(x)) {
@@ -147,7 +117,7 @@ collection_viewer = function(x,con=NULL) {
       if (length(x$`cube:dimensions`) > 0) {
         x = unname(escaper(x))
       } else {
-        x = unname(escaper(describe_collection(id = x$id)))
+        x = unname(escaper(describe_collection(collection = x)))
       }
         
     } else {
@@ -156,40 +126,8 @@ collection_viewer = function(x,con=NULL) {
     
     x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE,null="null")
     
-    html="<!DOCTYPE html>
-<html>
-
-	<head>
-		<title>openEO Collection</title>
-		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-		<meta charset='UTF-8'>
-		<meta name='viewport' content='width=device-width, initial-scale=1'>
-		<script src='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.js'></script>
-		<script src='https://cdn.jsdelivr.net/npm/vue'></script>
-		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_version%/assets/openeo-vue.umd.min.js'></script>
-		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.6/dist/leaflet.css' />
-		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
-		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_css_version%/assets/openeo-vue.css'>
-		<style>html, body { height: 100%; margin: 1em; font-family: sans-serif; }</style>
-	</head>
-
-	<body class='docgen'>
-		<div id='app'></div>
-		<script>
-		  new Vue({
-				el: '#app',
-				render: h => h(window['openeo-vue'].Collection, { 
-					props: {
-						collectionData: %collection_info%,
-						version: '1.0.0'
-					}
-				})
-			});
-		</script>
-		<noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
-	</body>
-
-</html>"
+    template_file = system.file("extdata", "collection_viewer_template.html", package = "openeo")
+    html = readChar(template_file, nchars = file.info(template_file)$size)
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
     html = gsub(x=html,pattern = "%vue_version%",replacement = vue_version)

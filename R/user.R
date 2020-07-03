@@ -43,7 +43,7 @@ list_files = function(con=NULL) {
 #' @param con authorized Connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param content the file path of the file to be uploaded
-#' @param target the relative server path location for the file
+#' @param target the relative server path location for the file, e.g. where to find the file in the users workspace
 #' @param encode the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)
 #' @param mime mime type used in upload_file ('application/octet-stream' as a default)
 #' 
@@ -87,7 +87,7 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
 #' @param src the relative filepath of the source file on the openeo back-end
 #' @param dst the destination file path on the local file system
 #' 
-#' @return The file path of the stored file
+#' @return The file path of the stored file on your machine
 #' @export
 download_file = function(src, dst = NULL, con=NULL) {
     tryCatch({
@@ -118,9 +118,9 @@ download_file = function(src, dst = NULL, con=NULL) {
 #'
 #' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
 #' 
+#' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' 
 #' @return logical
 #' @export
@@ -141,7 +141,7 @@ delete_file = function(src, con=NULL) {
 
 #' Retrieves the current users account information
 #' 
-#' Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
+#' Calls endpoint \code{/me} to fetch the user account information of the user that is currently logged in to the back-end
 #' 
 #' @param con authenticated client object (optional) otherwise \code{\link{active_connection}}
 #' is used.

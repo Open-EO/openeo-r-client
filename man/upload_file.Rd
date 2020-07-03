@@ -15,7 +15,7 @@ upload_file(
 \arguments{
 \item{content}{the file path of the file to be uploaded}
 
-\item{target}{the relative server path location for the file}
+\item{target}{the relative server path location for the file, e.g. where to find the file in the users workspace}
 
 \item{encode}{the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)}
 

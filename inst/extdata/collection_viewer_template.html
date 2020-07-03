@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>openEO Collection</title>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta charset='UTF-8'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<script src='https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js'></script>
+		<script src='https://cdn.jsdelivr.net/npm/vue'></script>
+		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_version%/assets/openeo-vue.umd.min.js'></script>
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css' />
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
+		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%vue_css_version%/assets/openeo-vue.css'>
+		<style>html, body { height: 100%; margin: 1em; font-family: sans-serif; }</style>
+	</head>
+
+	<body class='docgen'>
+		<div id='app'></div>
+		<script>
+		  new Vue({
+				el: '#app',
+				render: h => h(window['openeo-vue'].Collection, { 
+					props: {
+						collectionData: %collection_info%,
+						version: '1.0.0'
+					}
+				})
+			});
+		</script>
+		<noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
+	</body>
+
+</html>

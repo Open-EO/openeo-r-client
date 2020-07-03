@@ -15,7 +15,7 @@ download_file(src, dst = NULL, con = NULL)
 is used.}
 }
 \value{
-The file path of the stored file
+The file path of the stored file on your machine
 }
 \description{
 Sends a request to an openeo back-end to access the users files and downloads them to a given location

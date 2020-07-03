@@ -39,7 +39,7 @@ describe_collection = function(collection = NA, con=NULL) {
     
     if (length(collection) > 1 && !"Collection" %in% class(collection)) {
         return(lapply(collection, function(cid) {
-            describe_collection(con, cid)
+            describe_collection(collection=cid, con=con)
         }))
     } else {
         tryCatch({

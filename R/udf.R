@@ -13,7 +13,18 @@ list_udf_runtimes = function(con=NULL) {
     tryCatch({
         tag = "udf_runtimes"
         con = .assure_connection(con)
-        return(con$request(tag = tag, authorized = con$isLoggedIn()))
+        
+        listOfUdfRuntimes = con$request(tag = tag, authorized = con$isLoggedIn())
+        listOfUdfRuntimes = lapply(names(listOfUdfRuntimes), function(udf_runtime_name) {
+          udf_runtime = listOfUdfRuntimes[[udf_runtime_name]]
+          udf_runtime$id = udf_runtime_name
+          class(udf_runtime) = "UdfRuntime"
+          return(udf_runtime)
+        })
+        
+        class(listOfUdfRuntimes) = "UdfRuntimeList"
+        
+        return(listOfUdfRuntimes)
     }, error = .capturedErrorToMessage)
 }
 
@@ -44,7 +55,9 @@ list_udf_runtimes = function(con=NULL) {
 #' @return the textual JSON representation of the result
 #' 
 #' @note  
-#' The debug options are only available for the R-UDF service.
+#' The debug options are only available for the R-UDF service. The R UDF-API version has to be of version 0.1.0 (not the old alpha 
+#' version). You might want to check \url{https://github.com/Open-EO/openeo-r-udf#running-the-api-locally} for setting up a local 
+#' service for debugging.
 #' 
 #' @examples 
 #' \dontrun{

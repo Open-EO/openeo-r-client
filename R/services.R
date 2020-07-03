@@ -3,12 +3,13 @@
 #' Lists the current users services
 #' 
 #' Queries the back-end to retrieve a list of services that the current user owns. Services are 
-#' webservices like WCS, WFS, etc.
+#' webservices like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
+#' indices are the service IDs, the service object that is indexed by its ID can be used other functions instead of its service ID.
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return list of services (class ServiceList)
+#' @return named list of Services (class ServiceList)
 #' @export
 list_services = function(con=NULL) {
     tryCatch(suppressWarnings({
@@ -34,18 +35,17 @@ list_services = function(con=NULL) {
 
 #' Prepares and publishes a service on the back-end
 #' 
-#' The function will send a configuration object to the back-end to create a webservice from a job considering
-#' additional parameter.
+#' The function will create a web service of a process graph / workflow on the connected openEO service.
 #' 
 #' @param type character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()
 #' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
-#' @param title character (optional) the title in human readabled form for the service
-#' @param description character (optional) the description for the service
-#' @param enabled logical 
+#' @param title character (optional) - a title for the service intended for visualization purposes in clients for humans to read
+#' @param description character (optional) - a short description of the service
+#' @param enabled logical - whether or not the service is active or not
 #' @param configuration a named list specifying the configuration parameter
-#' @param plan character the billing plan
-#' @param budget numeric the amount of credits that can be spent for this service
+#' @param plan character - the billing plan
+#' @param budget numeric the amount of credits that can be spent on this service
 #' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #'  
