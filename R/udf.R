@@ -15,12 +15,17 @@ list_udf_runtimes = function(con=NULL) {
         con = .assure_connection(con)
         
         listOfUdfRuntimes = con$request(tag = tag, authorized = con$isLoggedIn())
-        listOfUdfRuntimes = lapply(names(listOfUdfRuntimes), function(udf_runtime_name) {
+        
+        runtime_names = names(listOfUdfRuntimes)
+        
+        listOfUdfRuntimes = lapply(runtime_names, function(udf_runtime_name) {
           udf_runtime = listOfUdfRuntimes[[udf_runtime_name]]
           udf_runtime$id = udf_runtime_name
           class(udf_runtime) = "UdfRuntime"
           return(udf_runtime)
         })
+        
+        names(listOfUdfRuntimes) = runtime_names
         
         class(listOfUdfRuntimes) = "UdfRuntimeList"
         

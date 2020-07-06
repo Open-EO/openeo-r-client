@@ -171,6 +171,11 @@ as.Graph.ProcessInfo = function(from) {
     return(parse_graph(json=from))
 }
 
+#' @export
+as.character.UdfRuntime = function(from) {
+    return(from$id)
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
