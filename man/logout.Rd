@@ -6,6 +6,10 @@
 \usage{
 logout(con = NULL)
 }
+\arguments{
+\item{con}{a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
+}
 \description{
 Logs out or closes the active connection to an openEO service.
 }

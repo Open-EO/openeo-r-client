@@ -401,7 +401,8 @@ Argument = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an Integer
 NULL
@@ -453,7 +454,8 @@ Integer = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an EPSG code as Integer
 NULL
@@ -504,7 +506,8 @@ EPSGCode = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Number
 NULL
@@ -576,7 +579,8 @@ Number = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a string.
 NULL
@@ -699,7 +703,8 @@ URI = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an output format of a back-end.
 NULL
@@ -760,7 +765,8 @@ OutputFormat = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a collection id.
 NULL
@@ -832,7 +838,8 @@ CollectionId = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a job.
 NULL
@@ -874,6 +881,192 @@ JobId = R6Class(
   )
 )
 
+# UdfRuntime argument ====
+#' UdfRuntimeArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfRuntimeArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the udf runtime in an process argument
+NULL
+
+UdfRuntimeArgument = R6Class(
+  "udf-runtime",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-runtime"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a runtime id."))
+        # correct value if you can
+        private$value = coerced
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
+    }
+  )
+)
+
+# UdfRuntimeVersion argument ====
+#' UdfRuntimeVersionArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfRuntimeVersionArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} is an argument that expects a udf runtime version or character as value.
+NULL
+
+UdfRuntimeVersionArgument = R6Class(
+  "udf-runtime-version",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-runtime-version"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a udf runtime version string."))
+        # correct value if you can
+        private$value = coerced
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
+    }
+  )
+)
+
+# UdfCode argument ====
+#' UdfCodeArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfCodeArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraph}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} is an argument that expects an udf code or a file path.
+NULL
+
+UdfCodeArgument = R6Class(
+  "udf-code",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-code"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        
+        if ("FileFormat" %in% class(private$value)) {
+          # what to do?
+        } else {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          
+          private$value = coerced
+        }
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      if (is.call(private$value)) {
+        return(paste(deparse(private$value),collapse = "\n"))
+      } else if (is.character(private$value)) {
+        if (file.exists(private$value)) {
+          # if valid file path open file and attach
+          tryCatch({
+            suppressWarnings({
+              content = readChar(private$value, file.info(private$value)$size)
+              return(content)
+            })
+            
+          }, error = function(e) {
+            return(private$value)
+          })
+          
+        } else {
+          return(private$value)
+        } 
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
+      } else if (is.na(private$value)) {
+        return(NA)
+      } else {
+        return(as.character(private$value))
+      }
+    }
+  )
+)
+
 # ProcessGraphId ====
 #' ProcessGraphId
 #' 
@@ -886,7 +1079,8 @@ JobId = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a process graph.
 NULL
@@ -941,7 +1135,8 @@ ProcessGraphId = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
 NULL
@@ -994,7 +1189,8 @@ ProjDefinition = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a bounding box / extent.
 NULL
@@ -1103,7 +1299,8 @@ BoundingBox = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a boolean / logical.
 NULL
@@ -1153,7 +1350,8 @@ Boolean = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date.
 NULL
@@ -1204,7 +1402,8 @@ Date = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date with time component.
 NULL
@@ -1255,7 +1454,8 @@ DateTime = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the time of a day.
 NULL
@@ -1318,7 +1518,8 @@ Time = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an object in geojson.
 NULL
@@ -1358,7 +1559,8 @@ GeoJson = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents output format options.
 NULL
@@ -1399,7 +1601,8 @@ OutputFormatOptions = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a raster cube.
 NULL
@@ -1447,7 +1650,8 @@ RasterCube = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a vector cube.
 NULL
@@ -1514,7 +1718,8 @@ VectorCube = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a ProcessGraph.
 NULL
@@ -1634,7 +1839,8 @@ ProcessGraph = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a ProcessGraph value.
 NULL
@@ -1718,7 +1924,8 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a single valued array.
 NULL
@@ -1947,7 +2154,8 @@ Array = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Kernel.
 NULL
@@ -1985,7 +2193,8 @@ Kernel = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a temporal interval.
 NULL
@@ -2027,7 +2236,8 @@ TemporalInterval = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
 NULL
@@ -2073,7 +2283,8 @@ TemporalIntervals = R6Class(
 #' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
 NULL
@@ -2274,7 +2485,10 @@ findParameterGenerator = function(schema) {
                                TemporalInterval,
                                TemporalIntervals,
                                Time,
-                               URI)
+                               URI,
+                               UdfRuntimeArgument,
+                               UdfRuntimeVersionArgument,
+                               UdfCodeArgument)
   
   # resolve the any parameter (no specification)
   if (length(schema$type) == 0 && length(schema$subtype) == 0) {

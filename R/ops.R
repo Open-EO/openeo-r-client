@@ -5,13 +5,34 @@
 
 # 1. Group
 
+#' Unary function wrappers
+#' 
+#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
+#' it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+#' processes counterparts.
+#' 
+#' @param x \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
+#' the function
+#' @param ... further arguments to pass on, see the documentation of those primitive functions of R for further information
+#' @param digits the amount of decimal digits to round to
+#' @param i the index of the element in a vector or list
+#' @param drop for completenes listed here but not used in openEO processes
+#' @param base the base of the exponential operation
+#' 
+#' @return a \code{ProcessNode}
+#' 
+#' @name unary_ops
+NULL
+
 .abs = function(x) {
   .genericUnaryFunction(x,"absolute")
 }
 
+#' @rdname unary_ops
 #' @export
 `abs.ProcessNode` <- .abs
 
+#' @rdname unary_ops
 #' @export
 `abs.ProcessGraphParameter` <- .abs
 
@@ -19,44 +40,50 @@
 .sign = function(x) {
   .genericUnaryFunction(x,"sgn")
 }
+#' @rdname unary_ops
 #' @export
 `sign.ProcessNode` <- .sign
+#' @rdname unary_ops
 #' @export
 `sign.ProcessGraphParameter` <- .sign
 
 .sqrt <- function(x) {
   .genericUnaryFunction(x,"sqrt")
 }
+#' @rdname unary_ops
 #' @export
 `sqrt.ProcessNode` <- .sqrt
-
+#' @rdname unary_ops
 #' @export
 `sqrt.ProcessGraphParameter` <- .sqrt
 
-.trunc = function(x) {
+.trunc = function(x, ...) {
   .genericUnaryFunction(x,"int")
 }
+#' @rdname unary_ops
 #' @export
 `trunc.ProcessNode` <- .trunc
-
+#' @rdname unary_ops
 #' @export
 `trunc.ProcessGraphParameter` <- .trunc
 
 .floor = function(x) {
   .genericUnaryFunction(x,"floor")
 }
+#' @rdname unary_ops
 #' @export
 `floor.ProcessNode` <- .floor
-
+#' @rdname unary_ops
 #' @export
 `floor.ProcessGraphParameter` <- .floor
 
 .ceiling = function(x) {
   .genericUnaryFunction(x,"ceil")
 }
+#' @rdname unary_ops
 #' @export
 `ceiling.ProcessNode` <- .ceiling
-
+#' @rdname unary_ops
 #' @export
 `ceiling.ProcessGraphParameter` <- .ceiling
 
@@ -70,20 +97,20 @@
   x = .checkMathConstants(x,graph)
   graph[[FUN]](x=x,p=digits) 
 }
+#' @rdname unary_ops
 #' @export
 `round.ProcessNode` <- .round
-
+#' @rdname unary_ops
 #' @export
 `round.ProcessGraphParameter` <- .round
-
 
 .exp = function(x) {
   .genericUnaryFunction(x,"exp")
 }
-
+#' @rdname unary_ops
 #' @export
 `exp.ProcessNode` <- .exp
-
+#' @rdname unary_ops
 #' @export
 `exp.ProcessGraphParameter` <- .exp
 
@@ -109,10 +136,10 @@
   }
   
 }
-
+#' @rdname unary_ops
 #' @export
 `log.ProcessNode` <- .log
-
+#' @rdname unary_ops
 #' @export
 `log.ProcessGraphParameter` <- .log
 
@@ -120,9 +147,10 @@
 .log10 = function(x) {
   .log(x,10)
 }
+#' @rdname unary_ops
 #' @export
 `log10.ProcessNode` <- .log10
-
+#' @rdname unary_ops
 #' @export
 `log10.ProcessGraphParameter` <- .log10
 
@@ -130,10 +158,10 @@
 .cos = function(x) {
   .genericUnaryFunction(x,"cos")
 }
-
+#' @rdname unary_ops
 #' @export
 `cos.ProcessNode` <- .cos
-
+#' @rdname unary_ops
 #' @export
 `cos.ProcessGraphParameter` <- .cos
 
@@ -141,9 +169,10 @@
 .sin = function(x) {
   .genericUnaryFunction(x,"sin")
 }
+#' @rdname unary_ops
 #' @export
 `sin.ProcessNode` <- .sin
-
+#' @rdname unary_ops
 #' @export
 `sin.ProcessGraphParameter` <- .sin
 
@@ -151,9 +180,10 @@
 .tan = function(x) {
   .genericUnaryFunction(x,"tan")
 }
+#' @rdname unary_ops
 #' @export
 `tan.ProcessNode` <- .tan
-
+#' @rdname unary_ops
 #' @export
 `tan.ProcessGraphParameter` <- .tan
 
@@ -161,10 +191,10 @@
 .cosh = function(x) {
   .genericUnaryFunction(x,"cosh")
 }
-
+#' @rdname unary_ops
 #' @export
 `cosh.ProcessNode` <- .cosh
-
+#' @rdname unary_ops
 #' @export
 `cosh.ProcessGraphParameter` <- .cosh
 
@@ -172,10 +202,10 @@
 .sinh = function(x) {
   .genericUnaryFunction(x,"sinh")
 }
-
+#' @rdname unary_ops
 #' @export
 `sinh.ProcessNode` <- .sinh
-
+#' @rdname unary_ops
 #' @export
 `sinh.ProcessGraphParameter` <- .sinh
 
@@ -183,10 +213,10 @@
 .tanh = function(x) {
   .genericUnaryFunction(x,"tanh")
 }
-
+#' @rdname unary_ops
 #' @export
 `tanh.ProcessNode` <- .tanh
-
+#' @rdname unary_ops
 #' @export
 `tanh.ProcessGraphParameter` <- .tanh
 
@@ -194,10 +224,10 @@
 .acos = function(x) {
   .genericUnaryFunction(x,"arccos")
 }
-
+#' @rdname unary_ops
 #' @export
 `acos.ProcessNode` <- .acos
-
+#' @rdname unary_ops
 #' @export
 `acos.ProcessGraphParameter` <- .acos
 
@@ -205,10 +235,10 @@
 .asin = function(x) {
   .genericUnaryFunction(x,"arcsin")
 }
-
+#' @rdname unary_ops
 #' @export
 `asin.ProcessNode` <- .asin
-
+#' @rdname unary_ops
 #' @export
 `asin.ProcessGraphParameter` <- .asin
 
@@ -216,10 +246,10 @@
 .atan = function(x) {
   .genericUnaryFunction(x,"arctan")
 }
-
+#' @rdname unary_ops
 #' @export
 `atan.ProcessNode` <- .atan
-
+#' @rdname unary_ops
 #' @export
 `atan.ProcessGraphParameter` <- .atan
 
@@ -227,9 +257,10 @@
 .acosh = function(x) {
   .genericUnaryFunction(x,"arccosh")
 }
+#' @rdname unary_ops
 #' @export
 `acosh.ProcessNode` <- .acosh
-
+#' @rdname unary_ops
 #' @export
 `acosh.ProcessGraphParameter` <- .acosh
 
@@ -237,9 +268,10 @@
 .asinh = function(x) {
   .genericUnaryFunction(x,"arcsinh")
 }
+#' @rdname unary_ops
 #' @export
 `asinh.ProcessNode` <- .asinh
-
+#' @rdname unary_ops
 #' @export
 `asinh.ProcessGraphParameter` <- .asinh
 
@@ -247,9 +279,10 @@
 .atanh = function(x) {
   .genericUnaryFunction(x,"arcsinh")
 }
+#' @rdname unary_ops
 #' @export
 `atanh.ProcessNode` <- .atanh
-
+#' @rdname unary_ops
 #' @export
 `atanh.ProcessGraphParameter` <- .atanh
 
@@ -277,9 +310,10 @@
 .cumsum <- function(x) {
   .genericUnaryFunction(x,"cumsum")
 }
+#' @rdname unary_ops
 #' @export
 `cumsum.ProcessNode` <- .cumsum
-
+#' @rdname unary_ops
 #' @export
 `cumsum.ProcessGraphParameter` <- .cumsum
 
@@ -287,10 +321,10 @@
 .cummin <- function(x) {
   .genericUnaryFunction(x,"cummin")
 }
-
+#' @rdname unary_ops
 #' @export
 `cummin.ProcessNode` <- .cummin
-
+#' @rdname unary_ops
 #' @export
 `cummin.ProcessGraphParameter` <- .cummin
 
@@ -298,10 +332,10 @@
 .cummax <- function(x) {
   .genericUnaryFunction(x,"cummax")
 }
-
+#' @rdname unary_ops
 #' @export
 `cummax.ProcessNode` <- .cummax
-
+#' @rdname unary_ops
 #' @export
 `cummax.ProcessGraphParameter` <- .cummax
 
@@ -309,15 +343,16 @@
 .cumprod <- function(x) {
   .genericUnaryFunction(x,"cumproduct")
 }
-
+#' @rdname unary_ops
 #' @export
 `cumprod.ProcessNode` <- .cumprod
-
+#' @rdname unary_ops
 #' @export
 `cumprod.ProcessGraphParameter` <- .cumprod
 
 # 2. Group
 # [ (subset) ====
+#' @rdname unary_ops
 #' @export
 `[.ProcessGraphParameter` <- function(x,i,...,drop=TRUE) {
   # check x for being an array
@@ -343,14 +378,32 @@
   
 }
 
+#' Binary function wrappers
+#' 
+#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
+#' it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+#' processes counterparts.
+#' 
+#' @param e1 \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
+#' the function or a numeric value
+#' @param e2 same as e1
+#' @param x the first expression in the xor statement
+#' @param y the seconde expression in the xor statement
+#' @param ... further arguments to pass on, see the documentation of those primitive functions of R for further information
+#' 
+#' @return a \code{ProcessNode}
+#' 
+#' @name binary_ops
+NULL
+
 # mathematical operators ----
 .plus = function(e1,e2){
   .genericBinaryFunction(e1,e2,"sum")
 }
-
+#' @rdname binary_ops
 #' @export
 `+.ProcessNode` <- .plus
-
+#' @rdname binary_ops
 #' @export
 `+.ProcessGraphParameter` <- .plus
 
@@ -364,10 +417,10 @@
   
   .genericBinaryFunction(e1,e2,"subtract")
 }
-
+#' @rdname binary_ops
 #' @export
 `-.ProcessNode` <- .minus
-
+#' @rdname binary_ops
 #' @export
 `-.ProcessGraphParameter` <- .minus
 
@@ -386,10 +439,10 @@
   }
   .genericBinaryFunction(e1,e2,FUN)
 }
-
+#' @rdname binary_ops
 #' @export
 `*.ProcessNode` <- .multiply
-
+#' @rdname binary_ops
 #' @export
 `*.ProcessGraphParameter` <- .multiply
 
@@ -397,10 +450,10 @@
 .divide = function(e1,e2) {
   .genericBinaryFunction(e1,e2,"divide")
 }
-
+#' @rdname binary_ops
 #' @export
 `/.ProcessNode` <- .divide
-
+#' @rdname binary_ops
 #' @export
 `/.ProcessGraphParameter` <- .divide
 
@@ -408,10 +461,10 @@
 .power = function(e1,e2) {
   .genericBinaryFunction(e1,e2,"power")
 }
-
+#' @rdname binary_ops
 #' @export
 `^.ProcessNode` <- .power
-
+#' @rdname binary_ops
 #' @export
 `^.ProcessGraphParameter` <- .power
 
@@ -419,21 +472,22 @@
 .mod = function(e1,e2) {
   .genericBinaryFunction(e1,e2,"mod")
 }
-
+#' @rdname binary_ops
 #' @export
 `%%.ProcessNode` <- .mod
-
+#' @rdname binary_ops
 #' @export
 `%%.ProcessGraphParameter` <- .mod
 
 # logical operators ----
 
-.not = function(e1,e2) {
-  .genericUnaryFunction(e1,"not")
+.not = function(x) {
+  .genericUnaryFunction(x,"not")
 }
+#' @rdname unary_ops
 #' @export
 `!.ProcessNode` <- .not
-
+#' @rdname unary_ops
 #' @export
 `!.ProcessGraphParameter` <- .not
 
@@ -448,9 +502,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
+#' @rdname binary_ops
 #' @export
 `&.ProcessNode` <- .and
-
+#' @rdname binary_ops
 #' @export
 `&.ProcessGraphParameter` <- .and
 
@@ -465,9 +520,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
+#' @rdname binary_ops
 #' @export
 `|.ProcessNode` <- .or
-
+#' @rdname binary_ops
 #' @export
 `|.ProcessGraphParameter` <- .or
 
@@ -479,10 +535,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](expressions=c(x,y)) 
 }
-
+#' @rdname binary_ops
 #' @export
 `xor.ProcessNode` <- .xor
-
+#' @rdname binary_ops
 #' @export
 `xor.ProcessGraphParameter` <- .xor
 
@@ -494,9 +550,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
 }
+#' @rdname binary_ops
 #' @export
 `==.ProcessNode` <- .equals
-
+#' @rdname binary_ops
 #' @export
 `==.ProcessGraphParameter` <- .equals
 
@@ -507,10 +564,11 @@
   FUN = "neq"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
-} 
+}
+#' @rdname binary_ops
 #' @export
 `!=.ProcessNode` <- .notequal
-
+#' @rdname binary_ops
 #' @export
 `!=.ProcessGraphParameter` <- .notequal
 
@@ -522,9 +580,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
 }
+#' @rdname binary_ops
 #' @export
 `<.ProcessNode` <- .smaller
-
+#' @rdname binary_ops
 #' @export
 `<.ProcessGraphParameter` <- .smaller
 
@@ -536,9 +595,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
 }
+#' @rdname binary_ops
 #' @export
 `<=.ProcessNode` <- .smaller_eq
-
+#' @rdname binary_ops
 #' @export
 `<=.ProcessGraphParameter` <- .smaller_eq
 
@@ -550,9 +610,10 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
 }
+#' @rdname binary_ops
 #' @export
 `>=.ProcessNode` <- .greater_eq
-
+#' @rdname binary_ops
 #' @export
 `>=.ProcessGraphParameter` <- .greater_eq
 
@@ -564,23 +625,41 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](x=e1,y=e2) 
 }
-
+#' @rdname binary_ops
 #' @export
 `>.ProcessNode` <- .greater
-
+#' @rdname binary_ops
 #' @export
 `>.ProcessGraphParameter` <- .greater
 
 # 3. group
+
+#' Group operator wrappers
+#' 
+#' R's mathematical group primitives that are mapped into openEO processes.
+#' 
+#' @param ... multiple arguments that start with a \code{ProcessNode} or a \code{ProcessGraphParameter}
+#' @param na.rm logical to determine if NA values shall be removed in the calculation or if they are propagated
+#' @param x a vector or list of values that are mixed or consits fully of \code{ProcessNode}, 
+#' \code{ProcessGraphParameter} or numerical values
+#' 
+#' @return \code{ProcessNode}
+#' @name group_ops
+#' 
+NULL
+
 # summary operators ----
 .sum <- function(..., na.rm=FALSE) {
   elems = list(...)
   .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="sum")
 }
+#' @rdname group_ops
 #' @export
 `sum.ProcessNode` <- .sum
 #' @export
+#' @rdname group_ops
 `sum.ProcessGraphParameter` <- .sum
+#' @rdname group_ops
 #' @export
 `sum.list` <- .sum
 
@@ -589,10 +668,13 @@
   elems = list(...)
   .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="product")
 }
+#' @rdname group_ops
 #' @export
 `prod.ProcessNode` <- .prod
+#' @rdname group_ops
 #' @export
 `prod.ProcessGraphParameter` <- .prod
+#' @rdname group_ops
 #' @export
 `prod.list` <- .prod
 
@@ -601,10 +683,13 @@
   elems = list(...)
   .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="min")
 }
+#' @rdname group_ops
 #' @export
 `min.ProcessNode` <- .min
+#' @rdname group_ops
 #' @export
 `min.ProcessGraphParameter` <- .min
+#' @rdname group_ops
 #' @export
 `min.list` <- .min
 
@@ -613,12 +698,13 @@
   elems = list(...)
   .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="max")
 }
+#' @rdname group_ops
 #' @export
 `max.ProcessNode` <- .max
-
+#' @rdname group_ops
 #' @export
 `max.ProcessGraphParameter` <- .max
-
+#' @rdname group_ops
 #' @export
 `max.list` <- .max
 
@@ -627,13 +713,13 @@
   elems = list(...)
   .genericAggregationFunction(x=elems,na.rm=na.rm,FUN="extrema")
 }
-
+#' @rdname group_ops
 #' @export
 `range.ProcessNode` <- .range
-
+#' @rdname group_ops
 #' @export
 `range.ProcessGraphParameter` <- .range
-
+#' @rdname group_ops
 #' @export
 `range.list` <- .range
 
@@ -641,13 +727,13 @@
 .mean <- function(x, na.rm=FALSE,...) {
   .genericAggregationFunction(x=x,na.rm=na.rm,FUN="mean")
 }
-
+#' @rdname group_ops
 #' @export
 `mean.ProcessNode` <- .mean
-
+#' @rdname group_ops
 #' @export
 `mean.ProcessGraphParameter` <- .mean
-
+#' @rdname group_ops
 #' @export
 `mean.list` <- .mean
 
@@ -657,12 +743,14 @@
 .median <- function(x, na.rm=FALSE,...) {
   .genericAggregationFunction(x=x,na.rm=na.rm,FUN="median")
 }
+#' @rdname group_ops
+#' @importFrom stats median
 #' @export
 `median.ProcessNode`<- .median
-
+#' @rdname group_ops
 #' @export
 `median.ProcessGraphParameter`<- .median
-
+#' @rdname group_ops
 #' @export
 `median.list`<- .median
 
@@ -670,11 +758,14 @@
 .sd <- function(x, na.rm=FALSE) {
   .genericAggregationFunction(x=x,na.rm=na.rm,FUN="sd")
 }
+#' @rdname group_ops
+#' @importFrom stats sd
 #' @export
 `sd.ProcessNode`  <- .sd
+#' @rdname group_ops
 #' @export
 `sd.ProcessGraphParameter`  <- .sd
-
+#' @rdname group_ops
 #' @export
 `sd.list`  <- .sd
 
@@ -682,17 +773,25 @@
 .var <- function(x, na.rm=FALSE) {
   .genericAggregationFunction(x=x,na.rm=na.rm,FUN="variance")
 }
-
+#' @rdname group_ops
+#' @importFrom stats var
 #' @export
 `var.ProcessNode` <- .var
+#' @rdname group_ops
 #' @export
 `var.ProcessGraphParameter` <- .var
-
+#' @rdname group_ops
 #' @export
 `var.list` <- .var
 
 
-.quantile <- function(x, probs, na.rm=FALSE) {
+.quantile <- function(x, ...) {
+  args = list(...)
+  probs = args$probs
+  na.rm = args$na.rm
+  
+  if (length(na.rm) == 0) na.rm = FALSE
+  
   if ("ProcessNode" %in% class(x)) {
     graph = x$getGraph()
   } else {
@@ -704,8 +803,11 @@
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraph'."))
   graph[[FUN]](data = x,probabilites = probs)
 }
+#' @rdname unary_ops
+#' @importFrom stats quantile
 #' @export
 `quantile.ProcessNode` <- .quantile
+#' @rdname unary_ops
 #' @export
 `quantile.ProcessGraphParameter` <- .quantile
 

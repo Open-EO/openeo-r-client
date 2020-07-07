@@ -14,8 +14,6 @@ log_job(job, offset = NULL, limit = NULL, con = NULL)
 \item{limit}{the limit of lines to be shown}
 
 \item{con}{an optional connection if you want to address a specific service}
-
-\item{a}{JobLog object or an Error}
 }
 \value{
 a \code{JobLog} object

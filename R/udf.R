@@ -21,6 +21,17 @@ list_udf_runtimes = function(con=NULL) {
         listOfUdfRuntimes = lapply(runtime_names, function(udf_runtime_name) {
           udf_runtime = listOfUdfRuntimes[[udf_runtime_name]]
           udf_runtime$id = udf_runtime_name
+          
+          versions = names(udf_runtime$versions)
+          udf_runtime$versions = lapply(versions, function(v) {
+            version = udf_runtime$versions[[v]]
+            version$version = v
+            class(version) = "UdfRuntimeVersion"
+            
+            return(version)
+          })
+          names(udf_runtime$versions) = versions
+          
           class(udf_runtime) = "UdfRuntime"
           return(udf_runtime)
         })

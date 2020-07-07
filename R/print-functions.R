@@ -435,5 +435,6 @@ print.ResultList = function(x, ...) {
 
 #' @export
 print.CubeDimensions = function(x,...) {
+    browser()
     warning("Unimplemented!")
 }

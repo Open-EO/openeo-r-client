@@ -263,6 +263,9 @@ login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL,
 #' 
 #' Logs out or closes the active connection to an openEO service.
 #' 
+#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' 
 #' @export
 logout = function(con=NULL) {
     con = .assure_connection(con)
@@ -295,7 +298,7 @@ active_connection = function(con=NULL) {
         assign(x = "active_connection", value = con, envir = pkgEnvironment)
         invisible(con)
     } else {
-        stop(paste0("Cannot set active connection with object of class '",head(class(con),1),"'"))
+        stop(paste0("Cannot set active connection with object of class '",utils::head(class(con),1),"'"))
     }
 }
 

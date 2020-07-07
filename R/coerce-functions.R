@@ -156,24 +156,42 @@ as.data.frame.AssetList = function(x, ...) {
     return(table)
 }
 
+#' Coercion into Graph
+#' 
+#' Currently there are several ways to create a \code{Graph} object. One of them is by coercion. You can coerce
+#' from \code{ProcessNode}, a function that returns a ProcessNode or from a userdefined process (\code{ProcessInfo}), as obtained by
+#' function \code{describe_process_graph}.
+#' 
+#' @name as.Graph
+#' 
+#' @param from the source from which to coerce (\code{ProcessNode}, \code{function} or \code{ProcessInfo})
+#' @return \code{Graph}
+#' 
 #' @export
 as.Graph.ProcessNode = function(from) {
     return(Graph$new(final_node=from))
 }
 
+#' @rdname as.Graph
 #' @export
 as.Graph.function = function(from) {
     return(.function_to_graph(value=from))
 }
 
+#' @rdname as.Graph
 #' @export
 as.Graph.ProcessInfo = function(from) {
     return(parse_graph(json=from))
 }
 
 #' @export
-as.character.UdfRuntime = function(from) {
-    return(from$id)
+as.character.UdfRuntime = function(x, ...) {
+    return(x$id)
+}
+
+#' @export
+as.character.UdfRuntimeVersion = function(x, ...) {
+    return(x$version)
 }
 
 suppressWarnings({

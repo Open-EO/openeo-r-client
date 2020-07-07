@@ -181,7 +181,7 @@ terms_of_service = function(con = NULL) {
         })
         sel = as.list(unlist(sel))
         if (length(sel) == 0) {
-            openeo:::.no_information_by_backend("terms of service")
+            .no_information_by_backend("terms of service")
             return(invisible(NULL))
         } else {
             htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
@@ -216,7 +216,7 @@ privacy_policy = function(con = NULL) {
         })
         sel = as.list(unlist(sel))
         if (length(sel) == 0) {
-            openeo:::.no_information_by_backend("privacy policy")
+            .no_information_by_backend("privacy policy")
             return(invisible(NULL))
         } else {
             htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
@@ -232,6 +232,8 @@ privacy_policy = function(con = NULL) {
 #' wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
 #' as a list object translated from JSON using the jsonlite package.
 #' 
+#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' is used.
 #' @export
 conformance = function(con=NULL) {
     tryCatch({

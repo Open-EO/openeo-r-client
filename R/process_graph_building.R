@@ -6,7 +6,7 @@ library(lubridate)
 # Graph ====
 #' Graph object
 #' 
-#' This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{Variable}}s. The 
+#' This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{ProcessGraphParameter}}. The 
 #' creation of a Graph is not required in most cases, because this will otherwise be done automatically in those function that have
 #' to send a Graph representation to the openEO service. In those cases you can pass on a function that results a ProcessNode or a 
 #' result node itself.

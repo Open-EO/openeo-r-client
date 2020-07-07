@@ -52,6 +52,8 @@ list_jobs = function(con=NULL) {
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a connection to file if output was provided, the raw data if not
+#' 
+#' @importFrom methods as
 #' @export
 compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con=NULL) {
     tryCatch({
@@ -477,7 +479,6 @@ estimate_job = function(job, con=NULL) {
 #' @param offset the start line from which to read
 #' @param limit the limit of lines to be shown
 #' @param con an optional connection if you want to address a specific service
-#' @param a JobLog object or an Error
 #' 
 #' @return a \code{JobLog} object
 #' @export

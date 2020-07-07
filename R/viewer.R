@@ -92,13 +92,13 @@ process_viewer = function(x,con=NULL) {
 #' The function opens up a viewer panel in RStudio which renders the collection information
 #' nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
 #' 
-#' @param x character with the name of a collection or the \code{\link{Collection}} obtained
+#' @param x character with the name of a collection or the \code{Collection} obtained
 #' with \code{\link{describe_collection}}.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
 #' @export
 collection_viewer = function(x,con=NULL) {
-    if (length(con) == 0) con = openeo:::.assure_connection(con)
+    if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
     doc_gen_version = "@latest"

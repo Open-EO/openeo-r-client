@@ -724,6 +724,8 @@ OpenEOClient <- R6Class(
 #' The function returns the client version. Wraps the call 'packageVersion("openeo")', which will return this packages version.
 #' 
 #' @return the client version
+#' 
+#' @importFrom utils packageVersion
 #' @export
 client_version = function() {
   return(packageVersion("openeo"))
