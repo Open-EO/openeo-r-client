@@ -2548,8 +2548,17 @@ processFromJson=function(json) {
 
 parameterFromJson = function(param_def) {
   
-  if (length(param_def$schema) == 0) stop("Invalid parameter description, because of missing schema")
-  
+  if (length(param_def$schema) == 0) {
+    # an empty schema means ANY value is allowed
+    arg = Argument$new()
+    
+    if (length(param_def$description) > 0) {
+      arg$setDescription(param_def$description)
+    }
+    
+    return(arg)
+  }
+    
   # if it is no unnamed object list, then box it
   if (length(names(param_def$schema)) > 0) {
     if (!is.null(param_def$schema$type) && is.list(param_def$schema$type)) {
