@@ -209,6 +209,8 @@ describe_account = function(con=NULL) {
 connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", provider=NULL, config = NULL) {
     con = OpenEOClient$new()
     
+    if (!is.null(user) && !is.null(password) && is.null(login_type)) login_type = "basic"
+    
     if (is.null(user) && is.null(password) && is.null(login_type)) {
         con = con$connect(url = host, version = version,exchange_token=exchange_token)
     } else if (login_type == "basic") {

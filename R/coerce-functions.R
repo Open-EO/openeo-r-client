@@ -80,6 +80,7 @@ NULL
 #' 
 #' @export
 as.data.frame.JobList = function(x, ...) {
+    x = unname(x)
     params = list(...)
     return(.listObjectsToDataFrame(x, extract = params$extract))
 }
@@ -135,13 +136,17 @@ as.data.frame.VersionsList = function(x, ...) {
 #' @export
 as.data.frame.FileFormatList = function(x, ...) {
     # this will just be an overview
-    output = .listObjectsToDataFrame(x$output,extract = c("name","title"))
+    output = .listObjectsToDataFrame(unname(x$output),extract = c("name","title"))
     output$direction = "output"
     
-    input = .listObjectsToDataFrame(x$input,extract = c("name","title"))
-    input$direction = "input"
+    if (nrow(x$input) > 0) {
+        input = .listObjectsToDataFrame(unname(x$input),extract = c("name","title"))
+        input$direction = "input"
+        table = rbind(output,input)
+    } else {
+        table = output
+    }
     
-    table = rbind(output,input)
     
     return(table)
 }
