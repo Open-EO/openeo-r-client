@@ -49,7 +49,7 @@ process_viewer = function(x,con=NULL) {
     } else if ("ProcessCollection" %in% class(x)) {
       x = con$processes
     } else if (is.character(x)) {
-      x = describe_process(con=con,id = x)
+      x = describe_process(con=con,process = x)
       
       if (is.null(x)) {
         return(invisible(NULL))
@@ -62,7 +62,7 @@ process_viewer = function(x,con=NULL) {
         warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
         return(invisible(NULL))
       }
-      x = describe_process(con=con,id = pid)
+      x = describe_process(con=con,process = pid)
     }
     
     if (!"ProcessInfo" %in% class(x)) {
@@ -121,7 +121,10 @@ collection_viewer = function(x,con=NULL) {
       }
         
     } else {
-        x = escaper(x)
+      if (length(x$`cube:dimensions`) == 0) {
+        x = describe_collection(collection = x)
+      }
+      x = escaper(x)
     }
     
     x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE,null="null")

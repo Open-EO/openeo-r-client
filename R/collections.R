@@ -68,6 +68,17 @@ describe_collection = function(collection = NA, con=NULL) {
             }
             
             if (!is.null(info$`cube:dimensions`)) {
+                
+                dim_names = names(info$`cube:dimensions`)
+                info$`cube:dimensions` = lapply(dim_names, function(dimname) {
+                    dim = info$`cube:dimensions`[[dimname]]
+                    dim$name = dimname
+                    class(dim) = "CubeDimension"
+                    
+                    return(dim)
+                })
+                names(info$`cube:dimensions`) = dim_names
+                
                 class(info$`cube:dimensions`) = "CubeDimensions"
             } else {
                 warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))

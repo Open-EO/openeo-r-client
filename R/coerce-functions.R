@@ -194,6 +194,11 @@ as.character.UdfRuntimeVersion = function(x, ...) {
     return(x$version)
 }
 
+#' @export
+as.character.CubeDimension = function(x, ...) {
+    return(x$name)
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)

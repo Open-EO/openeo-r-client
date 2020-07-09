@@ -415,6 +415,7 @@ print.ResultList = function(x, ...) {
         cat("Links expire on: ",x$properties$expires,"\n")
     }
     
+    # assets overview
     if (length(x$assets) > 0) {
         cat("\n")
         assets = as.data.frame(x$assets)
@@ -428,13 +429,34 @@ print.ResultList = function(x, ...) {
         cat("\n")
         cat("No assests found.\n")
     }
-    
-    # assets overview
-    
 }
 
 #' @export
 print.CubeDimensions = function(x,...) {
-    browser()
-    warning("Unimplemented!")
+    lapply(x,function(y) {
+        print(y)
+        cat("\n")
+    })
+}
+
+#' @export
+print.CubeDimension = function(x,...) {
+    cat("Dimension:\t",x$name,"\n")
+    
+    if (length(x$type) > 0) {
+        cat("Type:\t\t",x$type,"\n")
+    }
+    
+    if (length(x$axis) > 0) {
+        cat("Axis:\t\t",x$axis,"\n")
+    }
+    
+    if (length(x$extent) > 0) {
+        cat("Extent:\t\t",paste0("[",paste0(x$extent,collapse=","),"]"),"\n")
+    }
+    if (length(x$values) > 0) {
+        cat("Values:\t\t",paste0("[",paste(x$values,collapse=","),"]"))
+    }
+    
+    
 }

@@ -32,18 +32,22 @@ list_processes = function(con=NULL) {
 #' Queries an openeo back-end and retrieves more detailed information about offered processes
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id id of a process to be described
+#' @param process id of a process to be described or the ProcessInfo object
 #'
 #' @return a list of detailed information
 #' @export
-describe_process = function(id = NA, con=NULL) {
+describe_process = function(process = NA, con=NULL) {
     con = .assure_connection(con)
     
-    describeProcess = !missing(id) && !is.na(id)
+    describeProcess = !missing(process) && !is.na(process)
     
     if (!describeProcess) {
-        message("No or invalid process_id(s)")
+        message("No or invalid process_id(s) or process")
         invisible(NULL)
+    }
+    
+    if ("ProcessInfo" %in% class(process)) {
+        return(process)
     }
     
     if (is.null(con$processes)) {
@@ -51,10 +55,10 @@ describe_process = function(id = NA, con=NULL) {
         invisible(NULL)
     }
     
-    if (!id %in% names(con$processes)) {
-        message(paste("Cannot describe process '", id, "'. Process does not exist.", sep = ""))
+    if (!process %in% names(con$processes)) {
+        message(paste("Cannot describe process '", process, "'. Process does not exist.", sep = ""))
         invisible(NULL)
     } else {
-        return(con$processes[[id]])
+        return(con$processes[[process]])
     }
 }
