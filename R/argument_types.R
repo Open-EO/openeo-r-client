@@ -1509,7 +1509,10 @@ Time = R6Class(
 #' GeoJson
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-#' class represents geospatial features.
+#' class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
+#' allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
+#' in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+#' EPSG:4326, the polygon is transformed accordingly.
 #' 
 #' @name GeoJson
 #' 
@@ -1534,15 +1537,63 @@ GeoJson = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$subtype = "geojson"
+    },
+    
+    setValue = function(value) {
+      
+      if (!.is_package_installed("sf")) {
+        warnings("Package sf is not installed which is required for GeoJson support.")
+      }
+      
+      if (isNamespaceLoaded("sf")) {
+        if (all(c("XY","POLYGON") %in% class(value))) {
+          value = sf::st_sfc(value)
+        }
+        
+        if ("sfc_POLYGON" %in% class(value)) {
+          value = sf::st_sf(value)
+          sf::st_crs(value) = 4326
+        } 
+        
+        if ("sf" %in% class(value)) {
+          # since geojson only supports WGS84 we need to make sure that it is that crs
+          value = sf::st_transform(value, st_crs(4326))
+        }
+      }
+      
+      private$value = value
     }
   ),
   private = list(
     typeCheck = function() {
-      #TODO implement! object == list in R
-      stop("Not implemented")
+      if (is.list(private$value)) {
+        #if list we assume that the geojson object was created as list
+        return(NULL)
+      } 
+      
+      if ("sf" %in% class(private$value)) {
+        return(NULL)
+      } else {
+        stop("Class ",class(private$value)[[1]], " not supported in GeoJson Argument")
+      }
+        
+      
     },
     typeSerialization = function() {
-      return(as.list(private$value))
+      if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
+        return(private$value)
+      } else if ("sf" %in% class(private$value)){
+        if (!.is_package_installed("geojsonsf")) {
+          stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
+        } else {
+          gson = geojsonsf::sf_geojson(private$value)
+          return(jsonlite::fromJSON(gson, simplifyVector = FALSE))
+        }
+      } else {
+        stop("Unsupported value type.")
+      }
+      
+      
     }
   )
 )
@@ -2371,8 +2422,15 @@ AnyOf = R6Class(
           
         })
         
-        private$value = unname(choice_copies[validated])[[1]] # pick the first match
-        private$value$setValue(value)
+        tryCatch({
+          if (!any(validated)) stop("Cannot match the value to any of the parameter selection (AnyOf)")
+          
+          private$value = unname(choice_copies[validated])[[1]] # pick the first match
+          private$value$setValue(value)
+        }, error = function(e) {
+          message(e$message)
+        })
+        
         return(self)
       }
       

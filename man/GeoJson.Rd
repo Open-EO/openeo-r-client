@@ -8,7 +8,10 @@ Object of \code{\link{R6Class}} which represents an object in geojson.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-class represents geospatial features.
+class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
+allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
+in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+EPSG:4326, the polygon is transformed accordingly.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

@@ -9,7 +9,9 @@ Depends:
 Suggests:
     tibble,
     testthat,
-    knitr
+    knitr,
+    sf,
+    geojsonsf
 Imports:
     jsonlite,
     httr,

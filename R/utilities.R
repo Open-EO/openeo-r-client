@@ -94,3 +94,7 @@ graphToJSON = function(graph) {
     
     return(con)
 }
+
+.is_package_installed = function(pkg) {
+    return(nzchar(system.file(package=pkg)))
+}
