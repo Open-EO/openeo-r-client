@@ -279,8 +279,10 @@ validate_process_graph = function(graph, con=NULL) {
 #' @return a ProcessCollection object with the offered processes of the backend
 #' @export
 processes = function(con = NULL) {
-    con = .assure_connection(con)
-    return(con$getProcessCollection())
+    tryCatch({
+        con = .assure_connection(con)
+        return(con$getProcessCollection())
+    }, error = .capturedErrorToMessage)
 }
 
 setClass("ProcessInfo")

@@ -12,7 +12,12 @@
 #' 
 #' @export
 list_collections = function(con=NULL) {
-    con = .assure_connection(con)
+    tryCatch({
+        con = .assure_connection(con)
+    }, error = function(e){
+        message("Not connected to an openEO service.")
+        return(NULL)
+    })
     
     return(con$getDataCollection())
 }
@@ -28,7 +33,12 @@ list_collections = function(con=NULL) {
 #' @return a Collection object with detailed information about a collection.
 #' @export
 describe_collection = function(collection = NA, con=NULL) {
-    con = .assure_connection(con)
+    tryCatch({
+        con = .assure_connection(con)
+    }, error = function(e){
+        message("Not connected to an openEO service.")
+        return(NULL)
+    })
     
     missing_collection = missing(collection) || length(collection) == 0 || is.na(collection) || nchar(collection) == 0
     

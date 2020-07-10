@@ -182,15 +182,15 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 #' @return the job_id of the defined job
 #' @export 
 start_job = function(job, con=NULL) {
-    con = .assure_connection(con)
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+    
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+    
         if (is.null(job_id)) {
             stop("No job id specified.")
         }
@@ -285,15 +285,15 @@ update_job = function(id, title = NULL, description = NULL, process = NULL, plan
 #' @return result object containing of URLs for download
 #' @export
 list_results = function(job, con=NULL) {
-    con = .assure_connection(con)
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+    
         tag = "jobs_download"
         listOfResults = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, type = "application/json")
         class(listOfResults) = "ResultList"
@@ -354,15 +354,15 @@ download_results = function(job, folder, con=NULL) {
 #' @return a success / failure notification
 #' @export
 stop_job = function(job, con=NULL) {
-    con = .assure_connection(con)
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+    
         if (is.null(job_id)) {
             stop("No job id specified.")
         }
@@ -388,15 +388,15 @@ stop_job = function(job, con=NULL) {
 #' @return a detailed description about the job
 #' @export
 describe_job = function(job,con=NULL) {
-    con = .assure_connection(con)
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+    
         tag = "jobs_details"
         
         info = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, type = "application/json", auto_unbox = TRUE)
@@ -420,14 +420,14 @@ describe_job = function(job,con=NULL) {
 #' @return logical with state of success
 #' @export
 delete_job = function(job, con=NULL) {
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    con = .assure_connection(con)
-    
     tryCatch({
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+        con = .assure_connection(con)
+    
         tag = "jobs_delete"
         
         success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE)
@@ -451,15 +451,16 @@ delete_job = function(job, con=NULL) {
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
 estimate_job = function(job, con=NULL) {
-    
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+    
+    
         if (is.null(job_id)) {
             stop("No job id specified.")
         }
@@ -483,24 +484,25 @@ estimate_job = function(job, con=NULL) {
 #' @return a \code{JobLog} object
 #' @export
 log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
-    con = .assure_connection(con)
-    
-    if (!is.null(job) && "Job" %in% class(job)) {
-        job_id = job$id
-    } else {
-        job_id = job
-    }
-    
-    query_params = list()
-    if (length(offset) > 0) {
-        query_params$offset = offset
-    }
-    
-    if (length(limit) > 0) {
-        query_params$limit = limit
-    }
-    
     tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Job" %in% class(job)) {
+            job_id = job$id
+        } else {
+            job_id = job
+        }
+        
+        query_params = list()
+        if (length(offset) > 0) {
+            query_params$offset = offset
+        }
+        
+        if (length(limit) > 0) {
+            query_params$limit = limit
+        }
+    
+    
         if (is.null(job_id)) {
             stop("No job id specified.")
         }

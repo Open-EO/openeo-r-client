@@ -12,7 +12,13 @@ load_api = function(version) {
 }
 
 endpoint_mapping = function(con) {
-    con = .assure_connection(con)
+    tryCatch({
+        con = .assure_connection(con)
+    }, error = function(e){
+        message("Not connected to an openEO service.")
+        return(NULL)
+    })
+    
     
     endpoints = capabilities(con)$endpoints
     
@@ -92,7 +98,12 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' 
 #' @export
 supports = function(con=NULL, tag_name) {
-    con = .assure_connection(con)
+    tryCatch({
+        con = .assure_connection(con)
+    }, error = function(e){
+        message("Not connected to an openEO service.")
+        return(NULL)
+    })
     
     if (isNamespaceLoaded("tibble")) 
         return(con$api.mapping[con$api.mapping$tag == tag_name, "available"][[1]]) else return(con$api.mapping[con$api.mapping$tag == tag_name, "available"])

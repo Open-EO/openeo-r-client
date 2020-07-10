@@ -65,8 +65,10 @@ capabilities = function(con=NULL) {
 #' 
 #' @export
 list_features = function(con=NULL) {
-    con = .assure_connection(con)
-    return(con$api.mapping[c("endpoint", "operation", "available")])
+    tryCatch({
+        con = .assure_connection(con)
+        return(con$api.mapping[c("endpoint", "operation", "available")])
+    }, error = .capturedErrorToMessage)
 }
 
 #' Supported Input/Output formats

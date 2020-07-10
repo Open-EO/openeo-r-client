@@ -73,24 +73,26 @@ Graph = R6Class(
   public = list(
 
     initialize = function(con=NULL,final_node=NULL) {
-      con = .assure_connection(con)
-      
-      if (is.null(final_node)) {
-        stop("The final node (endpoint of the graph) has to be set.")
-      }
+      tryCatch({
+        con = .assure_connection(con)
         
-      if ("ProcessNode" %in% class(final_node)) {
-        node_list = .final_node_serializer(final_node)
-        private$nodes=unname(node_list)
-        private$final_node_id = final_node$getNodeId()
-        private$variables = variables(final_node)
-      } else {
-        stop("The final node has to be a ProcessNode.")
-      }
-      
-      
-      
-      invisible(self)
+        if (is.null(final_node)) {
+          stop("The final node (endpoint of the graph) has to be set.")
+        }
+          
+        if ("ProcessNode" %in% class(final_node)) {
+          node_list = .final_node_serializer(final_node)
+          private$nodes=unname(node_list)
+          private$final_node_id = final_node$getNodeId()
+          private$variables = variables(final_node)
+        } else {
+          stop("The final node has to be a ProcessNode.")
+        }
+        
+        
+        
+        invisible(self)
+      }, error = .capturedErrorToMessage)
     },
     
     getNodes = function() {
@@ -279,72 +281,74 @@ ProcessCollection = R6Class(
   lock_objects = FALSE,
   public = list(
     initialize = function(con=NULL) {
-      con = .assure_connection(con)
-      
-      private$processes = lapply(con$processes, function(process_description) {
-        process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
-        return(processFromJson(process_description))
-      })
-      
-      if (!is.list(private$processes)) stop("Processes are not provided as list")
-      
-      for (index in 1:length(private$processes)) {
-        if (is.null(private$processes[[index]])) {
-          next
-        }
+      tryCatch({
+        con = .assure_connection(con)
         
-        pid = private$processes[[index]]$getId()
-        function_formals = private$processes[[index]]$getFormals()
+        private$processes = lapply(con$processes, function(process_description) {
+          process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
+          return(processFromJson(process_description))
+        })
         
-        f = function() {}
-        formals(f) = function_formals
+        if (!is.list(private$processes)) stop("Processes are not provided as list")
         
-        
-        # probably do a deep copy of the object
-        # for the body we have the problem that index is addressed as variable in the parent environment. This
-        # causes a problem at call time, where index is resolve and this means that usually the last element
-        # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
-        # and then as.call
-        body(f) = quote({
-          exec_process = private$processes[[index]]$clone(deep=TRUE)
-          # find new node id:
-          node_id = .randomNodeId(exec_process$getId(),sep="_")
-          
-          while (node_id %in% private$getNodeIds()) {
-            node_id = .randomNodeId(exec_process$getId(),sep="_")
+        for (index in 1:length(private$processes)) {
+          if (is.null(private$processes[[index]])) {
+            next
           }
           
-          private$node_ids = c(private$node_ids,node_id)
+          pid = private$processes[[index]]$getId()
+          function_formals = private$processes[[index]]$getFormals()
           
-          #map given parameter of this function to the process parameter / arguments and set value
-          arguments = exec_process$parameters
+          f = function() {}
+          formals(f) = function_formals
           
-          # parameter objects should be updated directly, since there is a real object reference
-          this_param_names = names(formals())
           
-          # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
-          this_arguments = lapply(this_param_names, function(param) get(param))
-          names(this_arguments) = this_param_names
+          # probably do a deep copy of the object
+          # for the body we have the problem that index is addressed as variable in the parent environment. This
+          # causes a problem at call time, where index is resolve and this means that usually the last element
+          # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+          # and then as.call
+          body(f) = quote({
+            exec_process = private$processes[[index]]$clone(deep=TRUE)
+            # find new node id:
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
+            
+            while (node_id %in% private$getNodeIds()) {
+              node_id = .randomNodeId(exec_process$getId(),sep="_")
+            }
+            
+            private$node_ids = c(private$node_ids,node_id)
+            
+            #map given parameter of this function to the process parameter / arguments and set value
+            arguments = exec_process$parameters
+            
+            # parameter objects should be updated directly, since there is a real object reference
+            this_param_names = names(formals())
+            
+            # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+            this_arguments = lapply(this_param_names, function(param) get(param))
+            names(this_arguments) = this_param_names
+            
+            # special case: value is of type Argument
+            node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+            
+            lapply(names(this_arguments), function(param_name, arguments){
+              call_arg = this_arguments[[param_name]]
+              arguments[[param_name]]$setProcess(node)
+              #TODO maybe check here for is.list and then try the assignable
+              arguments[[param_name]]$setValue(call_arg)
+            }, arguments = arguments)
+            
+            return(node)
+          })
+          # replace index with the actual number!
+          tmp = gsub(body(f),pattern="index",replacement = eval(index))
+          body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
           
-          # special case: value is of type Argument
-          node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
-          
-          lapply(names(this_arguments), function(param_name, arguments){
-            call_arg = this_arguments[[param_name]]
-            arguments[[param_name]]$setProcess(node)
-            #TODO maybe check here for is.list and then try the assignable
-            arguments[[param_name]]$setValue(call_arg)
-          }, arguments = arguments)
-          
-          return(node)
-        })
-        # replace index with the actual number!
-        tmp = gsub(body(f),pattern="index",replacement = eval(index))
-        body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
-        
-        # register the ProcessNode creator functions on the Graph class
-        self[[pid]] = f
-      }
+          # register the ProcessNode creator functions on the Graph class
+          self[[pid]] = f
+        }
+      }, error = .capturedErrorToMessage)
     }
   ),
   private = list(
@@ -757,131 +761,132 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' @return Graph object
 #' @export
 parse_graph = function(json, parameters = NULL, con=NULL) {
-  con = .assure_connection(con)
-  processes = con$getProcessCollection()
-  
-  if (is.list(json)) {
-    parsed_json = json
-  } else {
-    if (!is.character(json)) json = as.character(json)
+  tryCatch({
+    con = .assure_connection(con)
+    processes = con$getProcessCollection()
     
-    is_valid = jsonlite::validate(json)
-    
-    if (!is_valid) {
-      message("Invalid JSON object. With the following message:")
-      stop(attr(is_valid,"err"))
+    if (is.list(json)) {
+      parsed_json = json
+    } else {
+      if (!is.character(json)) json = as.character(json)
+      
+      is_valid = jsonlite::validate(json)
+      
+      if (!is_valid) {
+        message("Invalid JSON object. With the following message:")
+        stop(attr(is_valid,"err"))
+      }
+      
+      parsed_json = fromJSON(json)
     }
     
-    parsed_json = fromJSON(json)
-  }
-  
-  
-  # use processes id on processes (processes[[id]])
-  # substitute values or set values
-  # if names(v) contains process_graph, do recursive call parse_graph
-  # if names(v) contains from_parameter -> create ProcessGraphParameter
-  # if names(v) contains from_node -> look up node_id
-  # TODO consider user defined processes which shall be always accessible
-  
-  
-  graph_definition = json$process_graph
-  
-  process_graph_parameters_names = sapply(json$parameters, function(param) {
-    param$name
-  })
-  
-  process_graph_parameters = lapply(json$parameters,function(param){
-    potential_param = parameterFromJson(param)
-    p = ProcessGraphParameter$new(name = param$name,
-                                  description = param$description)
     
-    p$adaptType(list(potential_param))
-    # identify nullable and required
-    return(p)
-  })
-  names(process_graph_parameters) = process_graph_parameters_names
-  
-  if (length(process_graph_parameters) == 0) {
-    process_graph_parameters = parameters
-  }
-  
-  node_ids = names(graph_definition)
-  process_lookup = lapply(node_ids, function(id) {
-    pdef = graph_definition[[id]]
-    process_id = pdef$process_id
-    if (!process_id %in% names(processes)) stop(paste0("Process '",process_id,"' is not provided by the connected openEO service."))
-    
-    p = processes[[process_id]]()
-    p$setNodeId(id)
+    # use processes id on processes (processes[[id]])
+    # substitute values or set values
+    # if names(v) contains process_graph, do recursive call parse_graph
+    # if names(v) contains from_parameter -> create ProcessGraphParameter
+    # if names(v) contains from_node -> look up node_id
+    # TODO consider user defined processes which shall be always accessible
     
     
-    return(p)
-  })
-  names(process_lookup) = node_ids
-  
-  lapply(node_ids, function(id) {
-    pdef = graph_definition[[id]]
-    p = process_lookup[[id]]
+    graph_definition = json$process_graph
     
-    # pdef$arguments here
-    lapply(names(pdef$arguments),function(name) {
-      argument = p$parameters[[name]]
-      value = pdef$arguments[[name]]
+    process_graph_parameters_names = sapply(json$parameters, function(param) {
+      param$name
+    })
+    
+    process_graph_parameters = lapply(json$parameters,function(param){
+      potential_param = parameterFromJson(param)
+      p = ProcessGraphParameter$new(name = param$name,
+                                    description = param$description)
       
-      if ("process_graph" %in% names(value)) {
-        # do subgraph
-        if (!"ProcessGraph" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
-        # TODO actually, we have to check the result also... as long as the result matches, it is ok... or it is an any of with process_graph in it
+      p$adaptType(list(potential_param))
+      # identify nullable and required
+      return(p)
+    })
+    names(process_graph_parameters) = process_graph_parameters_names
+    
+    if (length(process_graph_parameters) == 0) {
+      process_graph_parameters = parameters
+    }
+    
+    node_ids = names(graph_definition)
+    process_lookup = lapply(node_ids, function(id) {
+      pdef = graph_definition[[id]]
+      process_id = pdef$process_id
+      if (!process_id %in% names(processes)) stop(paste0("Process '",process_id,"' is not provided by the connected openEO service."))
+      
+      p = processes[[process_id]]()
+      p$setNodeId(id)
+      
+      
+      return(p)
+    })
+    names(process_lookup) = node_ids
+    
+    lapply(node_ids, function(id) {
+      pdef = graph_definition[[id]]
+      p = process_lookup[[id]]
+      
+      # pdef$arguments here
+      lapply(names(pdef$arguments),function(name) {
+        argument = p$parameters[[name]]
+        value = pdef$arguments[[name]]
         
-        params = argument$getProcessGraphParameters()
-        names(params) = sapply(params, function(p)p$getName())
-        value = parse_graph(con=con,json = value, parameters = c(process_graph_parameters,params))
-      } else if ("from_parameter" %in% names(value)) {
-        # do lookup for parameters
-        parameter_name = value$from_parameter
-        
-        value = process_graph_parameters[[parameter_name]]
-      } else if ("from_node" %in% names(value)) {
-        value = process_lookup[[value$from_node]]
-      } else if (is.list(value) && length(value) > 0) {
-        # iterate through list and look for lists with from_node or from_parameter and replace them with the correct items
-        value = lapply(value, function(array_elem) {
-          if (is.list(array_elem)) {
-            if ("from_node" %in% names(array_elem)) {
-              return(process_lookup[[array_elem$from_node]])
-            } else if ("from_parameter" %in% names(array_elem)) {
-              return(process_graph_parameters[[array_elem$from_parameter]])
+        if ("process_graph" %in% names(value)) {
+          # do subgraph
+          if (!"ProcessGraph" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
+          # TODO actually, we have to check the result also... as long as the result matches, it is ok... or it is an any of with process_graph in it
+          
+          params = argument$getProcessGraphParameters()
+          names(params) = sapply(params, function(p)p$getName())
+          value = parse_graph(con=con,json = value, parameters = c(process_graph_parameters,params))
+        } else if ("from_parameter" %in% names(value)) {
+          # do lookup for parameters
+          parameter_name = value$from_parameter
+          
+          value = process_graph_parameters[[parameter_name]]
+        } else if ("from_node" %in% names(value)) {
+          value = process_lookup[[value$from_node]]
+        } else if (is.list(value) && length(value) > 0) {
+          # iterate through list and look for lists with from_node or from_parameter and replace them with the correct items
+          value = lapply(value, function(array_elem) {
+            if (is.list(array_elem)) {
+              if ("from_node" %in% names(array_elem)) {
+                return(process_lookup[[array_elem$from_node]])
+              } else if ("from_parameter" %in% names(array_elem)) {
+                return(process_graph_parameters[[array_elem$from_parameter]])
+              } else {
+                return(array_elem)
+              }
             } else {
               return(array_elem)
             }
-          } else {
-            return(array_elem)
-          }
-        })
-      }
+          })
+        }
+        
+        argument$setValue(value)
+        
+      })
       
-      argument$setValue(value)
-      
+      return(p)
     })
     
-    return(p)
-  })
-  
-  #find final node and coerce to graph
-  final_node_id = unlist(lapply(node_ids, function(id) {
-    pdef = graph_definition[[id]]
+    #find final node and coerce to graph
+    final_node_id = unlist(lapply(node_ids, function(id) {
+      pdef = graph_definition[[id]]
+      
+      if (isTRUE(pdef$result)) {
+        return(id)
+      } else {
+        return(NULL)
+      }
+    }))
     
-    if (isTRUE(pdef$result)) {
-      return(id)
-    } else {
-      return(NULL)
-    }
-  }))
-  
-  final_node = process_lookup[[final_node_id]]
-  
-  return(as(final_node,"Graph"))
+    final_node = process_lookup[[final_node_id]]
     
+    return(as(final_node,"Graph"))
+  }, error = .capturedErrorToMessage)  
 }
 
 #' Creates a variable in a process graph

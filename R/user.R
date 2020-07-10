@@ -256,9 +256,11 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' }
 #' @export
 login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL, config=NULL, con=NULL) {
-    con = .assure_connection(con)
-    
-    return(con$login(user = user, password = password, login_type = login_type, provider = provider, config=config))
+    tryCatch({
+        con = .assure_connection(con)
+        
+        return(con$login(user = user, password = password, login_type = login_type, provider = provider, config=config))
+    }, error = .capturedErrorToMessage)
 }
 
 #' Logout
@@ -270,10 +272,12 @@ login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL,
 #' 
 #' @export
 logout = function(con=NULL) {
-    con = .assure_connection(con)
-    
-    con$logout()
-    return(TRUE)
+    tryCatch({
+        con = .assure_connection(con)
+        
+        con$logout()
+        return(TRUE)
+    }, error = .capturedErrorToMessage)
 }
 
 #' Active Connection

@@ -37,6 +37,7 @@ escaper = function(list) {
 #' 
 #' @export
 process_viewer = function(x,con=NULL) {
+  tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
@@ -85,6 +86,7 @@ process_viewer = function(x,con=NULL) {
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
+  }, error = .capturedErrorToMessage)
 }
 
 #' View for openEO collections
@@ -98,6 +100,7 @@ process_viewer = function(x,con=NULL) {
 #' 
 #' @export
 collection_viewer = function(x,con=NULL) {
+  tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
@@ -139,4 +142,5 @@ collection_viewer = function(x,con=NULL) {
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
+  }, error = .capturedErrorToMessage)
 }

@@ -37,28 +37,30 @@ list_processes = function(con=NULL) {
 #' @return a list of detailed information
 #' @export
 describe_process = function(process = NA, con=NULL) {
-    con = .assure_connection(con)
-    
-    describeProcess = !missing(process) && !is.na(process)
-    
-    if (!describeProcess) {
-        message("No or invalid process_id(s) or process")
-        invisible(NULL)
-    }
-    
-    if ("ProcessInfo" %in% class(process)) {
-        return(process)
-    }
-    
-    if (is.null(con$processes)) {
-        message("No processes found or loaded from the back-end")
-        invisible(NULL)
-    }
-    
-    if (!process %in% names(con$processes)) {
-        message(paste("Cannot describe process '", process, "'. Process does not exist.", sep = ""))
-        invisible(NULL)
-    } else {
-        return(con$processes[[process]])
-    }
+    tryCatch({
+        con = .assure_connection(con)
+        
+        describeProcess = !missing(process) && !is.na(process)
+        
+        if (!describeProcess) {
+            message("No or invalid process_id(s) or process")
+            invisible(NULL)
+        }
+        
+        if ("ProcessInfo" %in% class(process)) {
+            return(process)
+        }
+        
+        if (is.null(con$processes)) {
+            message("No processes found or loaded from the back-end")
+            invisible(NULL)
+        }
+        
+        if (!process %in% names(con$processes)) {
+            message(paste("Cannot describe process '", process, "'. Process does not exist.", sep = ""))
+            invisible(NULL)
+        } else {
+            return(con$processes[[process]])
+        }
+    }, error = .capturedErrorToMessage)
 }
