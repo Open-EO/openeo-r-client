@@ -428,7 +428,8 @@ Process = R6Class(
         names(parameters) = parameter_names
         
         
-        self$parameters = parameters
+        private$.parameters = parameters
+        class(private$.parameters) = "ArgumentList"
         
         # case returns as list(schema=list())
         if (is.list(returns) && "schema" %in% names(returns)) {
@@ -515,6 +516,8 @@ Process = R6Class(
           private$.parameters = private$process_graph$getVariables()
           names(private$.parameters) = sapply(private$.parameters, function(param) param$getName())
           
+          class(private$.parameters) = "ArgumentList"
+          
           private$returns = private$process_graph$getFinalNode()$getReturns()
         }
         
@@ -584,9 +587,7 @@ Process = R6Class(
     parameters = function(value) {
       if (missing(value)) {
         return(private$.parameters)
-      } else {
-        private$.parameters = value
-      }
+      } 
       
     }
   ),
@@ -639,6 +640,7 @@ Process = R6Class(
   )
 )
 
+setClass("ArgumentList")
 setOldClass(c("Graph","R6"))
 
 # ProcessNode ====
@@ -677,6 +679,8 @@ ProcessNode = R6Class(
       }
       
       private$copyAttributes(process)
+      
+      class(private$.parameters) = "ArgumentList"
       
       return(self)
     },
@@ -1128,4 +1132,19 @@ remove_variable = function(graph, variable) {
   
   return(value)
 
+}
+
+#' @export
+`$<-.ArgumentList` = function(x, name, value) {
+  x[[name]]$setValue(value)
+}
+
+#' @export
+`[<-.ArgumentList` = function(x, i, value) {
+  x[[i]]$setValue(value)
+}
+
+#' @export
+`[[<-.ArgumentList` = function(x, i, value) {
+  x[[i]]$setValue(value)
 }
