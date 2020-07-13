@@ -398,7 +398,7 @@ NULL
 
 # mathematical operators ----
 .plus = function(e1,e2){
-  .genericBinaryFunction(e1,e2,"sum")
+  .genericBinaryFunction(e1,e2,"add")
 }
 #' @rdname binary_ops
 #' @export
