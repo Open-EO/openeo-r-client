@@ -388,7 +388,6 @@ Argument = R6Class(
   )
 )
 
-
 # Integer ====
 #' Integer class
 #' 
