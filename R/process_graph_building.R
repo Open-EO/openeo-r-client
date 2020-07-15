@@ -23,7 +23,6 @@ library(lubridate)
 #' \describe{
 #'    \item{\code{$new(con = NULL, final_node=NULL)}}{The object creator created from processes and available data.}
 #'    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
-#'    \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
 #'    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize}} 
 #'    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
 #'    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
@@ -31,7 +30,6 @@ library(lubridate)
 #'    \item{$removeNode(node_id)}{removes a process node from the graph}
 #'    \item{$getFinalNode()}{gets the result process node of a process graph}
 #'    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
-#'    \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
 #'    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
 #'    \item{$setVariables(list_of_vars)}{sets the process graph parameter (variables) of graph}
 #' }
@@ -98,52 +96,7 @@ Graph = R6Class(
     getNodes = function() {
       return(private$nodes)
     },
-    
-    clean = function() {
-      # start at the end -> if multiple end nodes throw an error
-      # take the final node
-      suppressMessages({
-        endnode = self$getFinalNode()
-      })
-      
-      if (is.null(endnode)) stop("No final node defined in this graph. Please set a final node.")
-      
-      
-      # get all the available process nodes of that graph
-      used_nodes = .final_node_serializer(endnode)
-      
-      void = lapply(used_nodes,function(node){
-        # check all parameter
-        void2 = lapply(node$parameters,function(param) {
-          # if we find a graph (maybe also in a list or in an anyof) then clean them too
-          if ("Graph" %in% class(param)) {
-            param$clean() #should not be...
-          }
-          
-          if ("ProcessGraphArgument" %in% class(param)) {
-            value = param$getValue()
-            
-            if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
-              if ("Graph" %in% class(value)) {
-                value$clean()
-              }
-            }
-          }
-          return(TRUE)
-        })
-        
-        return(TRUE)
-      })
-      # set the used nodes as nodes
-      private$nodes = unname(used_nodes)
-      
-      invisible(self)
-    },
-    
     serialize = function() {
-      # iterate over all nodes and serialize their process (not the node it self, since this serializes it as argument)
-      # before clean the nodes, remove those that are not connected
-      self$clean()
       result = lapply(private$nodes, function(node) {
         return(node$serialize())
       })
@@ -156,8 +109,6 @@ Graph = R6Class(
     
     validate = function() {
       tryCatch({
-        self$clean() # only test that what has to be used
-        
         # for each process node call their processes parameters validate function
         results = unname(unlist(lapply(private$nodes, function(node) {
           node$validate()
@@ -214,19 +165,6 @@ Graph = R6Class(
       private$final_node_id = node
       return(TRUE)
     },
-    # TODO check if this is used / required (should be obsolete by $<-.ArgumentList)
-    setArgumentValue = function(node_id, parameter, value) {
-      private$assertNodeExists(node_id)
-      
-      node = self$getNode(node_id)
-      params = node$parameters
-      
-      if (! parameter %in% names(params)) stop(paste0("Cannot find parameter '",parameter,"' for process '",node_id,"'"))
-      
-      params[[parameter]]$setValue(value)
-      return(params[[parameter]]$validate()) # TODO decide if this is useful
-    },
-    
     getVariables = function() {
       return(unique(private$variables))
     },
@@ -379,10 +317,9 @@ ProcessCollection = R6Class(
 #'    corresponds to the parameter name}
 #'    \item{$setSummary(summary)}{sets the summary text}
 #'    \item{$setDescription(description)}{sets the description text}
-#'    \item{$setParameterValue(name,value)}{sets the value of a parameter}
 #'    \item{$getParameter(name)}{returns the Argument object with the provided name}
-#'    \item{$getProcessGraph()}{}
-#'    \item{$setProcessGraph(process_graph)}{}
+#'    \item{$getProcessGraph()}{returns the ProcessGraph to which this Process belongs}
+#'    \item{$setProcessGraph(process_graph)}{sets the ProcessGraph to which this Process belongs}
 #'    \item{$validate()}{validates the processes argument values}
 #'    \item{$serialize()}{serializes the process - mainly used as primary serialization for a \code{\link{ProcessNode}}}
 #'    \item{$getCharacteristics()}{select all non functions of the private area, to be used when copying process 
@@ -481,13 +418,6 @@ Process = R6Class(
       if (!is.null(summary)) {
         private$summary = summary
       }
-    },
-    setParameterValue= function(name,value) {
-      if (!name %in% names(private$.parameters)) stop("Cannot find parameter")
-      
-      private$.parameters[[name]]$setValue(value)
-      
-      return(invisible(self))
     },
     getParameter = function(name) {
       if (!name %in% names(self$parameters)) stop("Cannot find parameter")
