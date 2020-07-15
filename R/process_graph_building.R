@@ -120,7 +120,7 @@ Graph = R6Class(
             param$clean() #should not be...
           }
           
-          if ("ProcessGraph" %in% class(param)) {
+          if ("ProcessGraphArgument" %in% class(param)) {
             value = param$getValue()
             
             if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
@@ -173,10 +173,6 @@ Graph = R6Class(
       }, error = function(e){
         message(e$message)
       })
-      
-      
-      
-      
     },
     
     getNode = function (node_id) {
@@ -218,7 +214,7 @@ Graph = R6Class(
       private$final_node_id = node
       return(TRUE)
     },
-    # TODO check if this is used / required
+    # TODO check if this is used / required (should be obsolete by $<-.ArgumentList)
     setArgumentValue = function(node_id, parameter, value) {
       private$assertNodeExists(node_id)
       
@@ -839,7 +835,7 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
         
         if ("process_graph" %in% names(value)) {
           # do subgraph
-          if (!"ProcessGraph" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
+          if (!"ProcessGraphArgument" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
           # TODO actually, we have to check the result also... as long as the result matches, it is ok... or it is an any of with process_graph in it
           
           params = argument$getProcessGraphParameters()
@@ -1117,8 +1113,7 @@ remove_variable = function(graph, variable) {
     
     return(v)
   })
-  # if value is a function -> then make a call with the function and a suitable ProcessGraph 
-  # parameter
+  # if value is a function -> then make a call with the function and a suitable ProcessGraphParameter
   
   # make call
   call_env = new.env()
