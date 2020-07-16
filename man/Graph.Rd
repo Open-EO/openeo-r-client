@@ -28,7 +28,6 @@ parses the stored Graph representation into an openEO Graph object (\code{\link{
 \describe{
    \item{\code{$new(con = NULL, final_node=NULL)}}{The object creator created from processes and available data.}
    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
-   \item{$clean()}{function to clean the graph from unused process nodes that are not connected with the graph}
    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize}} 
    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
@@ -36,7 +35,6 @@ parses the stored Graph representation into an openEO Graph object (\code{\link{
    \item{$removeNode(node_id)}{removes a process node from the graph}
    \item{$getFinalNode()}{gets the result process node of a process graph}
    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
-   \item{$setArgumentValue(node_id, parameter, value)}{sets or replaces a value on a specific ProcessNodes parameter with the given value}
    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
    \item{$setVariables(list_of_vars)}{sets the process graph parameter (variables) of graph}
 }

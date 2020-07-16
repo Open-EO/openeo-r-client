@@ -30,10 +30,9 @@ into \code{\link{Argument}} objects.
    corresponds to the parameter name}
    \item{$setSummary(summary)}{sets the summary text}
    \item{$setDescription(description)}{sets the description text}
-   \item{$setParameterValue(name,value)}{sets the value of a parameter}
    \item{$getParameter(name)}{returns the Argument object with the provided name}
-   \item{$getProcessGraph()}{}
-   \item{$setProcessGraph(process_graph)}{}
+   \item{$getProcessGraph()}{returns the ProcessGraph to which this Process belongs}
+   \item{$setProcessGraph(process_graph)}{sets the ProcessGraph to which this Process belongs}
    \item{$validate()}{validates the processes argument values}
    \item{$serialize()}{serializes the process - mainly used as primary serialization for a \code{\link{ProcessNode}}}
    \item{$getCharacteristics()}{select all non functions of the private area, to be used when copying process 
