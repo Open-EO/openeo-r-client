@@ -5,27 +5,25 @@
 \title{Modifies a service}
 \usage{
 update_service(
-  con = NULL,
-  id,
+  service,
   type = NULL,
-  process_graph = NULL,
+  graph = NULL,
   title = NULL,
   description = NULL,
   enabled = NULL,
-  parameters = NULL,
+  configuration = NULL,
   plan = NULL,
-  budget = NULL
+  budget = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
-is used.}
-
-\item{id}{the service id}
+\item{service}{the Service or its ID}
 
 \item{type}{character the ogc web service type name to be created}
 
-\item{process_graph}{list of processes composed as a process graph}
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
 
 \item{title}{character (optional) the title in human readabled form for the service}
 
@@ -33,14 +31,17 @@ is used.}
 
 \item{enabled}{logical}
 
-\item{parameters}{a list of service creation parameters}
+\item{configuration}{a list of service creation configuration}
 
 \item{plan}{character the billing plan}
 
 \item{budget}{numeric the amount of credits that can be spent for this service}
+
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
-service representation as list
+Service object
 }
 \description{
 The function updates a service with the given information. If a parameter is NULL then it will

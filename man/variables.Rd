@@ -4,10 +4,10 @@
 \alias{variables}
 \title{Lists the defined variables for a graph}
 \usage{
-variables(final_node)
+variables(x)
 }
 \arguments{
-\item{graph}{a process graph object}
+\item{x}{a process graph object or a process node}
 }
 \value{
 a named list of Variables

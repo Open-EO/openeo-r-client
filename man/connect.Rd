@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{connect}
 \alias{connect}
-\title{Connect to a openeEO back-end}
+\title{Connect to a openeEO service}
 \usage{
 connect(
   host,
@@ -11,11 +11,12 @@ connect(
   password = NULL,
   login_type = NULL,
   exchange_token = "access_token",
-  external = NULL
+  provider = NULL,
+  config = NULL
 )
 }
 \arguments{
-\item{host}{URL pointing to the openEO server back-end host}
+\item{host}{URL pointing to the openEO server service host}
 
 \item{version}{the version number as string (optional)}
 
@@ -27,10 +28,12 @@ connect(
 
 \item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
 
-\item{external}{which external oidc provider shall be used (currently 'google' as allowed value)}
+\item{provider}{provider object as obtained by 'list_oidc_providers()'}
+
+\item{config}{named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)}
 }
 \description{
-Connects to openEO back-end. If the backend provides a well-known endpoint that allows for redirecting to
+Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
 specific versions, then you should provide the versions parameter.
 }
 \details{
@@ -48,17 +51,17 @@ which marks the latest service that was connected to.
 \examples{
 \dontrun{
 # connect to a host with specific version and without authentication
-con = connect(host='http://example.openeo.org',version='0.4.2')
+con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 
 # connect to a host by direct url and basic login
-con = connect(host='http://example.openeo.org/v/0.4.2',
+con = connect(host='http://example.openeo.org/v1.0',
               user='user',
              password='password',
              login_type='basic')
 
 # connect to a host with open id connect authentication
 con = connect(host='http://example.openeo.org',
-              version='0.4.2',
+              version='1.0.0-rc.2',
               login_type='oidc')
 }
 

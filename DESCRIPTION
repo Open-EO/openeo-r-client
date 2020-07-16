@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 0.6.2
+Version: 0.7.0
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.4.x.
 Depends:
@@ -9,7 +9,9 @@ Depends:
 Suggests:
     tibble,
     testthat,
-    knitr
+    knitr,
+    sf,
+    geojsonsf
 Imports:
     jsonlite,
     httr,
@@ -25,11 +27,12 @@ License: file LICENSE
 Collate:
     'argument_types.R'
     'authentication.R'
-    'callback-functions.R'
     'zzz.R'
     'capabilities-mapping.R'
     'utilities.R'
     'client.R'
+    'process_graph.R'
+    'process_graph_building.R'
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
@@ -37,8 +40,6 @@ Collate:
     'jobs.R'
     'ops.R'
     'print-functions.R'
-    'process_graph.R'
-    'process_graph_building.R'
     'processes.R'
     'server_metadata.R'
     'services.R'

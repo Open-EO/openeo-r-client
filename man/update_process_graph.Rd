@@ -5,24 +5,24 @@
 \title{Modify the current graph with a given}
 \usage{
 update_process_graph(
-  con = NULL,
   id,
   graph = NULL,
-  title = NULL,
-  description = NULL
+  summary = NULL,
+  description = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{id}{process graph id}
 
 \item{graph}{a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder}
 
-\item{title}{title of the process graph (optional)}
+\item{summary}{summary of the process graph (optional)}
 
 \item{description}{description of the process graph (optional)}
+
+\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \description{
 Upload a process graph to the back-end under a given (existing) process graph.

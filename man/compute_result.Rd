@@ -4,24 +4,34 @@
 \alias{compute_result}
 \title{Executes a job directly and returns the data immediately}
 \usage{
-compute_result(con = NULL, graph, format = NULL, output_file = NULL, ...)
+compute_result(
+  graph,
+  output_file = NULL,
+  budget = NULL,
+  plan = NULL,
+  con = NULL
+)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
-is used.}
-
-\item{graph}{A process graph}
-
-\item{format}{The inteded format of the data to be returned}
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
 
 \item{output_file}{Where to store the retrieved data under}
 
-\item{...}{additional configuration parameter for output generation}
+\item{budget}{numeric, how much to spend at maximum on testing}
+
+\item{plan}{character, selection of a service plan}
+
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a connection to file if output was provided, the raw data if not
 }
 \description{
-Executes a job directly on the connected openEO back-end and returns the data. It relates to
-POST /api/execute in v0.0.2. During the execution phase the connection to the server remains open.
+Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
+the server remains open. The functions and enpoints main purpose is the debugging of code, where results can be immediately
+checked. Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+So make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
+e.g. not supporting UDFs at this endpoint.
 }

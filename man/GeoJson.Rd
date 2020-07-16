@@ -8,13 +8,17 @@ Object of \code{\link{R6Class}} which represents an object in geojson.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-class represents geospatial features.
+class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
+allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
+in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+EPSG:4326, the polygon is transformed accordingly.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-\code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+\code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-\code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+\code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+\code{\link{UdfRuntimeVersionArgument}}
 }

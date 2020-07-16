@@ -4,13 +4,13 @@
 \alias{describe_process}
 \title{Describe a process}
 \usage{
-describe_process(con = NULL, id = NA)
+describe_process(process = NA, con = NULL)
 }
 \arguments{
+\item{process}{id of a process to be described or the ProcessInfo object}
+
 \item{con}{Authentication object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{id}{id of a process to be described}
 }
 \value{
 a list of detailed information

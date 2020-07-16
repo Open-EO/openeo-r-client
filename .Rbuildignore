@@ -3,3 +3,4 @@
 ^\.httr-oauth$
 ^examples$
 ^wiki$
+^CHANGELOG.md$

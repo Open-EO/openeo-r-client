@@ -1,7 +1,7 @@
 ---
 title: "R functions as callbacks"
 author: "Florian Lahn"
-date: "10 2 2020"
+date: "13 7 2020"
 output: html_document
 ---
 
@@ -13,39 +13,91 @@ Some concept mappings:
 
 |0.4.x|1.0.0|
 |-|-|
-|process graph|user defined / custom process|
+|process graph|user defined process|
 |openEO process| predefined process|
-|callback / sub process graph |custom process|
-|callback argument|custom process parameter|
-|variable|parameter of a custom process|
+|callback / sub process graph |user defined process|
+|callback argument| process parameter|
+|variable| process graph parameter |
 
 # Callbacks
 
 As with the openEO API versions 0.4.x we introduced the concept of callbacks which are used for processing data within processes. For example, if we modify a data cube by reducing it by its temporal dimension, we apply a specific function that defines how the mapping from a time series into a scalar is done. This and similarly functions that describe such mapping functions for reduce / apply or aggregate processes are called a callbacks.
 
-Usually this behavior in R can be achieved by passing a function as parameter. In the openEO R client prior to 0.6.x callbacks had to be solely created as the openEO concept 'callback' by creating a sub graph and using the processes provided by the back-end. This will be still a viable option to do, if there are complex functions or if a particular back-end does not comply to the well defined common set of openEO processes.
+Usually this behavior in R can be achieved by passing a function as parameter, e.g. the various `apply` functions. In the openEO R client prior to 0.6.x callbacks had to be solely created as the openEO concept 'callback' by creating a sub graph and using the processes provided by the back-end. This will be still a viable option to do, if there are complex functions or if a particular back-end does not comply to the well defined common set of openEO processes.
 
 # Simplifications
 
 For the client version >= 0.6 we wanted to mimic the R specific behavior better by allowing to pass a function as parameter which is evaluated into sub process graph / callback. A similar approach was achieved with the function `band_arithmetics` which was available in the client version 0.5.0. For this purpose the function statement was evaluated and translated into a set of openEO process. This means basically that a process graph was created by mapping primitve R operators like `+` or `*` into the corresponding openEO processes. To evaluate the function we did not use R's internal call evaluation engine, but implemented an own approach, due to the fact that only a mapping was done and no real calculation.
 
-However, this has limited the use and protability of this feature. Using the R call engine would make the feature protable and extensible. The challenge with this new approach was that we have to do the following:
+However, this has limited the use and portability of this feature. Using the R call engine would make the feature protable and extensible. The challenge with this new approach was that we have to do the following:
 
-* overload the primitve math operators, so that they work for the R6 classes `ProcessNode`, `Variable` and `callback-value`
-* create a process graph automatically by evaluating the function with a `callback-value`
+* overload the primitve math operators, so that they work for the R6 classes `ProcessNode`, `Variable` and `ProcessGraphParameter`
+* create a process graph automatically by evaluating the function with a `ProcessGraphParameter`
 
-## callback-value
+## ProcessGraphParameter
 
-In the R client domain a `callback-value` is the defined parameter in the signature of the callback function. In the API it was called `callback-argument` in the versions < 1.0. In case of a temporal reduction the `callback-value` would be a time series or to be more technically an array or in R terms a numeric vector, when the graph it evaluated for processing at the back-end. But for the R-client this will not hold any real value. It refers simply to the parameter that has to be used in this context. In order to create the process graph for the computations at the back-end.
+In the R client domain a `ProcessGraphParameter` is the defined parameter in the signature of the callback function. In the API it was called `callback-argument` in the versions < 1.0. In case of a temporal reduction the `ProcessGraphParameter` would be a time series or to be more technically an array or in R terms a numeric vector, when the graph it evaluated for processing at the back-end. But for the R-client this will not hold any real value. It refers simply to the parameter that has to be used in this context. In order to create the process graph for the computations at the back-end.
 
 # Work Done
 
-We overloaded many of the primitive operators in R. The result of those functions are `ProcessNodes` which are created by mapping the primitive functions to the equivalent openEO processes. This, however, requires back-ends to be fully compliant to the openEO processes in terms of those mathematical and logical operators. If the back-end is not compliant you can use the `ProcessNodes` created by a `Graph` from the `process_graph_builder()`. 
+We overloaded many of the primitive operators in R. The result of those functions are `ProcessNode`'s which are created by mapping the primitive functions to the equivalent openEO processes. This, however, requires back-ends to be fully compliant to the openEO processes in terms of those mathematical and logical operators. If the back-end is not compliant you can use the `ProcessNodes` created by a `ProcessCollection` from the `processes()`. 
 
 Mapping:
 
 |R primitive|openEO process|
 |-|-|
+|abs|"absolute" |
+|sign| "sgn" |
+| sqrt | "sqrt" |
+| trunc | "int" |
+| floor | "floor" |
+| ceiling | "ceil" |
+| round | "round" |
+| exp | "exp" |
+| log | "ln" if base = exp(1), "log10" if base = 10 or else "log" |
+| cos | "cos" |
+| sin | "sin" |
+| tan | "tan" |
+| cosh | "cosh" |
+| sinh | "sinh" |
+| tanh | "tanh" |
+| acos | "arccos" |
+| asin | "arcsin" |
+| atan | "arctan" |
+| acosh | "arccosh" |
+| asinh | "arcsinh" |
+| atanh | "arctanh" |
+| cumsum | "cumsum" |
+| cummin | "cummin" |
+| cummax | "cummax" |
+| cumprod | "cumprod" |
+| [ | "array_element" |
+| + | "add" |
+| - | "subtract" |
+| * | "multiply" |
+| / | "divide" |
+| ^ | "power" |
+| %% | "mod" |
+| ! | "not" |
+| && | "and" |
+| \|\| | "or" |
+| xor | "xor" |
+| == | "eq" |
+| != | "neq" |
+| < | "lt" |
+| <= | "lte" |
+| >= | "gte" |
+| > | "gt" |
+| sum | "sum" |
+| prod | "product" |
+| min | "min" |
+| max | "max" |
+| range | "extrema" |
+| mean | "mean" |
+| median | "median" |
+| sd | "sd" |
+| var | "var" |
+| quantile | "quantiles" |
 
 # Examples
 
@@ -86,7 +138,7 @@ evi_calculation = data %>% band_arithmetics(graph = graph,function(x) {
 ```
 
 
-### Version >= 0.6.0:
+### Version 0.6.x:
 ```{r, eval=FALSE}
 spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = function(x) {
   B08 = x[1]
@@ -96,9 +148,24 @@ spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = functi
 })
 ```
 
+### Version >= 0.7.0:
+```{r, eval = FALSE}
+con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+p = processes()
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands", reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
+
+```
+
+
 ## Aggregation function
 
-### Version >= 0.6.0:
+### Version 0.6.x:
 
 Either of the following variations can be used:
 
@@ -122,8 +189,23 @@ temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", redu
 temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
 ```
 
+### Version >= 0.7.0:
+
+Starting with version 0.7.0 all reducer / aggregation functions are passed as function with specific parameters. Using the process constructor from the `ProcessCollection` or R's aggregation functions are no longer supported due to continous mismatches between the provided process parameter of the `ProcessArgument` and the process parameter definition of the reducer / aggregation function (often times there are `context` parameter which causes problems with the unary operators). The other problem is that R's aggregation functions also follow another definition schema, so that it cannot reliably mapped, when passed on directly.
+
+```{r, eval=FALSE}
+con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+p = processes()
+```
+
+
+```{r, eval=FALSE}
+temporal_reduce = p$reduce_dimension(data = spectral_reduce,dimension = "t", reducer = function(data, context) {
+  min(data)
+})
+```
+
 # Additional Notes:
 
 * when using aggregation functions the first argument has to be an mathematical expression, but not a single number, otherwise the primitive operator for numeric is used
-* if you want to use a single function in a callback and you have to set additional values, you have to wrap it into a unnamed function, otherwise the function is evaluated instead of passed on as a function definition
 * if you use an array_element (vector / array subset function) more than once in an expression you should store it as a variable within a function in order to use the same value again. Doing something like `x[1]` more than once would create multiple different `ProcessNodes` with different process ids, which might lead to unwanted additional costs at the back-end

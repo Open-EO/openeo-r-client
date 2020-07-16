@@ -11,7 +11,7 @@ list_process_graphs(con = NULL)
 is used.}
 }
 \value{
-vector of process graph ids
+a list userdefined processes (\code{ProcessInfo})
 }
 \description{
 Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.

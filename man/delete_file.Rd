@@ -4,13 +4,13 @@
 \alias{delete_file}
 \title{Deletes a file from the users workspace}
 \usage{
-delete_file(con = NULL, src)
+delete_file(src, con = NULL)
 }
 \arguments{
+\item{src}{the relative filepath of the source file on the openeo back-end that shall be deleted}
+
 \item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{src}{the relative filepath of the source file on the openeo back-end that shall be deleted}
 }
 \value{
 logical

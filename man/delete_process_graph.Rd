@@ -4,13 +4,13 @@
 \alias{delete_process_graph}
 \title{Deletes a previously stored process graph}
 \usage{
-delete_process_graph(con = NULL, id)
+delete_process_graph(id, con = NULL)
 }
 \arguments{
+\item{id}{the id of the graph}
+
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{id}{the id of the graph}
 }
 \description{
 The function initiates the deletion of a process graph on the back-end. Only the owning user can delete

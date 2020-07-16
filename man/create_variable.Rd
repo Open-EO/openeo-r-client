@@ -4,21 +4,27 @@
 \alias{create_variable}
 \title{Creates a variable in a process graph}
 \usage{
-create_variable(id, description = NULL, type = "string", default = NULL)
+create_variable(
+  name,
+  description = NULL,
+  type = NULL,
+  subtype = NULL,
+  default = NULL
+)
 }
 \arguments{
-\item{id}{the id of the variable}
+\item{name}{the name of the variable}
 
 \item{description}{an optional description of the variable}
 
 \item{type}{the type of the value that is replaced on runtime, default 'string'}
 
-\item{default}{the default value for this variable}
+\item{subtype}{the subtype of the type (as specified by openEO types)}
 
-\item{graph}{a process graph object}
+\item{default}{the default value for this variable}
 }
 \value{
-a \code{\link{Variable}} object
+a \code{\link{ProcessGraphParameter}} object
 }
 \description{
 This function will create a variable to be used in the designated process graph with additional optional information.

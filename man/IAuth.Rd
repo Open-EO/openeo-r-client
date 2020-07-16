@@ -10,6 +10,8 @@ An interface that states the intended behavior for the authentication.
 
 \describe{
 \item{\code{access_token}}{The access_token to query password restricted web services of an openeo back-end}
+
+\item{\code{id_token}}{The id_token retrieved when exchanging the access_token at the identity provider}
 }}
 
 \section{Methods}{

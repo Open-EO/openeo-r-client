@@ -6,7 +6,7 @@
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return vector of process graph ids
+#' @return a list userdefined processes (\code{ProcessInfo})
 #' @export
 list_process_graphs = function(con=NULL) {
     tryCatch({
@@ -14,20 +14,17 @@ list_process_graphs = function(con=NULL) {
         
         con = .assure_connection(con)
         
-        listOfGraphShortInfos = con$request(tag = tag, authorized = TRUE)
-        listOfGraphShortInfos = listOfGraphShortInfos$process_graphs
+        listOfUserDefinedProcesses = con$request(tag = tag, authorized = TRUE)$processes
         
-        table = .listObjectsToDataFrame(listOfGraphShortInfos)
-        if (ncol(table) == 0 || nrow(table) == 0) {
-            message("No process graphs are currently stored on the back-end.")
-            invisible(table)
-        }
+        listOfUserDefinedProcesses = lapply(listOfUserDefinedProcesses, function(process) {
+            class(process) = "ProcessInfo"
+            return(process)
+        })
         
-        table = table[, c("id", "title", "description")]
-        if (isNamespaceLoaded("tibble")) 
-            table = tibble::as_tibble(table)
+        names(listOfUserDefinedProcesses) = sapply(listOfUserDefinedProcesses, function(p) p$id)
         
-        return(table)
+        return(listOfUserDefinedProcesses)
+        
     }, error = .capturedErrorToMessage)
 }
 
@@ -41,7 +38,7 @@ list_process_graphs = function(con=NULL) {
 #' 
 #' @return the process graph as list
 #' @export
-describe_process_graph = function(con=NULL, id) {
+describe_process_graph = function(id, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -52,7 +49,7 @@ describe_process_graph = function(con=NULL, id) {
         tag = "graph_details"
         graph = con$request(tag = tag, parameters = list(id), authorized = TRUE, type = "application/json", auto_unbox = TRUE)
         
-        class(graph) = "ProcessGraphInfo"
+        class(graph) = "ProcessInfo"
         class(graph$process_graph) = "Json_Graph"
         return(graph)
     }, error = .capturedErrorToMessage)
@@ -68,7 +65,7 @@ describe_process_graph = function(con=NULL, id) {
 #' @param id the id of the graph
 #' 
 #' @export
-delete_process_graph = function(con=NULL, id) {
+delete_process_graph = function(id, con=NULL) {
     tryCatch({
         tag = "graph_delete"
         
@@ -89,12 +86,20 @@ delete_process_graph = function(con=NULL, id) {
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph a process graph definition
-#' @param title the title of the process graph (optional)
+#' @param id the title of the process graph
+#' @param summary the summary of the process graph (optional)
 #' @param description the description of a process graph (optional)
+#' @param submit whether to create a process_graph at the service or to create it for local use
+#' 
+#' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_process_graph = function(con=NULL, graph, title = NULL, description = NULL) {
+create_process_graph = function(graph, id, summary=NULL, description = NULL, submit=TRUE, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
+        
+        if (is.function(graph)) {
+            graph = as(graph,"Graph")
+        }
         
         if ("ProcessNode" %in% class(graph)){
             # final node!
@@ -105,15 +110,24 @@ create_process_graph = function(con=NULL, graph, title = NULL, description = NUL
             stop("The graph information is missing or not a list")
         }
         
-        requestBody = list(title = title, description = description, process_graph = graph$serialize())
+        p = Process$new(id = id, summary = summary, description = description, process_graph = graph)
+        process_graph_description = p$serialize()
         
-        tag = "new_graph"
-        response = con$request(tag = tag, authorized = TRUE, data = requestBody, raw = TRUE)
+        if (submit) {
+            tag = "graph_create_replace"
+            
+            response = con$request(tag = tag, parameters = list(
+                process_graph_id = id
+            ), authorized = TRUE, data = process_graph_description, raw = TRUE)
+            
+            message("Graph was sucessfully stored on the backend.")
+            return(id) 
+        } else {
+            return(process_graph_description)
+        }
         
-        message("Graph was sucessfully stored on the backend.")
-        locationHeader = headers(response)$location
-        split = unlist(strsplit(locationHeader, "/"))
-        return(trimws(split[length(split)]))
+        
+        
     }, error = .capturedErrorToMessage)
 }
 
@@ -125,10 +139,10 @@ create_process_graph = function(con=NULL, graph, title = NULL, description = NUL
 #' is used.
 #' @param id process graph id
 #' @param graph a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder
-#' @param title title of the process graph (optional)
+#' @param summary summary of the process graph (optional)
 #' @param description description of the process graph (optional)
 #' @export
-update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, description = NULL) {
+update_process_graph = function(id, graph = NULL, summary = NULL, description = NULL, con=NULL) {
     tryCatch({
         if (is.null(id)) {
             stop("Cannot replace unknown graph. If you want to store the graph, use 'create_process_graph' instead")
@@ -136,44 +150,74 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
         
         con = .assure_connection(con)
         
-        requestBody = list()
+        #TODO get process_graph via id, then substitue updated stuff and PUT back
+        graph_info = describe_process_graph(con = con, id = id)
+        process = processFromJson(json=graph_info)
+         # = list()
         
         if (!is.null(graph)) {
+            
+            
             if (is.na(graph)) {
                 stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
-            } else if (!is.list(graph)) {
-                stop("The graph information is missing or not a list")
             } else {
-                if ("ProcessNode" %in% class(graph)){
-                    # final node!
-                    graph = Graph$new(con=con,final_node = graph)$serialize()
-                } 
-                requestBody[["process_graph"]] = graph
+                process$setProcessGraph(process_graph = graph)
             }
+                
+                
+            #     if (is.function(graph)) {
+            #     graph = as(graph,"Graph")
+            # } else if ("ProcessNode" %in% class(graph)){
+            #     # final node!
+            #     graph = Graph$new(con=con,final_node = graph)
+            # } else if ("Graph" %in% class(graph)) {
+            #     
+            # } else {
+            #     stop("Graph is neither final node, graph nor function.")
+            # }
+            # 
+            # # set or update variables and return
+            # requestBody[["process_graph"]] = graph$serialize()
+            # 
+            # if (length(graph$getVariables()) == 0) {
+            #     graph_params = list()
+            # } else {
+            #     graph_params = lapply(graph$getVariables(),function(p) {
+            #         p$asParameterInfo()
+            #     })
+            # }
+            # requestBody[["parameters"]] = graph_params
+            # 
+            # requestBody[["returns"]] = graph$getFinalNode()$getReturns()$asParameterInfo()
         }
         
-        if (!is.null(title)) {
-            if (is.na(title)) {
-                requestBody[["title"]] = NULL
-            } else {
-                requestBody[["title"]] = title
-            }
-        }
-        if (!is.null(description)) {
-            if (is.na(description)) {
-                requestBody[["description"]] = NULL
-            } else {
-                requestBody[["description"]] = description
-            }
-        }
+        process$setSummary(summary)
+        process$setDescription(description)
         
-        tag = "graph_replace"
+        # if (!is.null(summary)) {
+        #     if (is.na(summary)) {
+        #         requestBody[["summary"]] = NULL
+        #     } else {
+        #         requestBody[["summary"]] = summary
+        #     }
+        # }
+        # if (!is.null(description)) {
+        #     if (is.na(description)) {
+        #         requestBody[["description"]] = NULL
+        #     } else {
+        #         requestBody[["description"]] = description
+        #     }
+        # }
+        
+        requestBody = process$serialize()
+        
+        tag = "graph_create_replace"
         
         message = con$request(tag = tag, parameters = list(id), authorized = TRUE, data = requestBody, encodeType = "json")
         
         if (is.null(message)) {
             message(paste("Process graph '", id, "' was successfully modified.", sep = ""))
-            invisible(TRUE)
+            return(id)
         }
     }, error = .capturedErrorToMessage)
 }
@@ -187,21 +231,24 @@ update_process_graph = function(con=NULL, id, graph = NULL, title = NULL, descri
 #' @param graph the process graph that will be sent to the back-end and is being validated
 #' 
 #' @export
-validate_process_graph = function(con=NULL, graph) {
+validate_process_graph = function(graph, con=NULL) {
     tryCatch({
+        con = .assure_connection(con)
+        
         if ("Graph" %in% class(graph)) {
             graph = graph$serialize()
         } else if ("ProcessNode" %in% class(graph)) {
             graph = Graph$new(final_node = graph)$serialize()
+        } else if ("function" %in% class(graph)) {
+            graph = as(graph,"Graph")$serialize()
         }
             
         if (!is.list(graph) || is.null(graph)) {
             stop("The graph information is missing or not a list")
         }
         
-        con = .assure_connection(con)
-        
-        requestBody = list(process_graph = graph)
+        requestBody = list(
+            process_graph = graph)
         
         tag = "process_graph_validate"
         response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json")
@@ -219,41 +266,23 @@ validate_process_graph = function(con=NULL, graph) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Get a process graph builder from the connection
+
+
+#' Get a process graph builder / process collection from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a Graph object to model a process graph in R. To get a better overview about the process graph building, please have
+#' a ProcessCollection object to build a process graph in R. To get a better overview about the process graph building, please have
 #' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 #' 
 #' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return a Graph object with the offered processes of the backend
+#' @return a ProcessCollection object with the offered processes of the backend
 #' @export
-process_graph_builder = function(con=NULL) {
+processes = function(con = NULL) {
     tryCatch({
         con = .assure_connection(con)
-        
-        if (is.null(con$processes)) {
-            temp = list_processes(con)
-        }
-        
-        collections = list_collections(con)$collections
-        cids = sapply(collections, function(coll) coll$id)
-        collections = as.list(cids)
-        names(collections) = cids
-        
-        return(Graph$new(con, collections))
+        return(con$getProcessCollection())
     }, error = .capturedErrorToMessage)
 }
 
-#' @export
-processes = function(con = NULL) {
-    con = .assure_connection(con)
-    
-    collections = list_collections(con)$collections
-    cids = sapply(collections, function(coll) coll$id)
-    collections = as.list(cids)
-    names(collections) = cids
-    
-    return(ProcessCollection$new(con = con, data = collections))
-}
+setClass("ProcessInfo")

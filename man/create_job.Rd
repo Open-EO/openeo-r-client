@@ -5,21 +5,18 @@
 \title{Creates a job on the back-end from a Graph object}
 \usage{
 create_job(
-  con = NULL,
   graph = NULL,
   title = NULL,
   description = NULL,
   plan = NULL,
   budget = NULL,
-  format = NULL,
+  con = NULL,
   ...
 )
 }
 \arguments{
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
-is used.}
-
-\item{graph}{A Graph object}
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
 
 \item{title}{Optional title of a job to be found}
 
@@ -29,7 +26,8 @@ is used.}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
 
-\item{format}{The inteded format of the data to be returned}
+\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+is used.}
 
 \item{...}{additional configuration parameter for output generation}
 }

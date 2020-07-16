@@ -4,27 +4,21 @@
 \alias{ProcessCollection}
 \title{Process Collection}
 \description{
-Similarly to the Graph object this object contains template functions for process graph building, 
-but without the overload of creating a Graph object, which contains ProcessNodes.
+This object contains template functions for process graph building from the processes offered by an openEO service. This object is
+an R6 object that is not locked, in order to add new functions at runtime.
 }
-\section{Fields}{
-
-\describe{
-\item{\code{data}}{a named list of collection ids or callback parameters depending on the context}
-}}
-
 \section{Methods}{
 
 \describe{
-   \item{\code{$new(con = NULL, data = list())}}{The object creator created from processes and available data. 
-   If \code{data} was omitted then it is fetched from \code{\link{list_collections}}. }
+   \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
 }
 }
 
 \section{Arguments}{
 
 \describe{
-   \item{data}{optional a named list of available data}
+   \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 }
 

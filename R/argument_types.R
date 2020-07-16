@@ -18,22 +18,29 @@
 #' @section Methods:
 #' \describe{
 #'  \item{\code{$new(name, description,required=FALSE)}}{}
-#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
 #'  \item{\code{$getName}}{returns the name of a parameter as string}
-#'  \item{\code{$setName(value)}}{sets the name of a parameter}
+#'  \item{\code{$setName(name)}}{sets the name of a parameter}
+#'  \item{\code{$getDescription()}}{returns the description of a parameter}
+#'  \item{\code{$setDescription(description)}}{sets the description of a parameter}
 #'  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
 #'  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
+#'  \item{\code{$getDefault()}}{returns the parameters default value}
+#'  \item{\code{$setDefault(default)}}{sets the default value of a parameter}
 #'  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
 #'  API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+#'  \item{\code{$getSchema()}}{returns the schema definition}
+#'  \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
 #'  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
+#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
+#'  \item{\code{$isAny()}}{return TRUE if this parameter describes a choice of parameters}
 #' }
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{name}}{The name of a parameter}
-#'   \item{\code{description}}{}
+#'   \item{\code{name}}{character - The name of a parameter}
+#'   \item{\code{description}}{character - The description of a parameter}
 #'   \item{\code{required}}{logical - whether or not }
-#'   \item{\code{value}}{In this case also the name of a parameter}
 #'   \item{\code{pattern}}{the regexp as a string how to formulate the value}
+#'   \item{\code{default}}{the regexp as a string how to formulate the value}   
 #'   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
 #' }
 NULL
@@ -41,22 +48,26 @@ NULL
 Parameter = R6Class(
   "Parameter",
   public = list(
-    initialize=function(name, description,required=FALSE) {
+    initialize=function(name=character(), description=character(),required=FALSE) {
       private$name = name
       private$description = description
       private$required = FALSE
-    },
-    
-    isRequired = function() {
-      return(private$required)
     },
     
     getName = function() {
       return(private$name)
     },
     
-    setName = function(value) {
-      private$name = value
+    setName = function(name) {
+      private$name = name
+    },
+    
+    getDescription = function() {
+      return(private$description)
+    },
+    setDescription = function(description) {
+      private$description = description
+      invisible(self)
     },
     
     getPattern = function() {
@@ -65,25 +76,59 @@ Parameter = R6Class(
     setPattern = function(pattern) {
       private$schema$pattern = pattern
     },
-    setDefault = function(value) {
-      private$schema$default = value
+    setDefault = function(default) {
+      private$default = default
       invisible(self)
     },
     getDefault = function() {
-      return(private$schema$default)
+      return(private$default)
     },
     matchesSchema = function(schema) {
-      sel = c("type","format")
-      
+      sel = c("type","subtype")
       if (is.null(schema$type)) schema$type = character()
-      if (is.null(schema$format)) schema$format = character()
+      if (is.null(schema$subtype)) schema$subtype = character()
       
-      if (length(schema$type) == 0 && length(schema$format) == 0) return(TRUE) # TODO add unchecked warning?
+      if (length(schema$type) == 0 && length(schema$subtype) == 0) return(TRUE) # TODO add unchecked warning?
       
       return(setequal(private$schema[sel], schema[sel]))
     },
     getSchema = function() {
       return(private$schema)
+    },
+    asParameterInfo = function() {
+      # the function will serialize a parameter as in a process definition, which will be used
+      # when describing a parameter as some sort of a variable
+      
+      info = list()
+      info$name = self$getName()
+      info$description = self$getDescription()
+      
+      if (self$isNullable) {
+        info$optional = TRUE
+        info$default = NA
+      } else if (self$isRequired){
+        info$optional = FALSE
+      }
+      
+      if (all(c("Argument","Parameter","R6") %in% class(self)) && 
+          all(class(self) %in% c("Argument","Parameter","R6"))) {
+        # this is an object where anything goes in (Any)
+        info$schema = list(description = "Any data type")
+      } else if (all(c("anyOf","Argument","Parameter","R6") %in% class(self))) {
+        info$schema = lapply(self$getChoice(), function(param) {
+          param$asParameterInfo()
+        })
+        
+        if (self$isNullable) {
+          info$schema = append(private$schema, list(list(type = "null")))
+        }
+      } else if (self$isNullable) {
+        info$schema$type = list(private$schema$type,"null") #TODO array?
+      } else {
+        info$schema = private$schema
+      }
+      return(info)
+      
     }
   ),
   active = list(
@@ -100,17 +145,34 @@ Parameter = R6Class(
         
         private$nullable = value
       }
+    },
+    isRequired = function(value) {
+      if (missing(value)) {
+        return(private$required)
+      } else {
+        value = as.logical(value)
+        
+        if (is.na(value)) {
+          warning("Cannot cast value to logical. Assume FALSE.")
+          value = FALSE
+        }
+        
+        private$required = value
+      }
+    },
+    isAny = function() {
+      length(private$schema$type) == 0
     }
   ),
   private = list(
     name=character(),
     nullable = FALSE,
+    default = character(),
     schema = list(
       type=character(),
-      format = character(),
+      subtype = character(),
       pattern = character(),
-      parameters = list(), # potential callback parameter
-      default = character(),
+      parameters = list(), # potential ProcessGraphParameter (variables)
       
       # items are relevant for arrays
       items = list(
@@ -125,7 +187,6 @@ Parameter = R6Class(
 )
 
 # Argument ====
-# should be abstract class
 #' Argument class
 #' 
 #' This class inherits all fields and functions from \code{\link{Parameter}} and augments this class for 
@@ -144,10 +205,13 @@ Parameter = R6Class(
 #'   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
 #'   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
 #'   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
+#'   \item{\code{$getProcess()}}{returns the process to which this parameter belongs to}
+#'   \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 #' }
 #' @section Arguments: 
 #' \describe{
 #'   \item{\code{value}}{The value for this argument.}
+#'   \item{\code{p}}{An object of class 'Process' or inheriting like 'ProcessNode'}
 #' }
 NULL
 
@@ -167,23 +231,22 @@ Argument = R6Class(
       if (self$isNullable && 
           (length(self$getValue()) == 0 || 
            (!is.environment(self$getValue()) && 
-            is.na(self$getValue()))) && 
-          self$isRequired()) {
-        return(NA)
+            is.na(self$getValue()))) 
+          ) {
+        if (self$isRequired) {
+          return(NA)
+        } else {
+          return(NULL)
+        }
+        
       }
       
-      if ("Graph" %in% class(private$value)) {
-        if (!"callback" %in% class(self)) {
-          return(private$value$serialize())
-        } 
-      }
-      
-      if ("ProcessNode" %in% class(private$value)) {
-        return(private$value$serializeAsReference())
-      }
-      
-      if (any(c("callback-value","variable") %in% class(self$getValue()))) {
+      if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) {
         return(self$getValue()$serialize())
+      }
+      
+      if ("ProcessNode" %in% class(self$getValue())) {
+        return(self$getValue()$serializeAsReference())
       }
       
       # for format specific conversion overwrite this by children
@@ -202,12 +265,18 @@ Argument = R6Class(
         {
           private$checkRequiredNotSet()
           
-          if (!self$isRequired() && 
+          if (!self$isRequired && 
               !is.environment(private$value) && 
               self$isEmpty()) {
             
           } else {
-            if (!any(c("callback-value","variable") %in% class(self$getValue()))) private$typeCheck()
+            # ProcessGraphParameter -> variable
+            # schema$type length == 0 -> ANY
+            if (any(c("ProcessGraphParameter") %in% class(self$getValue()))) return(invisible(NULL)) 
+                
+            if ("ProcessNode" %in% class(self$getValue()) && self$getValue()$getReturns()$isAny) return(invisible(NULL))
+              
+            private$typeCheck()
           }
           
           invisible(NULL)
@@ -237,6 +306,7 @@ Argument = R6Class(
       return(invisible(self))
     }
   ),
+  # private =====
   private = list(
     value=NULL,
     process = NULL,
@@ -260,20 +330,21 @@ Argument = R6Class(
     },
     
     checkMultiResults = function() {
-      if ("ProcessNode" %in% class(private$value)) {
-        returns = private$value$getReturns()
-        
-        if (!is.null(returns$schema)) {
-          if (!is.null(returns$schema$anyOf)) {
-            output_candidated = returns$schema$anyOf
-            
-            if (!any(sapply(output_candidated,function(schema){self$matchesSchema(schema)}))) {
-              stop("Cannot match any of the provided returns of the prior process to this parameter")
-            }
-          }
-        }
-      }
-      
+      #TODO adapt or remove
+      # if ("ProcessNode" %in% class(private$value)) {
+      #   returns = private$value$getReturns()
+      #   
+      #   if (!is.null(returns$schema)) {
+      #     if (!is.null(returns$schema$anyOf)) {
+      #       output_candidated = returns$schema$anyOf
+      #       
+      #       if (!any(sapply(output_candidated,function(schema){self$matchesSchema(schema)}))) {
+      #         stop("Cannot match any of the provided returns of the prior process to this parameter")
+      #       }
+      #     }
+      #   }
+      # }
+      return(invisible(NULL))
       
     },
     deep_clone = function(name, value) {
@@ -317,57 +388,6 @@ Argument = R6Class(
   )
 )
 
-# Variable ====
-
-#' Variable class
-#' 
-#' This class reflects a variable that can be used within a process graph. It inherits all fields and functions
-#' from \code{\link{Argument}}. If the value is not set, the variable is serialized as a variable, but if it is, 
-#' then the variable is replaced with the set value. The variable is created by \code{\link{create_variable}}.
-#' 
-#' @name Variable
-#' 
-#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
-#' 
-#' @return Object of \code{\link{R6Class}} which represents a variable.
-#'
-NULL
-
-Variable = R6Class(
-  "variable",
-  inherit=Argument,
-  public = list(
-    initialize=function(id=character(),description=character(),type="string",default=NULL) {
-      private$name = id
-      private$description = description
-      private$schema$default = default
-      private$schema$type = type
-    }
-  ),
-  private = list(
-    typeSerialization = function() {
-      # if we want to bulk set a variable with setValue, e.g. an often used collection replace the variable with the set value
-      if (is.null(private$value)) {
-        res = list(variable_id = private$name)
-        
-        if (length(private$description) > 0 && !is.na(private$description)) res = append(res,list(description=private$description))
-        if (length(private$schema$type) > 0 && ! is.na(private$schema$type)) res= append(res, list(type=private$schema$type))
-        if (length(private$schema$default) > 0 && !is.na(private$schema$default)) res = append(res, list(default=private$schema$default))
-        
-        return(res)
-      } else {
-        return(private$value)
-      }
-      
-    }
-  )
-)
-
 # Integer ====
 #' Integer class
 #' 
@@ -376,11 +396,12 @@ Variable = R6Class(
 #' @name Integer
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an Integer
 NULL
@@ -398,7 +419,7 @@ Integer = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.integer(private$value)) {
+      if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -408,10 +429,14 @@ Integer = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
         # correct value if you can
         private$value = coerced
+        
+        
       }
+      return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.integer(private$value))
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(as.integer(private$value))
     }
   )
 )
@@ -424,11 +449,12 @@ Integer = R6Class(
 #' @name EPSGCode
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an EPSG code as Integer
 NULL
@@ -442,12 +468,12 @@ EPSGCode = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "integer"
-      private$schema$format = "epsg-code"
+      private$schema$subtype = "epsg-code"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.integer(private$value)) {
+      if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -457,6 +483,8 @@ EPSGCode = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
         # correct value if you can
         private$value = coerced
+        
+        return(invisible(NULL))
       }
     },
     typeSerialization = function() {
@@ -473,11 +501,12 @@ EPSGCode = R6Class(
 #' @name Number
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Number
 NULL
@@ -502,12 +531,16 @@ Number = R6Class(
     typeCheck = function() {
       
       if ("ProcessNode" %in% class(private$value)) {
-        # check return value?
-        return_schema = private$value$getReturns()$schema
-        
-        if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
+        return_value = private$value$getReturns()
+        if (!any(c("number","integer") %in% class(return_value) && 
+                 length(return_value$getSchema()$type)) != 0) {
+          
           stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
-      } else if (!is.numeric(private$value)) {
+        }
+        
+        # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
+          
+      } else if (!is.na(private$value) && !is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -518,10 +551,14 @@ Number = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if ("ProcessNode" %in% class(private$value)) {
         return(private$value$serialize())
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
       } else {
         return(as.numeric(private$value))
       }
@@ -537,11 +574,12 @@ Number = R6Class(
 #' @name String
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a string.
 NULL
@@ -559,7 +597,7 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -570,6 +608,8 @@ String = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (is.call(private$value)) {
@@ -590,6 +630,10 @@ String = R6Class(
         } else {
           return(private$value)
         } 
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
+      } else if (is.na(private$value)) {
+        return(NA)
       } else {
         return(as.character(private$value))
       }
@@ -608,12 +652,12 @@ URI = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "uri"
+      private$schema$subtype = "uri"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -626,6 +670,8 @@ URI = R6Class(
       }
       
       if (!file.exists(private$value) || !grepl(private$value,pattern="\\w+:(\\/?\\/?)[^\\s]+")) stop("Value is not an URI or file.")
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       
@@ -652,11 +698,12 @@ URI = R6Class(
 #' @name OutputFormat
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an output format of a back-end.
 NULL
@@ -670,25 +717,37 @@ OutputFormat = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "output-format"
+      private$schema$subtype = "output-format"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
-        suppressWarnings({
-          coerced = as.character(private$value)
-        })
+      if (!is.na(private$value) && !is.character(private$value)) {
         
-        if (is.null(coerced) || 
-            is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
-        # correct value if you can
-        private$value = coerced
+        if ("FileFormat" %in% class(private$value)) {
+          # what to do?
+        } else {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          
+          private$value = coerced
+        }
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.character(private$value))
+      if ("FileFormat" %in% class(private$value)) {
+        return(private$value$name)
+      } else {
+        return(as.character(private$value))
+      }
     }
   )
 )
@@ -701,11 +760,12 @@ OutputFormat = R6Class(
 #' @name CollectionId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a collection id.
 NULL
@@ -719,29 +779,48 @@ CollectionId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "collection-id"
+      private$schema$subtype = "collection-id"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
-        suppressWarnings({
-          coerced = as.character(private$value)
-        })
+      if (!is.na(private$value) && !is.character(private$value)) {
         
-        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
-        
-        if (is.null(coerced) || 
-            is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
-        # correct value if you can
-        private$value = coerced
+        if (!"Collection" %in% class(private$value)) {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (length(private$schema$pattern) > 0) {
+            if (!grepl(pattern=private$schema$pattern,x=coerced,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
+          }
+          
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          private$value = coerced
+        } else {
+          coerced = private$value$id
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Collection ID obtained from service is not valid, please contact the openEO service support."))
+        }
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
-      return(as.character(private$value))
+      if (!"Collection" %in% class(private$value)) {
+        return(as.character(private$value))
+      } else {
+        return(private$value$id)
+      }
+      
     }
   )
 )
@@ -754,11 +833,12 @@ CollectionId = R6Class(
 #' @name JobId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a job.
 NULL
@@ -772,12 +852,12 @@ JobId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "job-id"
+      private$schema$subtype = "job-id"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -792,9 +872,196 @@ JobId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
+    }
+  )
+)
+
+# UdfRuntime argument ====
+#' UdfRuntimeArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfRuntimeArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} which represents the udf runtime in an process argument
+NULL
+
+UdfRuntimeArgument = R6Class(
+  "udf-runtime",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-runtime"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a runtime id."))
+        # correct value if you can
+        private$value = coerced
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
+    }
+  )
+)
+
+# UdfRuntimeVersion argument ====
+#' UdfRuntimeVersionArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfRuntimeVersionArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} is an argument that expects a udf runtime version or character as value.
+NULL
+
+UdfRuntimeVersionArgument = R6Class(
+  "udf-runtime-version",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-runtime-version"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        suppressWarnings({
+          coerced = as.character(private$value)
+        })
+        
+        if (is.null(coerced) || 
+            is.na(coerced) ||
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a udf runtime version string."))
+        # correct value if you can
+        private$value = coerced
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      return(as.character(private$value))
+    }
+  )
+)
+
+# UdfCode argument ====
+#' UdfCodeArgument class
+#' 
+#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' 
+#' @name UdfCodeArgument
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
+#' 
+#' @return Object of \code{\link{R6Class}} is an argument that expects an udf code or a file path.
+NULL
+
+UdfCodeArgument = R6Class(
+  "udf-code",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "udf-code"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!is.na(private$value) && !is.character(private$value)) {
+        
+        if ("FileFormat" %in% class(private$value)) {
+          # what to do?
+        } else {
+          suppressWarnings({
+            coerced = as.character(private$value)
+          })
+          
+          if (is.null(coerced) || 
+              is.na(coerced) ||
+              length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
+          # correct value if you can
+          
+          private$value = coerced
+        }
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      if (is.call(private$value)) {
+        return(paste(deparse(private$value),collapse = "\n"))
+      } else if (is.character(private$value)) {
+        if (file.exists(private$value)) {
+          # if valid file path open file and attach
+          tryCatch({
+            suppressWarnings({
+              content = readChar(private$value, file.info(private$value)$size)
+              return(content)
+            })
+            
+          }, error = function(e) {
+            return(private$value)
+          })
+          
+        } else {
+          return(private$value)
+        } 
+      } else if (self$isEmpty() && !self$isRequired) {
+        return(NULL)
+      } else if (is.na(private$value)) {
+        return(NA)
+      } else {
+        return(as.character(private$value))
+      }
     }
   )
 )
@@ -807,11 +1074,12 @@ JobId = R6Class(
 #' @name ProcessGraphId
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the id of a process graph.
 NULL
@@ -825,12 +1093,12 @@ ProcessGraphId = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "process-graph-id"
+      private$schema$subtype = "process-graph-id"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -845,6 +1113,8 @@ ProcessGraphId = R6Class(
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -860,11 +1130,12 @@ ProcessGraphId = R6Class(
 #' @name ProjDefinition
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
 NULL
@@ -878,12 +1149,12 @@ ProjDefinition = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "proj-definition"
+      private$schema$subtype = "proj-definition"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.character(private$value)) {
+      if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -894,6 +1165,8 @@ ProjDefinition = R6Class(
         # correct value if you can
         private$value = coerced
       } 
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(private$value))
@@ -911,11 +1184,12 @@ ProjDefinition = R6Class(
 #' @name BoundingBox
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a bounding box / extent.
 NULL
@@ -929,7 +1203,7 @@ BoundingBox = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "bounding-box"
+      private$schema$subtype = "bounding-box"
     }
   ),
   private = list(
@@ -967,11 +1241,11 @@ BoundingBox = R6Class(
         }
         
       })
-      
+
       # check if crs is set (either proj string or epsg code)
       if ("crs" %in% obj_names) {
         crs_value = private$value[["crs"]]
-        if (!is.integer(crs_value)) {
+        if (!is.integer(crs_value) && !is.numeric(crs_value)) {
           if (!is.character(crs_value)) stop("CRS is not an EPSG identifier or a PROJ string")
           
           # automatical conversion in this EPSG cases
@@ -999,6 +1273,8 @@ BoundingBox = R6Class(
           }
         })
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (length(self$getValue()) == 0) {
@@ -1018,11 +1294,12 @@ BoundingBox = R6Class(
 #' @name Boolean
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a boolean / logical.
 NULL
@@ -1040,7 +1317,7 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.logical(private$value)) {
+      if (!is.na(private$value) && !is.logical(private$value)) {
         suppressWarnings({
           coerced = as.logical(private$value)
         })
@@ -1051,6 +1328,8 @@ Boolean = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.logical(private$value))
@@ -1066,11 +1345,12 @@ Boolean = R6Class(
 #' @name Date
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date.
 NULL
@@ -1084,12 +1364,12 @@ Date = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "date"
+      private$schema$subtype = "date"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.Date(private$value)) {
+      if (!is.na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
         })
@@ -1100,6 +1380,8 @@ Date = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%Y-%m-%d")))
@@ -1115,11 +1397,12 @@ Date = R6Class(
 #' @name DateTime
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a date with time component.
 NULL
@@ -1133,12 +1416,12 @@ DateTime = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "date-time"
+      private$schema$subtype = "date-time"
     }
   ),
   private = list(
     typeCheck = function() {
-      if (!is.POSIXct(private$value)) {
+      if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
         })
@@ -1149,6 +1432,8 @@ DateTime = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%Y-%m-%dT%H:%M%SZ")))
@@ -1164,11 +1449,12 @@ DateTime = R6Class(
 #' @name Time
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents the time of a day.
 NULL
@@ -1182,7 +1468,7 @@ Time = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "string"
-      private$schema$format = "time"
+      private$schema$subtype = "time"
     },
     setValue = function(value) {
       # the value will be a posixct where we just return the time component
@@ -1198,7 +1484,7 @@ Time = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (!is.POSIXct(private$value)) {
+      if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
         })
@@ -1209,6 +1495,8 @@ Time = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       return(as.character(format(private$value,format = "%H:%M:%SZ")))
@@ -1220,16 +1508,20 @@ Time = R6Class(
 #' GeoJson
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-#' class represents geospatial features.
+#' class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
+#' allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
+#' in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+#' EPSG:4326, the polygon is transformed accordingly.
 #' 
 #' @name GeoJson
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents an object in geojson.
 NULL
@@ -1243,16 +1535,64 @@ GeoJson = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "geojson"
+      private$schema$subtype = "geojson"
+    },
+    
+    setValue = function(value) {
+      
+      if (!.is_package_installed("sf")) {
+        warnings("Package sf is not installed which is required for GeoJson support.")
+      }
+      
+      if (isNamespaceLoaded("sf")) {
+        if (all(c("XY","POLYGON") %in% class(value))) {
+          value = sf::st_sfc(value)
+        }
+        
+        if ("sfc_POLYGON" %in% class(value)) {
+          value = sf::st_sf(value)
+          sf::st_crs(value) = 4326
+        } 
+        
+        if ("sf" %in% class(value)) {
+          # since geojson only supports WGS84 we need to make sure that it is that crs
+          value = sf::st_transform(value, st_crs(4326))
+        }
+      }
+      
+      private$value = value
     }
   ),
   private = list(
     typeCheck = function() {
-      #TODO implement! object == list in R
-      stop("Not implemented")
+      if (is.list(private$value)) {
+        #if list we assume that the geojson object was created as list
+        return(NULL)
+      } 
+      
+      if ("sf" %in% class(private$value)) {
+        return(NULL)
+      } else {
+        stop("Class ",class(private$value)[[1]], " not supported in GeoJson Argument")
+      }
+        
+      
     },
     typeSerialization = function() {
-      return(as.list(private$value))
+      if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
+        return(private$value)
+      } else if ("sf" %in% class(private$value)){
+        if (!.is_package_installed("geojsonsf")) {
+          stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
+        } else {
+          gson = geojsonsf::sf_geojson(private$value)
+          return(jsonlite::fromJSON(gson, simplifyVector = FALSE))
+        }
+      } else {
+        stop("Unsupported value type.")
+      }
+      
+      
     }
   )
 )
@@ -1265,11 +1605,12 @@ GeoJson = R6Class(
 #' @name OutputFormatOptions
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents output format options.
 NULL
@@ -1283,47 +1624,7 @@ OutputFormatOptions = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "output-format-options"
-    }
-  ),
-  private = list(
-    typeCheck = function() {
-      #TODO implement! object == list in R
-    },
-    typeSerialization = function() {
-      return(as.list(private$value))
-    }
-  )
-)
-
-# ProcessGraphVariables ====
-#' ProcessGraphVariables
-#' 
-#' Inheriting from \code{\link{Argument}} in order to represent the process graph variables that enable a mapping. 
-#' When the already stored Graph that contains variables is loaded for execution.
-#' 
-#' @name ProcessGraphVariables
-#' 
-#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
-#' 
-#' @return Object of \code{\link{R6Class}} which represents the mapping of variables and values at runtime.
-NULL
-
-ProcessGraphVariables = R6Class(
-  "process-graph-variables",
-  inherit=Argument,
-  public = list(
-    initialize=function(name=character(),description=character(),required=FALSE) {
-      private$name = name
-      private$description = description
-      private$required = required
-      private$schema$type = "object"
-      private$schema$format = "process-graph-variables"
+      private$schema$subtype = "output-format-options"
     }
   ),
   private = list(
@@ -1340,17 +1641,18 @@ ProcessGraphVariables = R6Class(
 #' RasterCube
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a raster cube. This is usually the in- and 
-#' output format of a process. Unless the process operates within a callback on reduced data. Analogous to
+#' output format of a process. Unless the process operates within a ProcessGraph on reduced data. Analogous to
 #' this the \code{\link{VectorCube}} behaves in the same manner, but with spatial feature data.
 #' 
 #' @name RasterCube
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a raster cube.
 NULL
@@ -1364,7 +1666,7 @@ RasterCube = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "raster-cube"
+      private$schema$subtype = "raster-cube"
     }
   ),
   private = list(
@@ -1394,11 +1696,12 @@ RasterCube = R6Class(
 #' @name VectorCube
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a vector cube.
 NULL
@@ -1412,7 +1715,7 @@ VectorCube = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "vector-cube"
+      private$schema$subtype = "vector-cube"
     }
   ),
   private = list(
@@ -1434,13 +1737,14 @@ VectorCube = R6Class(
   )
 )
 
-# Callback ====
-#' Callback
+# ProcessGraphArgument ====
+#' ProcessGraphArgument
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a callback. The callback operates on reduced data
+#' Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
-#' single value. The value of a callback is usually a \code{\link{Graph}} with \code{\link{CallbackValue}} as 
+#' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
 #' injected data. Hints from the openeo api documention:
+# TODO change
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
@@ -1448,29 +1752,30 @@ VectorCube = R6Class(
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$getCallbackParameters()}}{returns the available list \code{\link{CallbackValue}}}
-#'   \item{\code{$setCallbackParameters(parameters)}}{assigns a list of \code{\link{CallbackValue}} to the callback}
+#'   \item{\code{$getProcessGraphParameters()}}{returns the available list \code{\link{ProcessGraphParameter}}}
+#'   \item{\code{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link{ProcessGraphParameter}} to the ProcessGraph}
 #' }
 #' 
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{parameters}}{the list \code{\link{CallbackValue}}}
+#'   \item{\code{parameters}}{the list \code{\link{ProcessGraphParameter}}}
 #' }
 #' 
-#' @name CallbackArgument
+#' @name ProcessGraphArgument
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a callback.
+#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph.
 NULL
 
-Callback = R6Class(
-  "callback",
+ProcessGraphArgument = R6Class(
+  "ProcessGraphArgument",
   inherit=Argument,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
@@ -1478,38 +1783,48 @@ Callback = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "object"
-      private$schema$format = "callback"
+      private$schema$subtype = "process-graph"
     },
     
     setValue = function(value) {
       if ("function" %in% class(value)) {
-        # if value is a function -> then make a call with the function and a suitable callback 
+        # if value is a function -> then make a call with the function and a suitable ProcessGraph
         # parameter
         # create a new graph
-        
+
         process_collection = private$process$getGraph()
-        
+
         # probably switch temporarily the graph of the parent process
         # then all newly created process nodes go into the new graph
         private$process$setGraph(process_collection)
-        
-        # find suitable callback parameter (mostly array or binary) -> check for length of formals
-        callback_parameter = private$parameters
-        names(callback_parameter) = names(formals(value))
-        
-        lapply(callback_parameter, function(cb){cb$setProcess(private$process)})
-        
+
+        process_graph_parameter = private$parameters
+
+        # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
+        # the issue can no longer been resolved automatically
+        if (length(formals(value)) != length(process_graph_parameter)) stop("Function parameter do not match ProcessGraph parameter(s)")
+
+        names(process_graph_parameter) = names(formals(value))
+
+        lapply(process_graph_parameter, function(cb){cb$setProcess(private$process)})
+
         # make call
-        final_node = do.call(value,args = callback_parameter)
-        
+        final_node = do.call(value,args = process_graph_parameter)
+
         # then serialize it via the final node
-        
+
         # assign new graph as value
-        value = Graph$new(final_node = final_node)
+        private$value = Graph$new(final_node = final_node)
+      } else if ("ProcessNode" %in% class(value)) {
+        private$value = Graph$new(final_node = value)
+      } else if ("Graph" %in% class(value) || is.na(value)) {
+        private$value = value
+      } else {
+        stop("Assigned value for process graph is neiter function, Graph nor a final process node.")
       }
       
       
-      private$value = value
+      
     },
     setProcess = function(p) {
       private$process = p
@@ -1521,11 +1836,11 @@ Callback = R6Class(
       return(invisible(self))
     },
     
-    setCallbackParameters = function(parameters) {
+    setProcessGraphParameters = function(parameters) {
       private$parameters = parameters
     },
     
-    getCallbackParameters = function() {
+    getProcessGraphParameters = function() {
       return(private$parameters)
     }
     
@@ -1534,8 +1849,8 @@ Callback = R6Class(
     parameters = list(),
     
     typeCheck = function() {
-      # check the value (graph) for the same callback parameters (CallbackValues)
-      if (!"Graph" %in% class(private$value)) stop("The value of a callback argument is usually a graph.")
+      # check the value (graph) for the same ProcessGraph parameters (ProcessGraphParameters)
+      if (!"Graph" %in% class(private$value)) stop("The value of a ProcessGraph argument is usually a graph.")
       
       errors = private$value$validate()
       
@@ -1543,72 +1858,93 @@ Callback = R6Class(
         stop(paste("Errors in subgraph:",paste(errors,collapse=";")))
       }
 
+      return(invisible(NULL))
       
     },
     
     typeSerialization = function() {
       if(!is.null(private$value)) {
         # serialize the graph
-        return(list(callback=private$value$serialize()))
+        return(list(
+          process_graph = private$value$serialize()))
       }
     }
   )
 )
 
-# CallbackValue ====
-#' CallbackValue
+# ProcessGraphParameter ====
+#' ProcessGraphParameter
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent the available data within a callback graph.
+#' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
 #' Hints from the openeo api documention:
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
 #' }
 #' 
-#' @name CallbackValue
+#' @name ProcessGraphParameter
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a callback value.
+#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph value.
 NULL
 
-# in case the callback-value is an arry - which it will be in most cases - we have to store
+# in case the ProcessGraphParameter is an arry - which it will be in most cases - we have to store
 # process nodes for array subsetting in the object with its index. This should be done to 
 # reuse the results of previous steps
-CallbackValue = R6Class(
-  "callback-value",
+ProcessGraphParameter = R6Class(
+  "ProcessGraphParameter",
   inherit=Argument,
   public = list(
     initialize=function(name=character(),
                         description=character(),
                         type=character(),
-                        format=character(),
+                        subtype=character(),
+                        default=character(),
                         required=FALSE) {
       private$name = name
       private$description = description
       private$required = required
       private$schema$type = type
-      private$schema$format = format
+      private$schema$subtype = subtype
+      private$default = default
     },
     print = function() {
       cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      invisible(self)
+    },
+    adaptType = function(fromParameter) {
+      if (is.list(fromParameter) && length(fromParameter) == 1) {
+        fromParameter = fromParameter[[1]]
+        private$schema = fromParameter$getSchema()
+        private$default = fromParameter$getDefault()
+        private$required = fromParameter$isRequired
+        private$nullable = fromParameter$isNullable
+      } else {
+        stop("Not considered yet")
+      }
+      
       invisible(self)
     }
   ),
   private = list(
     typeSerialization = function() {
-      res = list(from_argument=private$name)
-      return(res)
+      if (self$isEmpty()) {
+        return(list(from_parameter=private$name))
+      } else {
+        return(self$getValue())
+      }
     }
   )
 )
 
-setOldClass(c("callback-value","Argument","Parameter","R6"))
+setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 
 # Array ====
 #' Array
@@ -1634,11 +1970,12 @@ setOldClass(c("callback-value","Argument","Parameter","R6"))
 #' }
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a single valued array.
 NULL
@@ -1657,7 +1994,7 @@ Array = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = format
+      private$schema$subtype = format
       
       private$schema$items = items
     },
@@ -1713,7 +2050,7 @@ Array = R6Class(
       if (itemType == "any") {
         # this can be anything so we shift the responsibility to the back-end
         #TODO maybe give a warning that it is unchecked
-        return() 
+        return(invisible(NULL)) 
       }
       
       if (length(private$schema$minItems) == 1 && 
@@ -1727,7 +2064,7 @@ Array = R6Class(
 
       if (itemType == "array") {
         # just check the first layer, everything else would be nice, but is no more in our responsibility
-        if ("callback-value" %in% class(private$value)) {
+        if ("ProcessGraphParameter" %in% class(private$value)) {
           if (length(private$value$getSchema()$type) > 0 && 
               private$value$getSchema()$type == "array")
             if (length(private$value$getSchema()$items$type) > 0) {
@@ -1735,7 +2072,7 @@ Array = R6Class(
                 return()
               }
             } else {
-              stop("Selected callback-value is an array, but has a different item type.")
+              stop("Selected ProcessGraphParameter is an array, but has a different item type.")
             }
             
         }
@@ -1772,7 +2109,7 @@ Array = R6Class(
         if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
         
       } else {
-        if (!"callback-value" %in% class(private$value[[1]])) {
+        if (!"ProcessGraphParameter" %in% class(private$value[[1]])) {
           allOK = switch(itemType,
                          string = all(sapply(private$value,function(val){
                            if ("Process" %in% class(val)) {
@@ -1836,30 +2173,22 @@ Array = R6Class(
         # correct value if you can
         private$value = coerced
       }
+      
+      return(invisible(NULL))
     },
     typeSerialization = function() {
       if (length(self$getValue()) == 0 || is.na(self$getValue())) {
         return(NA)
       }
       
-      if ("callback-value" %in% class(self$getValue()[[1]])) {
-        serialized = lapply(self$getValue(),function(arg)arg$serialize())
-        if (length(serialized) == 1) {
-          serialized = serialized[[1]]        
-        } 
-        return(serialized)
-      } else {
-        return(
-          lapply(self$getValue(), function(value) {
-            
-            if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
-            
-            if ("Argument" %in% class(value)) return(value$serialize())
-            
-            return(value)
-          })
-        )
-      }
+      lapply(self$getValue(), function(value) {
+        
+        if ("ProcessNode" %in% class(value)) return(value$serializeAsReference())
+        
+        if ("Argument" %in% class(value)) return(value$serialize())
+        
+        return(value)
+      })
     })
 )
 
@@ -1871,11 +2200,12 @@ Array = R6Class(
 #' @name Kernel
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a Kernel.
 NULL
@@ -1894,7 +2224,7 @@ Kernel = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "kernel"
+      private$schema$subtype = "kernel"
       private$schema$items = items
     }
   )
@@ -1909,11 +2239,12 @@ Kernel = R6Class(
 #' @name TemporalInterval
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a temporal interval.
 NULL
@@ -1932,7 +2263,7 @@ TemporalInterval = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "temporal-interval"
+      private$schema$subtype = "temporal-interval"
       private$schema$items = items
       private$schema$maxItems = 2
       private$schema$minItems = 2
@@ -1951,11 +2282,12 @@ TemporalInterval = R6Class(
 #' @name TemporalIntervals
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
 NULL
@@ -1974,7 +2306,7 @@ TemporalIntervals = R6Class(
       private$description = description
       private$required = required
       private$schema$type = "array"
-      private$schema$format = "temporal-intervals"
+      private$schema$subtype = "temporal-intervals"
       private$schema$items = items
     }
   )
@@ -1997,11 +2329,12 @@ TemporalIntervals = R6Class(
 #' @name AnyOf
 #' 
 #' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{CallbackArgument}}, 
-#' \code{\link{CallbackValue}}, \code{\link{Variable}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-#' \code{\link{AnyOf}} and \code{\link{ProjDefinition}}
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
 NULL
@@ -2038,13 +2371,13 @@ AnyOf = R6Class(
         
         # currently we have only 1 parameter (either single value or array) or two (directly binary operation)
         number_of_params = sapply(private$parameter_choice,function(cb) {
-          length(cb$getCallbackParameters())
+          length(cb$getProcessGraphParameters())
         })
         
         choice_index = unname(which(number_of_params == length(signature)))
         
         if (length(choice_index) == 0) {
-          stop("Cannot match function to any of the callback parameter.")
+          stop("Cannot match function to any of the ProcessGraph parameter.")
         }
         choice = private$parameter_choice[[choice_index]]
         
@@ -2057,8 +2390,8 @@ AnyOf = R6Class(
         return(self)
       }
       
-      if ("callback" %in% class(value)) {
-        # This is mostly for callbacks
+      if ("ProcessGraph" %in% class(value)) {
+        # This is mostly for ProcessGraphs
         arg_allowed = any(sapply(private$parameter_choice, function(argument) {
           all(length(setdiff(class(argument),class(value))) == 0,
               length(setdiff(class(value),class(argument))) == 0
@@ -2073,7 +2406,6 @@ AnyOf = R6Class(
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
         validated = sapply(choice_copies, function(param) {
-          
           param$setValue(value)
           
           tryCatch(
@@ -2089,8 +2421,15 @@ AnyOf = R6Class(
           
         })
         
-        private$value = unname(choice_copies[validated])[[1]] # pick the first match
-        private$value$setValue(value)
+        tryCatch({
+          if (!any(validated)) stop("Cannot match the value to any of the parameter selection (AnyOf)")
+          
+          private$value = unname(choice_copies[validated])[[1]] # pick the first match
+          private$value$setValue(value)
+        }, error = function(e) {
+          message(e$message)
+        })
+        
         return(self)
       }
       
@@ -2179,7 +2518,7 @@ AnyOf = R6Class(
 # parse functions ----
 findParameterGenerator = function(schema) {
   # TODO adapt this if I add some parameter/argument
-  # variables are not listed since they are created at the graph
+  # ProcessGraphParameter are not listed since they are created at the graph (as "variables")
   parameter_constructor = list(Integer,
                                EPSGCode,
                                Number, 
@@ -2192,11 +2531,10 @@ findParameterGenerator = function(schema) {
                                CollectionId,
                                JobId,
                                ProcessGraphId,
-                               ProcessGraphVariables,
                                ProjDefinition,
                                OutputFormat,
                                OutputFormatOptions,
-                               Callback,
+                               ProcessGraphArgument,
                                Array,
                                Kernel,
                                Date,
@@ -2204,172 +2542,179 @@ findParameterGenerator = function(schema) {
                                TemporalInterval,
                                TemporalIntervals,
                                Time,
-                               URI)
+                               URI,
+                               UdfRuntimeArgument,
+                               UdfRuntimeVersionArgument,
+                               UdfCodeArgument)
+  
+  # resolve the any parameter (no specification)
+  if (length(schema$type) == 0 && length(schema$subtype) == 0) {
+    return(list(Argument))
+  }
   
   matches = unlist(lapply(parameter_constructor, function(constructor){
     if(constructor$new()$matchesSchema(schema)) constructor
   }))
-  
   if (is.null(matches) || length(matches) == 0) matches = list(Argument) # if we don't find anything simply use this, since it is not restricted
   
   return(matches)
 }
 
-parameterFromJson = function(param_def, nullable = FALSE) {
-  if (is.null(param_def$schema$format)) param_def$schema$format = character()
-  if (is.null(param_def$required)) param_def$required = FALSE
-  
-  type = param_def$schema$type
-  
-  if (is.null(type) && !is.null(param_def$schema$anyOf)) {
-    #anyOf case
-    # scan list for type: null
-    types = sapply(param_def$schema$anyOf, function(schema)schema$type)
-    
-    # if present set nullable = TRUE and throw it out
-    if ("null" %in% types) {
-      nullable = TRUE
-      param_def$schema$anyOf[[which(types=="null")]] = NULL
-    }
-    
-    params = lapply(
-      #create anyOf object
-      
-      param_def$schema$anyOf,
-      function(anyOf_schema) {
-        param_copy = param_def
-        param_copy$schema = anyOf_schema
-        return(parameterFromJson(param_copy))
-      }
-    )
-    
-    if (length(params) > 1) {
-      choice = AnyOf$new(name=param_def$name, 
-                         description=param_def$description,
-                         required = param_def$required, 
-                         parameter_list = params)
-      
-      choice$isNullable = nullable
-    } else {
-      nullableParameter = params[[1]]
-      nullableParameter$isNullable = nullable
-      return(nullableParameter)
-    }
-    
-    return(choice)
-  }
-  
-  if (is.list(type)) {
-    # if is array and we have only null and one other, then only use the one prior parameter and make it nullable
-    nullable = "null" %in% type
-    if (nullable) {
-      type[[which(type == "null")]] = NULL # remove this entry
-    }
-    
-    if (length(type) > 1) {
-      # create an anyOf
-      param_template = param_def$schema
-      types = param_template$type
-      param_template$type = NULL
-      
-      schemas = lapply(types, function(type_name) {
-        res = param_template
-        res$type = type_name
-        return(res)
-      })
-      
-      param_def$schema = list(anyOf=schemas) # create new anyOf element with the schemas
-      
-      # recursive call -> in the next iteration it will be an anyOf case (nullable is passed on)
-      return(parameterFromJson(param_def,nullable))
-    } else {
-      param_def$schema$type = unname(unlist(type))
-    }
-  }
-  
-  # this will be the normal case for simple schemas?
-  gen=findParameterGenerator(param_def$schema)[[1]]
-  param = gen$new(name=param_def$name, description=param_def$description,required = param_def$required)
-  
-  # in general also reolve null cases
-  param$isNullable = nullable
-  
-  # TODO change in 1.0.0 to param_def$default
-  param$setDefault(param_def$schema$default)
-  
-  if ("callback" %in% class(param)) {
-    # iterate over all callback parameters and create CallbackParameters, but name = property name (what the process exports to callback)
-    # value has to be assigned by user, then switch name and value during serialization
-    
-    cb_params = lapply(names(param_def$schema$parameters), function(param_name) {
-      param_json = param_def$schema$parameters[[param_name]]
-      if (is.null(param_json[["format"]])) param_json[["format"]] = character()
-      
-      # param_type = findParameterGenerator(param_json[c("type","format")])$new()
-      
-      
-      
-      cb = CallbackValue$new(name = param_name,
-                             description = param_json$description,
-                             type = param_json[["type"]],
-                             format = param_json[["format"]],
-                             required = TRUE)
-      
-      if(!is.null(param_json[["pattern"]])) cb$setPattern(param_json[["pattern"]])
-      
-      return(cb)
-    })
-    names(cb_params) = names(param_def$schema$parameters)
-    
-    # note: later all CBs need to be bound by the user
-    
-    param$setCallbackParameters(cb_params)
-  }
-  
-  if ("array" %in% class(param)) {
-    if (!"kernel" %in% class(param)) {
-      param$setItemSchema(param_def$schema$items)
-    } else {
-      param$setItemSchema(param_def$schema$items)
-    }
-    
-  }
-  return(param)
-}
-
 processFromJson=function(json) {
   if (is.null(json$summary)) json$summary = character()
-  if (is.null(json$parameter_order)) json$parameter_order = character()
+  
   
   tryCatch({
     #map parameters!
-    parameters = lapply(
-      names(json$parameters), function(name) {
-        pdef = json$parameters[[name]]
-        if (is.null(pdef$name)) {
-          pdef$name = name
+    parameter_names = sapply(json$parameters, function(p)p$name)
+    
+    if (length(parameter_names) > 0) {
+      parameters = lapply(
+        json$parameters, function(pdef) {
+          # set param if it is contained in the schema
+          param = parameterFromJson(pdef)
+          
+          return(param)
         }
-        
-        # set param if it is contained in the schema
-        param = parameterFromJson(pdef)
-        pattern = pdef$schema$pattern
-        if (!is.null(pattern)) {
-          param$setPattern(pattern)
-        }
-        
-        return(param)
-      }
-    )
-  
+      )
+      
+      names(parameters) = parameter_names
+    } else {
+      parameters = list()
+    }
+    
+    if (length(json$process_graph) > 0) {
+      graph = parse_graph(json=json)  
+    } else {
+      graph = NULL
+    }
+    
+    
     Process$new(id=json$id,
                 description = json$description,
                 summary=json$summary,
                 parameters = parameters,
                 returns = json$returns,
-                parameter_order = json$parameter_order)
+                process_graph = graph)
   }, error = function(e) {
     warning(paste0("Invalid process description for '",json$id,"'"))
     NULL
   })
+  
+}
 
+parameterFromJson = function(param_def) {
+  
+  if (length(param_def$schema) == 0) {
+    # an empty schema means ANY value is allowed
+    arg = Argument$new()
+    
+    if (length(param_def$description) > 0) {
+      arg$setDescription(param_def$description)
+    }
+    
+    return(arg)
+  }
+    
+  # if it is no unnamed object list, then box it
+  if (length(names(param_def$schema)) > 0) {
+    if (!is.null(param_def$schema$type) && is.list(param_def$schema$type)) {
+      param_def$schema = lapply(param_def$schema$type, function(type,original_param_schema) {
+        original_param_schema$type = type
+        return(original_param_schema)
+      },original_param_schema = param_def$schema)
+    } else {
+      param_def$schema = list(param_def$schema)
+    }
+    
+  }
+  
+  #special case a simple type + null, which mean a type that is a list and schema not
+  # then dissolve the parameter into multiple instances
+  
+  
+  
+  # now we have a list over which we can lapply
+  nullable = sapply(param_def$schema, function(schema) {
+    return(!is.null(schema$type) && schema$type == "null")
+  })
+  
+  param_nullable = any(nullable)
+  
+  # delete the null parameter
+  if (param_nullable) {
+    param_def$schema[[which(nullable)]] = NULL
+  }
+  
+  is_choice = length(param_def$schema) > 1
+  
+  
+  #create a list of parameters / find from schema
+  params = lapply(param_def$schema, function(schema) {
+    # this will be the normal case for simple schemas?
+    gen=findParameterGenerator(schema)[[1]]
+    param = gen$new()
+    
+    if (length(schema$pattern) != 0) {
+      param$setPattern(schema$pattern)
+    }
+    
+    if ("ProcessGraphArgument" %in% class(param)) {
+      # iterate over all ProcessGraph parameters and create ProcessGraphParameters, but name = property name (what the process exports to ProcessGraph)
+      # value has to be assigned by user, then switch name and value during serialization
+      pg_params = lapply(schema$parameters, function(param_json) {
+        if (is.null(param_json$schema[["subtype"]])) param_json$schema[["subtype"]] = character()
+        
+        cb = ProcessGraphParameter$new(name = param_json$name,
+                               description = param_json$description,
+                               type = param_json$schema[["type"]],
+                               subtype = param_json$schema[["subtype"]],
+                               required = TRUE)
+        
+        if(!is.null(param_json$schema[["pattern"]])) cb$setPattern(param_json$schema[["pattern"]])
+        
+        cb$isRequired = !isTRUE(param_json$optional) # isTRUE is only true if not false and not null
+        
+        return(cb)
+      })
+      pg_param_names = sapply(schema$parameters,function(p)p$name)
+      names(pg_params) = pg_param_names
+      
+      param$setProcessGraphParameters(pg_params)
+    }
+    
+    if ("array" %in% class(param)) {
+      if (!"kernel" %in% class(param)) {
+        param$setItemSchema(schema$items)
+      } else {
+        param$setItemSchema(schema$items)
+      }
+      
+    }
+    return(param)
+  })
+  
+  # if choice then create an anyOf
+  if (is_choice) {
+    #build an anyOf
+    param = AnyOf$new(parameter_list = params)
+  } else {
+    param = params[[1]]
+  }
+  
+  
+  # in general also reolve null cases
+  param$isNullable = param_nullable
+  param$setDefault(param_def$default)
+  param$setName(param_def$name)
+  param$setDescription(param_def$name)
+  param$isRequired = !is.null(param_def$optional) && !param_def$optional
+  
+  pattern = param_def$schema$pattern
+  if (!is.null(pattern)) {
+    param$setPattern(pattern)
+  }
+  
+  return(param)
+  
 }

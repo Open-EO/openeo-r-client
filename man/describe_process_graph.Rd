@@ -4,13 +4,13 @@
 \alias{describe_process_graph}
 \title{Fetches the representation of a stored graph}
 \usage{
-describe_process_graph(con = NULL, id)
+describe_process_graph(id, con = NULL)
 }
 \arguments{
+\item{id}{The id of a process graph on the back-end}
+
 \item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{id}{The id of a process graph on the back-end}
 }
 \value{
 the process graph as list
