@@ -8,6 +8,11 @@
 #' @export
 print.User = function(x, ...) {
     cat(paste("ID:", "\t", x$user_id, "\n", sep = ""))
+    
+    if (!is.null(x$name)) {
+        cat(paste("Name:", "\t", x$name, "\n", sep = ""))    
+    }
+    
     if (!is.null(x$budget)) {
         cat(paste("Budget:", "\t", x$budget, "\n", sep = ""))
     }
@@ -82,6 +87,11 @@ print.FileFormat = function(x, ...) {
         cat("Format: \t\t\t",x$title,"\n",sep="")   
     }
     cat("Format ID: \t\t\t",x$name,"\n",sep="")
+    
+    if (length(x$description) > 0) {
+        cate("\n",x$description,"\n\n")
+    }
+    
     cat("Applicable GIS data types: \t",paste0(x$gis_data_types,collapse=", "),"\n",sep="")
     
     param_names = names(x$parameter)
@@ -99,7 +109,17 @@ print.FileFormat = function(x, ...) {
 #' @export
 print.ServiceType = function(x, ...) {
     # name is set in list_service_types not in specification
-    cat("Service: \t\t",x$name,"\n",sep="")
+    if (length(x$title) > 0) {
+        cat("Service: \t\t",x$title,"\n",sep="")
+    } else {
+        cat("Service: \t\t",x$name,"\n",sep="")
+    }
+    
+    if (length(x$description) > 0) {
+        cat("\n",x$description,"\n\n",sep="")
+    }
+    
+    
     if (length(x$configuration) > 0) {
         cat("Configuration parameter:\n")
         config_params = data.frame(name = names(x$configuration),description = sapply(x$configuration, function(cparam) {
