@@ -204,9 +204,25 @@ as.character.CubeDimension = function(x, ...) {
     return(x$name)
 }
 
+
+#' Coerce into a Process
+#' 
+#' This function converts objects into a process.
+#' 
+#' @name as.Process
+#' 
+#' @param from the source from which to coerce (\code{ProcessInfo})
+#' @return \code{\link{Process}}
+#'    
+#' @export
+as.Process.ProcessInfo = function(from) {
+    return(processFromJson(from))
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
     setAs(from="ProcessInfo",to="Graph",as.Graph.ProcessInfo)
+    setAs(from="ProcessInfo",to="Process",as.Process.ProcessInfo)
 })
 

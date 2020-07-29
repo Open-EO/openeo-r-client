@@ -89,7 +89,7 @@ print.FileFormat = function(x, ...) {
     cat("Format ID: \t\t\t",x$name,"\n",sep="")
     
     if (length(x$description) > 0) {
-        cate("\n",x$description,"\n\n")
+        cat("\n",x$description,"\n\n")
     }
     
     cat("Applicable GIS data types: \t",paste0(x$gis_data_types,collapse=", "),"\n",sep="")
