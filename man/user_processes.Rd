@@ -14,7 +14,7 @@ is used in order to access personal user defined processes you need to be logged
 \code{\link{UserProcessCollection}}
 }
 \description{
-The created process graphs via \code{\link{create_process_graph}} at the openEO service are user defined processes. 
+The created process graphs via \code{\link{create_user_process}} at the openEO service are user defined processes. 
 This means that they can be used within the creation of process graphs themselves. For processes provided by the 
 particular openEO service the \code{\link{processes}} function can be used to obtain a builder for those processes. 
 Analoguous to this idea, this function creates a builder object for user defined proceses which are listed and described

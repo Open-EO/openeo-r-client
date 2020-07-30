@@ -11,7 +11,7 @@ list_user_processes(con = NULL)
 is used.}
 }
 \value{
-a list userdefined processes (\code{ProcessInfo})
+a named list of user defined processes (\code{ProcessInfo})
 }
 \description{
 Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.
