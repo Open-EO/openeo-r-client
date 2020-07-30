@@ -28,9 +28,9 @@ list_user_processes = function(con=NULL) {
   }, error = .capturedErrorToMessage)
 }
 
-#' Fetches the representation of a stored graph
+#' Fetches the representation of a stored user defined process
 #' 
-#' The function queries the back-end for a specific user defined process graph
+#' The function queries the back-end for a specific user defined process and returns detailled information.
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -38,7 +38,7 @@ list_user_processes = function(con=NULL) {
 #' 
 #' @return the process graph as list
 #' @export
-describe_process_graph = function(id, con=NULL) {
+get_user_process = function(id, con=NULL) {
   tryCatch({
     con = .assure_connection(con)
     
@@ -155,7 +155,7 @@ update_process_graph = function(id, graph = NULL, summary = NULL, description = 
     con = .assure_connection(con)
     
     #TODO get process_graph via id, then substitue updated stuff and PUT back
-    graph_info = describe_process_graph(con = con, id = id)
+    graph_info = get_user_process(con = con, id = id)
     process = processFromJson(json=graph_info)
     # = list()
     
@@ -276,7 +276,7 @@ validate_process_graph = function(graph, con=NULL) {
 #' This means that they can be used within the creation of process graphs themselves. For processes provided by the 
 #' particular openEO service the \code{\link{processes}} function can be used to obtain a builder for those processes. 
 #' Analoguous to this idea, this function creates a builder object for user defined proceses which are listed and described
-#' with \code{\link{describe_process_graph}} and \code{\link{list_user_processes}}.
+#' with \code{\link{get_user_process}} and \code{\link{list_user_processes}}.
 #' 
 #' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
 #' is used in order to access personal user defined processes you need to be logged in
