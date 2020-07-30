@@ -1,3 +1,6 @@
+#' @include process_graph_building.R
+NULL
+
 # process graph endpoint ----
 
 #' Lists the Ids of the process graphs from the current user
@@ -228,13 +231,120 @@ validate_process = function(graph, con=NULL) {
   }, error = .capturedErrorToMessage)
 }
 
+# User Defined Process Collection ====
+#' User Defined Process Collection
+#' 
+#' This object contains template functions for process graph building from the user defined processes at an openEO service. 
+#' This object is an R6 object that is not locked, in order to add new functions at runtime, in the same fashion as 
+#' \code{\link{ProcessCollection}} for predefined processes. The object is usually created at 
+#' \code{\link{user_processes}} and resembles a given status, meaning, when a new user process is created or another one
+#' is updated the \code{UserProcessCollection} needs to be recreated with "fresh" data.
+#' 
+#' @name UserProcessCollection
+#' 
+#' @section Methods:
+#' \describe{
+#'    \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
+#' } 
+#' @section Arguments:
+#' \describe{
+#'    \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' is used.}
+#' }
+NULL 
+
+#' @export
+UserProcessCollection = R6Class(
+  "UserProcessCollection",
+  lock_objects = FALSE,
+  public = list(
+    initialize = function(con=NULL) {
+      tryCatch({
+        con = .assure_connection(con)
+        udps = list_user_processes(con=con)
+        process_names = names(udps)
+        udps = lapply(udps,function(udp) as(get_user_process(udp,con = con),"Process"))
+        names(udps) = process_names
+        
+        private$processes = udps
+        
+        if (!is.list(private$processes)) stop("Processes are not provided as list")
+        
+        for (index in 1:length(private$processes)) {
+          if (is.null(private$processes[[index]])) {
+            next
+          }
+          
+          pid = private$processes[[index]]$getId()
+          function_formals = private$processes[[index]]$getFormals()
+          
+          f = function() {}
+          formals(f) = function_formals
+          
+          
+          # probably do a deep copy of the object
+          # for the body we have the problem that index is addressed as variable in the parent environment. This
+          # causes a problem at call time, where index is resolve and this means that usually the last element
+          # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
+          # and then as.call
+          body(f) = quote({
+            exec_process = private$processes[[index]]$clone(deep=TRUE)
+            # find new node id:
+            node_id = .randomNodeId(exec_process$getId(),sep="_")
+            
+            while (node_id %in% private$getNodeIds()) {
+              node_id = .randomNodeId(exec_process$getId(),sep="_")
+            }
+            
+            private$node_ids = c(private$node_ids,node_id)
+            
+            #map given parameter of this function to the process parameter / arguments and set value
+            arguments = exec_process$parameters
+            
+            # parameter objects should be updated directly, since there is a real object reference
+            this_param_names = names(formals())
+            
+            # used match.call before, but it seem that it doesn't resolve the pipe - it is something like data = .
+            this_arguments = lapply(this_param_names, function(param) get(param))
+            names(this_arguments) = this_param_names
+            
+            # special case: value is of type Argument
+            node = ProcessNode$new(node_id = node_id,process=exec_process,graph=self)
+            
+            lapply(names(this_arguments), function(param_name, arguments){
+              call_arg = this_arguments[[param_name]]
+              arguments[[param_name]]$setProcess(node)
+              #TODO maybe check here for is.list and then try the assignable
+              arguments[[param_name]]$setValue(call_arg)
+            }, arguments = arguments)
+            
+            return(node)
+          })
+          # replace index with the actual number!
+          tmp = gsub(body(f),pattern="index",replacement = eval(index))
+          body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
+          
+          # register the ProcessNode creator functions on the Graph class
+          self[[pid]] = f
+        }
+      }, error = .capturedErrorToMessage)
+    }
+  ),
+  private = list(
+    conection = NULL,
+    node_ids = character(),
+    processes = list(),
+    getNodeIds = function() {private$node_ids}
+  )
+)
+
 #' Process collection for user defined processes
 #' 
 #' The created process graphs via \code{\link{create_user_process}} at the openEO service are user defined processes. 
 #' This means that they can be used within the creation of process graphs themselves. For processes provided by the 
 #' particular openEO service the \code{\link{processes}} function can be used to obtain a builder for those processes. 
 #' Analoguous to this idea, this function creates a builder object for user defined proceses which are listed and described
-#' with \code{\link{get_user_process}} and \code{\link{list_user_processes}}.
+#' with \code{\link{describe_user_process}} and \code{\link{list_user_processes}}.
 #' 
 #' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
 #' is used in order to access personal user defined processes you need to be logged in
