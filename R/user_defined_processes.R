@@ -8,7 +8,7 @@
 #' is used.
 #' @return a list userdefined processes (\code{ProcessInfo})
 #' @export
-list_process_graphs = function(con=NULL) {
+list_user_processes = function(con=NULL) {
   tryCatch({
     tag = "graph_overview"
     
@@ -275,19 +275,19 @@ validate_process_graph = function(graph, con=NULL) {
 #' The created process graphs via \code{\link{create_process_graph}} at the openEO service are user defined processes. 
 #' This means that they can be used within the creation of process graphs themselves. For processes provided by the 
 #' particular openEO service the \code{\link{processes}} function can be used to obtain a builder for those processes. 
-#' Analoguous to this idea, this function creates a builder object for user defined proceses which are listed and descibed
-#' with \code{\link{list_process_graphs}}\code{\link{describe_process_graph}} and \code{\link{list_process_graphs}}.
+#' Analoguous to this idea, this function creates a builder object for user defined proceses which are listed and described
+#' with \code{\link{describe_process_graph}} and \code{\link{list_user_processes}}.
 #' 
 #' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
 #' is used in order to access personal user defined processes you need to be logged in
 #' 
-#' @return \code{\link{UserDefinedProcessCollection}}
+#' @return \code{\link{UserProcessCollection}}
 #' 
 #' @export
-user_defined_processes = function(con = NULL) {
+user_processes = function(con = NULL) {
   tryCatch({
     con = .assure_connection(con)
-    return(UserDefinedProcessCollection$new(con=con))
+    return(UserProcessCollection$new(con=con))
   }, error = .capturedErrorToMessage)
 }
 

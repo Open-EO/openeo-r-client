@@ -1,3 +1,6 @@
+#' @include user_defined_processes.R
+NULL
+
 # processes endpoint ----
 
 #' List available processes on server

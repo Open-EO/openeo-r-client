@@ -300,7 +300,7 @@ ProcessCollection = R6Class(
 #' This object is an R6 object that is not locked, in order to add new functions at runtime, in the same fashion as 
 #' \code{\link{ProcessCollection}} for predefined processes.
 #' 
-#' @name UserDefinedProcessCollection
+#' @name UserProcessCollection
 #' 
 #' @section Methods:
 #' \describe{
@@ -314,14 +314,14 @@ ProcessCollection = R6Class(
 NULL 
 
 #' @export
-UserDefinedProcessCollection = R6Class(
-  "UDPCollection",
+UserProcessCollection = R6Class(
+  "UserProcessCollection",
   lock_objects = FALSE,
   public = list(
     initialize = function(con=NULL) {
       tryCatch({
         con = .assure_connection(con)
-        udps = list_process_graphs(con=con)
+        udps = list_user_processes(con=con)
         process_names = names(udps)
         udps = lapply(udps,function(udp) as(describe_process_graph(udp,con = con),"Process"))
         names(udps) = process_names
