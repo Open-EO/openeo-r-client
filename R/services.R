@@ -280,3 +280,45 @@ delete_service = function(service, con=NULL) {
         invisible(TRUE)
     }, error = .capturedErrorToMessage)
 }
+
+#' Service log
+#' 
+#' Attempts to open the log of secondary service.
+#' 
+#' @param service the service or the service_id
+#' @param offset the id of the log entry to start from
+#' @param limit the limit of lines to be shown
+#' @param con an optional connection if you want to address a specific service
+#' 
+#' @return a \code{Log} object
+#' @export
+log_service = function(service, offset=NULL,limit=NULL, con=NULL) {
+    tryCatch({
+        con = .assure_connection(con)
+        
+        if (!is.null(job) && "Service" %in% class(job)) {
+            service_id = service$id
+        } else {
+            service_id = job
+        }
+        
+        query_params = list()
+        if (length(offset) > 0) {
+            query_params$offset = offset
+        }
+        
+        if (length(limit) > 0) {
+            query_params$limit = limit
+        }
+        
+        
+        if (is.null(service_id)) {
+            stop("No job id specified.")
+        }
+        tag = "service_log"
+        
+        success = con$request(tag = tag, parameters = list(service_id), authorized = TRUE, query=query_params)
+        class(success) = "Log"
+        return(success)
+    }, error = .capturedErrorToMessage)
+}

@@ -14,7 +14,7 @@ result node itself.
 }
 \details{
 However, you might want to perform an explicit cast with \code{as(x,"Graph")} in order to obtain a Graph object. 'x' can be the afore
-mentioned function or ProcessNode, and also a ProcessGraph object that can be obtained by \code{\link{describe_process_graph}}, which
+mentioned function or ProcessNode, and also a ProcessGraph object that can be obtained by \code{\link{describe_user_process}}, which
 parses the stored Graph representation into an openEO Graph object (\code{\link{parse_graph}}).
 }
 \section{Fields}{

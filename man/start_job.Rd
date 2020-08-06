@@ -4,10 +4,12 @@
 \alias{start_job}
 \title{Starts remote asynchronous evaluation of a job}
 \usage{
-start_job(job, con = NULL)
+start_job(job, log = FALSE, con = NULL)
 }
 \arguments{
 \item{job}{the job object or the job id of the defined job}
+
+\item{log}{logical - whether to enable automatic logging after starting the job}
 
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 is used.}

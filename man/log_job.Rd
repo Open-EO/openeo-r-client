@@ -9,14 +9,14 @@ log_job(job, offset = NULL, limit = NULL, con = NULL)
 \arguments{
 \item{job}{the job or the job_id}
 
-\item{offset}{the start line from which to read}
+\item{offset}{the id of the log entry to start from}
 
 \item{limit}{the limit of lines to be shown}
 
 \item{con}{an optional connection if you want to address a specific service}
 }
 \value{
-a \code{JobLog} object
+a \code{Log} object
 }
 \description{
 Attempts to open the log of job.

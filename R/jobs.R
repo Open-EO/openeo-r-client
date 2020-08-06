@@ -1,3 +1,6 @@
+#' @include debugging.R
+NULL
+
 # jobs endpoint ----
 
 #' List the jobs that a user has
@@ -176,12 +179,13 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 #' for a defined job.
 #' 
 #' @param job the job object or the job id of the defined job
+#' @param log logical - whether to enable automatic logging after starting the job
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return the job_id of the defined job
 #' @export 
-start_job = function(job, con=NULL) {
+start_job = function(job, log=FALSE, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
     
@@ -199,6 +203,10 @@ start_job = function(job, con=NULL) {
         
         success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE)
         message(paste("Job '", job_id, "' has been successfully queued for evaluation.", sep = ""))
+        
+        if (log) {
+            logs(job_id=job_id,con=con)
+        }
         
         invisible(success)
     }, error = .capturedErrorToMessage)
@@ -477,11 +485,11 @@ estimate_job = function(job, con=NULL) {
 #' Attempts to open the log of job.
 #' 
 #' @param job the job or the job_id
-#' @param offset the start line from which to read
+#' @param offset the id of the log entry to start from
 #' @param limit the limit of lines to be shown
 #' @param con an optional connection if you want to address a specific service
 #' 
-#' @return a \code{JobLog} object
+#' @return a \code{Log} object
 #' @export
 log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
     tryCatch({
@@ -509,7 +517,7 @@ log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
         tag = "job_log"
         
         success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, query=query_params)
-        class(success) = "JobLog"
+        class(success) = "Log"
         return(success)
     }, error = .capturedErrorToMessage)
 }
