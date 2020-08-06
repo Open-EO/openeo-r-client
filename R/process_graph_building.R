@@ -523,7 +523,7 @@ ProcessNode = R6Class(
       if (length(private$description)>0) results$description = private$description
       
       if (length(private$.namespace) > 0) {
-        results$namespace = namespace
+        results$namespace = private$.namespace
       }
       
       if (length(self$getParameters()) > 0) {

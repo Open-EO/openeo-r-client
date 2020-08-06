@@ -477,6 +477,11 @@ print.CubeDimension = function(x,...) {
     if (length(x$values) > 0) {
         cat("Values:\t\t",paste0("[",paste(x$values,collapse=","),"]"))
     }
-    
-    
+}
+
+#' @export
+print.Log = function(x,...) {
+    void = sapply(x$logs,function(log_entry) {
+        cat(paste0("[",toupper(log_entry$level),"] ",log_entry$message,"\n"))
+    })
 }

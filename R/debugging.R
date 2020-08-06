@@ -66,3 +66,67 @@ print.request = function(x) {
         print(prettify(rawToChar(x$options$postfields)))
     }
 }
+
+#' Access logs of a Service or Job
+#' 
+#' Prints contents of the log file of a Job or Service to the console. Requests the log every second. If the log response always empty 
+#' for a given timeout, the logging stops.
+#' 
+#' @param obj Service or Job object
+#' @param job_id character the jobs ID
+#' @param service_id character - the services ID
+#' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' @param timeout integer the timeout for the logging after no update in seconds, default is 10
+#' 
+#' @export
+logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
+    
+    tryCatch({
+        con = .assure_connection(con)
+        
+        
+        
+        if (length(obj) == 0 && length(job_id) == 0 && length(service_id) == 0) {
+            message("No service or job stated to be logged.")
+            return(invisible(NULL))
+        }
+        
+        if ((length(obj) > 0 && "Job" %in% class(obj)) || length(job_id) > 0) {
+            log_fun = log_job
+            
+            if (length(obj) == 0 && length(job_id) > 0) {
+                obj = job_id
+            }
+        } else if ((length(obj) > 0 && "Service" %in% class(obj)) || length(service_id) > 0) {
+            log_fun = log_service
+            
+            if (length(obj) == 0 && length(service_id) > 0) {
+                obj = service_id
+            }
+        }
+        
+        log = log_fun(obj, con=con)
+        last_message_id = log$logs[[length(log$logs)]]$id
+        print(log)
+        
+        start = Sys.time()
+        while(difftime(Sys.time(),start,units="secs") <= timeout) {
+            log = log_fun(obj,offset = last_message_id, con=con)
+            if (length(log$logs) > 0) {
+                start = Sys.time()
+                last_message_id = log$logs[[length(log$logs)]]$id
+                
+                print(log)
+            }
+            Sys.sleep(1)
+        }
+        message("Log ended or had a timeout.")
+    }, error = function(e){
+        message(e$message)
+    }, finally={
+        return(invisible(NULL))
+    })
+    
+    
+}

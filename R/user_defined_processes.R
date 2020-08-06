@@ -157,7 +157,7 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
     
     con = .assure_connection(con)
     
-    graph_info = get_user_process(con = con, id = id)
+    graph_info = describe_user_process(con = con, id = id)
     process = processFromJson(json=graph_info)
     
     if (!is.null(graph)) {
@@ -263,7 +263,7 @@ UserProcessCollection = R6Class(
         con = .assure_connection(con)
         udps = list_user_processes(con=con)
         process_names = names(udps)
-        udps = lapply(udps,function(udp) as(get_user_process(udp,con = con),"Process"))
+        udps = lapply(udps,function(udp) as(describe_user_process(udp,con = con),"Process"))
         names(udps) = process_names
         
         private$processes = udps
