@@ -167,7 +167,14 @@ describe_account = function(con=NULL) {
 #' Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
 #' specific versions, then you should provide the versions parameter.
 #' 
-#' @details Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
+#' @details 
+#' You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
+#' have an overview about their status, connection details like the URL and supported features. You can always explore the
+#' service for free, meaning you have access to publicly available metadata of data collections as well as the offered
+#' processing functions. For any computations and the creation of webservices you need to register the openEO partner of
+#' your choice. Then you will get further information on credentials and the login procedure.
+#' 
+#' Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
 #' just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 #' open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
 #' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
@@ -189,6 +196,10 @@ describe_account = function(con=NULL) {
 #'
 #' @examples 
 #' \dontrun{
+#' # The following examples show different configuration settings and point 
+#' # to imaginary URLs. Please obtain a valid URL via the openEO hub and 
+#' # register with one of the provider if required.
+#' 
 #' # connect to a host with specific version and without authentication
 #' con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 #' 
@@ -211,20 +222,26 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
     
     if (!is.null(user) && !is.null(password) && is.null(login_type)) login_type = "basic"
     
-    if (is.null(user) && is.null(password) && is.null(login_type)) {
-        con = con$connect(url = host, version = version,exchange_token=exchange_token)
-    } else if (login_type == "basic") {
-        if (!is.null(user) && !is.null(password)) {
-            con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(user = user, password = password, login_type = login_type)
-        } else {
-            con = con$connect(url = host, version = version,exchange_token=exchange_token)
-        }
-    } else if (login_type == "oidc") {
-        con = con$connect(url = host, version = version,exchange_token=exchange_token)$login(login_type = login_type, provider=provider, config = NULL)
-    } else {
-        message("Incomplete credentials. Either username or password is missing")
-        return()
+    con = con$connect(url = host, version = version,exchange_token=exchange_token)
+    
+    if (length(con) == 0) {
+        message("Invalid openEO host stated. Please use an URL pointing to a valid openEO webservice implementation.")
+        return(invisible(NULL))
     }
+    
+    if (length(login_type) > 0) {
+        if (login_type == "basic") {
+            if (!is.null(user) && !is.null(password)) {
+                con = con$login(user = user, password = password, login_type = login_type)
+            }
+        } else if (login_type == "oidc") {
+            con = con$login(login_type = login_type, provider=provider, config = config)
+        } else {
+            message("Incomplete credentials. Either username or password is missing")
+            return(invisible(NULL))
+        }
+    }
+    
     
     return(invisible(con))
 }
@@ -233,7 +250,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' 
 #' Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
 #' is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
-#' register, then you need to log in afterwards.
+#' explore the functionalities and want to compute something, then you need to log in afterwards.
 #' 
 #' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
 #' is used.

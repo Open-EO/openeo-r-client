@@ -43,7 +43,7 @@ library(openeo)
 conn = connect(host="http://backend1.openeo.org/",user="test",password="test",login_type="basic")
 
 # list collection and processes
-list_collections()
+colls = list_collections()
 list_processes()
 
 # get detailed descriptions
@@ -53,22 +53,38 @@ describe_process("filter_bbox")
 # create a process graph / task
 p = processes()
 
-data1 = ph$load_collection(id = p$data$`COPERNICUS/S2`,
-                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
-                              temporal_extent = c("2018-04-30","2018-06-26"),bands = c("B4","B8"))
-b4 = p$filter_bands(data = data1,bands = "B4")
-b8 = p$filter_bands(data=data1,bands = "B8")
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2")))
 
-ndvi = p$normalized_difference(band1 = b4,band2 = b8)
-
-reducer = p$reduce(data = ndvi,dimension = "temporal", reducer = function(x) {
-  min(x)
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
 })
 
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  p$min(x)
+})
 
-apply_linear_transform = graph$apply(data = reducer, process = p$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255))
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
 
-result = p$save_result(data = apply_linear_transform,format = "png")
+result = p$save_result(data=apply_linear_transform,format="PNG")
                                 
 job_id = create_job(graph=result, title="Example graph", description="This graph is just a general example",format="png")
 
@@ -97,3 +113,4 @@ The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additi
 ## Links
 * [openEO.org](http://openeo.org/)
 * [openEO core API](https://openeo.org/documentation/1.0/developers/api/reference.html)
+* [openEO hub](https://hub.openeo.org/)

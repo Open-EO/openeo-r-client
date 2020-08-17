@@ -37,6 +37,12 @@ Connects to openEO service. If the backend provides a well-known endpoint that a
 specific versions, then you should provide the versions parameter.
 }
 \details{
+You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
+have an overview about their status, connection details like the URL and supported features. You can always explore the
+service for free, meaning you have access to publicly available metadata of data collections as well as the offered
+processing functions. For any computations and the creation of webservices you need to register the openEO partner of
+your choice. Then you will get further information on credentials and the login procedure.
+
 Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
 just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
 open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
@@ -50,6 +56,10 @@ which marks the latest service that was connected to.
 }
 \examples{
 \dontrun{
+# The following examples show different configuration settings and point 
+# to imaginary URLs. Please obtain a valid URL via the openEO hub and 
+# register with one of the provider if required.
+
 # connect to a host with specific version and without authentication
 con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 

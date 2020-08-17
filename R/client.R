@@ -146,6 +146,17 @@ OpenEOClient <- R6Class(
         if (endsWith(url,"/")) {
           url = substr(url,1,nchar(url)-1)
         }
+        
+        
+        response = NULL
+        tryCatch({
+          response = httr::GET(url = url)
+        }, error = function(e) {
+          
+        })
+        
+        if (length(response) == 0) return(invisible(NULL))
+        
         private$host = url
         private$exchange_token = exchange_token
         

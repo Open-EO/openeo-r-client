@@ -269,7 +269,7 @@ cat(readChar(dl_file,nchars = file.size(dl_file)))
 The last function in this context is the `delete_file()` function, which removes a specific file from the workspace.
 
 ```{r}
-delete_file(src = "aoi/polygon.json")
+delete_file(src = "aoi/polygons.json")
 ```
 
 And again, the workspace is empty. (If not, then maybe other users may have left data on this demo account)
@@ -321,7 +321,7 @@ formals(p$load_collection)
 You can see that there are 4 defined parameters. They are initialized with `NA`. More detailled information can be obtained by using the `describe_process()`. By typing in the different arguments and evaluating the function you receive a `ProcessNode` object, which are the building blocks of the process graph / workflow.
 
 ```{r, paged.print=FALSE}
-describe_process(id = "load_collection")
+describe_process(process = "load_collection")
 ```
 
 ## EVI Graph
@@ -349,26 +349,26 @@ as(evi,"Graph")
 
 So, now we have created a small graph and we want to store it for later use at the openEO service.
 
-```{r}
-list_process_graphs()
+```{r, paged.print=FALSE}
+list_user_processes()
 ```
 
 ```{r}
-validate_process_graph(graph = evi)
+validate_process(graph = evi)
 ```
 
 ```{r}
-graph_id = create_process_graph(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
+graph_id = create_user_process(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
 ```
 
 ```{r, paged.print=FALSE}
-list_process_graphs()
+list_user_processes()
 ```
 
 Fetch the process graph definition as a user define openEO process and print it.
 
 ```{r, paged.print=FALSE}
-evi_process = describe_process_graph(id = "evi")
+evi_process = describe_user_process(id = "evi")
 class(evi_process)
 ```
 
@@ -382,11 +382,12 @@ If you want the graph representation reimported into R, you can use `parse_graph
 evi_graph = parse_graph(json = evi_process) # or use as(evi_process,"Graph")
 ```
 
-When you decide to not use it anymore or if you simply want to delete it, then use `delete_process_graph` with the set ID.
+When you decide to not use it anymore or if you simply want to delete it, then use `delete_user_process` with the set ID.
 
-```{r}
-delete_process_graph(id = graph_id)
+```{r, eval=FALSE}
+delete_user_process(id = graph_id)
 ```
+
 
 
 ## Minimum EVI example
@@ -419,6 +420,7 @@ spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = 
 })
 ```
 
+
 ```{r}
 temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
   min(x)
@@ -444,17 +446,73 @@ result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
 ```
 
 ```{r}
-min_evi_graph_id = create_process_graph( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
+min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
 ```
 
 ```{r, paged.print = FALSE}
-list_process_graphs()
+list_user_processes()
 ```
 
 ```{r}
-delete_process_graph(id = min_evi_graph_id)
+delete_user_process(id = min_evi_graph_id)
 ```
 
+## Integration of user defined processes
+
+In the section "EVI Graph" we created and stored a sub graph that resembles the same code that was used as a reducer when creating the node 'spectral_reduce'. In an alternative approach we can load and reuse user defined processes. In analogy to the predefined processes of the openEO service we use `user_processes()` to create an easy-to-use ProcessNode builder.
+
+```{r}
+p = processes()
+udps = user_processes()
+colls = list_collections()
+formats = list_file_formats()
+```
+
+```{r}
+example_udp_node = udps$evi()
+
+example_udp_node
+```
+
+```{r}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  udps$evi(data = data)
+})
+
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+
+min_evi_graph = as(result,"Graph")
+
+validate_process(graph = min_evi_graph)
+```
+
+# User defined processes integration
+
+- processes defined with `create_user_process` can be incorporated as processes in workflows which enhances the extensibility
 
 # Calculate immediate results
 
