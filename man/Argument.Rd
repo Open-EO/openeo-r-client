@@ -20,6 +20,8 @@ functions \code{$typeCheck()} and \code{$typeSerialization()}.
   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
+  \item{\code{$getProcess()}}{returns the process to which this parameter belongs to}
+  \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 }
 }
 
@@ -27,6 +29,7 @@ functions \code{$typeCheck()} and \code{$typeSerialization()}.
  
 \describe{
   \item{\code{value}}{The value for this argument.}
+  \item{\code{p}}{An object of class 'Process' or inheriting like 'ProcessNode'}
 }
 }
 

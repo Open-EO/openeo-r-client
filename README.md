@@ -2,7 +2,7 @@
 
 [![Status](https://img.shields.io/badge/Status-proof--of--concept-yellow.svg)]()
 
-This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use. In the future we will start to use tagged releases, when we reach a sufficient number of implemented features.
+This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use.
 
 ## Installation
 Install the package by using `install_github` from the devtools package.
@@ -12,7 +12,7 @@ if (!require(devtools)) {
   install.packages("devtools",dependencies=TRUE)
   library(devtools)
 }
-install_github(repo="Open-EO/openeo-r-client",ref="v0.5.0",dependencies=TRUE)
+install_github(repo="Open-EO/openeo-r-client",ref="api-v1.0.0-dev",dependencies=TRUE)
 library(openeo)
 ```
 
@@ -27,13 +27,18 @@ Since the openEO project is under heavy development regarding the openeo API tha
 | v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
 | v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
 | v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
-| v0.4.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
-| v0.5.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
-| v0.6.x | [v0.4.2](https://open-eo.github.io/openeo-api/v/0.4.2/) |
+| v0.4.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v1.0.x | [v1.0.0](https://openeo.org/documentation/1.0/developers/api/reference.html) |
+
+## Prerequirements
+
+The openeo package won't process anything at the local machine. It will always interact with a designated back-end. Only at the back-end the data is stored and the computations are performed. Therefore please make sure you are registered with any of the available openEO back-ends, in order to obtain credentials and the access URLs (see: [openEO Hub](https://hub.openeo.org/) for getting an overview about available back-ends). 
 
 ## Getting Started
 After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.
-Starting with API version 0.4.x the process graph creation has drastically changed. To get insights on the process graph building, please [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building).
+To get started with the process graph creation, please [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building) for further information.
 
 After we defined the process graph, we send it as a task to the backend where it is processed. It can be processed _immediately_ (the client is holding the connection and waits for the results), _directly asynchronous_ (the client sends the task and queues the process execution and the results are stored in the user workspace on the backend, meanwhile the client receives an acceptance notification).
 
@@ -42,48 +47,56 @@ library(openeo)
 conn = connect(host="http://backend1.openeo.org/",user="test",password="test",login_type="basic")
 
 # list collection and processes
-conn %>% list_collections()
-conn %>% list_processes()
+colls = list_collections()
+list_processes()
 
 # get detailed descriptions
-conn %>% describe_collection(c("sentinel2_subset","landsat7_ndvi"))
-conn %>% describe_process("filter_bbox")
+describe_collection(c("sentinel2_subset","landsat7_ndvi"))
+describe_process("filter_bbox")
 
 # create a process graph / task
-graph = conn %>% process_graph_builder()
+p = processes()
 
-data1 = graph$load_collection(id = graph$data$`COPERNICUS/S2`,
-                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
-                              temporal_extent = c("2018-04-30","2018-06-26"),bands = c("B4","B8"))
-b4 = graph$filter_bands(data = data1,bands = "B4")
-b8 = graph$filter_bands(data=data1,bands = "B8")
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2")))
 
-ndvi = graph$normalized_difference(band1 = b4,band2 = b8)
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
 
-reducer = graph$reduce(data = ndvi,dimension = "temporal")
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  p$min(x)
+})
 
-cb_graph = conn %>% callback(reducer,parameter = "reducer")
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
 
-cb_graph$min(data = cb_graph$data$data) %>% cb_graph$setFinalNode()
-
-
-apply_linear_transform = graph$apply(data = reducer)
-
-cb2_graph = conn %>% callback(apply_linear_transform, "process")
-
-cb2_graph$linear_scale_range(x = cb2_graph$data$x, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255) %>% 
-  cb2_graph$setFinalNode()
-
-graph$save_result(data = apply_linear_transform,format = "png") %>% graph$setFinalNode()
-
+result = p$save_result(data=apply_linear_transform,format="PNG")
                                 
-job_id = conn %>% create_job(graph=graph, title="Example graph", description="This graph is just a general example",format="png")
+job_id = create_job(graph=result, title="Example graph", description="This graph is just a general example",format="png")
 
-conn %>% start_job(job_id)
+start_job(job_id)
 
-result_obj = conn %>% list_results(job_id)
+result_obj = list_results(job_id)
 
-conn %>% download_results(job = job_id, folder = ".")
+download_results(job = job_id, folder = ".")
 
 ```
 To get an overview which functions the packages offers and to access the function documentation you can either navigate in RStudio into the "Packages" tab and select the "openeo" package and click on the function you are interested in. Or you can use the following command line operations:
@@ -103,4 +116,5 @@ The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additi
 
 ## Links
 * [openEO.org](http://openeo.org/)
-* [openEO core API](https://open-eo.github.io/openeo-api/)
+* [openEO core API](https://openeo.org/documentation/1.0/developers/api/reference.html)
+* [openEO hub](https://hub.openeo.org/)

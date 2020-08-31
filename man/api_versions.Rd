@@ -10,9 +10,9 @@ api_versions(url)
 \item{url}{the url as String pointing to the base host of the back-end}
 }
 \value{
-a tibble containing all supported API versions of the back-end
+a data.frame or a tibble containing all supported API versions of the back-end
 }
 \description{
 The function queries the back-end for its supported versions. The endpoint \href{https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get}{/.well-known/openeo} 
-is called and the JSON result is coerced into a tibble.
+is called on the given host URL and the JSON result is coerced into a tibble.
 }

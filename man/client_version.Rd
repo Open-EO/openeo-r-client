@@ -10,5 +10,5 @@ client_version()
 the client version
 }
 \description{
-The function returns the client version.
+The function returns the client version. Wraps the call 'packageVersion("openeo")', which will return this packages version.
 }

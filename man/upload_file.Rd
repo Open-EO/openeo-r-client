@@ -5,24 +5,24 @@
 \title{Uploads data into the users workspace}
 \usage{
 upload_file(
-  con = NULL,
   content,
   target,
   encode = "raw",
-  mime = "application/octet-stream"
+  mime = "application/octet-stream",
+  con = NULL
 )
 }
 \arguments{
-\item{con}{authorized Connection (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{content}{the file path of the file to be uploaded}
 
-\item{target}{the relative server path location for the file}
+\item{target}{the relative server path location for the file, e.g. where to find the file in the users workspace}
 
 \item{encode}{the encoding type used to upload the data, e.g. 'multipart','form','json','raw' ('raw' by default)}
 
 \item{mime}{mime type used in upload_file ('application/octet-stream' as a default)}
+
+\item{con}{authorized Connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 the relative file path on the server

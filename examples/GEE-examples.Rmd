@@ -10,7 +10,7 @@ The connection part will take place in all the examples, therefore we will store
 library(openeo)
 library(tibble)
 
-user = "group8"
+user = "group7"
 pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
@@ -18,23 +18,25 @@ api_versions(gee_host_url)
 ```
 
 ```{r}
-gee = connect(host = gee_host_url, version="0.4.2",user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd,login_type = "basic")
 ```
 
 `gee` is a connection to an openEO service. Starting with openeo (v0.6.0) it is no longer required to use the connection on most of the client functions, due to the use of `active_connection`. However, if you use multiple services at once you should pass the intended connection, because `active_connection` will only hold the latest connected services.
 
-# openeo [v0.6.0]
+With the functions `terms_of_service()` and `privacy_policy` you can view the respective documents from the openEO service (if provided).
+
+# openeo [v1.0.0]
 
 ## Use Case 1 - Minimum NDVI as a web service
 
 Make sure to have established a connection to the openEO GEE service by running the code in point 1 (at the beginnging of the document).
 
 ### 2. Requesting the capabilities of the back-end
-```{r}
+```{r, paged.print = FALSE}
 capabilities()
 ```
 
-Here is an example of the new 'connection-less' call of a service. Usually you needed to formulate the call as this: `capabilities(con = gee)`. If you are connected to multiple services and want to explore them, then you can always pass the service connection manually in order to differentiate the calls.
+Here is an example of the new 'connection-less' call of a service. Usually you needed to formulate the call as this: `capabilities(con = gee)`. If you are connected to multiple services and want to explore them, then you can always pass the service connection manually in order to differentiate the calls. Otherwise `active_connection()` is used if the connection was omitted.
 
 ### 3. Check which collections are available at the back-end
 ```{r}
@@ -42,21 +44,37 @@ collections = list_collections()
 collections
 ```
 
-### 4. Request details about a specific collection 
 ```{r}
-c1 = describe_collection(con=gee,id = "COPERNICUS/S2")
+collections$`COPERNICUS/S2`
+```
+
+
+### 4. Request details about a specific collection 
+```{r, paged.print=FALSE}
+c1 = describe_collection(collections$`COPERNICUS/S2`)
 c1
 ```
 
-### 5. Check that needed processes are available
-```{r}
-list_processes()
+### 5. Check that required processes are available
+
+Just for completenes, if you remove the indexing you will get all processes visualized. Just for showcasing we limited the amount of printed processes to 5.
+
+```{r, paged.print=FALSE}
+list_processes()[1:5]
 ```
 
-```{r}
-reduce_info = describe_process(id = "reduce")
+If you require information about a particular process, then either type in the process id or pass a ProcessInfo object.
+
+```{r, paged.print=FALSE}
+reduce_info = describe_process(process = "reduce_dimension")
 reduce_info
 ```
+
+```{r, paged.print=FALSE}
+processes = list_processes()
+describe_process(processes$reduce_dimension)
+```
+
 
 ```{r, eval=FALSE}
 process_viewer(reduce_info)
@@ -64,31 +82,58 @@ process_viewer(gee$processes$reduce)
 ```
 
 
-### 6. Request the supported secondary web service types
+### 6. Request the supported secondary web service types and file formats
+
+#### 6. a) service types
 ```{r}
- list_service_types()
+service_types = list_service_types()
+service_types
 ```
 
+#### 6. b) file formats
+```{r, paged.print=FALSE}
+formats = list_file_formats()
+formats
+```
+
+```{r, paged.print=FALSE}
+formats$output$PNG
+```
+
+
 ### 7. Define the process graph
+
+In contrast to older versions of this code examples, we do not need to split the collection into its bands before applying the normalized difference operation. We now need to reduce the 'band' dimension in order to apply the normalized difference operation.
+
+For subseting arrays we can use an index or a label (`B4 = x["B4"]` or `B4 = x[1]`) the order of the bands is specified by the 'bands' parameter in `load_collection(...)`.
+
 ```{r}
 p = processes()
-data1 = p$load_collection(id = p$data$`COPERNICUS/S2`,
-                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
-                              temporal_extent = c("2018-04-30","2018-06-26"),
-                              bands = c("B4","B8"))
 
-b4 = p$filter_bands(data = data1,bands = "B4")
-b8 = p$filter_bands(data=data1,bands = "B8")
+s2 = collections$`COPERNICUS/S2`
+dims = dimensions(s2)
 
-ndvi = p$normalized_difference(band1 = b4,band2 = b8)
+data1 = p$load_collection(id = s2,
+                          spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
+                          temporal_extent = c("2018-04-30","2018-06-26"),
+                          bands = c("B4","B8"))
 
-reducer = p$reduce(data = ndvi,dimension = "temporal", reducer = min)
+ndvi = p$reduce_dimension(data = data1, dimension = dims$bands,reducer = function(x, context) {
+  B4 = x["B4"]
+  B8 = x["B8"]
 
-apply_linear_transform = p$apply(data = reducer, process = function(value) {
-  p$linear_scale_range(x = value, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255)
+  return(p$normalized_difference(x = B4,y = B8))
 })
 
-final = p$save_result(data = apply_linear_transform,format = "png") 
+reducer = p$reduce_dimension(data = ndvi,dimension = dims$t, reducer = function(x, context) {
+  min(x)
+})
+
+apply_linear_transform = p$apply(data = reducer, process = function(x,context) {
+  p$linear_scale_range(x = x, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255)
+})
+
+final = p$save_result(data = apply_linear_transform,format = formats$output$PNG)
 ```
 
 Client-sided validation
@@ -113,11 +158,11 @@ graph
 ### 8. Webservice
 #### 8 a) create xyz service
 ```{r}
-service_id = create_service(type = "xyz",
+service = create_service(type = service_types$xyz,
                             graph = final,
                             title = "UC1 reference service with R", 
                             description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation). The service is used from the RNotebook example for GEE")
-service_id
+service
 ```
 
 #### 8. b) request meta data
@@ -126,7 +171,7 @@ list_services()
 ```
 
 ```{r}
-service = describe_service(id = service_id)
+service = describe_service(service = service)
 url = service$url
 ```
 
@@ -135,7 +180,6 @@ url = service$url
 ```{r, eval=TRUE}
 library(magrittr)
 library(leaflet)
-url = "https://earthengine.openeo.org/v0.4/xyz/jjDZWtFbNZZYeJvj/{z}/{x}/{y}"
 leaflet() %>% addTiles() %>% addTiles(url, tileOptions(tms=TRUE)) %>% setView(lng = -1.8,lat=43.4,zoom = 8)
 ```
 
@@ -143,14 +187,14 @@ For reproducability and availability of service the leaflet example uses another
 
 #### 8. d) remove service
 ```{r}
-delete_service(id = service_id)
+delete_service(service = service)
 ```
 
 ### 9. alternative download / processing 
 #### 9 a) direct computation
 ```{r}
 library(raster)
-compute_result(graph=graph,format="png",output_file = "gee_test.png")
+compute_result(graph=graph,output_file = "gee_test.png")
 plot(raster("gee_test.png"))
 ```
 
@@ -212,7 +256,7 @@ zonal_statistics = p$aggregate_polygon(data = data,
                                                                               c(16.524124, 48.1386), 
                                                                               c(16.138916, 48.1386), 
                                                                               c(16.138916, 48.320647))),
-                                           reducer = function(x) {
+                                           reducer = function(x, context) {
                                              p$zonal_statistics(x)
                                            })
 
@@ -264,12 +308,12 @@ In this example we will briefly show how to create a more complex process graph 
 ```{r}
 library(openeo)
 
-user = "group8"
+user = "group7"
 pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-con = connect(host = gee_host_url,version="0.4.2",user=user,password=pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd)
 ```
 
 Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
@@ -281,7 +325,7 @@ p = processes()
 In order to showcase another feature, the `variable`, we substitute the collection name with a such a variable. We can then later set the specific value in order to run the code.
 
 ```{r}
-var1 = create_variable(id = "collection_name", type = "string")
+var1 = create_variable(name = "collection_name", type = "string")
 var1$serialize()
 ```
 
@@ -300,16 +344,23 @@ data = p$load_collection(id = var1,
                              ),
                              bands=list("B8","B4","B2"))
 
-spectral_reduce = p$reduce(data = data, dimension = "bands",reducer = function(x) {
-  B08 = x[1]
-  B04 = x[2]
-  B02 = x[3]
+spectral_reduce = p$reduce_dimension(data = data, 
+                                     dimension = "bands",
+                                     reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
   (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
 })
 
-temporal_reduce = p$reduce(data=spectral_reduce,dimension = "temporal", reducer = p$min)
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,
+                                     dimension = "t", 
+                                     reducer = function(data,context){
+  p$min(data)
+})
 
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value) {
+apply_linear_transform = p$apply(data=temporal_reduce,
+                                 process = function(value,...) {
   p$linear_scale_range(x = value, 
                            inputMin = -1, 
                            inputMax = 1, 
@@ -345,7 +396,7 @@ start_job(job = job_id)
 ```{r}
 library(dplyr)
 library(magrittr)
-list_jobs() %>% arrange(desc(submitted))
+list_jobs() %>% as.data.frame() %>% arrange(desc(created))
 ```
 
 ```{r}
@@ -357,6 +408,289 @@ download_results(job=job_id,folder=".")
 delete_job(job = job_id)
 ```
 
+
+# openeo [v0.6.x]
+
+## UC 1
+
+```{r}
+# Make sure to have established a connection to the openEO GEE service by running the code in point 1 (at the beginnging of the document).
+
+# 2. Requesting the capabilities of the back-end
+
+capabilities()
+
+
+# Here is an example of the new 'connection-less' call of a service. Usually you needed to formulate the call as this: `capabilities(con = gee)`. If you are connected to multiple services and want to explore them, then you can always pass the service connection manually in order to differentiate the calls.
+
+# 3. Check which collections are available at the back-end
+
+collections = list_collections()
+collections
+
+
+# 4. Request details about a specific collection 
+
+c1 = describe_collection(con=gee,id = "COPERNICUS/S2")
+c1
+
+
+# 5. Check that needed processes are available
+
+list_processes()
+
+reduce_info = describe_process(id = "reduce_dimension")
+reduce_info
+
+process_viewer(reduce_info)
+process_viewer(gee$processes$reduce)
+
+
+
+# 6. Request the supported secondary web service types
+
+list_service_types()
+
+
+# 7. Define the process graph
+
+p = processes()
+data1 = p$load_collection(id = p$data$`COPERNICUS/S2`,
+                              spatial_extent = list(west=-2.7634,south=43.0408,east=-1.121,north=43.8385),
+                              temporal_extent = c("2018-04-30","2018-06-26"),
+                              bands = c("B4","B8"))
+
+b4 = p$filter_bands(data = data1,bands = "B4")
+b8 = p$filter_bands(data=data1,bands = "B8")
+
+ndvi = p$normalized_difference(band1 = b4,band2 = b8)
+
+reducer = p$reduce(data = ndvi,dimension = "temporal", reducer = min)
+
+apply_linear_transform = p$apply(data = reducer, process = function(value) {
+  p$linear_scale_range(x = value, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255)
+})
+
+final = p$save_result(data = apply_linear_transform,format = "png") 
+
+
+# Client-sided validation
+
+graph = as(final,"Graph")
+graph$validate()
+
+
+# Server-sided validation
+
+validate_process_graph(graph=final)
+
+
+# In the last code block you can see, that you can now pass the last resulting `ProcessNode` into the function. Before this you need to set the final node explicitly on the created `Graph` object.
+
+# The process graph created above will be serialized into JSON notation, which enables the openeEO service to interprete the commands.
+
+graph
+
+
+
+# 8. Webservice
+# 8 a) create xyz service
+
+service_id = create_service(type = "xyz",
+                            graph = final,
+                            title = "UC1 reference service with R", 
+                            description = "Created a XYZ service from R using the graph for Use Case 1 (NDVI calculation). The service is used from the RNotebook example for GEE")
+service_id
+
+
+# 8. b) request meta data
+
+list_services()
+
+service = describe_service(id = service_id)
+url = service$url
+
+
+
+# 8. c) visualizing a xyz service with leaflet
+
+library(magrittr)
+library(leaflet)
+url = "https://earthengine.openeo.org/v0.4/xyz/jjDZWtFbNZZYeJvj/{z}/{x}/{y}"
+leaflet() %>% addTiles() %>% addTiles(url, tileOptions(tms=TRUE)) %>% setView(lng = -1.8,lat=43.4,zoom = 8)
+
+
+# For reproducability and availability of service the leaflet example uses another URL. The service was created beforehand, because the created service will be deleted in the next command. For the leaflet plugin to show a result we reference to that service. If you evaluate the code blocks block by block and you have adapted some things, then you can comment out the `url` statement in the code above. Then the url of your service will be used.
+
+#### 8. d) remove service
+
+delete_service(id = service_id)
+
+
+# 9. alternative download / processing 
+# 9 a) direct computation
+
+library(raster)
+compute_result(graph=graph,format="png",output_file = "gee_test.png")
+plot(raster("gee_test.png"))
+
+file.remove("gee_test.png")
+
+
+
+# 9.b) batch processing
+
+job_id =  create_job(graph=final,title="UC1 Rclient NDVI")
+job_id
+start_job(job = job_id)
+
+list_jobs()
+
+Sys.sleep(25)
+download_results(job = job_id,folder = "./gee_test/")
+
+delete_job(job = job_id)
+
+list.files("./gee_test/")
+```
+
+## UC 3
+
+```{r}
+# Make sure to have established a connection to the openEO GEE service by running the code in point 1 (at the beginnging of the document).
+
+
+# 2. create the process graph
+
+p = processes()
+
+data = p$load_collection(id = p$data$`COPERNICUS/S2`, 
+                             spatial_extent = list(west = 16.1, east = 16.6, north = 48.6, south = 47.2), 
+                             temporal_extent = list("2017-01-01", "2017-02-01"), 
+                             bands = list("B8"))
+
+# Starting at this point the example won't work and it will only be used to show case how this will be done. The processes `aggregate_polygon` and `zonal_statistics` are not implemented / supported by the openEO GEE back-end.
+
+zonal_statistics = p$aggregate_polygon(data = data,
+                                           polygons = list(type = "Polygon", 
+                                                           coordinates = list(c(16.138916, 48.320647), 
+                                                                              c(16.524124, 48.320647), 
+                                                                              c(16.524124, 48.1386), 
+                                                                              c(16.138916, 48.1386), 
+                                                                              c(16.138916, 48.320647))),
+                                           reducer = function(x) {
+                                             p$zonal_statistics(x)
+                                           })
+
+final = p$save_result(data = zonal_statistics,format = "JSON") 
+
+# 3. create a job
+job_id = create_job(graph = final, 
+                   title = "Zonal Statistics / Sentinel 2", 
+                   description = "Compute time series of zonal (regional) statistics of Sentinel 2 imagery over user-specified polygons.")
+
+# 4. Start batch processing the job
+start_job(job = job_id)
+
+# 5. ping the job to get status updates
+describe_job(job = job_id)
+
+# 6. Retrieve download links (after the job has finished)
+
+list_results(job = job_id)
+
+# 7. Download file(s)
+
+download_results(job = job_id, folder = paste0(job_id, "_results"))
+```
+
+
+## Minimum EVI
+
+```{r}
+# In this example we will briefly show how to create a more complex process graph and store it at the back-end. First we connect to the openEO GEE service.
+
+
+library(openeo)
+
+user = "group8"
+pwd = "test123"
+
+gee_host_url = "https://earthengine.openeo.org"
+
+gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd,login_type = "basic")
+
+
+# Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
+
+p = processes()
+
+# In order to showcase another feature, the `variable`, we substitute the collection name with a such a variable. We can then later set the specific value in order to run the code.
+
+var1 = create_variable(name = "collection_name", type = "string")
+var1$serialize()
+
+# Now we will create a process graph that calculates the minimum EVI of an area of interest and scales the output to a value range of 0 to 255 and stores the results in a PNG file.
+
+data = p$load_collection(id = var1,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
+
+# temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "temporal", reducer = p$min)
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "temporal", reducer = function(x,y){
+  p$min(x)
+})
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format="PNG")
+
+# When we look at the `data` node, we can see that a variable was set for the parameter `id`.
+
+data
+
+# Now we set the value and due to the object referneces of the R6 classes the value will be directly substituted. And this also affects the whole process chain.
+
+var1$setValue("COPERNICUS/S2")
+data
+
+
+# As in the other use case examples we can now compute the results directly or create and manage a batch job.
+
+
+job_id = create_job(graph=result, title = "Min EVI example")
+
+start_job(job = job_id)
+
+library(dplyr)
+library(magrittr)
+list_jobs() %>% arrange(desc(submitted))
+
+download_results(job=job_id,folder=".")
+
+delete_job(job = job_id)
+```
 
 # openeo [v0.5.x]
 

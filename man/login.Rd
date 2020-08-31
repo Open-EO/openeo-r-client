@@ -5,24 +5,27 @@
 \title{Function to login to a specific backend}
 \usage{
 login(
-  con = NULL,
   user = NULL,
   password = NULL,
   login_type = NULL,
-  external = NULL
+  provider = NULL,
+  config = NULL,
+  con = NULL
 )
 }
 \arguments{
-\item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{user}{the user name}
 
 \item{password}{the password}
 
 \item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
 
-\item{external}{character - 'google' whether Google is used as a Identity Provider for OIDC}
+\item{provider}{provider object as obtained by 'list_oidc_providers()'}
+
+\item{config}{named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)}
+
+\item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a connected and authenticated back-end connection
@@ -30,16 +33,16 @@ a connected and authenticated back-end connection
 \description{
 Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
 is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
-register, then you need to log in afterwards.
+explore the functionalities and want to compute something, then you need to log in afterwards.
 }
 \examples{
 \dontrun{
 # simple connection without login to maybe explore the capabilities of a back-end first
-con = connect(host='http://example.openeo.org',version='0.4.2')
+con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
 
-login(con=con, user='user',password='password',login_type='basic')
+login(user='user',password='password',login_type='basic', con=con)
 
 # or alternatively the oidc login
-login(con=con,login_type='oidc')
+login(login_type='oidc', provider=provider, config=config)
 }
 }

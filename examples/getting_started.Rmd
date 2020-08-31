@@ -1,0 +1,639 @@
+---
+title: "Getting Started"
+output: html_document
+---
+
+# General parameter
+
+```{r connection_setup}
+library(openeo)
+library(tibble)
+
+user = "group7"
+pwd = "test123"
+
+gee_host_url = "https://earthengine.openeo.org"
+```
+
+
+# Version lookup
+
+After you signed up at a particular openEO service you probably will also obtained the URL of the service. This URL itself is useful to connect to the service and also to list the available API versions. The versions prior to the 1.0.0 version are not back-ward compatible. This means if you want to use the `openeo` package in combination with a openEO service that does not support openEO API version 1.0.0 or higher. You have to install an older release of the package manually.
+
+The following table shows the compatibilities between different `openeo` R packages and their respective openEO API version.
+
+| openeo R client version | openeo API version |
+| --- | --- |
+| v0.0.1 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| 0.1.0 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
+| v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
+| v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
+| v0.4.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
+| v1.0.0 | [v1.0.0](https://openeo.org/documentation/1.0/developers/api/reference.html) |
+
+You can install the considered version from Github by using the version number stated. In cases of 'x', replace 'x' by the latest number, for example 'v0.6.2'). You will find all released versions on the [packages Github repository](https://github.com/Open-EO/openeo-r-client/releases). To install it from R you can use the following code, where you set the value for `ref` accoringly.
+
+```{r, eval=FALSE}
+devtools::install_github(repo="Open-EO/openeo-r-client",ref="v0.6.2",dependencies=TRUE)
+```
+
+To get the provided API versions from the openEO service you can use `api_versions()` with the services URL. You will get a data.frame object with the version number, the level of service maturity (production ready or not) and the versioned URL. You might get a `tibble` object if that package is loaded.
+
+
+```{r}
+versions = api_versions(url = gee_host_url)
+versions
+```
+
+
+# Establishing connection and login
+
+The version request described before should be done to verify and establish a compatibility between the R software and the openEO service. To use the service in R we need to connect to the service and type in the credentials. However, some functionalities are also accessible without a login. But you won't be able to compute anything, because those functions are more or less exploratory ones.
+
+In the remaining parts of the we will use the openEO Google Earth Engine driver for demonstration purposes.
+
+There are two major login types, which can be used for authentication:
+ * Basic Authentiaction
+ * OpenID Connect (OIDC)
+
+The *Basic Authentication* is the most common one, where you can authenticate by simply typing in your user name and password. The *OpenID Connect* mechanism is a bit more complex, but it might allow you to login with your Google account or alike. The allowed identity provider like Google, Microsoft or an openEO service internal one are specified can vary between openEO services, but can be queried by using `list_oidc_providers()` when you have already connected to the service.
+
+## Connecting
+
+As previously mentioned you can simply connect to an openEO service and explore multiple features like the hosted image collections and the available computation capabilities. In terms of completeness, be aware that services might provide more data collections to users once they have signed in due to licensing prohibitations.
+
+There are generally two ways of connecting:
+1. you have a direct URL to a versioned endpoint (like the `url` column of the `api_versions()` result)
+```{r, eval=FALSE}
+gee = connect(host = "https://earthengine.openeo.org/v1.0")
+```
+
+
+2. you have a general URL and you have to provide the version which you want to use (note: if a general URL is used and no version is stated, then it tries to use the latest **production** version)
+```{r}
+gee = connect(host = gee_host_url,version = "1.0.0-rc.2")
+```
+
+You have to use a connection when interacting with a service which you can either specify manually, for example if you are operating on with multiple openEO services at once, or you can use the cached last active connection (to recall it use `active_connection()`). If you omit the connection in functions, then it is automatically assumed to use the last active connection, otherwise specify the parameter `con` on those function.
+
+```{r}
+gee2 = active_connection()
+
+identical(gee,gee2)
+```
+
+Upon connecting to a service there is a special feature for RStudio user, because the package implements the Connection contract, which will list the connection in the "connection" pane and provide a brief overview of the available collections and their dimension structure.
+
+Also you will during the connection you will get a notification to check the privacy policy and the terms of service which can be read by:
+```{r, eval=FALSE}
+terms_of_service()
+
+privacy_policy()
+```
+
+Those functions will open the viewer panel in RStudio which will render the specific website.
+
+## Login
+
+There are again 2 ways of login, either directly via `connect` by passing additional information about the login type and potentially the login credentials or by calling `login()` manually.
+
+```{r}
+gee = connect(host = gee_host_url,version = "1.0.0-rc.2", user = user,password = pwd,login_type = "basic")
+```
+
+If you want to explore the service before signing in you can always first connect and login later manually. `login()` offers the same login parameter as `connect()`
+
+```{r, eval=FALSE}
+login(user = user, password = pwd, login_type = "basic")
+```
+
+### OIDC
+
+At this point we have covered the basic authentication method. The OpenID connect flow requires more configuration to be used. First, you have to get in contact with the openEO service provider and you have to register your client software. As a result you will get a `client_id` and a `secret` which allows your client software to use a particular identity provider. You might have to follow additional instructions on how to obtain those information from your chosen openEO service provider.
+
+We will provide some code examples, but we have to leave out those sensitive information.
+
+Let's consider EODC as an openEO service, which uses the Google authentication as identity provider. We will use a direct URL as connection parameter.
+
+```{r}
+eodc_host = "https://openeo.eodc.eu/v1.0/"
+eodc = connect(host = eodc_host)
+```
+
+```{r}
+provider = list_oidc_providers()
+
+str(provider$google)
+```
+
+Since we are already connected, we can now login, using the particular oidc provider and the afore mentioned client credentials. The latter can either be stated as a named list or you can state the path to a JSON file, containing the same information.
+
+```{r, eval = FALSE}
+login(login_type = "oidc", provider = provider$google, config = list(client_id=..., secret=...))
+```
+
+You will notice that your standard internet browser will open a new website, where you have to enter your credentials. The website will be hosted by your identity provider (here at Google). Your client - the `openeo` package - will be notified by the identity provider and pass on a access code which will be used internally.
+
+Now, switch back to the Google Earth Engine Connection:
+```{r}
+active_connection(con = gee)
+```
+
+
+# Exploration
+
+As already mentioned the exploratory functions do not need a registration or sign in and are free of costs. Typical use cases are that you might want to know which collections and which processes are available, as well as which file formats are available for export and which web services for integration in GIS or web apps.
+
+With list_* functions you will get overviews of the elements. Jobs, Services and process graphs are bound to a user and require a authentication. To get more detailled information on those objects, you can use describe_* with their respective ID.
+
+Objects stated in the list object and objects returned as detailled information have the same class, but in the list view some information is hidden. They are treated and printed in the same way.
+
+List objects are always printed as data.frame or tibble. This does not mean, that they are. Those are S3 objects with dedicated `print()` and `as.data.frame()` methods. 
+
+Here are some examples on the collections:
+
+```{r}
+list_collections()
+```
+
+
+```{r}
+colls = list_collections()
+class(colls)
+```
+
+```{r}
+str(colls$`COPERNICUS/S2`)
+```
+
+As in the example before, you are advised to use auto-completion - meaning get an object list like the collections or file formats and use a particular entry via its name. Those lists are very similar to named lists.
+
+```{r, paged.print = FALSE}
+describe_collection(collection = colls$`COPERNICUS/S2`)
+```
+
+Similarly the processes are handled. With `list_processes()` you will get a list of process objects which are visualized via a dedicated `print()` method. The processes obtained here, are just for information purposes. For process graph / workflow creation we will use `processes()`, which creates process collection that contains parametrized functions.
+
+```{r, paged.print=FALSE}
+process_list = list_processes()
+
+process_list[1:3]
+```
+
+Again, you can access particular objects by their ID.
+
+```{r, paged.print = FALSE}
+process_list$`if`
+```
+
+```{r, paged.print = FALSE}
+process_list$`sum`
+```
+
+
+Similarly file formats and service types can be obtained and visualized this way. On a side note, you can also use those objects, when assigning the file format in the openEO process for `save_results` or the service type, when creating a particular web service.
+
+```{r}
+formats = list_file_formats()
+class(formats)
+```
+
+```{r, paged.print = FALSE}
+formats
+```
+
+```{r, paged.print=FALSE}
+formats$output$PNG
+```
+
+```{r}
+class(formats$output$PNG)
+```
+
+For formats, we have to distinguish supported input and output formats. Output formats are used when serializing results and input formats are used when aggregating data via polygon, creating a mask from a geometry or potentially uploading a raster image as mask.
+
+```{r, paged.print=FALSE}
+service_types = list_service_types()
+service_types
+```
+
+# User
+
+As a registered user, you will have a file space / workspace to upload data to, as well as a list of created, ongoing and completed jobs and services, and to access your account data, where you view the credits available / spent.
+
+## User account 
+```{r, paged.print = FALSE}
+describe_account()
+```
+
+## File workspace
+
+For the file space the data you will upload will oftentimes be areas of interests in JSON or SHP, some masks or scripts to use in user defined functions.
+
+To get an overview about already uploaded files, you can use the already known `list_*` function. Here it is `list_files()`. If the workspace is empty, then it will say so.
+```{r}
+list_files()
+```
+
+As an example for the uploading, we will first temporarily download a GeoJSON file from the Github repository, upload it in a second step with `upload_file()` and then remove the temporary download file. As `target` parameter you can use also subfolders, in order to organize your workspace. If the subfolder does not exist, then it will be created during the upload.
+
+```{r}
+file = tempfile(fileext = ".json")
+  
+download.file(url = "https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/examples/polygons.geojson", destfile = file)
+
+openeo::upload_file(content=file,target="aoi/polygons.json")
+
+file.remove(file)
+```
+
+Now, we call `list_files()` again, and as you can see, the file is now in the workspace under the given path.
+
+```{r}
+list_files()
+```
+
+The `download_file()` function works inverse to the upload and lets you retrieve the uploaded data.
+
+```{r}
+dl_file = download_file(src="aoi/polygons.json", dst = file)
+```
+
+```{r}
+cat(readChar(dl_file,nchars = file.size(dl_file)))
+```
+
+The last function in this context is the `delete_file()` function, which removes a specific file from the workspace.
+
+```{r}
+delete_file(src = "aoi/polygons.json")
+```
+
+And again, the workspace is empty. (If not, then maybe other users may have left data on this demo account)
+
+```{r}
+list_files()
+```
+
+```{r, echo=FALSE, include=FALSE}
+file.remove(dl_file)
+rm(dl_file)
+```
+
+# Creating a process graph / workflow
+
+The `ProcessCollection` is an object that offers the processes available by `list_processes()` as functions of an R6 object. Therefore all the parameter definitions and the process metadata are evaluated and translated into functions in R. To create the `ProcessCollection` just use `processes()` on an active openEO connection or specify one by making use of parameter `con`.
+
+```{r}
+p = processes()
+```
+
+Lets explore object `p` a bit further.
+
+```{r}
+class(p)
+```
+
+```{r}
+names(p)
+```
+
+Here you can see all the available processes on the openEO service. The functions or fields under ".__enclos_env__", "clone" and "initialize" are R6 specific functions, but the rest are dynamically added functions. This means that when you connect to a different openEO service the functions here might be different or they have different parameter.
+
+For comparison here are the processes listed in `list_processes()`:
+```{r}
+names(list_processes())
+```
+
+"load_collection" is a key function, because it is the point where the data is selected for further processsing. 
+
+```{r}
+class(p$load_collection)
+```
+
+```{r}
+formals(p$load_collection)
+```
+
+You can see that there are 4 defined parameters. They are initialized with `NA`. More detailled information can be obtained by using the `describe_process()`. By typing in the different arguments and evaluating the function you receive a `ProcessNode` object, which are the building blocks of the process graph / workflow.
+
+```{r, paged.print=FALSE}
+describe_process(process = "load_collection")
+```
+
+## EVI Graph
+
+In the following we will create the EVI calculation and store it as a process graph on the openEO service.
+
+Most of the processes offered by openEO services are standardized, this means that it will be possible to use mathematical operators like `+`, `-` and alike coherently between different services. That also allowed us to overload the primitive mathematical operators in R so that it becomes easy to use.
+
+The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands "red", "blue" and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like `raster::calc`. Similarly we use this mechanism in the openeo packege.
+
+```{r}
+evi = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  return((2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1))
+}
+```
+
+The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. In later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
+
+```{r}
+as(evi,"Graph")
+```
+
+So, now we have created a small graph and we want to store it for later use at the openEO service.
+
+```{r, paged.print=FALSE}
+list_user_processes()
+```
+
+```{r}
+validate_process(graph = evi)
+```
+
+```{r}
+graph_id = create_user_process(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
+```
+
+```{r, paged.print=FALSE}
+list_user_processes()
+```
+
+Fetch the process graph definition as a user define openEO process and print it.
+
+```{r, paged.print=FALSE}
+evi_process = describe_user_process(id = "evi")
+class(evi_process)
+```
+
+```{r, paged.print = FALSE}
+evi_process
+```
+
+If you want the graph representation reimported into R, you can use `parse_graph` on this received `ProcessInfo` object or you can use the coerce function.
+
+```{r}
+evi_graph = parse_graph(json = evi_process) # or use as(evi_process,"Graph")
+```
+
+When you decide to not use it anymore or if you simply want to delete it, then use `delete_user_process` with the set ID.
+
+```{r, eval=FALSE}
+delete_user_process(id = graph_id)
+```
+
+
+
+## Minimum EVI example
+
+The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetics as an inbound function.
+
+We have used the variables `colls` and `formats` before. They originate from their respective list_* function.
+
+```{r}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+```
+
+Here we are using the EVI calculation as used in the previous example.
+```{r}
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
+```
+
+
+```{r}
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+```
+
+Note: in former versions it was able to pass `min` or `p$min` directly to the parameter 'reducer'. Now it has always to be wrapped in a function. The reason behind that were problems when matching the signature of an openEO process or even the R primitive on to the required signature of the function that has to be passed as reducer function. For example R's `min` function requires an array and a statement how to deal with NA values. The reducer function of `p$reduce_dimension` offers arguments for an array (data) and a context (a named list of values). With this different types of arguments you can imagine the matching problems.
+
+```{r}
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+```
+
+As a last step we will store the results as a PNG file. The `ProcessNode` returned from that function will be our endnote in the graph and so we will pass it on towards openEO service functions.
+
+```{r}
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+```
+
+```{r}
+min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
+```
+
+```{r, paged.print = FALSE}
+list_user_processes()
+```
+
+```{r}
+delete_user_process(id = min_evi_graph_id)
+```
+
+## Integration of user defined processes
+
+In the section "EVI Graph" we created and stored a sub graph that resembles the same code that was used as a reducer when creating the node 'spectral_reduce'. In an alternative approach we can load and reuse user defined processes. In analogy to the predefined processes of the openEO service we use `user_processes()` to create an easy-to-use ProcessNode builder.
+
+```{r}
+p = processes()
+udps = user_processes()
+colls = list_collections()
+formats = list_file_formats()
+```
+
+```{r}
+example_udp_node = udps$evi()
+
+example_udp_node
+```
+
+```{r}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  udps$evi(data = data)
+})
+
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+
+min_evi_graph = as(result,"Graph")
+
+validate_process(graph = min_evi_graph)
+```
+
+# User defined processes integration
+
+- processes defined with `create_user_process` can be incorporated as processes in workflows which enhances the extensibility
+
+# Calculate immediate results
+
+For development and testing you process graph you can use the `compute_result` function. Please keep in mind, that depending on the payment plan chosen or available at the openEO service, that there might be costs involved. Since it will block your command line until the calculations are done and the results are sent, choose a small data sample when using this function. It might also be the case that some provider won't allow UDF at this function. In cases where payments are involved you have the possibility to set the payment plan and the maximum amount of credits spent.
+
+```{r}
+temp = tempfile()
+file = compute_result(graph = result, output_file = temp)
+```
+
+```{r}
+r = raster::raster(file)
+raster::spplot(r)
+```
+
+
+# Creating a job
+
+- pass on the defined function, result node or graph
+
+```{r}
+job = create_job(graph=result,title = "Minimum EVI", description = "Minimum EVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file.")
+```
+
+```{r}
+jobs = list_jobs()
+jobs
+```
+
+The job list is also printed as data.frame or tibble. But it is a list of job objects.
+
+```{r}
+class(jobs)
+```
+
+```{r}
+job$id
+```
+
+
+```{r}
+class(jobs[[job$id]])
+```
+
+```{r}
+jobs[[job$id]]
+```
+
+Similarly as for the process graph `describe_job()` returns a more detailled description of the job.
+
+```{r}
+describe_job(job = job)
+```
+
+You can queue the job for execution by using `start_job()`
+
+```{r}
+start_job(job=job)
+```
+
+Now, we need to wait for the job to finish. We can get information on the status either by the job list or by the job meta data.
+
+```{r}
+list_jobs()
+```
+
+When it is finished, we can inspect the results.
+
+```{r, paged.print=FALSE}
+list_results(job=job)
+```
+
+In most cases we want to download the results.
+
+```{r}
+dir = tempdir()
+download_results(job=job, folder = dir)
+```
+
+With the download function all result assests are downloaded into the target folder.
+
+```{r}
+list.files(dir)
+```
+
+```{r}
+delete_job(job=job)
+```
+
+
+# Creating a service
+
+```{r}
+service_types = list_service_types()
+```
+
+
+```{r}
+test_service = create_service(type = service_types$xyz, graph = result, title = "XYZ service for minimum EVI", description = "XYZ service for minimum EVI from the getting_started guide.",enabled = TRUE)
+```
+
+```{r}
+list_services()
+```
+
+```{r}
+describe_service(service = test_service)
+```
+
+```{r, eval=TRUE}
+library(magrittr)
+library(leaflet)
+leaflet() %>% addTiles() %>% addTiles(test_service$url, tileOptions(tms=TRUE)) %>% setView(lng = 16.363449,lat=48.210033,zoom = 7)
+```
+
+# RStudio specific features
+
+In this web page representation certain features cannot be shown, but shall be mentioned, for you to try out in RStudio.
+
+- `process_viewer()`: opens the Viewer panel and renders the process information as HTML webpage
+- `collection_viewer()`: similar to `process_viewer()`, but for collections
+- `terms_of_service()`: also a web view of the terms of service
+- `privacy_policy`: web view of the privacy policy
+- connection contract implementation: creates a connection in the connections pane for the openEO service

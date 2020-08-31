@@ -14,5 +14,5 @@ is used.}
 object of type user
 }
 \description{
-Calls endpoint /me to fetch the user account information of the user that is currently logged in to the back-end
+Calls endpoint \code{/me} to fetch the user account information of the user that is currently logged in to the back-end
 }

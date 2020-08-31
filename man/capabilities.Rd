@@ -2,7 +2,7 @@
 % Please edit documentation in R/server_metadata.R
 \name{capabilities}
 \alias{capabilities}
-\title{Shows an overview about the capabilities of an OpenEO back-end}
+\title{Capabilities overview}
 \usage{
 capabilities(con = NULL)
 }
@@ -13,5 +13,5 @@ capabilities(con = NULL)
 capabilities object
 }
 \description{
-Queries the back-end for its general capabilities.
+The function queries the openEO service to which was connected for general information about the service.
 }

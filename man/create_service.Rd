@@ -5,41 +5,41 @@
 \title{Prepares and publishes a service on the back-end}
 \usage{
 create_service(
-  con = NULL,
   type,
   graph,
   title = NULL,
   description = NULL,
   enabled = NULL,
-  parameters = NULL,
+  configuration = NULL,
   plan = NULL,
-  budget = NULL
+  budget = NULL,
+  con = NULL
 )
 }
 \arguments{
+\item{type}{character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()}
+
+\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+will return the results}
+
+\item{title}{character (optional) - a title for the service intended for visualization purposes in clients for humans to read}
+
+\item{description}{character (optional) - a short description of the service}
+
+\item{enabled}{logical - whether or not the service is active or not}
+
+\item{configuration}{a named list specifying the configuration parameter}
+
+\item{plan}{character - the billing plan}
+
+\item{budget}{numeric the amount of credits that can be spent on this service}
+
 \item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{type}{character the ogc web service type name to be created}
-
-\item{graph}{A process graph object}
-
-\item{title}{character (optional) the title in human readabled form for the service}
-
-\item{description}{character (optional) the description for the service}
-
-\item{enabled}{logical}
-
-\item{parameters}{a list of service creation parameters}
-
-\item{plan}{character the billing plan}
-
-\item{budget}{numeric the amount of credits that can be spent for this service}
 }
 \value{
-service representation as list
+Service object
 }
 \description{
-The function will send a configuration object to the back-end to create a webservice from a job considering
-additional parameter.
+The function will create a web service of a process graph / workflow on the connected openEO service.
 }

@@ -3,13 +3,16 @@
 \name{as.data.frame}
 \alias{as.data.frame}
 \alias{as.data.frame.JobList}
+\alias{as.data.frame.ServiceList}
 \alias{as.data.frame.BandList}
 \alias{as.data.frame.CollectionList}
 \alias{as.data.frame.VersionsList}
-\alias{as.data.frame.FileTypesList}
+\alias{as.data.frame.FileFormatList}
 \title{Coercions into data.frame objects}
 \usage{
 \method{as.data.frame}{JobList}(x, ...)
+
+\method{as.data.frame}{ServiceList}(x, ...)
 
 \method{as.data.frame}{BandList}(x, ...)
 
@@ -17,7 +20,7 @@
 
 \method{as.data.frame}{VersionsList}(x, ...)
 
-\method{as.data.frame}{FileTypesList}(x, ...)
+\method{as.data.frame}{FileFormatList}(x, ...)
 }
 \arguments{
 \item{x}{the list object that will be coerced}

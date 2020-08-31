@@ -4,15 +4,15 @@
 \alias{download_results}
 \title{Downloads the results of a job into a specific folder}
 \usage{
-download_results(con = NULL, job, folder)
+download_results(job, folder, con = NULL)
 }
 \arguments{
-\item{con}{a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
-is used.}
-
 \item{job}{job object or the job_id for which the results are fetched}
 
 \item{folder}{a character string that is the target path on the local computer}
+
+\item{con}{a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
+is used.}
 }
 \value{
 a list of the target file paths

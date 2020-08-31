@@ -1,3 +1,7 @@
+#' @include process_graph_building.R
+#' @include user_defined_processes.R
+NULL
+
 .removeNullEntries = function(list) {
     list[-which(sapply(list, is.null))]
 }
@@ -76,8 +80,18 @@
 #' 
 #' @export
 as.data.frame.JobList = function(x, ...) {
+    x = unname(x)
     params = list(...)
     return(.listObjectsToDataFrame(x, extract = params$extract))
+}
+
+#' @rdname as.data.frame
+#' @export
+as.data.frame.ServiceList = function(x, ...) {
+    x = unname(x)
+    params = list(...)
+    table = .listObjectsToDataFrame(x, extract = params$extract)
+    return(table)
 }
 
 #' @rdname as.data.frame
@@ -92,7 +106,7 @@ as.data.frame.BandList = function(x, ...) {
 #' @rdname as.data.frame
 #' @export
 as.data.frame.CollectionList = function(x, ...) {
-    colls = x$collections
+    colls = x
     
     params = list(...)
     
@@ -120,28 +134,95 @@ as.data.frame.VersionsList = function(x, ...) {
 
 #' @rdname as.data.frame
 #' @export
-as.data.frame.FileTypesList = function(x, ...) {
-    names = names(x)
-    datatypes = unname(lapply(x, function(format) {
-        return(format$gis_data_types)
-    }))
+as.data.frame.FileFormatList = function(x, ...) {
+    # this will just be an overview
+    output = .listObjectsToDataFrame(unname(x$output),extract = c("name","title"))
+    output$direction = "output"
     
-    parameters = unname(lapply(x, function(format) {
-        return(format$parameters)
-    }))
+    if (nrow(x$input) > 0) {
+        input = .listObjectsToDataFrame(unname(x$input),extract = c("name","title"))
+        input$direction = "input"
+        table = rbind(output,input)
+    } else {
+        table = output
+    }
     
-    table = as.data.frame(cbind(format = names, type = datatypes, parameters = parameters))
-    table$format = unlist(table$format)
     
     return(table)
 }
 
 #' @export
+as.data.frame.AssetList = function(x, ...) {
+    params = list(...)
+    x = lapply(names(x), function(asset) {
+        return(c(asset_name=asset,x[[asset]]))
+    })
+    table = .listObjectsToDataFrame(x, extract = params$extract)
+    return(table)
+}
+
+#' Coercion into Graph
+#' 
+#' Currently there are several ways to create a \code{Graph} object. One of them is by coercion. You can coerce
+#' from \code{ProcessNode}, a function that returns a ProcessNode or from a userdefined process (\code{ProcessInfo}), as obtained by
+#' function \code{describe_process_graph}.
+#' 
+#' @name as.Graph
+#' 
+#' @param from the source from which to coerce (\code{ProcessNode}, \code{function} or \code{ProcessInfo})
+#' @return \code{Graph}
+#' 
+#' @export
 as.Graph.ProcessNode = function(from) {
     return(Graph$new(final_node=from))
 }
 
+#' @rdname as.Graph
+#' @export
+as.Graph.function = function(from) {
+    return(.function_to_graph(value=from))
+}
+
+#' @rdname as.Graph
+#' @export
+as.Graph.ProcessInfo = function(from) {
+    return(parse_graph(json=from))
+}
+
+#' @export
+as.character.UdfRuntime = function(x, ...) {
+    return(x$id)
+}
+
+#' @export
+as.character.UdfRuntimeVersion = function(x, ...) {
+    return(x$version)
+}
+
+#' @export
+as.character.CubeDimension = function(x, ...) {
+    return(x$name)
+}
+
+
+#' Coerce into a Process
+#' 
+#' This function converts objects into a process.
+#' 
+#' @name as.Process
+#' 
+#' @param from the source from which to coerce (\code{ProcessInfo})
+#' @return \code{\link{Process}}
+#'    
+#' @export
+as.Process.ProcessInfo = function(from) {
+    return(processFromJson(from))
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
+    setAs(from="function",to="Graph",as.Graph.function)
+    setAs(from="ProcessInfo",to="Graph",as.Graph.ProcessInfo)
+    setAs(from="ProcessInfo",to="Process",as.Process.ProcessInfo)
 })
 

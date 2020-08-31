@@ -4,13 +4,13 @@
 \alias{describe_job}
 \title{Fetches information about a job}
 \usage{
-describe_job(con = NULL, job)
+describe_job(job, con = NULL)
 }
 \arguments{
+\item{job}{the job object or the id of the job}
+
 \item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{job}{the job object or the id of the job}
 }
 \value{
 a detailed description about the job

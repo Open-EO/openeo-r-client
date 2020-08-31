@@ -7,23 +7,27 @@
 A class that authenticates via Open ID Connect. It inherits all fields and functions from \code{\link{IAuth}}. The OIDC login
 will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
 chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
-the OIDC provider (the R client has provided its ID and the callback URI beforehand).
+the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a configuration 
+file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the provider is 'http://localhost:1410/'.
+}
+\details{
 The \code{access_token} will be returned when queried. If the lease time has run out the client will refresh the access_token
 automatically.
 }
 \section{Methods}{
 
 \describe{
-  \item{\code{$new(host,discovery_document = NULL)}}{the constructor for the authentication}
+  \item{\code{$new(provider, config=NULL)}}{the constructor for the authentication}
   \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
+  \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr'}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{host}}{the URL pointing to the OIDC discovery document}
-  \item{\code{discover_document}}{optional the discovery document of the OIDC endpoint}
+  \item{\code{provider}}{a provider object as returned by \code{list_oidc_providers()}}
+  \item{\code{config}}{either a file to JSON containing information about 'client_id' and 'secret' or a named list}
 }
 }
 

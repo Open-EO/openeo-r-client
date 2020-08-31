@@ -4,13 +4,13 @@
 \alias{stop_job}
 \title{Terminates a running job}
 \usage{
-stop_job(con = NULL, job)
+stop_job(job, con = NULL)
 }
 \arguments{
+\item{job}{the job object or the id of job that will be canceled}
+
 \item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
 is used.}
-
-\item{job}{the job object or the id of job that will be canceled}
 }
 \value{
 a success / failure notification

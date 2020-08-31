@@ -37,17 +37,20 @@ escaper = function(list) {
 #' 
 #' @export
 process_viewer = function(x,con=NULL) {
+  tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
-    doc_gen_version = "@1.0.0-beta.2"
+    # doc_gen_version = "@1.0.0-beta.2"
+    doc_gen_version = "@latest"
+    css_version = "@latest"
     
     if (is.function(x)) {
       x=do.call(x,args=list())
     } else if ("ProcessCollection" %in% class(x)) {
       x = con$processes
     } else if (is.character(x)) {
-      x = describe_process(con=con,id = x)
+      x = describe_process(con=con,process = x)
       
       if (is.null(x)) {
         return(invisible(NULL))
@@ -60,7 +63,7 @@ process_viewer = function(x,con=NULL) {
         warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
         return(invisible(NULL))
       }
-      x = describe_process(con=con,id = pid)
+      x = describe_process(con=con,process = pid)
     }
     
     if (!"ProcessInfo" %in% class(x)) {
@@ -73,45 +76,17 @@ process_viewer = function(x,con=NULL) {
     
     x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE)
     
-    html="<!DOCTYPE html>
-  <html>
-  
-  <head>
-  <title>openEO Processes</title>
-  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <script src='https://cdn.jsdelivr.net/npm/vue'></script>
-  <script src='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.umd.min.js'></script>
-  <link rel='stylesheet'' href='https://cdn.jsdelivr.net/npm/@openeo/processes-docgen%doc_gen_version%/dist/DocGen.css'>
-  <style>html, body { height: 100%; margin: 0; }</style>
-  </head>
-  
-  <body>
-  <div id='app'></div>
-  <script>
-    new Vue({
-      el: '#app',
-      render: h => h(DocGen, { 
-        props: {
-          document: %processes%,
-          apiVersion: %api_version%,
-          showTableOfContents: %navigator%
-        }
-      })
-    });
-  </script>
-  <noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
-  </body>
-  
-  </html>"
+    template_file = system.file("extdata", "process_viewer_template.html", package = "openeo")
+    html = readChar(template_file, nchars = file.info(template_file)$size)
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
+    html = gsub(x=html,pattern = "%css_version%",replacement = css_version)
     html = gsub(x=html,pattern = "%processes%",replacement=x,fixed=TRUE)
     html = gsub(x=html,pattern = "%navigator%",replacement=navigator)
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
+  }, error = .capturedErrorToMessage)
 }
 
 #' View for openEO collections
@@ -119,69 +94,53 @@ process_viewer = function(x,con=NULL) {
 #' The function opens up a viewer panel in RStudio which renders the collection information
 #' nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
 #' 
-#' @param x character with the name of a collection or the \code{\link{CollectionInfo}} obtained
+#' @param x character with the name of a collection or the \code{Collection} obtained
 #' with \code{\link{describe_collection}}.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
 #' @export
 collection_viewer = function(x,con=NULL) {
-    if (length(con) == 0) con = openeo:::.assure_connection(con)
+  tryCatch({
+    if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
     doc_gen_version = "@latest"
+    vue_version = "@latest"
+    vue_css_version = "@latest"
     
     if (is.character(x)) {
-      x = describe_collection(con=con,id=x)
+      x = describe_collection(con=con,collection=x)
     }
     
     if (is.null(x)) {
       return(invisible(NULL))
     }
     
-    if (!"CollectionInfo" %in% class(x)) {
+    if (!"Collection" %in% class(x)) {
+      if (length(x$`cube:dimensions`) > 0) {
         x = unname(escaper(x))
+      } else {
+        x = unname(escaper(describe_collection(collection = x)))
+      }
+        
     } else {
-        x = escaper(x)
+      if (length(x$`cube:dimensions`) == 0) {
+        x = describe_collection(collection = x)
+      }
+      x = escaper(x)
     }
     
-    x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE)
+    x = jsonlite::toJSON(x,force=TRUE,auto_unbox = TRUE,null="null")
     
-    html="<!DOCTYPE html>
-<html>
-
-	<head>
-		<title>openEO Collection</title>
-		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
-		<meta charset='UTF-8'>
-		<meta name='viewport' content='width=device-width, initial-scale=1'>
-		<script src='https://cdn.jsdelivr.net/npm/vue'></script>
-		<script src='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.umd.min.js'></script>
-		<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@openeo/vue-components%doc_gen_version%/assets/openeo-vue.css'>
-		<style>html, body { height: 100%; margin: 1em; font-family: sans-serif; }</style>
-	</head>
-
-	<body>
-		<div id='app'></div>
-		<script>
-			var { Collection } = window['openeo-vue'];
-			new Vue({
-				el: '#app',
-				render: h => h(Collection, { 
-					props: {
-						collectionData: %collection_info%,
-						version: %api_version%
-					}
-				})
-			});
-		</script>
-		<noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
-	</body>
-
-</html>"
+    template_file = system.file("extdata", "collection_viewer_template.html", package = "openeo")
+    html = readChar(template_file, nchars = file.info(template_file)$size)
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
+    html = gsub(x=html,pattern = "%vue_version%",replacement = vue_version)
+    html = gsub(x=html,pattern = "%vue_css_version%",replacement = vue_css_version)
     html = gsub(x=html,pattern = "%collection_info%",replacement=x,fixed=TRUE)
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
+  }, error = .capturedErrorToMessage)
 }
