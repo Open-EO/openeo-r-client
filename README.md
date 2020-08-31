@@ -2,7 +2,7 @@
 
 [![Status](https://img.shields.io/badge/Status-proof--of--concept-yellow.svg)]()
 
-This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use. In the future we will start to use tagged releases, when we reach a sufficient number of implemented features.
+This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use.
 
 ## Installation
 Install the package by using `install_github` from the devtools package.
@@ -30,11 +30,15 @@ Since the openEO project is under heavy development regarding the openeo API tha
 | v0.4.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
-| v0.7.x | [v1.0.0-rc.2](https://openeo.org/documentation/1.0/developers/api/reference.html) |
+| v1.0.x | [v1.0.0](https://openeo.org/documentation/1.0/developers/api/reference.html) |
+
+## Prerequirements
+
+The openeo package won't process anything at the local machine. It will always interact with a designated back-end. Only at the back-end the data is stored and the computations are performed. Therefore please make sure you are registered with any of the available openEO back-ends, in order to obtain credentials and the access URLs (see: [openEO Hub](https://hub.openeo.org/) for getting an overview about available back-ends). 
 
 ## Getting Started
 After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.
-Starting with API version 0.4.x the process graph creation has drastically changed. To get insights on the process graph building, please [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building).
+To get started with the process graph creation, please [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building) for further information.
 
 After we defined the process graph, we send it as a task to the backend where it is processed. It can be processed _immediately_ (the client is holding the connection and waits for the results), _directly asynchronous_ (the client sends the task and queues the process execution and the results are stored in the user workspace on the backend, meanwhile the client receives an acceptance notification).
 

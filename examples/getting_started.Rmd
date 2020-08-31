@@ -18,7 +18,7 @@ gee_host_url = "https://earthengine.openeo.org"
 
 # Version lookup
 
-After you signed up at a particular openEO service you probably will also obtained the URL of the service. This URL itself is useful to connect to the service and also to list the available API versions. The versions prior to the 0.7.0 version are not back-ward compatible. This means if you want to use the `openeo` package in combination with a openEO service that does not support openEO API version 1.0.0 or higher. You have to install an older release of the package manually.
+After you signed up at a particular openEO service you probably will also obtained the URL of the service. This URL itself is useful to connect to the service and also to list the available API versions. The versions prior to the 1.0.0 version are not back-ward compatible. This means if you want to use the `openeo` package in combination with a openEO service that does not support openEO API version 1.0.0 or higher. You have to install an older release of the package manually.
 
 The following table shows the compatibilities between different `openeo` R packages and their respective openEO API version.
 
@@ -32,7 +32,7 @@ The following table shows the compatibilities between different `openeo` R packa
 | v0.4.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
-| v0.7.x | [v1.0.0-rc.2](https://openeo.org/documentation/1.0/developers/api/reference.html) |
+| v1.0.0 | [v1.0.0](https://openeo.org/documentation/1.0/developers/api/reference.html) |
 
 You can install the considered version from Github by using the version number stated. In cases of 'x', replace 'x' by the latest number, for example 'v0.6.2'). You will find all released versions on the [packages Github repository](https://github.com/Open-EO/openeo-r-client/releases). To install it from R you can use the following code, where you set the value for `ref` accoringly.
 

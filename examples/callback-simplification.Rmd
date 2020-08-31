@@ -148,7 +148,7 @@ spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = functi
 })
 ```
 
-### Version >= 0.7.0:
+### Version >= 1.0.0:
 ```{r, eval = FALSE}
 con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
 p = processes()
@@ -189,9 +189,9 @@ temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", redu
 temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", reducer = min)
 ```
 
-### Version >= 0.7.0:
+### Version >= 1.0.0:
 
-Starting with version 0.7.0 all reducer / aggregation functions are passed as function with specific parameters. Using the process constructor from the `ProcessCollection` or R's aggregation functions are no longer supported due to continous mismatches between the provided process parameter of the `ProcessArgument` and the process parameter definition of the reducer / aggregation function (often times there are `context` parameter which causes problems with the unary operators). The other problem is that R's aggregation functions also follow another definition schema, so that it cannot reliably mapped, when passed on directly.
+Starting with version 1.0.0 all reducer / aggregation functions are passed as function with specific parameters. Using the process constructor from the `ProcessCollection` or R's aggregation functions are no longer supported due to continous mismatches between the provided process parameter of the `ProcessArgument` and the process parameter definition of the reducer / aggregation function (often times there are `context` parameter which causes problems with the unary operators). The other problem is that R's aggregation functions also follow another definition schema, so that it cannot reliably mapped, when passed on directly.
 
 ```{r, eval=FALSE}
 con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
