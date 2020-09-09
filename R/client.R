@@ -646,7 +646,6 @@ OpenEOClient <- R6Class(
           return(TRUE)
         }
         
-        # TODO might be never reached
         okMessage = content(response,"parsed","application/json")
         return(okMessage)
       } else {

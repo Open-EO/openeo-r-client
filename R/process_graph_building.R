@@ -635,8 +635,6 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
     # if names(v) contains process_graph, do recursive call parse_graph
     # if names(v) contains from_parameter -> create ProcessGraphParameter
     # if names(v) contains from_node -> look up node_id
-    # TODO consider user defined processes which shall be always accessible
-    
     
     graph_definition = json$process_graph
     
@@ -685,7 +683,6 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
         if ("process_graph" %in% names(value)) {
           # do subgraph
           if (!"ProcessGraphArgument" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
-          # TODO actually, we have to check the result also... as long as the result matches, it is ok... or it is an any of with process_graph in it
           
           params = argument$getProcessGraphParameters()
           names(params) = sapply(params, function(p)p$getName())
@@ -879,8 +876,6 @@ variables = function(x) {
     })
     
     # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
-    # TODO think about this and/or implement it
-    
     for (i in 1:length(variables)) {
       if (! "Argument" %in% class(variables[[i]])) {
         warning("Can't translate process graph parameter into R object")

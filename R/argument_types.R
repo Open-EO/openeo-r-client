@@ -88,7 +88,7 @@ Parameter = R6Class(
       if (is.null(schema$type)) schema$type = character()
       if (is.null(schema$subtype)) schema$subtype = character()
       
-      if (length(schema$type) == 0 && length(schema$subtype) == 0) return(TRUE) # TODO add unchecked warning?
+      if (length(schema$type) == 0 && length(schema$subtype) == 0) return(TRUE)
       
       return(setequal(private$schema[sel], schema[sel]))
     },
@@ -123,7 +123,7 @@ Parameter = R6Class(
           info$schema = append(private$schema, list(list(type = "null")))
         }
       } else if (self$isNullable) {
-        info$schema$type = list(private$schema$type,"null") #TODO array?
+        info$schema$type = list(private$schema$type,"null")
       } else {
         info$schema = private$schema
       }
@@ -327,25 +327,6 @@ Argument = R6Class(
       
       #if nothing is done, then simply return the object
       return(private$value)
-    },
-    
-    checkMultiResults = function() {
-      #TODO adapt or remove
-      # if ("ProcessNode" %in% class(private$value)) {
-      #   returns = private$value$getReturns()
-      #   
-      #   if (!is.null(returns$schema)) {
-      #     if (!is.null(returns$schema$anyOf)) {
-      #       output_candidated = returns$schema$anyOf
-      #       
-      #       if (!any(sapply(output_candidated,function(schema){self$matchesSchema(schema)}))) {
-      #         stop("Cannot match any of the provided returns of the prior process to this parameter")
-      #       }
-      #     }
-      #   }
-      # }
-      return(invisible(NULL))
-      
     },
     deep_clone = function(name, value) {
       
@@ -1629,7 +1610,12 @@ OutputFormatOptions = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      #TODO implement! object == list in R
+      if (!self$isEmpty()) {
+        if (!is.list(private$value)) {
+          stop("Output format options are not a list")
+        }
+      }
+      
     },
     typeSerialization = function() {
       return(as.list(private$value))
@@ -1675,7 +1661,7 @@ RasterCube = R6Class(
       # value should be a ProcessNode
       if (! "ProcessNode" %in% class(private$value)) stop("RasterCube is not retreived by process.")
       
-      private$checkMultiResults()
+      invisible(NULL)
     },
     typeSerialization = function() {
       if ("ProcessNode" %in% class(private$value)) {
@@ -1724,8 +1710,7 @@ VectorCube = R6Class(
       # value should be a ProcessNode
       if (! "ProcessNode" %in% class(private$value)) stop("VectorCube is not retreived by process.")
       
-      private$checkMultiResults()
-      # if (! "vector-cube" %in% class(private$value$getProcess()$getReturns())) stop("The stated process does not return a VectorCube")
+      invisible(NULL)
     },
     typeSerialization = function() {
       if ("ProcessNode" %in% class(private$value)) {
@@ -1744,9 +1729,8 @@ VectorCube = R6Class(
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 #' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
 #' injected data. Hints from the openeo api documention:
-# TODO change
 #' \itemize{
-#'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
+#'   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
 #' }
 #' 
@@ -2049,7 +2033,6 @@ Array = R6Class(
       itemType = private$schema$items$type
       if (itemType == "any") {
         # this can be anything so we shift the responsibility to the back-end
-        #TODO maybe give a warning that it is unchecked
         return(invisible(NULL)) 
       }
       
@@ -2484,9 +2467,7 @@ AnyOf = R6Class(
   private = list(
     parameter_choice = list(),
     
-    typeCheck = function() {
-      # TODO rework
-    },
+    typeCheck = function() {},
     typeSerialization = function() {
       if (length(self$getValue()) == 0) {
         return(NULL)
@@ -2517,7 +2498,7 @@ AnyOf = R6Class(
 
 # parse functions ----
 findParameterGenerator = function(schema) {
-  # TODO adapt this if I add some parameter/argument
+  # adapt this if I add some parameter/argument
   # ProcessGraphParameter are not listed since they are created at the graph (as "variables")
   parameter_constructor = list(Integer,
                                EPSGCode,
