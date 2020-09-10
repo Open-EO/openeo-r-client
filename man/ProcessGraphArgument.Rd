@@ -12,7 +12,7 @@ of a data cube. For example reducing the time dimension results in a time series
 single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
 injected data. Hints from the openeo api documention:
 \itemize{
-  \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
+  \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
 }
 }

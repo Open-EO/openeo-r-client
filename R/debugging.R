@@ -107,6 +107,13 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
         }
         
         log = log_fun(obj, con=con)
+        
+        # maybe the log has not initialized yet, then wait a second
+        while (length(log$logs) == 0) {
+            Sys.sleep(1)
+            log = log_fun(obj, con=con)
+        }
+        
         last_message_id = log$logs[[length(log$logs)]]$id
         print(log)
         
