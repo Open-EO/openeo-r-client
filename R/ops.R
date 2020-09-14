@@ -498,8 +498,6 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   # v0.5 -> and only has two arguments
-  # TODO think to overwrite 'all'
-  
   FUN = "and"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](expressions=c(e1,e2)) 
@@ -516,8 +514,6 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   # v0.5 -> or only has two arguments, now it takes an array
-  # TODO think to overwrite 'any'
-  
   FUN = "or"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](expressions=c(e1,e2)) 

@@ -296,10 +296,10 @@ log_service = function(service, offset=NULL,limit=NULL, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
-        if (!is.null(job) && "Service" %in% class(job)) {
+        if (!is.null(service) && "Service" %in% class(service)) {
             service_id = service$id
         } else {
-            service_id = job
+            service_id = service
         }
         
         query_params = list()

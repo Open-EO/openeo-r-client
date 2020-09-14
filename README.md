@@ -1,7 +1,5 @@
 # openEO client in R
 
-[![Status](https://img.shields.io/badge/Status-proof--of--concept-yellow.svg)]()
-
 This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use.
 
 ## Installation
@@ -12,7 +10,7 @@ if (!require(devtools)) {
   install.packages("devtools",dependencies=TRUE)
   library(devtools)
 }
-install_github(repo="Open-EO/openeo-r-client",ref="api-v1.0.0-dev",dependencies=TRUE)
+install_github(repo="Open-EO/openeo-r-client",dependencies=TRUE)
 library(openeo)
 ```
 

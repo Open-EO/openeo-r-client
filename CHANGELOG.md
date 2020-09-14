@@ -1,23 +1,87 @@
 # Changelog
 
-## unreleased
+## [1.0.0] -
+
+In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here. 
+
+Note: similarly named functions that work on different objects are abrreviated by a `*`, e.g. `describe_*()` for `describe_job()`, `describe_service()`, ...
 
 ### Added
-- function `conformance` operated on the new corresponding api endpoint
+- added a serialization of object `Parameter` into a descriptive form
+- added a function to parse and coerce an R function into a `Graph` (e.g. `as(x,"Graph")`, where x is a R function returning a `ProcessNode`)
 - new functions `privacy_policy()` and `terms_of_service()` to view the privacy policy and the terms of service
+- function `conformance()` operated on the new corresponding api endpoint
+- added class `ProcessCollection` in order to divide the Graph object and the graph building. It is created upon connection and obtainable via `processes()`.
+- added a function `logs()`, `log_job()` and `log_service()` to request the back-end logs of a job or a service. The logging blocks the console and requests every second an update of the log at the back-end. Also when queing a job via `start_job()` an immediate logging can be triggered.
+- added S3 class labels, coerce and print functions for some exchange object:
+   - `FileFormatList` (`as.data.frame.FileFormaList`)
+   - `FileFormat` (`print.FileFormat`)
+   - `ServiceType` (`print.ServiceType`)
+   - `ServiceList` (`as.data.frame.ServiceList`, `print.ServiceList`)
+   - `Service` (`print.Service`)
+   - `CollectionList`
+   - `Collection` (`print.Collection`)
+   - `Log` (`print.Log`)
+   - `Job` (`print.Job`)
+   - `JobList` (`print.JobList`)
+   - `ResultList` (`print.ResultList`)
+   - `AssetList` (`as.data.frame.AssetList`)
+   - `ProcessInfo` (`as.Graph.ProcessInfo`)
+   - `UdfRuntime` (`as.character.UdfRuntime`)
+   - `UdfRuntimeList`
+   - `CubeDimension` (`as.character.CubeDimension`)
+   - `CubeDimensions` (`print.CubeDimensions`)
+   - `ProcessInfo` (`as.Process.ProcessInfo`)
+- implemented the RStudio connection interface which shows the active connection and the available data sets with their dimensional description
+- added classes for arguments: `UdfRuntimeArgument`, `UdfRuntimeVersionArgument`, `UdfCodeArgument`
+- implemented and added a class `ArgumentList` to `Process` in order to allow an easier value assignment, e.g. `node1$parameter$x = ...`, which comes in handy, when the node is assigned to a variable and a parameter has to changed later
+- added a builder for user-defined processes (`UserProcessCollection` and `user_processes()`) like `ProcessCollection` for predefined processes, which offers a users stored process graph as a usable function that creates a `ProcessNode`
 
 ### Fixed
+- improved reading of files [#50]
 
 ### Changed
-- `format` was dropped was a parameter and is replaced by `subtype` when parsing process definitions
-- Callback was renamed into ProcessGraph (Graph is still a different Concept)
-- callback-values have been replaced by ProcessGraphParameters
-- anyOf was dropped as a top-level parameter definition schema, now a list of parameter is evaluated into an `anyOf` parameter object to maintain to intended behavior
-- modified viewer scripts to visualize collection and processes following the new api definition
+- added more setter functions to `Parameter` parent class in order to manipulate parameter representations later, when defining Parameters in user defined processes
 - `ProcessGraph` as a parameter requires a function wrapping - meaning you should not pass an openeo process like `p$min` directly, because with the elaborated `ProcessGraphParameter` we cannot do a reliable automatic variable matching, e.g. often the ProcessGraphParameter "context" is misinterpreted
-- serialization of `ProcessGraphParameter` from_argument -> from_parameter
+- updated and externalized the scripts in the `*_viewer()` functions to visualize collection and processes following the new api definition
+- anyOf was dropped as a top-level parameter definition schema in the API. The parameter `anyOf` is still be used in the client.
+- classes were renamed:
+   - `Callback` was renamed into `ProcessGraphArgument` (Graph is still a different Concept), which is used in reducer or aggregation functions
+   - `callback-value` was renamed into `ProcessGraphParameter`
+- unset `ProcessGraphParameter` are derived automatically from R functions that are passed as `ProcessGraphArgument` (former `Callback`) and they become parameters that shall be set by a user upon use of this user defined graph
+- updated the endpoint file for version 1.0.0
+- adapted the exchange models (JSON models) and their parsing / serialization to the new API accordingly, especially in the `print` functions
+- harmonized various function behavior:
+   - `update_*` and `create_*` functions return their respective object (e.g. `update_job` --> `Job`) instead of their ID (previous behaviour)
+   - `list_*` functions return a named list of those particular exchange objects (e.g. `list_jobs` --> named list of `Job`)
+   - parameters, where before only the ID of particular object was passed on, were changed to allow the overview or detailed object description also
+- the `Graph` object does not hold a reference about the available data sets any longer
+- the user defined processes management exchanges now Process objects instead of former Graph objects with the back-end
+- when creating and storing user defined processes on a back-end, they now require a distinct id selected by the user
+- updating an user defined process is done via replacement, so the old representation is queried in the `update_process_graph` and merged with the new information given by the function parameter
+- renamed functions
+   - `list_file_formats()` to `list_file_formats()`
+   - `list_process_graphs()` to `list_user_processes()`
+   - `describe_process_graph()` to `describe_user_process()`
+   - `delete_process_graph()` to `delete_user_process()`
+   - `create_process_graph()` to `create_user_process()`
+   - `update_process_graph()` to `update_user_process()`
+   - `validate_process_graph()` to `validate_process()`
+- `FileFormat` object can passed to `OutputFormat` parameter
+- in addition to ID also the objects of respective `list_*` and `describe_*` can be passed as parameter
+- old `*Info` class names are reduced to the respective shorter class name without "Info", except for `ProcessInfo`
+- print functions of exchange objects obtained by `list_*` and `describe_*` are labeled with the same class and printed with the information available (either overview or detailed view)
+- made the OIDC connection configurable by the user, since the user needs a client id and secret by the back-end provider
+- enabled and reimplemented the `GeoJson` argument
+- when starting the computation of a job you can trigger the immediate request to the job log with parameter `log` at `start_job()`
 
 ### Removed
+- removed funtion `follow_job()` (replaced by `log_job()`)
+- removed the field `connection` which linked to the used openEO client from the process graph object
+- removed function `process_graph_builder()`
+- removed function `callback()`, because those Process Graphs are either created from an R function or an resulting `ProcessNode`
+- removed URL encoding procedure when managing files on the back-end
+- removed `user_id` as a parameter from the files request, because the user information is send with the bearer token
 
 ## [0.6.2] - 2020-04-09
 

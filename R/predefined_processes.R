@@ -146,7 +146,6 @@ ProcessCollection = R6Class(
                         lapply(names(this_arguments), function(param_name, arguments){
                             call_arg = this_arguments[[param_name]]
                             arguments[[param_name]]$setProcess(node)
-                            #TODO maybe check here for is.list and then try the assignable
                             arguments[[param_name]]$setValue(call_arg)
                         }, arguments = arguments)
                         
