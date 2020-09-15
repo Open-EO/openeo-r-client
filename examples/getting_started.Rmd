@@ -34,7 +34,7 @@ The following table shows the compatibilities between different `openeo` R packa
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v1.0.0 | [v1.0.0](https://openeo.org/documentation/1.0/developers/api/reference.html) |
 
-You can install the considered version from Github by using the version number stated. In cases of 'x', replace 'x' by the latest number, for example 'v0.6.2'). You will find all released versions on the [packages Github repository](https://github.com/Open-EO/openeo-r-client/releases). To install it from R you can use the following code, where you set the value for `ref` accoringly.
+You can install the considered version from Github by using the version number stated. In cases of 'x', replace 'x' by the latest number, for example 'v0.6.2'). You will find all released versions on the [packages Github repository](https://github.com/Open-EO/openeo-r-client/releases). To install it from R you can use the following code, where you set the value for `ref` accordingly.
 
 ```{r, eval=FALSE}
 devtools::install_github(repo="Open-EO/openeo-r-client",ref="v0.6.2",dependencies=TRUE)
@@ -74,7 +74,7 @@ gee = connect(host = "https://earthengine.openeo.org/v1.0")
 
 2. you have a general URL and you have to provide the version which you want to use (note: if a general URL is used and no version is stated, then it tries to use the latest **production** version)
 ```{r}
-gee = connect(host = gee_host_url,version = "1.0.0-rc.2")
+gee = connect(host = gee_host_url,version = "1.0.0")
 ```
 
 You have to use a connection when interacting with a service which you can either specify manually, for example if you are operating on with multiple openEO services at once, or you can use the cached last active connection (to recall it use `active_connection()`). If you omit the connection in functions, then it is automatically assumed to use the last active connection, otherwise specify the parameter `con` on those function.
@@ -283,7 +283,7 @@ file.remove(dl_file)
 rm(dl_file)
 ```
 
-# Creating a process graph / workflow
+# Creating a user defined process (process graph / workflow)
 
 The `ProcessCollection` is an object that offers the processes available by `list_processes()` as functions of an R6 object. Therefore all the parameter definitions and the process metadata are evaluated and translated into functions in R. To create the `ProcessCollection` just use `processes()` on an active openEO connection or specify one by making use of parameter `con`.
 
