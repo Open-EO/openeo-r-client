@@ -69,7 +69,11 @@ graphToJSON = function(graph) {
         }
     }
     
-    versions = as.data.frame(do.call(rbind,sem_parser(v$api_version)))
+    if (length(v$api_version) == 1) {
+        versions = as.data.frame(do.call(cbind,sem_parser(v$api_version)))    
+    } else {
+        versions = as.data.frame(do.call(rbind,sem_parser(v$api_version)))
+    }
     
     for (i in 1:ncol(versions)) {
         versions[,i] = unlist(versions[,i])

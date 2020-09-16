@@ -278,6 +278,10 @@ OpenEOClient <- R6Class(
         cat("Connected to service: ",private$host,"\n")
         cat("Please check the terms of service (terms_of_service()) and the privacy policy (privacy_policy()). By further usage of this service, you acknowledge and agree to those terms and policies.\n")
         
+        if (!hostInfo[hostInfo$url == private$host,]$production) {
+          message("Warning: Connected host is considered unstable and not production-ready. Unexpected errors might occur.")
+        }
+        
         tryCatch({
           if (is.null(self$processes)) {
             processes = list_processes(self)

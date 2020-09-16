@@ -10,12 +10,11 @@
 #' @export
 api_versions = function(url) {
     tryCatch({
-        
         if (endsWith(url, "/")) 
             url = substr(url, 1, nchar(url) - 1)
         endpoint = "/.well-known/openeo"
         
-        info = GET(url = paste(url, endpoint, sep = "/"))
+        info = GET(url = paste0(url, endpoint))
         if (info$status == 200) {
             vlist = content(info)
             class(vlist) = "VersionsList"
