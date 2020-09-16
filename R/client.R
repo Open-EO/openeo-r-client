@@ -731,6 +731,23 @@ OpenEOClient <- R6Class(
 
 )
 
+setOldClass(c("OpenEOClient","R6"))
+
+#' @rdname status
+#' @export
+status.OpenEOClient = function(x, ...) {
+  result = ""
+  if (x$isConnected()) {
+    result = "connected"
+  }
+  
+  if (x$isLoggedIn()) {
+    result = "authenticated"
+  }
+  
+  return(result)
+}
+
 # client functions ----
 
 #' Returns the client version

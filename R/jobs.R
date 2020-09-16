@@ -521,3 +521,15 @@ log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
         return(success)
     }, error = .capturedErrorToMessage)
 }
+
+#' @rdname status
+#' @export
+status.Job = function(x, ...) {
+    tryCatch({
+        # refresh description 
+        x = describe_job(job = x)
+        return(job$status)
+    }, error = function(e) {
+        print(e$message)
+    })
+}

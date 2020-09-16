@@ -463,7 +463,6 @@ Process = R6Class(
 )
 
 setClass("ArgumentList")
-setOldClass(c("Graph","R6"))
 
 # ProcessNode ====
 #' Process Node object
