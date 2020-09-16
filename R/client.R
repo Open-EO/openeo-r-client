@@ -135,7 +135,7 @@ OpenEOClient <- R6Class(
         stop("Not connected to a back-end. Please connect to one before proceeding")
       }
     },
-
+    
     connect = function(url,version,exchange_token="access_token") {
       tryCatch({
         if (missing(url)) {
@@ -215,9 +215,14 @@ OpenEOClient <- R6Class(
                                       )
                                       
                                     },
-                                    connectCode = paste0("openeo::connect(host=\"",url,"\")"),
+                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",url,"\")"),
                                     disconnect = function() {
                                       logout()
+                                      .remove_connection(con = self)
+                                      observer <- getOption("connectionObserver")
+                                      
+                                      if (!is.null(observer))
+                                        observer$connectionClosed("OpenEO Service", url)
                                     },
                                     listObjects = function() {
                                       
@@ -760,4 +765,16 @@ status.OpenEOClient = function(x, ...) {
 #' @export
 client_version = function() {
   return(packageVersion("openeo"))
+}
+
+
+.remove_connection = function(con) {
+  genv_names = names(globalenv())
+  sel = sapply(genv_names, function(var, con){
+    obj = get(var)
+    return(identical(obj, con))
+  }, con = con)
+  sel = which(sel)
+  
+  rm(list = names(sel), envir=globalenv())
 }
