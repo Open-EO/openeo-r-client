@@ -1847,7 +1847,7 @@ ProcessGraphArgument = R6Class(
     },
     
     typeSerialization = function() {
-      if(!is.null(private$value)) {
+      if(!is.null(private$value) && !is.na(private$value)) {
         # serialize the graph
         return(list(
           process_graph = private$value$serialize()))

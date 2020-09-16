@@ -390,7 +390,11 @@ print.Graph = function(x, ...) {
 
 #' @export
 print.ProcessNode = function(x, ...) {
-    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    node_validation = x$validate()
+    
+    if (is.null(node_validation)) {
+        print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    }
 }
 
 #' @export
