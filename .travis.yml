@@ -9,6 +9,7 @@ before_install:
 
 after_success:
   - Rscript -e 'pkgdown::build_site()'
+  - git add docs/*
 
 deploy:
   provider: pages
