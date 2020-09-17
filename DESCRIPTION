@@ -11,7 +11,8 @@ Suggests:
     testthat,
     knitr,
     sf,
-    geojsonsf
+    geojsonsf,
+    pkgdown
 Imports:
     jsonlite,
     httr,
