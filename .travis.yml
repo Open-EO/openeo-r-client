@@ -9,12 +9,11 @@ before_install:
 
 after_success:
   - Rscript -e 'pkgdown::build_site()'
-  - git add docs/*
 
 deploy:
   provider: pages
   strategy: git
-  cleanup: false
+  skip_cleanup: true
   github_token: $GITHUB_PAT
   keep_history: true
   local_dir: docs
