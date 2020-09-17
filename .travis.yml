@@ -14,7 +14,7 @@ deploy:
   provider: pages
   strategy: git
   cleanup: false
-  token: $GITHUB_PAT
+  github_token: $GITHUB_PAT
   keep_history: true
   local_dir: docs
   on:
