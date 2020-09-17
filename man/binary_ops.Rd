@@ -103,8 +103,6 @@ the function or a numeric value}
 \item{x}{the first expression in the xor statement}
 
 \item{y}{the seconde expression in the xor statement}
-
-\item{...}{further arguments to pass on, see the documentation of those primitive functions of R for further information}
 }
 \value{
 a \code{ProcessNode}
