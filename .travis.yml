@@ -1,6 +1,10 @@
 language: r
 cache: packages
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get -y install libudunits2-dev
+
 after_success:
   - Rscript -e 'pkgdown::build_site()'
 
