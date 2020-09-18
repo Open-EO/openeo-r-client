@@ -4,3 +4,5 @@
 ^examples$
 ^wiki$
 ^CHANGELOG.md$
+^docs$
+^\.travis\.yml$

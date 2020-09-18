@@ -528,7 +528,7 @@ status.Job = function(x, ...) {
     tryCatch({
         # refresh description 
         x = describe_job(job = x)
-        return(job$status)
+        return(x$status)
     }, error = function(e) {
         print(e$message)
     })
