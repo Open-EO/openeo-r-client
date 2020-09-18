@@ -391,7 +391,6 @@ NULL
 #' @param e2 same as e1
 #' @param x the first expression in the xor statement
 #' @param y the seconde expression in the xor statement
-#' @param ... further arguments to pass on, see the documentation of those primitive functions of R for further information
 #' 
 #' @return a \code{ProcessNode}
 #' 

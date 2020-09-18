@@ -135,7 +135,7 @@ OpenEOClient <- R6Class(
         stop("Not connected to a back-end. Please connect to one before proceeding")
       }
     },
-
+    
     connect = function(url,version,exchange_token="access_token") {
       tryCatch({
         if (missing(url)) {
@@ -147,10 +147,9 @@ OpenEOClient <- R6Class(
           url = substr(url,1,nchar(url)-1)
         }
         
-        
         response = NULL
         tryCatch({
-          response = httr::GET(url = url)
+          response = api_versions(url = url)
         }, error = function(e) {
           
         })
@@ -215,9 +214,14 @@ OpenEOClient <- R6Class(
                                       )
                                       
                                     },
-                                    connectCode = paste0("openeo::connect(host=\"",url,"\")"),
+                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",url,"\")"),
                                     disconnect = function() {
                                       logout()
+                                      .remove_connection(con = self)
+                                      observer <- getOption("connectionObserver")
+                                      
+                                      if (!is.null(observer))
+                                        observer$connectionClosed("OpenEO Service", url)
                                     },
                                     listObjects = function() {
                                       
@@ -731,6 +735,23 @@ OpenEOClient <- R6Class(
 
 )
 
+setOldClass(c("OpenEOClient","R6"))
+
+#' @rdname status
+#' @export
+status.OpenEOClient = function(x, ...) {
+  result = ""
+  if (x$isConnected()) {
+    result = "connected"
+  }
+  
+  if (x$isLoggedIn()) {
+    result = "authenticated"
+  }
+  
+  return(result)
+}
+
 # client functions ----
 
 #' Returns the client version
@@ -743,4 +764,16 @@ OpenEOClient <- R6Class(
 #' @export
 client_version = function() {
   return(packageVersion("openeo"))
+}
+
+
+.remove_connection = function(con) {
+  genv_names = names(globalenv())
+  sel = sapply(genv_names, function(var, con){
+    obj = get(var)
+    return(identical(obj, con))
+  }, con = con)
+  sel = which(sel)
+  
+  rm(list = names(sel), envir=globalenv())
 }

@@ -322,3 +322,11 @@ log_service = function(service, offset=NULL,limit=NULL, con=NULL) {
         return(success)
     }, error = .capturedErrorToMessage)
 }
+
+#' @rdname status
+#' @export
+status.Service = function(x, ...) {
+    x = describe_service(service=x)
+    
+    if (x$enabled) return("enabled") else return("disabled")
+}

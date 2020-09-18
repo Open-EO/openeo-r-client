@@ -102,3 +102,15 @@ graphToJSON = function(graph) {
 .is_package_installed = function(pkg) {
     return(nzchar(system.file(package=pkg)))
 }
+
+#' Retrieves the status
+#' 
+#' The function refreshes the passed object and returns its status.
+#' 
+#' @param x an object like Job
+#' @param ... currently not used
+#' @return status as character
+#' @export
+status = function(x, ...) {
+    UseMethod("status",x)
+}
