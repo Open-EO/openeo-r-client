@@ -147,10 +147,9 @@ OpenEOClient <- R6Class(
           url = substr(url,1,nchar(url)-1)
         }
         
-        
         response = NULL
         tryCatch({
-          response = httr::GET(url = url)
+          response = api_versions(url = url)
         }, error = function(e) {
           
         })
