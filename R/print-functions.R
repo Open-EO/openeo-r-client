@@ -479,7 +479,7 @@ print.CubeDimension = function(x,...) {
         cat("Extent:\t\t",paste0("[",paste0(x$extent,collapse=","),"]"),"\n")
     }
     if (length(x$values) > 0) {
-        cat("Values:\t\t",paste0("[",paste(x$values,collapse=","),"]"))
+        cat("Values:\t\t",paste0("[",paste(x$values,collapse=","),"]","\n"))
     }
 }
 

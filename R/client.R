@@ -479,7 +479,7 @@ OpenEOClient <- R6Class(
                                                config = config)
             
             private$auth_client$login()
-            cat("Login successful.")
+            cat("Login successful.\n")
             
             return(invisible(self))
         }, error=function(e){
@@ -502,7 +502,7 @@ OpenEOClient <- R6Class(
         private$auth_client = BasicAuth$new(endpoint,user,password)
 
         self$user_id = private$auth_client$login()
-        cat("Login successful.")
+        cat("Login successful.\n")
         return(invisible(self))
 
       },
@@ -730,10 +730,10 @@ OpenEOClient <- R6Class(
       if (class(response) == "response") {
         errorMessage = content(response)
         if (!is.null(errorMessage[["message"]])) {
-          stop(errorMessage[["message"]])
+          stop(paste("SERVER-ERROR:", errorMessage[["message"]]))
         } else {
           # if there is an uncaptured error from the server then just return it as is
-          stop(paste("SERVER-ERROR:",errorMessage))
+          stop(paste("SERVER-ERROR:", errorMessage))
         }
       } else {
         # never happens? it is something else than response object
