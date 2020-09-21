@@ -469,7 +469,8 @@ EPSGCode = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.integer(private$value))
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(as.integer(private$value))
     }
   )
 )
@@ -613,7 +614,7 @@ String = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (is.na(private$value)) {
+      } else if (!is.environment(private$value) && is.na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1038,7 +1039,7 @@ UdfCodeArgument = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (is.na(private$value)) {
+      } else if (!is.environment(private$value) && is.na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1847,11 +1848,10 @@ ProcessGraphArgument = R6Class(
     },
     
     typeSerialization = function() {
-      if(!is.null(private$value) && !is.na(private$value)) {
-        # serialize the graph
+      if (is.environment(private$value) && "serialize" %in% names(private$value)) {
         return(list(
           process_graph = private$value$serialize()))
-      }
+      } 
     }
   )
 )
@@ -2160,7 +2160,7 @@ Array = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (length(self$getValue()) == 0 || is.na(self$getValue())) {
+      if (!is.environment(self$getValue()) && (length(self$getValue()) == 0 || is.na(self$getValue()))) {
         return(NA)
       }
       
