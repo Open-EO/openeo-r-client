@@ -3,7 +3,7 @@ Type: Package
 Title: openEO client interface
 Version: 1.0.0
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
-Description: This package provides the user with a client to access data and processing functionalities of openEO backends in R. This client version is operating against the API version 0.4.x.
+Description: This package provides a client software to access data and processing functionalities of openEO conformant back-ends in R.
 Depends:
     R (>= 3.3)
 Suggests:
