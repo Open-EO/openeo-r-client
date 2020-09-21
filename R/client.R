@@ -150,8 +150,6 @@ OpenEOClient <- R6Class(
         response = NULL
         tryCatch({
           response = api_versions(url = url)
-        }, error = function(e) {
-          
         })
         
         if (length(response) == 0) return(invisible(NULL))
@@ -224,7 +222,7 @@ OpenEOClient <- R6Class(
                                         observer$connectionClosed("OpenEO Service", url)
                                     },
                                     listObjects = function() {
-                                      
+                                      active_connection(con = self)
                                       
                                       if (!is.null(active_connection())) {
                                           cids = self$getCollectionNames()
