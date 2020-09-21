@@ -68,7 +68,7 @@ OpenEOClient <- R6Class(
     # functions ====
     initialize = function(host=NULL) {
       if (!is.null(host)) {
-        private$host = host
+        private$setHost(host = host)
       }
       
       active_connection(con=self)
@@ -143,18 +143,16 @@ OpenEOClient <- R6Class(
           return(invisible(self))
         }
           
-        if (endsWith(url,"/")) {
-          url = substr(url,1,nchar(url)-1)
-        }
+        private$setHost(url)
         
         response = NULL
         tryCatch({
-          response = api_versions(url = url)
+          response = api_versions(url = self$getHost())
         })
         
         if (length(response) == 0) return(invisible(NULL))
         
-        private$host = url
+        
         private$exchange_token = exchange_token
         
         if (!missing(version) && !is.null(version)) {
@@ -171,10 +169,7 @@ OpenEOClient <- R6Class(
           } else {
             url = hostInfo[[version]]$url
             
-            if (endsWith(url,"/")) {
-              url = substr(url,1,nchar(url)-1)
-            }
-            private$host = url
+            private$setHost(url)
           }
         } else {
           
@@ -186,10 +181,19 @@ OpenEOClient <- R6Class(
               hostInfo[,i] = unlist(hostInfo[,i])
             }
             
+            hostInfo$url = sapply(hostInfo$url, function(url) {
+              #modify url (strip trailing slashes)
+              if (endsWith(url,"/")) {
+                return(substr(url,1,nchar(url)-1))
+              }
+              
+              return(url)
+            })
+            
             # select highest API version that is production ready. if none is production
             # ready, then select highest version
             hostInfo = .version_sort(hostInfo)
-            private$host = hostInfo[1,"url"]
+            private$setHost(hostInfo[1,"url"])
           }
         }
         
@@ -461,6 +465,13 @@ OpenEOClient <- R6Class(
     data_collection=NULL,
     
     # functions ====
+    setHost = function(host) {
+      if (endsWith(host,"/")) {
+        host = substr(host,1,nchar(host)-1)
+      }
+      
+      private$host = host
+    },
     loginOIDC = function(provider=NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
