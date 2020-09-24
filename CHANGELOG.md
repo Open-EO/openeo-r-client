@@ -36,9 +36,13 @@ Note: similarly named functions that work on different objects are abrreviated b
 - added classes for arguments: `UdfRuntimeArgument`, `UdfRuntimeVersionArgument`, `UdfCodeArgument`
 - implemented and added a class `ArgumentList` to `Process` in order to allow an easier value assignment, e.g. `node1$parameter$x = ...`, which comes in handy, when the node is assigned to a variable and a parameter has to changed later
 - added a builder for user-defined processes (`UserProcessCollection` and `user_processes()`) like `ProcessCollection` for predefined processes, which offers a users stored process graph as a usable function that creates a `ProcessNode`
+- added function `status` for the connection, jobs and services to immediate get the status information. It also always queries the back-end for an update on call
 
 ### Fixed
 - improved reading of files [#50]
+- switching the connection in RStudio connection panel now correctly updates the panel
+- fixed a problem with trailing slashes when setting the host url in the connection or reading it from the wellknown document
+- fixed a problem with environments (mostly R6 classes) in the validate function of some arguments
 
 ### Changed
 - added more setter functions to `Parameter` parent class in order to manipulate parameter representations later, when defining Parameters in user defined processes
@@ -74,6 +78,7 @@ Note: similarly named functions that work on different objects are abrreviated b
 - made the OIDC connection configurable by the user, since the user needs a client id and secret by the back-end provider
 - enabled and reimplemented the `GeoJson` argument
 - when starting the computation of a job you can trigger the immediate request to the job log with parameter `log` at `start_job()`
+- Kernel argument does not inherit from Array and allows matrix, array and data.frame as kernel value
 
 ### Removed
 - removed funtion `follow_job()` (replaced by `log_job()`)
