@@ -237,10 +237,6 @@ OpenEOClient <- R6Class(
                                       } else {
                                         return(list())
                                       }
-                                      
-                                      
-                                      
-                                      
                                     },
                                     listColumns = function(collection=NULL) {
                                       if (!is.null(collection)) {
@@ -272,9 +268,6 @@ OpenEOClient <- R6Class(
                                       }
                                     },
                                     previewObject = function(rowLimit=1,collection=NULL) {
-                                      if (!is.null(collection)) {
-                                        collection_viewer(x=collection)
-                                      }
                                       return(data.frame())
                                     },
                                     connectionObject = self)
