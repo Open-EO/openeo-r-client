@@ -29,7 +29,7 @@ will return the results}
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional configuration parameter for output generation}
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \value{
 the id of the job

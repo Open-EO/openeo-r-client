@@ -10,7 +10,8 @@ create_user_process(
   summary = NULL,
   description = NULL,
   submit = TRUE,
-  con = NULL
+  con = NULL,
+  ...
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ create_user_process(
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \value{
 a list assembling a process graph description or the graph id if send

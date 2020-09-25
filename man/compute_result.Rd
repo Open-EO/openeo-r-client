@@ -9,7 +9,8 @@ compute_result(
   output_file = NULL,
   budget = NULL,
   plan = NULL,
-  con = NULL
+  con = NULL,
+  ...
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ will return the results}
 
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \value{
 a connection to file if output was provided, the raw data if not

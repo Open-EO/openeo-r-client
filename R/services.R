@@ -48,10 +48,11 @@ list_services = function(con=NULL) {
 #' @param budget numeric the amount of credits that can be spent on this service
 #' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 #' is used.
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #'  
 #' @return Service object
 #' @export
-create_service = function(type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL) {
+create_service = function(type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
     tryCatch({
         if (is.null(type)) {
             stop("No type specified.")
@@ -88,7 +89,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
         }
         
         tag = "service_publish"
-        response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE)
+        response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE, ...)
         
         message("Service was successfully created.")
         locationHeader = headers(response)$location
@@ -118,11 +119,12 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' @param budget numeric the amount of credits that can be spent for this service
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
 #' @return Service object
 #' 
 #' @export
-update_service = function(service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL) {
+update_service = function(service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
     
     tryCatch({
         patch = list()
@@ -211,7 +213,7 @@ update_service = function(service, type = NULL, graph = NULL, title = NULL, desc
         }
         
         tag = "services_update"
-        res = con$request(tag = tag, parameters = list(service), authorized = TRUE, encodeType = "json", data = patch)
+        res = con$request(tag = tag, parameters = list(service), authorized = TRUE, encodeType = "json", data = patch, ...)
         message(paste("Service '", service, "' was successfully updated.", sep = ""))
         
         

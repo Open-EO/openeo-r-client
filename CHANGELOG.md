@@ -37,6 +37,8 @@ Note: similarly named functions that work on different objects are abrreviated b
 - implemented and added a class `ArgumentList` to `Process` in order to allow an easier value assignment, e.g. `node1$parameter$x = ...`, which comes in handy, when the node is assigned to a variable and a parameter has to changed later
 - added a builder for user-defined processes (`UserProcessCollection` and `user_processes()`) like `ProcessCollection` for predefined processes, which offers a users stored process graph as a usable function that creates a `ProcessNode`
 - added function `status` for the connection, jobs and services to immediate get the status information. It also always queries the back-end for an update on call
+- added ... parameter to the request, PUT and POST function to controll the JSON serialization in toJSON (e.g. especially when stating the number of digits to use during this serialization)
+- also enabled the ... parameter for functions where a process (graph) is sent to the back-end
 
 ### Fixed
 - improved reading of files [#50]

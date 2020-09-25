@@ -11,7 +11,8 @@ update_job(
   process = NULL,
   plan = NULL,
   budget = NULL,
-  con = NULL
+  con = NULL,
+  ...
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ will return the results or a self defined \code{\link{Process}}}
 
 \item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
 The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values

@@ -13,7 +13,8 @@ create_service(
   configuration = NULL,
   plan = NULL,
   budget = NULL,
-  con = NULL
+  con = NULL,
+  ...
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ will return the results}
 
 \item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \value{
 Service object

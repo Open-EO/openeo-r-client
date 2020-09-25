@@ -575,52 +575,66 @@ OpenEOClient <- R6Class(
         stop("Query parameters are no list of key-value-pairs")
       }
       
-      if (is.character(data)) {
-        data = fromJSON(data,simplifyDataFrame = FALSE)
+      header = list()
+      
+      if (authorized && !is.null(private$auth_client)) {
+        header = private$addAuthorization(header)
       }
       
-      if (is.list(data)) {
-        
-        header = list()
-        if (authorized && !is.null(private$auth_client)) {
-          header = private$addAuthorization(header)
+      if (is.character(data)) {
+        # data = fromJSON(data,simplifyDataFrame = FALSE)
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
         }
+      } else if (is.list(data)) {
         
-        # create json and prepare to send graph as post body
-        
-        response=POST(
-          url= url,
-          config = header,
-          query = query,
-          body = data,
-          encode = encodeType
-        )
-        
-        if (is.debugging()) {
-          print(response)
-        }
-        
-        if (response$status_code < 400) {
-          if (response$status_code != 202) {
-            if (raw) {
-              return(response)
-            } else {
-              okMessage = content(response,"parsed","application/json")
-              
-              return(okMessage)
-            }
-          } else {
-            return(NULL)
-          }
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
           
-        } else {
-          private$errorHandling(response,url)
+          
+          data = do.call(toJSON, args = list(x = data,
+                                             auto_unbox = TRUE,
+                                             ...))
+            
         }
+        
       } else {
         stop("Cannot interprete data - data is no list that can be transformed into json")
       }
+      
+      response=POST(
+        url= url,
+        config = header,
+        query = query,
+        body = data,
+        encode = encodeType
+      )
+      
+      if (is.debugging()) {
+        print(response)
+      }
+      
+      if (response$status_code < 400) {
+        if (response$status_code != 202) {
+          if (raw) {
+            return(response)
+          } else {
+            okMessage = content(response,"parsed","application/json")
+            
+            return(okMessage)
+          }
+        } else {
+          return(NULL)
+        }
+        
+      } else {
+        private$errorHandling(response,url)
+      }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
+      # TODO remove raw as parameter?
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
@@ -630,6 +644,28 @@ OpenEOClient <- R6Class(
       
 
       # create json and prepare to send graph as post body
+      if (is.character(data)) {
+        # data = fromJSON(data,simplifyDataFrame = FALSE)
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
+        }
+      } else if (is.list(data)) {
+        
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
+          
+          
+          data = do.call(toJSON, args = list(x = data,
+                                             auto_unbox = TRUE,
+                                             ...))
+          
+        }
+        
+      } else {
+        stop("Cannot interprete data - data is no list that can be transformed into json")
+      }
 
       response=PUT(
         url= url,
@@ -638,14 +674,6 @@ OpenEOClient <- R6Class(
         body = data,
         encode = encodeType
       )
-
-      # params = list(url=url, 
-      #               config = header, 
-      #               body=data)
-      # if (!is.null(encodeType)) {
-      #   params = append(params, list(encode = encodeType))
-      # }
-      # response = do.call("PUT", args = params)
       
       if (is.debugging()) {
         print(response)
