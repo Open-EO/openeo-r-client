@@ -54,11 +54,13 @@ list_jobs = function(con=NULL) {
 #' @param plan character, selection of a service plan
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
+#' @param ... additional parameters passed to toJSON (like 'digits')
+#' 
 #' @return a connection to file if output was provided, the raw data if not
 #' 
 #' @importFrom methods as
 #' @export
-compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con=NULL) {
+compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -93,7 +95,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
         }
         
         tag = "execute_sync"
-        res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE)
+        res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE, ...)
         
         if (!is.null(output_file)) {
             tryCatch({
@@ -127,7 +129,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional configuration parameter for output generation
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
 #' @return the id of the job
 #' @export
@@ -161,7 +163,7 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
         # endpoint,authorized=FALSE,data,encodeType = 'json',query = list(),...
         tag = "jobs_define"
         
-        response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE)
+        response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE, ...)
         
         message("Job was sucessfully registered on the backend.")
         
@@ -234,8 +236,10 @@ start_job = function(job, log=FALSE, con=NULL) {
 #' @param budget replaces or sets the credits that can be spent at maximum
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
+#' @param ... additional parameters passed to toJSON (like 'digits')
+#' 
 #' @export
-update_job = function(id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL, con=NULL) {
+update_job = function(id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -273,7 +277,7 @@ update_job = function(id, title = NULL, description = NULL, process = NULL, plan
         }
         
         tag = "jobs_update"
-        res = con$request(tag = tag, parameters = list(id), authorized = TRUE, encodeType = "json", data = patch)
+        res = con$request(tag = tag, parameters = list(id), authorized = TRUE, encodeType = "json", data = patch, ...)
         message(paste("Job '", id, "' was successfully updated.", sep = ""))
         
         job = describe_job(con=con,job = id)

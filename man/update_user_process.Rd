@@ -9,7 +9,8 @@ update_user_process(
   graph = NULL,
   summary = NULL,
   description = NULL,
-  con = NULL
+  con = NULL,
+  ...
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ update_user_process(
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
 Upload a process graph to the back-end under a given (existing) process graph.

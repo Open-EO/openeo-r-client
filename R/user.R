@@ -200,8 +200,8 @@ describe_account = function(con=NULL) {
 #' # to imaginary URLs. Please obtain a valid URL via the openEO hub and 
 #' # register with one of the provider if required.
 #' 
-#' # connect to a host with specific version and without authentication
-#' con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
+#' # connect to a host of the latest version and without authentication
+#' con = connect(host='http://example.openeo.org')
 #' 
 #' # connect to a host by direct url and basic login
 #' con = connect(host='http://example.openeo.org/v1.0',

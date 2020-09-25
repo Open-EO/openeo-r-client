@@ -4,13 +4,15 @@
 \alias{validate_process}
 \title{Validates a user process}
 \usage{
-validate_process(graph, con = NULL)
+validate_process(graph, con = NULL, ...)
 }
 \arguments{
 \item{graph}{the process graph that will be sent to the service and is going to be validated}
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
+
+\item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
 Sends the process graph as a user process to the openEO service and validates it against the predefined and user-defined 

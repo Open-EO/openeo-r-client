@@ -68,7 +68,7 @@ OpenEOClient <- R6Class(
     # functions ====
     initialize = function(host=NULL) {
       if (!is.null(host)) {
-        private$host = host
+        private$setHost(host = host)
       }
       
       active_connection(con=self)
@@ -143,20 +143,16 @@ OpenEOClient <- R6Class(
           return(invisible(self))
         }
           
-        if (endsWith(url,"/")) {
-          url = substr(url,1,nchar(url)-1)
-        }
+        private$setHost(url)
         
         response = NULL
         tryCatch({
-          response = api_versions(url = url)
-        }, error = function(e) {
-          
+          response = api_versions(url = self$getHost())
         })
         
         if (length(response) == 0) return(invisible(NULL))
         
-        private$host = url
+        
         private$exchange_token = exchange_token
         
         if (!missing(version) && !is.null(version)) {
@@ -173,10 +169,7 @@ OpenEOClient <- R6Class(
           } else {
             url = hostInfo[[version]]$url
             
-            if (endsWith(url,"/")) {
-              url = substr(url,1,nchar(url)-1)
-            }
-            private$host = url
+            private$setHost(url)
           }
         } else {
           
@@ -188,10 +181,19 @@ OpenEOClient <- R6Class(
               hostInfo[,i] = unlist(hostInfo[,i])
             }
             
+            hostInfo$url = sapply(hostInfo$url, function(url) {
+              #modify url (strip trailing slashes)
+              if (endsWith(url,"/")) {
+                return(substr(url,1,nchar(url)-1))
+              }
+              
+              return(url)
+            })
+            
             # select highest API version that is production ready. if none is production
             # ready, then select highest version
             hostInfo = .version_sort(hostInfo)
-            private$host = hostInfo[1,"url"]
+            private$setHost(hostInfo[1,"url"])
           }
         }
         
@@ -224,7 +226,7 @@ OpenEOClient <- R6Class(
                                         observer$connectionClosed("OpenEO Service", url)
                                     },
                                     listObjects = function() {
-                                      
+                                      active_connection(con = self)
                                       
                                       if (!is.null(active_connection())) {
                                           cids = self$getCollectionNames()
@@ -235,10 +237,6 @@ OpenEOClient <- R6Class(
                                       } else {
                                         return(list())
                                       }
-                                      
-                                      
-                                      
-                                      
                                     },
                                     listColumns = function(collection=NULL) {
                                       if (!is.null(collection)) {
@@ -270,9 +268,6 @@ OpenEOClient <- R6Class(
                                       }
                                     },
                                     previewObject = function(rowLimit=1,collection=NULL) {
-                                      if (!is.null(collection)) {
-                                        collection_viewer(x=collection)
-                                      }
                                       return(data.frame())
                                     },
                                     connectionObject = self)
@@ -463,6 +458,13 @@ OpenEOClient <- R6Class(
     data_collection=NULL,
     
     # functions ====
+    setHost = function(host) {
+      if (endsWith(host,"/")) {
+        host = substr(host,1,nchar(host)-1)
+      }
+      
+      private$host = host
+    },
     loginOIDC = function(provider=NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
@@ -470,7 +472,7 @@ OpenEOClient <- R6Class(
                                                config = config)
             
             private$auth_client$login()
-            cat("Login successful.")
+            cat("Login successful.\n")
             
             return(invisible(self))
         }, error=function(e){
@@ -493,7 +495,7 @@ OpenEOClient <- R6Class(
         private$auth_client = BasicAuth$new(endpoint,user,password)
 
         self$user_id = private$auth_client$login()
-        cat("Login successful.")
+        cat("Login successful.\n")
         return(invisible(self))
 
       },
@@ -573,52 +575,66 @@ OpenEOClient <- R6Class(
         stop("Query parameters are no list of key-value-pairs")
       }
       
-      if (is.character(data)) {
-        data = fromJSON(data,simplifyDataFrame = FALSE)
+      header = list()
+      
+      if (authorized && !is.null(private$auth_client)) {
+        header = private$addAuthorization(header)
       }
       
-      if (is.list(data)) {
-        
-        header = list()
-        if (authorized && !is.null(private$auth_client)) {
-          header = private$addAuthorization(header)
+      if (is.character(data)) {
+        # data = fromJSON(data,simplifyDataFrame = FALSE)
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
         }
+      } else if (is.list(data)) {
         
-        # create json and prepare to send graph as post body
-        
-        response=POST(
-          url= url,
-          config = header,
-          query = query,
-          body = data,
-          encode = encodeType
-        )
-        
-        if (is.debugging()) {
-          print(response)
-        }
-        
-        if (response$status_code < 400) {
-          if (response$status_code != 202) {
-            if (raw) {
-              return(response)
-            } else {
-              okMessage = content(response,"parsed","application/json")
-              
-              return(okMessage)
-            }
-          } else {
-            return(NULL)
-          }
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
           
-        } else {
-          private$errorHandling(response,url)
+          
+          data = do.call(toJSON, args = list(x = data,
+                                             auto_unbox = TRUE,
+                                             ...))
+            
         }
+        
       } else {
         stop("Cannot interprete data - data is no list that can be transformed into json")
       }
+      
+      response=POST(
+        url= url,
+        config = header,
+        query = query,
+        body = data,
+        encode = encodeType
+      )
+      
+      if (is.debugging()) {
+        print(response)
+      }
+      
+      if (response$status_code < 400) {
+        if (response$status_code != 202) {
+          if (raw) {
+            return(response)
+          } else {
+            okMessage = content(response,"parsed","application/json")
+            
+            return(okMessage)
+          }
+        } else {
+          return(NULL)
+        }
+        
+      } else {
+        private$errorHandling(response,url)
+      }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
+      # TODO remove raw as parameter?
       url = paste(private$host,endpoint,sep="/")
       
       header = list()
@@ -628,6 +644,28 @@ OpenEOClient <- R6Class(
       
 
       # create json and prepare to send graph as post body
+      if (is.character(data)) {
+        # data = fromJSON(data,simplifyDataFrame = FALSE)
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
+        }
+      } else if (is.list(data)) {
+        
+        if (encodeType == "json") {
+          encodeType = "raw"
+          header = append(header, add_headers(`Content-Type` = "application/json"))
+          
+          
+          data = do.call(toJSON, args = list(x = data,
+                                             auto_unbox = TRUE,
+                                             ...))
+          
+        }
+        
+      } else {
+        stop("Cannot interprete data - data is no list that can be transformed into json")
+      }
 
       response=PUT(
         url= url,
@@ -636,14 +674,6 @@ OpenEOClient <- R6Class(
         body = data,
         encode = encodeType
       )
-
-      # params = list(url=url, 
-      #               config = header, 
-      #               body=data)
-      # if (!is.null(encodeType)) {
-      #   params = append(params, list(encode = encodeType))
-      # }
-      # response = do.call("PUT", args = params)
       
       if (is.debugging()) {
         print(response)
@@ -721,10 +751,10 @@ OpenEOClient <- R6Class(
       if (class(response) == "response") {
         errorMessage = content(response)
         if (!is.null(errorMessage[["message"]])) {
-          stop(errorMessage[["message"]])
+          stop(paste("SERVER-ERROR:", errorMessage[["message"]]))
         } else {
           # if there is an uncaptured error from the server then just return it as is
-          stop(paste("SERVER-ERROR:",errorMessage))
+          stop(paste("SERVER-ERROR:", errorMessage))
         }
       } else {
         # never happens? it is something else than response object

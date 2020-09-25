@@ -1,18 +1,18 @@
 # utility functions ----
 .not_implemented_yet = function() {
-    warning("Not implemented yet.")
+    message("Not implemented yet.")
 }
 
 .not_supported_by_client = function() {
-    warning("Not supported by the current client version.")
+    message("Not supported by the current client version.")
 }
 
 .not_supported_by_backend = function() {
-    warning("The function is not supported by the current back-end version.")
+    message("The function is not supported by the current back-end version.")
 }
 
 .no_information_by_backend = function(what) {
-    warning(paste0("There are no information about ",what," available at the service."))
+    message(paste0("There are no information about ",what," available at the service."))
 }
 
 #' Wrapper for toJSON

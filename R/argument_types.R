@@ -469,7 +469,8 @@ EPSGCode = R6Class(
       }
     },
     typeSerialization = function() {
-      return(as.integer(private$value))
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(as.integer(private$value))
     }
   )
 )
@@ -613,7 +614,7 @@ String = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (is.na(private$value)) {
+      } else if (!is.environment(private$value) && is.na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1038,7 +1039,7 @@ UdfCodeArgument = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (is.na(private$value)) {
+      } else if (!is.environment(private$value) && is.na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1847,11 +1848,10 @@ ProcessGraphArgument = R6Class(
     },
     
     typeSerialization = function() {
-      if(!is.null(private$value) && !is.na(private$value)) {
-        # serialize the graph
+      if (is.environment(private$value) && "serialize" %in% names(private$value)) {
         return(list(
           process_graph = private$value$serialize()))
-      }
+      } 
     }
   )
 )
@@ -2160,7 +2160,7 @@ Array = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (length(self$getValue()) == 0 || is.na(self$getValue())) {
+      if (!is.environment(self$getValue()) && (length(self$getValue()) == 0 || is.na(self$getValue()))) {
         return(NA)
       }
       
@@ -2178,7 +2178,9 @@ Array = R6Class(
 # Kernel ====
 #' Kernel
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a kernel that shall be applied on the data cube.
+#' Inheriting from \code{\link{Argument}} in order to represent a 2 dimensional array of weights that shall be applied 
+#' on the x and y (spatial) dimensions of the data cube. The inner level of the nested array aligns with the x axis and 
+#' the outer level aligns with the y axis. Each level of the kernel must have an uneven number of elements.
 #' 
 #' @name Kernel
 #' 
@@ -2195,7 +2197,7 @@ NULL
 
 Kernel = R6Class(
   "kernel",
-  inherit=Array,
+  inherit=Argument,
   public = list(
     initialize=function(name=character(),
                         description=character(),
@@ -2209,6 +2211,32 @@ Kernel = R6Class(
       private$schema$type = "array"
       private$schema$subtype = "kernel"
       private$schema$items = items
+    }
+  ),
+  private = list(
+    typeSerialization = function() {
+      # might not be really required
+      
+      private$value
+    },
+    typeCheck = function() {
+      if (!self$isEmpty()) {
+        if (!is.matrix(private$value) || !is.data.frame(private$value) || !is.array(private$value)) {
+          stop("Kernel value is neither matrix nor data.frame")
+        } else {
+          dims = dim(kernel)
+          
+          if (!length(dims) == 2) {
+            stop("Kernel has more or less than two dimensions")
+          }
+          
+          if (!all(dims %% 2 == 1)) {
+            stop("One or more kernel dimension have an even number of elements")
+          }
+          
+          invisible(NULL)
+        }
+      }
     }
   )
 )

@@ -97,10 +97,11 @@ delete_user_process = function(id, con=NULL) {
 #' @param summary the summary for the user process (optional)
 #' @param description the description for the user process (optional)
 #' @param submit whether to create a new user process at the openEO service or to create it for local use (default set to submit = TRUE)
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
 #' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_user_process = function(graph, id, summary=NULL, description = NULL, submit=TRUE, con=NULL) {
+create_user_process = function(graph, id, summary=NULL, description = NULL, submit=TRUE, con=NULL, ...) {
   tryCatch({
     con = .assure_connection(con)
     
@@ -125,7 +126,7 @@ create_user_process = function(graph, id, summary=NULL, description = NULL, subm
       
       response = con$request(tag = tag, parameters = list(
         process_graph_id = id
-      ), authorized = TRUE, data = process_graph_description, raw = TRUE)
+      ), authorized = TRUE, data = process_graph_description, raw = TRUE, ...)
       
       message("Graph was sucessfully stored on the backend.")
       return(id) 
@@ -148,8 +149,9 @@ create_user_process = function(graph, id, summary=NULL, description = NULL, subm
 #' @param graph a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder
 #' @param summary summary of the process graph (optional)
 #' @param description description of the process graph (optional)
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #' @export
-update_user_process = function(id, graph = NULL, summary = NULL, description = NULL, con=NULL) {
+update_user_process = function(id, graph = NULL, summary = NULL, description = NULL, con=NULL, ...) {
   tryCatch({
     if (is.null(id)) {
       stop("Cannot replace unknown graph. If you want to store the graph / user defined process, use 'create_user_process' instead")
@@ -177,7 +179,7 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
     
     tag = "graph_create_replace"
     
-    message = con$request(tag = tag, parameters = list(id), authorized = TRUE, data = requestBody, encodeType = "json")
+    message = con$request(tag = tag, parameters = list(id), authorized = TRUE, data = requestBody, encodeType = "json", ...)
     
     if (is.null(message)) {
       message(paste("Process graph '", id, "' was successfully modified.", sep = ""))
@@ -194,9 +196,10 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph the process graph that will be sent to the service and is going to be validated
+#' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
 #' @export
-validate_process = function(graph, con=NULL) {
+validate_process = function(graph, con=NULL, ...) {
   tryCatch({
     con = .assure_connection(con)
     
@@ -216,7 +219,7 @@ validate_process = function(graph, con=NULL) {
       process_graph = graph)
     
     tag = "process_graph_validate"
-    response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json")
+    response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json", ...)
     
     if (length(response$errors) == 0) {
       message("Graph was sucessfully validated.")
