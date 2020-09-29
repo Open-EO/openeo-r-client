@@ -79,7 +79,12 @@ Graph = R6Class(
           node_list = .final_node_serializer(final_node)
           private$nodes=unname(node_list)
           private$final_node_id = final_node$getNodeId()
-          private$variables = variables(final_node)
+          tryCatch({
+            private$variables = variables(final_node)
+          }, error = function(e) {
+            
+          })
+          
         } else {
           stop("The final node has to be a ProcessNode.")
         }
@@ -625,9 +630,8 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
         stop(attr(is_valid,"err"))
       }
       
-      parsed_json = fromJSON(json)
+      parsed_json = fromJSON(json, simplifyDataFrame = FALSE)
     }
-    
     
     # use processes id on processes (processes[[id]])
     # substitute values or set values
@@ -635,13 +639,13 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
     # if names(v) contains from_parameter -> create ProcessGraphParameter
     # if names(v) contains from_node -> look up node_id
     
-    graph_definition = json$process_graph
+    graph_definition = parsed_json$process_graph
     
-    process_graph_parameters_names = sapply(json$parameters, function(param) {
+    process_graph_parameters_names = sapply(parsed_json$parameters, function(param) {
       param$name
     })
     
-    process_graph_parameters = lapply(json$parameters,function(param){
+    process_graph_parameters = lapply(parsed_json$parameters,function(param){
       potential_param = parameterFromJson(param)
       p = ProcessGraphParameter$new(name = param$name,
                                     description = param$description)
@@ -669,6 +673,7 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
       return(p)
     })
     names(process_lookup) = node_ids
+    
     
     lapply(node_ids, function(id) {
       pdef = graph_definition[[id]]
@@ -853,6 +858,8 @@ variables = function(x) {
     
     # now find the most picked argument per process graph parameter (p)
     most_probable_types = lapply(matches, function(variable) {
+      if (length(variable) == 0) return(list())
+      
       # variable is a list
       class_matches = sapply(variable, function(p) {
         class(p)[[1]]
@@ -863,6 +870,7 @@ variables = function(x) {
       counts = sapply(unique_types, function(class) {
         sum(class_matches == class)
       })
+      
       
       most_probable = unique_types[which(counts==max(counts,na.rm = TRUE))]
       
