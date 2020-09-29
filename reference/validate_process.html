@@ -114,7 +114,7 @@ processes of the service." />
 processes of the service.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>validate_process</span>(<span class='kw'>graph</span>, con = <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>validate_process</span><span class='op'>(</span><span class='va'>graph</span>, con <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -127,6 +127,10 @@ processes of the service.</p>
       <th>con</th>
       <td><p>connected and authorized openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
     </tr>
     </table>
 

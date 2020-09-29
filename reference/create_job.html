@@ -120,15 +120,15 @@ description. By providing a execution plan and a maximum usable budget the user 
 back-end provider.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_job</span>(
-  graph = <span class='kw'>NULL</span>,
-  title = <span class='kw'>NULL</span>,
-  description = <span class='kw'>NULL</span>,
-  plan = <span class='kw'>NULL</span>,
-  budget = <span class='kw'>NULL</span>,
-  con = <span class='kw'>NULL</span>,
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>create_job</span><span class='op'>(</span>
+  graph <span class='op'>=</span> <span class='cn'>NULL</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  description <span class='op'>=</span> <span class='cn'>NULL</span>,
+  plan <span class='op'>=</span> <span class='cn'>NULL</span>,
+  budget <span class='op'>=</span> <span class='cn'>NULL</span>,
+  con <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -161,7 +161,7 @@ is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional configuration parameter for output generation</p></td>
+      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
     </tr>
     </table>
 

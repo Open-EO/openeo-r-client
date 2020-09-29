@@ -114,15 +114,16 @@ that shall be replaced or removed. Shows a message of result or failure." />
 that shall be replaced or removed. Shows a message of result or failure.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>update_job</span>(
-  <span class='kw'>id</span>,
-  title = <span class='kw'>NULL</span>,
-  description = <span class='kw'>NULL</span>,
-  process = <span class='kw'>NULL</span>,
-  plan = <span class='kw'>NULL</span>,
-  budget = <span class='kw'>NULL</span>,
-  con = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>update_job</span><span class='op'>(</span>
+  <span class='va'>id</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  description <span class='op'>=</span> <span class='cn'>NULL</span>,
+  process <span class='op'>=</span> <span class='cn'>NULL</span>,
+  plan <span class='op'>=</span> <span class='cn'>NULL</span>,
+  budget <span class='op'>=</span> <span class='cn'>NULL</span>,
+  con <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,6 +157,10 @@ will return the results or a self defined <code><a href='Process.html'>Process</
       <th>con</th>
       <td><p>connected and authenticated openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
     </tr>
     </table>
 

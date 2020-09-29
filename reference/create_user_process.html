@@ -112,14 +112,15 @@
     <p>Uploads the process graph information to the back-end and stores it for reuse as a user defined process.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>create_user_process</span>(
-  <span class='kw'>graph</span>,
-  <span class='kw'>id</span>,
-  summary = <span class='kw'>NULL</span>,
-  description = <span class='kw'>NULL</span>,
-  submit = <span class='fl'>TRUE</span>,
-  con = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>create_user_process</span><span class='op'>(</span>
+  <span class='va'>graph</span>,
+  <span class='va'>id</span>,
+  summary <span class='op'>=</span> <span class='cn'>NULL</span>,
+  description <span class='op'>=</span> <span class='cn'>NULL</span>,
+  submit <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  con <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,6 +149,10 @@
       <th>con</th>
       <td><p>connected and authorized openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
     </tr>
     </table>
 

@@ -116,18 +116,19 @@ not be overwritten at the backend. If the parameter is set to NA then the value 
 will be deleted and also set to NULL.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>update_service</span>(
-  <span class='kw'>service</span>,
-  type = <span class='kw'>NULL</span>,
-  graph = <span class='kw'>NULL</span>,
-  title = <span class='kw'>NULL</span>,
-  description = <span class='kw'>NULL</span>,
-  enabled = <span class='kw'>NULL</span>,
-  configuration = <span class='kw'>NULL</span>,
-  plan = <span class='kw'>NULL</span>,
-  budget = <span class='kw'>NULL</span>,
-  con = <span class='kw'>NULL</span>
-)</pre>
+    <pre class="usage"><span class='fu'>update_service</span><span class='op'>(</span>
+  <span class='va'>service</span>,
+  type <span class='op'>=</span> <span class='cn'>NULL</span>,
+  graph <span class='op'>=</span> <span class='cn'>NULL</span>,
+  title <span class='op'>=</span> <span class='cn'>NULL</span>,
+  description <span class='op'>=</span> <span class='cn'>NULL</span>,
+  enabled <span class='op'>=</span> <span class='cn'>NULL</span>,
+  configuration <span class='op'>=</span> <span class='cn'>NULL</span>,
+  plan <span class='op'>=</span> <span class='cn'>NULL</span>,
+  budget <span class='op'>=</span> <span class='cn'>NULL</span>,
+  con <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,6 +174,10 @@ will return the results</p></td>
       <th>con</th>
       <td><p>connected and authorized openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
     </tr>
     </table>
 

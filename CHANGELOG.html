@@ -166,6 +166,9 @@
 <li>implemented and added a class <code>ArgumentList</code> to <code>Process</code> in order to allow an easier value assignment, e.g. <code>node1$parameter$x = ...</code>, which comes in handy, when the node is assigned to a variable and a parameter has to changed later</li>
 <li>added a builder for user-defined processes (<code>UserProcessCollection</code> and <code><a href="reference/user_processes.html">user_processes()</a></code>) like <code>ProcessCollection</code> for predefined processes, which offers a users stored process graph as a usable function that creates a <code>ProcessNode</code>
 </li>
+<li>added function <code>status</code> for the connection, jobs and services to immediate get the status information. It also always queries the back-end for an update on call</li>
+<li>added … parameter to the request, PUT and POST function to controll the JSON serialization in toJSON (e.g. especially when stating the number of digits to use during this serialization)</li>
+<li>also enabled the … parameter for functions where a process (graph) is sent to the back-end</li>
 </ul>
 </div>
 <div id="fixed" class="section level3">
@@ -173,6 +176,9 @@
 <a href="#fixed" class="anchor"></a>Fixed</h3>
 <ul>
 <li>improved reading of files [#50]</li>
+<li>switching the connection in RStudio connection panel now correctly updates the panel</li>
+<li>fixed a problem with trailing slashes when setting the host url in the connection or reading it from the wellknown document</li>
+<li>fixed a problem with environments (mostly R6 classes) in the validate function of some arguments</li>
 </ul>
 </div>
 <div id="changed" class="section level3">
@@ -244,6 +250,7 @@
 <li>enabled and reimplemented the <code>GeoJson</code> argument</li>
 <li>when starting the computation of a job you can trigger the immediate request to the job log with parameter <code>log</code> at <code><a href="reference/start_job.html">start_job()</a></code>
 </li>
+<li>Kernel argument does not inherit from Array and allows matrix, array and data.frame as kernel value</li>
 </ul>
 </div>
 <div id="removed" class="section level3">
