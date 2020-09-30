@@ -83,6 +83,8 @@ reduce5$validate()
 
 # as mentioned the previous graphs examples are not really supposed to be running rather than
 # for testing the overloaded math operators
+# created for API version 0.4.2
+# might be deprecated
 
 # POC UC 1 min NDVI example ====
 user <- "group8"

@@ -37,7 +37,7 @@ The following table shows the compatibilities between different `openeo` R packa
 You can install the considered version from Github by using the version number stated. In cases of 'x', replace 'x' by the latest number, for example 'v0.6.2'). You will find all released versions on the [packages Github repository](https://github.com/Open-EO/openeo-r-client/releases). To install it from R you can use the following code, where you set the value for `ref` accordingly.
 
 ```{r, eval=FALSE}
-devtools::install_github(repo="Open-EO/openeo-r-client",ref="v0.6.2",dependencies=TRUE)
+devtools::install_github(repo="Open-EO/openeo-r-client",ref="v1.0.0",dependencies=TRUE)
 ```
 
 To get the provided API versions from the openEO service you can use `api_versions()` with the services URL. You will get a data.frame object with the version number, the level of service maturity (production ready or not) and the versioned URL. You might get a `tibble` object if that package is loaded.
@@ -65,16 +65,20 @@ The *Basic Authentication* is the most common one, where you can authenticate by
 
 As previously mentioned you can simply connect to an openEO service and explore multiple features like the hosted image collections and the available computation capabilities. In terms of completeness, be aware that services might provide more data collections to users once they have signed in due to licensing prohibitations.
 
-There are generally two ways of connecting:
-1. you have a direct URL to a versioned endpoint (like the `url` column of the `api_versions()` result)
+There are generally three ways of connecting:
+1. you have a general URL to the back-end and want to connect to the latest production ready version:
+```{r, eval=FALSE}
+gee = connect(host = "https://earthengine.openeo.org")
+```
+
+2. you have a direct URL to a versioned endpoint (like the `url` column of the `api_versions()` result)
 ```{r, eval=FALSE}
 gee = connect(host = "https://earthengine.openeo.org/v1.0")
 ```
 
-
-2. you have a general URL and you have to provide the version which you want to use (note: if a general URL is used and no version is stated, then it tries to use the latest **production** version)
+3. you have a general URL and you have to provide the version which you want to use (note: if a general URL is used and no version is stated, then it tries to use the latest **production** version)
 ```{r}
-gee = connect(host = gee_host_url,version = "1.0.0")
+gee = connect(host = "https://earthengine.openeo.org,version" = "1.0.0")
 ```
 
 You have to use a connection when interacting with a service which you can either specify manually, for example if you are operating on with multiple openEO services at once, or you can use the cached last active connection (to recall it use `active_connection()`). If you omit the connection in functions, then it is automatically assumed to use the last active connection, otherwise specify the parameter `con` on those function.
@@ -101,7 +105,7 @@ Those functions will open the viewer panel in RStudio which will render the spec
 There are again 2 ways of login, either directly via `connect` by passing additional information about the login type and potentially the login credentials or by calling `login()` manually.
 
 ```{r}
-gee = connect(host = gee_host_url,version = "1.0.0-rc.2", user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url,version = "1.0.0", user = user,password = pwd,login_type = "basic")
 ```
 
 If you want to explore the service before signing in you can always first connect and login later manually. `login()` offers the same login parameter as `connect()`

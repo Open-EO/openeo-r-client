@@ -7,13 +7,12 @@ output: html_notebook
 
 ```{r}
 library(openeo)
-library(tibble)
 ```
 
 Add credentials here (configure connect) or point to a R script that holds the credentials and cares for connection
 
 ```{r}
-host = "http://openeo.vgt.vito.be/openeo/0.4.2/"
+host = "https://openeo.vito.be"
 con = connect(host = host)
 ```
 
@@ -27,7 +26,7 @@ list_service_types()
 
 
 ```{r}
-list_file_types()
+list_file_formats()
 ```
 
 ```{r}
@@ -35,7 +34,7 @@ colls = list_collections()
 ```
 
 ```{r}
-describe_collection(id = "S2_FAPAR_SCENECLASSIFICATION_V102_PYRAMID")
+describe_collection(collection = "S2_FAPAR_SCENECLASSIFICATION_V102_PYRAMID")
 ```
 
 
@@ -52,7 +51,7 @@ list_jobs()
 p = processes()
 
 # creating the graph
-data = p$load_collection(id = p$data$SENTINEL2_L2A_SENTINELHUB,
+data = p$load_collection(id = "SENTINEL2_L2A_SENTINELHUB",
                              spatial_extent = list(
                                west=16.1,
                                east=16.6,
@@ -63,7 +62,7 @@ data = p$load_collection(id = p$data$SENTINEL2_L2A_SENTINELHUB,
                                "2018-01-01", "2018-02-01"
                              ))
 
-spectral_reduce = p$reduce(data = data, dimension = "bands", function(x) {
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands", reducer =  function(x, context) {
   B08 = x[8]
   B04 = x[4]
   B02 = x[2]
@@ -71,10 +70,12 @@ spectral_reduce = p$reduce(data = data, dimension = "bands", function(x) {
 })
 
 
-temporal_reduce =  p$reduce(data = spectral_reduce,dimension = "temporal", reducer = p$min)
+temporal_reduce =  p$reduce_dimension(data = spectral_reduce,dimension = "t", reducer = function(x, context) {
+  p$min(x)
+})
 
 
-result = p$save_result(format="GTiff")
+result = p$save_result(data = temporal_reduce, format="GTiff")
 
 # print as JSON
 graph = as(result, "Graph")
@@ -89,9 +90,9 @@ cat(graphToJSON(graph),file = "vito-r-evi-phenology-graph.json")
 # client side graph validation
 graph$validate()
 
-con %>% validate_process_graph(graph = graph)
+validate_process(graph = graph)
 
 # compute the result and check if the graph was valid
-con %>% compute_result(graph=graph,format="GTiff",output_file = "vito-evi.tif")
+compute_result(graph=graph,format="GTiff",output_file = "vito-evi.tif")
 ```
 

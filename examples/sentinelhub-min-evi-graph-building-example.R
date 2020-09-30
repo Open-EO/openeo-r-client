@@ -1,5 +1,6 @@
 # Example RClient v0.6.0 <-> Sentinel Hub 0.4.2
 # https://openeo.org/openeo/news/2019/03/07/openeo-api-040.html
+# deprecated with client version v1.0.0!
 
 library(openeo)
 library(magrittr)
