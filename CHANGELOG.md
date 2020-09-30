@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] -
+## [1.0.0] - 2020-09-30
 
 In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here. 
 
