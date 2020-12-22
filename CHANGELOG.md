@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1] - unreleased
+
+### Fixes
+- modified a descriptive text for "production-readiness" of back-ends
+- modified the documentation and examples of `connect()` in terms of the parameter `version`
+- modified the implemented openEO API version of the client (removed the release candidate suffix)
+- fixed interpretation of an one entry discovery object [#59](https://github.com/Open-EO/openeo-r-client/issues/59)
+
 ## [1.0.0] - 2020-09-30
 
 In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here. 
