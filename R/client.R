@@ -450,7 +450,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
-    version = "1.0.0-rc.2", # implemented api version
+    version = "1.0.0", # implemented api version
     general_auth_type = "bearer",
     exchange_token="access_token",
     capabilities=NULL,
