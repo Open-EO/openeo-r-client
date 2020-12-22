@@ -186,7 +186,7 @@ describe_account = function(con=NULL) {
 #' which marks the latest service that was connected to.
 #' 
 #' @param host URL pointing to the openEO server service host
-#' @param version the version number as string (optional)
+#' @param version the openEO API version number as string (optional), see also \code{\link{api_versions}}
 #' @param user the user name (optional)
 #' @param password the password (optional)
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
@@ -211,7 +211,6 @@ describe_account = function(con=NULL) {
 #' 
 #' # connect to a host with open id connect authentication
 #' con = connect(host='http://example.openeo.org',
-#'               version='1.0.0-rc.2',
 #'               login_type='oidc')
 #' }
 #'
