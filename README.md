@@ -116,3 +116,4 @@ The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additi
 * [openEO.org](http://openeo.org/)
 * [openEO core API](https://openeo.org/documentation/1.0/developers/api/reference.html)
 * [openEO hub](https://hub.openeo.org/)
+* [openEO R Client package API](https://open-eo.github.io/openeo-r-client/)
