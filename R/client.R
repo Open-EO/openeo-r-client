@@ -152,12 +152,11 @@ OpenEOClient <- R6Class(
         
         if (length(response) == 0) return(invisible(NULL))
         
-        
         private$exchange_token = exchange_token
-        
         if (!missing(version) && !is.null(version)) {
           # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
-          hostInfo=private$backendVersions()$versions
+          hostInfo = private$backendVersions()$versions
+          
           versionLabels = sapply(hostInfo,function(x)x$api_version)
           names(hostInfo) = versionLabels
           
@@ -171,6 +170,8 @@ OpenEOClient <- R6Class(
             
             private$setHost(url)
           }
+          
+          hostInfo = as.data.frame(unname(hostInfo),stringsAsFactors = FALSE) # transform the list explicitly into a data.frame
         } else {
           
           if ("versions" %in% names(private$backendVersions())) {
@@ -276,7 +277,7 @@ OpenEOClient <- R6Class(
         self$api.mapping = endpoint_mapping(self)
         cat("Connected to service: ",private$host,"\n")
         cat("Please check the terms of service (terms_of_service()) and the privacy policy (privacy_policy()). By further usage of this service, you acknowledge and agree to those terms and policies.\n")
-        
+
         if (!hostInfo[hostInfo$url == private$host,]$production) {
           message("Warning: Connected host is not production-ready. Unexpected errors might occur.")
         }
