@@ -87,7 +87,6 @@ OIDCAuth <- R6Class(
       private$title = provider$title
       private$description = provider$description
       
-      
       if (length(provider$scopes) == 0) {
         private$scopes = list("openid")
       } else {
@@ -97,13 +96,17 @@ OIDCAuth <- R6Class(
       private$getEndpoints()
       
       # important for authorization_code flow
-      if (is.null(config) || !(is.character(config) && file.exists(config))) {
+      if (is.null(config) || !is.list(config)) {
         stop("Please provide any configuration details about the client_id and the secret. Either as list object or specify a valid file path.")
       }
       
       if (is.character(config)) {
-        config = jsonlite::read_json(config)
-      }
+        if (file.exists(config)) {
+          config = jsonlite::read_json(config)
+        } else {
+          stop("Please provide any configuration details about the client_id and the secret. If you chose to pass the credentials as file, then please provide valid file path.")
+        }
+      } 
       
       if (!(is.list(config) && all(c("client_id","secret") %in% names(config)))) {
         stop("'client_id' and 'secret' are not present in the configuration.")

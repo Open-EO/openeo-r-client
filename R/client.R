@@ -144,7 +144,6 @@ OpenEOClient <- R6Class(
         }
           
         private$setHost(url)
-        
         response = NULL
         tryCatch({
           response = api_versions(url = self$getHost())
@@ -304,7 +303,6 @@ OpenEOClient <- R6Class(
       return(private$version)
     },
     login=function(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL) {
-      
       if (!is.null(user) && !is.null(password) && is.null(login_type)) {
         # then it should be "basic"
         login_type = "basic"
