@@ -476,7 +476,7 @@ OpenEOClient <- R6Class(
             return(invisible(self))
         }, error=function(e){
           private$auth_client = NULL
-          stop("Login failed.")
+          stop(paste0("Login failed. Reason: ",e$message))
         })
       })
     },
