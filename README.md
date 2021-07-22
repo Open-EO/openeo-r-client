@@ -111,6 +111,7 @@ If you are interested, you can have a look at some example scripts that were use
 
 ## Further Information
 The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additional information on process graph building and other topics.
+The package documentation can be found here: <https://open-eo.github.io/openeo-r-client/index.html>
 
 ## Links
 * [openEO.org](http://openeo.org/)
