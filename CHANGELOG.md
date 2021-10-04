@@ -2,6 +2,9 @@
 
 ## [1.0.1] - unreleased
 
+### Changes
+- clarified the currently used OIDC code flow and adapted documentation [#71](https://github.com/Open-EO/openeo-r-client/issues/71)
+
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
 - modified the documentation and examples of `connect()` in terms of the parameter `version`

@@ -4,15 +4,23 @@
 \alias{OIDCAuth}
 \title{OIDC Authentication}
 \description{
-A class that authenticates via Open ID Connect. It inherits all fields and functions from \code{\link{IAuth}}. The OIDC login
-will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
-the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a configuration 
-file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the provider is 'http://localhost:1410/'.
+A class that handles the authentication via Open ID Connect. The \code{httr} package is used to handle OIDCs underlying
+OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+all fields and functions from \code{\link{IAuth}}.
 }
 \details{
+The OIDC login interacts with the OIDC provider via the \code{Authorization Code Grant}. During the login process an internet browser window 
+will be opened and you will be asked to enter your credentials. The website belongs to the OIDC provider of the
+chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
+the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a 
+configuration file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the 
+provider is 'http://localhost:1410/' (\code{\link[httr]{oauth_listener}}).
+
 The \code{access_token} will be returned when queried. If the lease time has run out the client will refresh the access_token
 automatically.
+
+Since the OIDC workflow is mainly based on OAuth2.0 we use httr to deal with this authentication by creating an 
+\code{\link[httr]{oauth_app}}
 }
 \section{Methods}{
 

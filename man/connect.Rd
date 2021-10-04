@@ -18,7 +18,7 @@ connect(
 \arguments{
 \item{host}{URL pointing to the openEO server service host}
 
-\item{version}{the version number as string (optional)}
+\item{version}{the openEO API version number as string (optional), see also \code{\link{api_versions}}}
 
 \item{user}{the user name (optional)}
 
@@ -30,7 +30,7 @@ connect(
 
 \item{provider}{provider object as obtained by 'list_oidc_providers()'}
 
-\item{config}{named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)}
+\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)}
 }
 \description{
 Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
@@ -71,7 +71,6 @@ con = connect(host='http://example.openeo.org/v1.0',
 
 # connect to a host with open id connect authentication
 con = connect(host='http://example.openeo.org',
-              version='1.0.0-rc.2',
               login_type='oidc')
 }
 
