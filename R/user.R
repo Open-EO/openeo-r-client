@@ -192,7 +192,7 @@ describe_account = function(con=NULL) {
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
 #' @param provider provider object as obtained by 'list_oidc_providers()'
-#' @param config named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)
+#' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)
 #'
 #' @examples 
 #' \dontrun{
