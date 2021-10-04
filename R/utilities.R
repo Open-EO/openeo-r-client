@@ -44,7 +44,6 @@ graphToJSON = function(graph) {
 }
 
 .version_sort = function(v) {
-    
     sem_parser = function(ver) {
         if (length(ver) == 1) {
             split = strsplit(ver,"[.-]")[[1]]

@@ -174,8 +174,10 @@ OpenEOClient <- R6Class(
         } else {
           
           if ("versions" %in% names(private$backendVersions())) {
-            hostInfo=private$backendVersions()$versions
-            hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
+            # hostInfo=private$backendVersions()$versions
+            # hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
+            hostInfo=as.data.frame(private$backendVersions())
+            
             
             for (i in 1:ncol(hostInfo)) {
               hostInfo[,i] = unlist(hostInfo[,i])
@@ -507,6 +509,7 @@ OpenEOClient <- R6Class(
         endpoint = ".well-known/openeo"
         
         info = private$GET(endpoint = endpoint,authorized = FALSE, type="application/json",auto_unbox=TRUE)
+        class(info) = "VersionsList"
         
         return(info)
       },error= function(e) {

@@ -129,6 +129,10 @@ as.data.frame.VersionsList = function(x, ...) {
     versions = x$versions
     params = list(...)
     table = .listObjectsToDataFrame(versions, extract = params$extract)
+    
+    # production is here an optional field and defaults to FALSE. In case it was not set do it here
+    if (!"production" %in% names(table)) table$production = rep(FALSE,1:nrow(table))
+    
     return(table[c("api_version", "production", "url")])
 }
 

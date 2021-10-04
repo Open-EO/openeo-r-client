@@ -14,9 +14,13 @@ api_versions = function(url) {
             url = substr(url, 1, nchar(url) - 1)
         endpoint = "/.well-known/openeo"
         
-        info = GET(url = paste0(url, endpoint))
+        info = GET(url = paste0(url, endpoint),config=content_type_json())
         if (info$status == 200) {
             vlist = content(info)
+            
+            if (is.raw(vlist)) {
+                vlist=jsonlite::fromJSON(rawToChar(vlist),simplifyDataFrame = FALSE)
+            }
             class(vlist) = "VersionsList"
             
             if (isNamespaceLoaded("tibble")) {
