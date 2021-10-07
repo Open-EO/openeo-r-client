@@ -34,8 +34,10 @@ Since the OIDC workflow is mainly based on OAuth2.0 we use httr to deal with thi
 \section{Arguments}{
 
 \describe{
-  \item{\code{provider}}{a provider object as returned by \code{list_oidc_providers()}}
-  \item{\code{config}}{either a file to JSON containing information about 'client_id' and 'secret' or a named list}
+  \item{\code{provider}}{the name of an OIDC provider registered at the back-end or a provider object as returned by \code{list_oidc_providers()}}
+  \item{\code{config}}{either a file to JSON containing information about 'client_id' and 
+  'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+  overwrite the default settings of the OIDC provider}
 }
 }
 

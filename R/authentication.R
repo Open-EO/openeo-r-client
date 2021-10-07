@@ -68,8 +68,10 @@ IAuth <- R6Class(
 #'
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{provider}}{a provider object as returned by \code{list_oidc_providers()}}
-#'   \item{\code{config}}{either a file to JSON containing information about 'client_id' and 'secret' or a named list}
+#'   \item{\code{provider}}{the name of an OIDC provider registered at the back-end or a provider object as returned by \code{list_oidc_providers()}}
+#'   \item{\code{config}}{either a file to JSON containing information about 'client_id' and 
+#'   'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+#'   overwrite the default settings of the OIDC provider}
 #' }
 #'
 #' @importFrom R6 R6Class
@@ -89,13 +91,26 @@ OIDCAuth <- R6Class(
 
     # functions ####
     initialize = function(provider, config = NULL) {
+      # comfort function select provider by name if one is provided
+      if (is.character(provider)) {
+        oidc_providers = list_oidc_providers()
+        if (provider %in% names(oidc_providers)) {
+          provider = oidc_providers[[provider]]
+        } else {
+          stop(paste0("The selected provider '",provider,"' is not supported. Check with list_oidc_providers() the available providers."))
+        }
+      }
+      
       private$setIssuer(provider$issuer)
       
       private$id = provider$id
       private$title = provider$title
       private$description = provider$description
       
-      if (length(provider$scopes) == 0) {
+      # user knows best, allow custom scopes...
+      if (length(config$scopes) > 0 && is.character(config$scopes)) {
+        private$scopes = config$scopes
+      } else if (length(provider$scopes) == 0) {
         private$scopes = list("openid")
       } else {
         private$scopes = provider$scopes

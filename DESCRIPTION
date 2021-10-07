@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: openEO client interface
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: person("Florian", "Lahn", email = "florian.lahn@uni-muenster.de", role = c("aut", "cre"))
 Description: This package provides a client software to access data and processing functionalities of openEO conformant back-ends in R.
 Depends:
