@@ -4,14 +4,15 @@
 
 ### Changes
 - clarified the currently used OIDC code flow and adapted documentation [#71](https://github.com/Open-EO/openeo-r-client/issues/71)
-- usability improvements when selecting and configuring the OIDC Authentication provider[#74](https://github.com/Open-EO/openeo-r-client/issues/74)
+- usability improvements when selecting and configuring the OIDC Authentication provider [#74](https://github.com/Open-EO/openeo-r-client/issues/74)
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
 - modified the documentation and examples of `connect()` in terms of the parameter `version`
 - modified the implemented openEO API version of the client (removed the release candidate suffix)
 - fixed interpretation of an one entry discovery object [#59](https://github.com/Open-EO/openeo-r-client/issues/59)
-- fixed an issue when querying the versions of a back-end (#72)
+- fixed an issue when querying the versions of a back-end [#72](https://github.com/Open-EO/openeo-r-client/issues/72)
+- Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) [#75](https://github.com/Open-EO/openeo-r-client/issues/75)
 
 ## [1.0.0] - 2020-09-30
 
