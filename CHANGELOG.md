@@ -5,6 +5,7 @@
 ### Changes
 - clarified the currently used OIDC code flow and adapted documentation [#71](https://github.com/Open-EO/openeo-r-client/issues/71)
 - usability improvements when selecting and configuring the OIDC Authentication provider[#74](https://github.com/Open-EO/openeo-r-client/issues/74)
+- cleaning empty fields when serializing user defined process results [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
