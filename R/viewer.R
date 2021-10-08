@@ -41,9 +41,7 @@ process_viewer = function(x,con=NULL) {
     if (length(con) == 0) con = .assure_connection(con)
     
     api_version = paste0("'",con$api_version(),"'")
-    # doc_gen_version = "@1.0.0-beta.2"
-    doc_gen_version = "@latest"
-    css_version = "@latest"
+    doc_gen_version = "1"
     
     if (is.function(x)) {
       x=do.call(x,args=list())
@@ -80,7 +78,6 @@ process_viewer = function(x,con=NULL) {
     html = readChar(template_file, nchars = file.info(template_file)$size)
     
     html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
-    html = gsub(x=html,pattern = "%css_version%",replacement = css_version)
     html = gsub(x=html,pattern = "%processes%",replacement=x,fixed=TRUE)
     html = gsub(x=html,pattern = "%navigator%",replacement=navigator)
     html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
@@ -103,10 +100,7 @@ collection_viewer = function(x,con=NULL) {
   tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
-    api_version = paste0("'",con$api_version(),"'")
-    doc_gen_version = "@latest"
-    vue_version = "@latest"
-    vue_css_version = "@latest"
+    vue_version = "2"
     
     if (is.character(x)) {
       x = describe_collection(con=con,collection=x)
@@ -135,11 +129,8 @@ collection_viewer = function(x,con=NULL) {
     template_file = system.file("extdata", "collection_viewer_template.html", package = "openeo")
     html = readChar(template_file, nchars = file.info(template_file)$size)
     
-    html = gsub(x=html,pattern = "%doc_gen_version%",replacement = doc_gen_version)
     html = gsub(x=html,pattern = "%vue_version%",replacement = vue_version)
-    html = gsub(x=html,pattern = "%vue_css_version%",replacement = vue_css_version)
     html = gsub(x=html,pattern = "%collection_info%",replacement=x,fixed=TRUE)
-    html = gsub(x=html,pattern = "%api_version%",replacement=api_version)
     
     htmlViewer(html)
   }, error = .capturedErrorToMessage)
