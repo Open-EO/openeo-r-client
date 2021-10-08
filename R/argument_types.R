@@ -2660,7 +2660,12 @@ parameterFromJson = function(param_def) {
   
   # now we have a list over which we can lapply
   nullable = sapply(param_def$schema, function(schema) {
-    return(!is.null(schema$type) && schema$type == "null")
+    nullable_single = !is.null(schema$type) && schema$type == "null"
+    
+    nullable_array = !is.null(schema$type) && schema$type == "array" && 
+      length(schema$items$type) == 1 && schema$items$type == "null"
+    
+    return(nullable_single || nullable_array)
   })
   
   param_nullable = any(nullable)
