@@ -113,3 +113,21 @@ graphToJSON = function(graph) {
 status = function(x, ...) {
     UseMethod("status",x)
 }
+
+.clean_empty_fields = function(l) {
+    fields = names(l)
+    
+    for(f in fields) {
+        if (length(l[[f]]) == 0) {
+            l[[f]] = NULL
+        } else if (is.list(l[[f]])) {
+            r = .clean_empty_fields(l[[f]])
+            if (length(r) == 0) {
+                r = NULL
+            }
+            
+            l[[f]] = r
+        }
+    }
+    return(l)
+}

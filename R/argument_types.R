@@ -127,6 +127,9 @@ Parameter = R6Class(
       } else {
         info$schema = private$schema
       }
+      
+      info$schema = .clean_empty_fields(info$schema)
+      
       return(info)
       
     }
