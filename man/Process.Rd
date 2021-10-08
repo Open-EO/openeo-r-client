@@ -28,6 +28,7 @@ into \code{\link{Argument}} objects.
    \item{$getReturns()}{returns the schema for the return type as list}
    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
    corresponds to the parameter name}
+   \item{$setId(id)}{sets the id of a process}
    \item{$setSummary(summary)}{sets the summary text}
    \item{$setDescription(description)}{sets the description text}
    \item{$getParameter(name)}{returns the Argument object with the provided name}

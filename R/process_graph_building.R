@@ -216,6 +216,7 @@ setOldClass(c("Graph","R6"))
 #'    \item{$getReturns()}{returns the schema for the return type as list}
 #'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
 #'    corresponds to the parameter name}
+#'    \item{$setId(id)}{sets the id of a process}
 #'    \item{$setSummary(summary)}{sets the summary text}
 #'    \item{$setDescription(description)}{sets the description text}
 #'    \item{$getParameter(name)}{returns the Argument object with the provided name}
@@ -241,7 +242,7 @@ NULL
 Process = R6Class(
   "Process",
   public=list(
-    initialize = function(id,description=character(), summary = character(),parameters = list(),returns = list(),process_graph=NULL) {
+    initialize = function(id=character(),description=character(), summary = character(),parameters = list(),returns = list(),process_graph=NULL) {
       private$id = id
       private$description = description
       private$summary=summary
@@ -310,6 +311,11 @@ Process = R6Class(
       
       return(result)
     },
+    setId = function(id) {
+      if (!is.null(id)) {
+        private$id = id
+      }
+    },
     setDescription = function(description) {
       if (!is.null(description)) {
         private$description = description
@@ -355,7 +361,9 @@ Process = R6Class(
       return(invisible(self))
     },
     serialize = function() {
-      results = list(id=private$id)
+      results = list()
+      
+      if (length(private$id) == 1) results$id = private$id
       # class(results) = "ProcessInfo"
       
       if (length(private$description)>0) results$description = private$description

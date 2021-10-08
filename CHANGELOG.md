@@ -6,6 +6,7 @@
 - clarified the currently used OIDC code flow and adapted documentation [#71](https://github.com/Open-EO/openeo-r-client/issues/71)
 - usability improvements when selecting and configuring the OIDC Authentication provider [#74](https://github.com/Open-EO/openeo-r-client/issues/74)
 - cleaning empty fields when serializing user defined process results [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
+- changes related to UDP visualization: prior the process graph was visualized as JSON, which caused trouble, when exchanging JSON code between different clients. Now you can use `as(x,"Process")` to get a valid process from the result node [#54](https://github.com/Open-EO/openeo-r-client/issues/54)
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends

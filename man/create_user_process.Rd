@@ -6,7 +6,7 @@
 \usage{
 create_user_process(
   graph,
-  id,
+  id = NULL,
   summary = NULL,
   description = NULL,
   submit = TRUE,
@@ -35,4 +35,10 @@ a list assembling a process graph description or the graph id if send
 }
 \description{
 Uploads the process graph information to the back-end and stores it for reuse as a user defined process.
+}
+\details{
+The parameter \code{submit} will be deprecated in the future. Please use \code{as(obj, "Process")} in the 
+future. In general you might use this when copying a JSON representation of your process graph to
+another software. In that case use \code{udp = as(obj, "Process")} and simply print or call 
+object \code{udp} on the console.
 }

@@ -398,6 +398,11 @@ print.ProcessNode = function(x, ...) {
 }
 
 #' @export
+print.Process = function(x, ...) {
+    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+}
+
+#' @export
 print.Json_Graph = function(x, ...) {
     print(toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE))
 }

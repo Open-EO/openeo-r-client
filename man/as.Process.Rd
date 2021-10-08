@@ -3,12 +3,18 @@
 \name{as.Process}
 \alias{as.Process}
 \alias{as.Process.ProcessInfo}
+\alias{as.Process.Graph}
+\alias{as.Process.ProcessNode}
 \title{Coerce into a Process}
 \usage{
 as.Process.ProcessInfo(from)
+
+as.Process.Graph(from)
+
+as.Process.ProcessNode(from)
 }
 \arguments{
-\item{from}{the source from which to coerce (\code{ProcessInfo})}
+\item{from}{the source from which to coerce (\code{ProcessInfo} or \code{Graph})}
 }
 \value{
 \code{\link{Process}}

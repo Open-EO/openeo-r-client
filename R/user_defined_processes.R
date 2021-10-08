@@ -90,6 +90,11 @@ delete_user_process = function(id, con=NULL) {
 #' 
 #' Uploads the process graph information to the back-end and stores it for reuse as a user defined process.
 #' 
+#' The parameter \code{submit} will be deprecated in the future. Please use \code{as(obj, "Process")} in the 
+#' future. In general you might use this when copying a JSON representation of your process graph to
+#' another software. In that case use \code{udp = as(obj, "Process")} and simply print or call 
+#' object \code{udp} on the console.
+#' 
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph a process graph definition
@@ -101,7 +106,7 @@ delete_user_process = function(id, con=NULL) {
 #' 
 #' @return a list assembling a process graph description or the graph id if send
 #' @export
-create_user_process = function(graph, id, summary=NULL, description = NULL, submit=TRUE, con=NULL, ...) {
+create_user_process = function(graph, id=NULL, summary=NULL, description = NULL, submit=TRUE, con=NULL, ...) {
   tryCatch({
     con = .assure_connection(con)
     
@@ -109,19 +114,33 @@ create_user_process = function(graph, id, summary=NULL, description = NULL, subm
       graph = as(graph,"Graph")
     }
     
+    if (isFALSE(submit)) cat("Parameter 'submit' is deprecated and will be removed in the future. Please use \"as(obj,\"Process\")\" to obtain a process locally.\n\n")
+    
+    if (length(id) == 0) {
+      stop("No ID for was stated. Please name it before transmitting to the back-end.")
+    }
+    
     if ("ProcessNode" %in% class(graph)){
       # final node!
       graph = Graph$new(final_node = graph)
+      
+      p = Process$new(id = id, summary = summary, description = description, process_graph = graph)
+    } else if ("Process" == class(graph)[1]){
+      p = graph
+      
+      p$setId(id)
+      p$setSummary(summary)
+      p$setDescription(description)
+    } else {
+      if (!"Graph" %in% class(graph) || is.null(graph)) {
+        stop("The graph information is missing or not a list")
+      }
     }
     
-    if (!"Graph" %in% class(graph) || is.null(graph)) {
-      stop("The graph information is missing or not a list")
-    }
     
-    p = Process$new(id = id, summary = summary, description = description, process_graph = graph)
     process_graph_description = p$serialize()
     
-    if (submit) {
+    if (isTRUE(submit)) {
       tag = "graph_create_replace"
       
       response = con$request(tag = tag, parameters = list(
