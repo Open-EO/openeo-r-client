@@ -76,6 +76,12 @@ Parameter = R6Class(
     setPattern = function(pattern) {
       private$schema$pattern = pattern
     },
+    getEnum = function() {
+      return(private$schema$enum)
+    },
+    setEnum = function(enum){
+      private$schema$enum = enum
+    },
     setDefault = function(default) {
       private$default = default
       invisible(self)
@@ -182,7 +188,8 @@ Parameter = R6Class(
         type=NULL # type name, e.g. "string", "array","number","any", etc.
       ),
       minItems = integer(),
-      maxItems = integer()
+      maxItems = integer(),
+      enum = character()
     ),
     required = logical(),
     description = character()
@@ -592,6 +599,12 @@ String = R6Class(
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
+      }
+      
+      if (length(self$getEnum()) > 0) {
+        if (!private$value %in% self$getEnum()) {
+          stop(paste0("Enum was stated, but value does not match any enum."))
+        }
       }
       
       return(invisible(NULL))
@@ -2419,6 +2432,7 @@ AnyOf = R6Class(
       } else {
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
+        
         validated = sapply(choice_copies, function(param) {
           param$setValue(value)
           
@@ -2431,8 +2445,6 @@ AnyOf = R6Class(
               return(FALSE)
             }
           )
-          
-          
         })
         
         tryCatch({
@@ -2669,6 +2681,10 @@ parameterFromJson = function(param_def) {
     
     if (length(schema$pattern) != 0) {
       param$setPattern(schema$pattern)
+    }
+    
+    if (length(schema$enum) != 0) {
+      param$setEnum(schema$enum)
     }
     
     if ("ProcessGraphArgument" %in% class(param)) {

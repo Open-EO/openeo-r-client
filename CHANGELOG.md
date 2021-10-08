@@ -15,6 +15,7 @@
 - fixed interpretation of an one entry discovery object [#59](https://github.com/Open-EO/openeo-r-client/issues/59)
 - fixed an issue when querying the versions of a back-end [#72](https://github.com/Open-EO/openeo-r-client/issues/72)
 - Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) [#75](https://github.com/Open-EO/openeo-r-client/issues/75)
+- fixed missing enum validation [#65](https://github.com/Open-EO/openeo-r-client/issues/65)
 
 ## [1.0.0] - 2020-09-30
 
