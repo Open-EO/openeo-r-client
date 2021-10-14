@@ -7,15 +7,17 @@
 Object of \code{\link{R6Class}} with methods for building an openeo process graph
 }
 \description{
-This class represents an openeo process graph. It consists of \code{\link{ProcessNode}}s and optional \code{\link{ProcessGraphParameter}}. The 
-creation of a Graph is not required in most cases, because this will otherwise be done automatically in those function that have
-to send a Graph representation to the openEO service. In those cases you can pass on a function that results a ProcessNode or a 
-result node itself.
+This class represents an openEO process graph - which is generally denoted as field \code{process_graph} 
+in the exchange objects of the API. The graph consists of \code{\link{ProcessNode}}s and optional 
+\code{\link{ProcessGraphParameter}} (former variables). The explicit creation of a Graph is usually not 
+required and discouraged, because this will be handled automatically.
 }
 \details{
-However, you might want to perform an explicit cast with \code{as(x,"Graph")} in order to obtain a Graph object. 'x' can be the afore
-mentioned function or ProcessNode, and also a ProcessGraph object that can be obtained by \code{\link{describe_user_process}}, which
-parses the stored Graph representation into an openEO Graph object (\code{\link{parse_graph}}).
+In terms of the openEO API the process graph is the technical description of a process. To create an
+user-defined process it requires a process graph and additional meta data. The process graph is not
+accepted at any openEO endpoint directly. For that it has to be wrapped in a \code{\link{Process}} 
+object. Use \code{\link{as.Process}} in those cases. It is similarly handled in other functions of 
+this package.
 }
 \section{Fields}{
 
@@ -56,22 +58,3 @@ parses the stored Graph representation into an openEO Graph object (\code{\link{
 }
 }
 
-\examples{
-\dontrun{
-con = connect(host="http://some.url.org/openeo")
-p = processes()
-...
-result = p$save_result(data = prior_step, format = "PNG")
-graph = as(result, "Graph")
-
-# alternative with a function (R primitve operator are translated into openEO processes)
-resulting_ndvi_function = function(x) {
- B4 = x[1]
- B8 = x[2]
-
- return((B8-B4)/(B8+B4))
-} 
-
-graph = as(resulting_ndvi_function, "Graph")
-}
-}
