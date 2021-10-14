@@ -7,6 +7,7 @@
 - usability improvements when selecting and configuring the OIDC Authentication provider [#74](https://github.com/Open-EO/openeo-r-client/issues/74)
 - cleaning empty fields when serializing user defined process results [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 - changes related to UDP visualization: prior the process graph was visualized as JSON, which caused trouble, when exchanging JSON code between different clients. Now you can use `as(x,"Process")` to get a valid process from the result node [#54](https://github.com/Open-EO/openeo-r-client/issues/54)
+- documentation changes to discourage the use of `as(x,"Graph")` [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
@@ -17,6 +18,9 @@
 - Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) [#75](https://github.com/Open-EO/openeo-r-client/issues/75)
 - fixed missing enum validation [#65](https://github.com/Open-EO/openeo-r-client/issues/65)
 - fixed process parsing of processes with completely nullable arrays [#79](https://github.com/Open-EO/openeo-r-client/issues/79)
+
+### Removed
+- deleted some out-dated example scripts
 
 ## [1.0.0] - 2020-09-30
 
