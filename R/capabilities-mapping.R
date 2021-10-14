@@ -1,7 +1,7 @@
 #' @include zzz.R
 #' @importFrom utils read.csv2
 load_api = function(version) {
-    if (!version %in% c("0.0.2", "0.3.1", "0.4.1", "0.4.2","1.0.0-rc.2")) 
+    if (!version %in% c("0.0.2", "0.3.1", "0.4.1", "0.4.2","1.0.0-rc.2","1.0.0")) 
         stop("Unsupported API version.")
     
     api = read.csv2(system.file("extdata", paste0("api_",version,".csv"), package = "openeo"), stringsAsFactors = FALSE)
@@ -22,7 +22,8 @@ endpoint_mapping = function(con) {
     
     endpoints = capabilities(con)$endpoints
     
-    api = load_api(version = "1.0.0-rc.2")
+    # each package R version refers to a certain API version, this is also documented
+    api = load_api(version = "1.0.0")
     
     backend_df = data.frame(endpoint = unlist(sapply(endpoints, function(entry) {
         return(rep(entry$path, length(entry$methods)))

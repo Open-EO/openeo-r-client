@@ -300,10 +300,10 @@ logout = function(con=NULL) {
 #' 
 #' The function gets or sets the currently active connection to an openEO service. Usually the
 #' active connection is set when calling the \code{\link{connect}} function. Only the last 
-#' connection is set to active.
+#' connection is set as active.
 #' An application for the active connection is the optional connection within all the functions
 #' that interact with the openEO service and require a connection. If the connection is omitted 
-#' in those function this function will be called in order to try to fetch a connection. If you 
+#' in those function, this function will be called in order to try to fetch a connection. If you 
 #' want to operate on multiple services at once, you should use an explicit connection.
 #' 
 #' @param con optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
@@ -311,6 +311,18 @@ logout = function(con=NULL) {
 #' @return \code{\link{OpenEOClient}}
 #' 
 #' @seealso \code{\link{connect}}
+#' 
+#' @examples \dontrun{
+#' con1 = connect("https://first.openeo-backend.com")
+#' con2 = connect("https://second.openeo-backend.com")
+#' 
+#' active_connection() # this will be con2, the last connected backend
+#' 
+#' active_connection(con = con1) # sets the first connection as active, so it does not have to 
+#' # be passed to all functions
+#' 
+#' active_connection() # this will now return the previous set connection con1
+#' }
 #' 
 #' @export
 active_connection = function(con=NULL) {
