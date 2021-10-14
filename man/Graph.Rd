@@ -38,7 +38,7 @@ this package.
    \item{$getFinalNode()}{gets the result process node of a process graph}
    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
-   \item{$setVariables(list_of_vars)}{sets the process graph parameter (variables) of graph}
+   \item{$setVariables(list_of_vars)}{sets the \code{\link{ProcessGraphParameter}} ( former variables) of graph}
 }
 }
 
