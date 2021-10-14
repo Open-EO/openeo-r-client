@@ -78,7 +78,7 @@ gee = connect(host = "https://earthengine.openeo.org/v1.0")
 
 3. you have a general URL and you have to provide the version which you want to use (note: if a general URL is used and no version is stated, then it tries to use the latest **production** version)
 ```{r}
-gee = connect(host = "https://earthengine.openeo.org,version" = "1.0.0")
+gee = connect(host = "https://earthengine.openeo.org",version = "1.0.1")
 ```
 
 You have to use a connection when interacting with a service which you can either specify manually, for example if you are operating on with multiple openEO services at once, or you can use the cached last active connection (to recall it use `active_connection()`). If you omit the connection in functions, then it is automatically assumed to use the last active connection, otherwise specify the parameter `con` on those function.
@@ -348,7 +348,7 @@ evi = function(data,context) {
 The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. In later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
 
 ```{r}
-as(evi,"Graph")
+as(evi,"Process")
 ```
 
 So, now we have created a small graph and we want to store it for later use at the openEO service.
@@ -431,7 +431,7 @@ temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reduc
 })
 ```
 
-Note: in former versions it was able to pass `min` or `p$min` directly to the parameter 'reducer'. Now it has always to be wrapped in a function. The reason behind that were problems when matching the signature of an openEO process or even the R primitive on to the required signature of the function that has to be passed as reducer function. For example R's `min` function requires an array and a statement how to deal with NA values. The reducer function of `p$reduce_dimension` offers arguments for an array (data) and a context (a named list of values). With this different types of arguments you can imagine the matching problems.
+Note: in former versions it was possible to pass `min` or `p$min` directly to the parameter 'reducer'. Now it has always to be wrapped in a function. The reason behind that were problems when matching the signature of an openEO process or even the R primitive on to the required signature of the function that has to be passed as reducer function. For example R's `min` function requires an array and a statement how to deal with NA values. The reducer function of `p$reduce_dimension` offers arguments for an array (data) and a context (a named list of values). With this different types of arguments you can imagine the matching problems.
 
 ```{r}
 apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
@@ -509,9 +509,9 @@ apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,.
 
 result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
 
-min_evi_graph = as(result,"Graph")
+min_evi_graph = as(result,"Process")
 
-validate_process(graph = min_evi_graph)
+validate_process(graph = result)
 ```
 
 # User defined processes integration

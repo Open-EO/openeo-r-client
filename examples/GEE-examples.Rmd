@@ -18,7 +18,7 @@ api_versions(gee_host_url)
 ```
 
 ```{r}
-gee = connect(host = gee_host_url, version="1.0.0",user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.1",user = user,password = pwd,login_type = "basic")
 ```
 
 `gee` is a connection to an openEO service. Starting with openeo (v0.6.0) it is no longer required to use the connection on most of the client functions, due to the use of `active_connection`. However, if you use multiple services at once you should pass the intended connection, because `active_connection` will only hold the latest connected services.

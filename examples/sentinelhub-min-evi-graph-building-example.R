@@ -10,7 +10,9 @@ library(jsonlite)
 
 host_url = "https://openeo.sentinel-hub.com/production/"
 
-shub = connect(host = host_url, version="0.4.2")
+api_versions(host_url)
+
+shub = connect(host = host_url)
 
 graph = process_graph_builder(con = shub)
 
