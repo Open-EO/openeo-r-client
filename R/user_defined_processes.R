@@ -132,7 +132,13 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
       p$setSummary(summary)
       p$setDescription(description)
     } else {
-      if (!"Graph" %in% class(graph) || is.null(graph)) {
+      if (length(graph) > 0 && "Graph" %in% class(graph)) {
+        p = as(graph,"Process")
+        
+        p$setId(id)
+        p$setSummary(summary)
+        p$setDescription(description)
+      } else {
         stop("The graph information is missing or not a list")
       }
     }
