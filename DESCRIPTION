@@ -12,7 +12,8 @@ Suggests:
     knitr,
     sf,
     geojsonsf,
-    pkgdown
+    pkgdown,
+    rmarkdown
 Imports:
     jsonlite,
     httr,

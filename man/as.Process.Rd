@@ -14,11 +14,11 @@ as.Process.Graph(from)
 as.Process.ProcessNode(from)
 }
 \arguments{
-\item{from}{the source from which to coerce (\code{ProcessInfo} or \code{Graph})}
+\item{from}{the source from which to coerce (\code{ProcessInfo}, \code{\link{Graph}} or \code{\link{ProcessNode}})}
 }
 \value{
 \code{\link{Process}}
 }
 \description{
-This function converts objects into a process.
+This function converts objects into a process. If no meta data is provided it will return a valid, but yet not back-end storeable user defined process.
 }

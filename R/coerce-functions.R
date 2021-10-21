@@ -1,5 +1,6 @@
 #' @include process_graph_building.R
 #' @include user_defined_processes.R
+#' @importFrom methods S3Part<-
 NULL
 
 .removeNullEntries = function(list) {
@@ -214,11 +215,11 @@ as.character.CubeDimension = function(x, ...) {
 
 #' Coerce into a Process
 #' 
-#' This function converts objects into a process.
+#' This function converts objects into a process. If no meta data is provided it will return a valid, but yet not back-end storeable user defined process.
 #' 
 #' @name as.Process
 #' 
-#' @param from the source from which to coerce (\code{ProcessInfo} or \code{Graph})
+#' @param from the source from which to coerce (\code{ProcessInfo}, \code{\link{Graph}} or \code{\link{ProcessNode}})
 #' @return \code{\link{Process}}
 #'    
 #' @export

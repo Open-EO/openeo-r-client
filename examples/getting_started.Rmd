@@ -151,9 +151,9 @@ active_connection(con = gee)
 
 As already mentioned the exploratory functions do not need a registration or sign in and are free of costs. Typical use cases are that you might want to know which collections and which processes are available, as well as which file formats are available for export and which web services for integration in GIS or web apps.
 
-With list_* functions you will get overviews of the elements. Jobs, Services and process graphs are bound to a user and require a authentication. To get more detailled information on those objects, you can use describe_* with their respective ID.
+With list_* functions you will get overviews of the elements. Jobs, Services and process graphs are bound to a user and require a authentication. To get more detailed information on those objects, you can use describe_* with their respective ID.
 
-Objects stated in the list object and objects returned as detailled information have the same class, but in the list view some information is hidden. They are treated and printed in the same way.
+Objects stated in the list object and objects returned as detailed information have the same class, but in the list view some information is hidden. They are treated and printed in the same way.
 
 List objects are always printed as data.frame or tibble. This does not mean, that they are. Those are S3 objects with dedicated `print()` and `as.data.frame()` methods. 
 
