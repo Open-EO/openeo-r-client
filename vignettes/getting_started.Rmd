@@ -26,7 +26,7 @@ When we talk about client-server based processing, this means basically that no 
 
 The authors acknowledge the financial support to have developed this package during the H2020 project "openEO" (Oct 2017 to Sept 2020) by the European Union, funded under call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project "R4openEO" (Sept 2021 to Sept 2022). 
 
-Further more openEO was improved and operationalized by ESA funding in the project "openEO platform" (times...)
+Further more openEO was improved and operationalized by ESA funding in the project "openEO Platform" (Sept 2020 to Sept 2022)
 
 ## Disclaimer
 This software is free of charge. You can use it, distribute it and also improve it under the Apache2 license. In openEO exploration of services and data is also free in most cases. You can even start developing your analysis with the processes provided by the back-end. 
@@ -270,7 +270,7 @@ evi = function(data,context) {
 }
 ```
 
-The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. In later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
+The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
 
 ```{r, eval=FALSE}
 as(evi,"Graph")
