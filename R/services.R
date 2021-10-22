@@ -152,6 +152,13 @@ update_service = function(service, type = NULL, graph = NULL, title = NULL, desc
                 process = unclass(process)
                 
                 patch[["process"]] = process
+            } else if ("Process" %in% class(graph)) { 
+                process = as(graph$getProcessGraph(), "Process")
+                process = process$serialize()
+                
+                process = unclass(process)
+                
+                patch[["process"]] = process
             } else {
                 stop("Process graph cannot be set to be empty.")
             }
@@ -332,3 +339,5 @@ status.Service = function(x, ...) {
     
     if (x$enabled) return("enabled") else return("disabled")
 }
+
+setClass("Service")
