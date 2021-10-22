@@ -107,7 +107,12 @@ Parameter = R6Class(
       
       info = list()
       info$name = self$getName()
-      info$description = self$getDescription()
+      
+      if (length(self$getDescription()) > 0) {
+        if (!is.na(self$getDescription()) || nchar(self$getDescription()) > 0) {
+          info$description = self$getDescription()
+        }
+      }
       
       if (self$isNullable) {
         info$optional = TRUE
