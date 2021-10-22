@@ -192,6 +192,9 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
       
       if (is.na(graph)) {
         stop("Cannot remove process graph from the element. Please replace it with another process graph, or ignore it via setting NULL")
+      } else if ("Process" %in% class(graph)) {
+        process = graph
+        process$setId(id)
       } else {
         process$setProcessGraph(process_graph = graph)
       }
