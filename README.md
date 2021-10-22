@@ -1,3 +1,6 @@
+
+<img align="right" src="./wiki/logo_project.png" width="25%">
+
 # openEO client in R
 
 This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use.
