@@ -80,7 +80,7 @@ delete_user_process = function(id, con=NULL) {
     
     success = con$request(tag = tag, parameters = list(id), authorized = TRUE)
     if (success) {
-      message(paste("Graph '", id, "' was successfully deleted from the back-end", sep = ""))
+      message(paste("Process '", id, "' was successfully deleted from the back-end", sep = ""))
     }
     return(success)
   }, error = .capturedErrorToMessage)
@@ -153,7 +153,7 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
         process_graph_id = id
       ), authorized = TRUE, data = process_graph_description, raw = TRUE, ...)
       
-      message("Graph was sucessfully stored on the backend.")
+      message("Process was sucessfully stored on the backend.")
       return(id) 
     } else {
       return(process_graph_description)
@@ -210,7 +210,7 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
     message = con$request(tag = tag, parameters = list(id), authorized = TRUE, data = requestBody, encodeType = "json", ...)
     
     if (is.null(message)) {
-      message(paste("Process graph '", id, "' was successfully modified.", sep = ""))
+      message(paste("Process '", id, "' was successfully modified.", sep = ""))
       return(id)
     }
   }, error = .capturedErrorToMessage)
@@ -250,7 +250,7 @@ validate_process = function(graph, con=NULL, ...) {
     response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json", ...)
     
     if (length(response$errors) == 0) {
-      message("Graph was sucessfully validated.")
+      message("Process graph was sucessfully validated.")
     } else {
       void = sapply(response$errors, function(obj) {
         paste0("[",obj$code,"] ",obj$message)
