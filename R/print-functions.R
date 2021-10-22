@@ -73,9 +73,9 @@ print.ProcessInfo <- function(x, ...) {
             
     }
     
+    # This is mostly relevant for User defined processes, since predefined processes wont't have those
     if (length(x$process_graph) > 0) {
-        cat("Stored process graph:\n")
-        print(x$process_graph)
+        message("To print the process graph please coerce this object into a `Process`, e.g. as(x,\"Process\")")
     }
 }
 
