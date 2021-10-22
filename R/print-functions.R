@@ -352,14 +352,7 @@ print.Service = function(x, ...) {
     }
     
     if (length(x$process) > 0) {
-        if ("Process" %in% class(x$process)) {
-            pg = unclass(x$process$serialize())
-        } else {
-            pg = x$process
-        }
-        
-        pg = toJSON(pg, pretty = TRUE, auto_unbox = TRUE)
-        cat(paste("Process graph:\n", pg, "\n", sep = ""))
+        message("To print the process graph please coerce this object into a `Process`, e.g. as(x,\"Process\")")
     }
 }
 
