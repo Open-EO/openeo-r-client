@@ -13,6 +13,7 @@
 - changed the printing output of User defined processes and services to not show the pure process graph anymore, use as(x,"Process") in that case
 - documentation changes to discourage the use of `as(x,"Graph")` [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 - allowed to modify service and UDP by passing a modified process object
+- fixed na checks when updating a process graph in an UDP, which threw irritating warnings
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
