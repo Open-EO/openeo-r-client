@@ -918,14 +918,19 @@ remove_variable = function(graph, variable) {
 .final_node_serializer = function(node,graph=list()) {
   add = list(node)
   names(add) = node$getNodeId()
-  
+
   paramValues = unname(unlist(lapply(node$parameters,function(param) {
     if ("anyOf" %in% class(param)) {
       param = param$getValue()
     }
     
-    param$getValue()
+    if (!is.null(param)) {
+      return(param$getValue())
+    } else {
+      return(NA)
+    }
   })))
+  
   nodeSelectors = sapply(paramValues,function(v) {
     "ProcessNode" %in% class(v)
   })
