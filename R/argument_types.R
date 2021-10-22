@@ -2706,7 +2706,9 @@ parameterFromJson = function(param_def) {
         
         if(!is.null(param_json$schema[["pattern"]])) cb$setPattern(param_json$schema[["pattern"]])
         
-        cb$isRequired = !isTRUE(param_json$optional) # isTRUE is only true if not false and not null
+        if (is.null(param_json$optional)) param_json$optional = FALSE
+        
+        cb$isRequired = isFALSE(param_json$optional)
         
         return(cb)
       })
@@ -2741,7 +2743,10 @@ parameterFromJson = function(param_def) {
   param$setDefault(param_def$default)
   param$setName(param_def$name)
   param$setDescription(param_def$name)
-  param$isRequired = !is.null(param_def$optional) && !param_def$optional
+  
+  if (is.null(param_def$optional)) param_def$optional = FALSE
+  
+  param$isRequired = isFALSE(param_def$optional)
   
   pattern = param_def$schema$pattern
   if (!is.null(pattern)) {
