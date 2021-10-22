@@ -2,12 +2,17 @@
 
 ## [1.0.1] - unreleased
 
+### Added
+- added a vignette for getting started [#81](https://github.com/Open-EO/openeo-r-client/issues/81)
+
 ### Changes
 - clarified the currently used OIDC code flow and adapted documentation [#71](https://github.com/Open-EO/openeo-r-client/issues/71)
 - usability improvements when selecting and configuring the OIDC Authentication provider [#74](https://github.com/Open-EO/openeo-r-client/issues/74)
 - cleaning empty fields when serializing user defined process results [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 - changes related to UDP visualization: prior the process graph was visualized as JSON, which caused trouble, when exchanging JSON code between different clients. Now you can use `as(x,"Process")` to get a valid process from the result node [#54](https://github.com/Open-EO/openeo-r-client/issues/54)
+- changed the printing output of User defined processes and services to not show the pure process graph anymore, use as(x,"Process") in that case
 - documentation changes to discourage the use of `as(x,"Graph")` [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
+- allowed to modify service and UDP by passing a modified process object
 
 ### Fixes
 - modified a descriptive text for "production-readiness" of back-ends
@@ -18,6 +23,8 @@
 - Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) [#75](https://github.com/Open-EO/openeo-r-client/issues/75)
 - fixed missing enum validation [#65](https://github.com/Open-EO/openeo-r-client/issues/65)
 - fixed process parsing of processes with completely nullable arrays [#79](https://github.com/Open-EO/openeo-r-client/issues/79)
+- fixed a problem with NULL values set as value for AnyOf, the traversion of the graph did not work properly, because of a NULL-pointer issue
+- fixed a parsing problem, where the "optional" field was not correctly interpreted in every case
 
 ### Removed
 - deleted some out-dated example scripts
