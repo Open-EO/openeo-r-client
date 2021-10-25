@@ -22,6 +22,8 @@ Encoding: UTF-8
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 License: file LICENSE
+License_is_FOSS: yes
+License_restricts_use: no
 Collate:
     'argument_types.R'
     'authentication.R'
