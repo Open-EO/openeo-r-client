@@ -18,12 +18,12 @@ create_service(
 )
 }
 \arguments{
-\item{type}{character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()}
+\item{type}{character - the OGC web service type name to be created or an object of type ServiceType obtainable through list_service_types()}
 
 \item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 will return the results}
 
-\item{title}{character (optional) - a title for the service intended for visualization purposes in clients for humans to read}
+\item{title}{character (optional) - a title for the service intended for visualization purposes in clients}
 
 \item{description}{character (optional) - a short description of the service}
 
@@ -33,7 +33,7 @@ will return the results}
 
 \item{plan}{character - the billing plan}
 
-\item{budget}{numeric the amount of credits that can be spent on this service}
+\item{budget}{numeric - the amount of credits that can be spent on this service}
 
 \item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 is used.}

@@ -4,7 +4,7 @@
 \alias{TemporalIntervals}
 \title{TemporalIntervals}
 \value{
-Object of \code{\link{R6Class}} which represents a list temporal intervals.
+Object of \code{\link{R6Class}} representing a list of temporal intervals.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a list of \code{\link{TemporalInterval}}.

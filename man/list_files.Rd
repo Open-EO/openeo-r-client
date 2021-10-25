@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{list_files}
 \alias{list_files}
-\title{Lists workspace files}
+\title{List workspace files}
 \usage{
 list_files(con = NULL)
 }

@@ -4,11 +4,11 @@
 \alias{BoundingBox}
 \title{BoundingBox}
 \value{
-Object of \code{\link{R6Class}} which represents a bounding box / extent.
+Object of \code{\link{R6Class}} representing a bounding box / extent.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of a certain area of 
-interest. Its value is usually a named list with "west","south","east" and "north". A NA value means a open
+Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of an area of 
+interest. Its value is usually a named list with "west","south","east" and "north". An NA value means an open
 interval.
 }
 \seealso{

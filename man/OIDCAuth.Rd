@@ -5,13 +5,13 @@
 \title{OIDC Authentication}
 \description{
 A class that handles the authentication via Open ID Connect. The \code{httr} package is used to handle OIDCs underlying
-OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+OAuth2.0 mechanism. In order to align authentication between the two supported authentication methods this class inherits and implements
 all fields and functions from \code{\link{IAuth}}.
 }
 \details{
 The OIDC login interacts with the OIDC provider via the \code{Authorization Code Grant}. During the login process an internet browser window 
 will be opened and you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
+chosen openeo back-end. Meanwhile, the client will start a server daemon in the background that listens to the callback from
 the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a 
 configuration file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the 
 provider is 'http://localhost:1410/' (\code{\link[httr]{oauth_listener}}).
@@ -35,8 +35,8 @@ Since the OIDC workflow is mainly based on OAuth2.0 we use httr to deal with thi
 
 \describe{
   \item{\code{provider}}{the name of an OIDC provider registered at the back-end or a provider object as returned by \code{list_oidc_providers()}}
-  \item{\code{config}}{either a file to JSON containing information about 'client_id' and 
-  'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+  \item{\code{config}}{either a JSON file containing information about 'client_id' and 
+  'secret' or a named list. Experienced user and developer can also add 'scopes' to 
   overwrite the default settings of the OIDC provider}
 }
 }

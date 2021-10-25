@@ -4,7 +4,7 @@
 \alias{DateTime}
 \title{DateTime}
 \value{
-Object of \code{\link{R6Class}} which represents a date with time component.
+Object of \code{\link{R6Class}} representing a date with time component.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a date with time component.

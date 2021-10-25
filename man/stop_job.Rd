@@ -16,6 +16,6 @@ is used.}
 a success / failure notification
 }
 \description{
-Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
+Informs the server that the specified job needs to be terminated and the token 'canceled' to prevent 
 further executions and related costs.
 }

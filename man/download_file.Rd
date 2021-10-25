@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{download_file}
 \alias{download_file}
-\title{Downloads a file from the users workspace}
+\title{Download a file from the user workspace}
 \usage{
 download_file(src, dst = NULL, con = NULL)
 }
@@ -18,5 +18,5 @@ is used.}
 The file path of the stored file on your machine
 }
 \description{
-Sends a request to an openeo back-end to access the users files and downloads them to a given location
+Sends a request to an openeo back-end to access the users files and downloads them to a given location.
 }

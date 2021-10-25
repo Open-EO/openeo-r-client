@@ -4,10 +4,10 @@
 \alias{CollectionId}
 \title{CollectionId class}
 \value{
-Object of \code{\link{R6Class}} which represents a collection id.
+Object of \code{\link{R6Class}} representing a CollectionId.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a collection id on an openeo back-end.
+Inheriting from \code{\link{Argument}} in order to represent a CollectionId on an openeo back-end.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

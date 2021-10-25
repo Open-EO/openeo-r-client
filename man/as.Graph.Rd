@@ -25,6 +25,6 @@ predefined and stored user-defined processes).
 }
 \details{
 Those pure \code{Graph} objects shall only be used internally. If you want to use this 
-information in terms of interacting with the back-end directly via JSON please use 
+information to directly interact with the back-end via JSON please use 
 \code{\link{as.Process}}. This function might be removed from the package function export in the future.
 }

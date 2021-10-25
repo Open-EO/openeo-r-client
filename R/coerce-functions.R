@@ -173,7 +173,7 @@ as.data.frame.AssetList = function(x, ...) {
 #' predefined and stored user-defined processes).
 #' 
 #' Those pure \code{Graph} objects shall only be used internally. If you want to use this 
-#' information in terms of interacting with the back-end directly via JSON please use 
+#' information to directly interact with the back-end via JSON please use 
 #' \code{\link{as.Process}}. This function might be removed from the package function export in the future.
 #' 
 #' @name as.Graph
@@ -216,7 +216,7 @@ as.character.CubeDimension = function(x, ...) {
 
 #' Coerce into a Process
 #' 
-#' This function converts objects into a process. If no meta data is provided it will return a valid, but yet not back-end storeable user defined process.
+#' This function converts objects into a process. If no meta data is provided it will return a valid user defined process, not yet storable in the back-end.
 #' 
 #' @name as.Process
 #' 

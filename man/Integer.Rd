@@ -4,7 +4,7 @@
 \alias{Integer}
 \title{Integer class}
 \value{
-Object of \code{\link{R6Class}} which represents an Integer
+Object of \code{\link{R6Class}} representing an Integer
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a single integer value.

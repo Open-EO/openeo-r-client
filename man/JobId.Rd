@@ -4,10 +4,10 @@
 \alias{JobId}
 \title{JobId class}
 \value{
-Object of \code{\link{R6Class}} which represents the id of a job.
+Object of \code{\link{R6Class}} representing the id of a job.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a job id on an openeo back-end.
+Inheriting from \code{\link{Argument}} in order to represent a jobId on an openeo back-end.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

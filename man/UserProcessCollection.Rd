@@ -4,8 +4,8 @@
 \alias{UserProcessCollection}
 \title{User Defined Process Collection}
 \description{
-This object contains template functions for process graph building from the user defined processes at an openEO service. 
-This object is an R6 object that is not locked, in order to add new functions at runtime, in the same fashion as 
+This object contains template functions for building process graphs from user defined processes at an openEO service. 
+This object is an unlocked R6 object, in order to add new functions at runtime, in the same fashion as 
 \code{\link{ProcessCollection}} for predefined processes. The object is usually created at 
 \code{\link{user_processes}} and resembles a given status, meaning, when a new user process is created or another one
 is updated the \code{UserProcessCollection} needs to be recreated with "fresh" data.
@@ -20,7 +20,7 @@ is updated the \code{UserProcessCollection} needs to be recreated with "fresh" d
 \section{Arguments}{
 
 \describe{
-   \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+   \item{con}{optional - an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 }

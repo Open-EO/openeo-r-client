@@ -28,7 +28,7 @@ escaper = function(list) {
 
 #' Viewer panel for provided openEO processes
 #' 
-#' Opens up a viewer panel in RStudio and renders nicely one or more processes of the connected 
+#' Opens up a viewer panel in RStudio and renders one or more processes of the connected 
 #' openEO service in HTML. The components of openeo-js-commons / openEO webeditor are reused.
 #' 
 #' @param x a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
@@ -86,10 +86,10 @@ process_viewer = function(x,con=NULL) {
   }, error = .capturedErrorToMessage)
 }
 
-#' View for openEO collections
+#' View openEO collections
 #' 
-#' The function opens up a viewer panel in RStudio which renders the collection information
-#' nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
+#' The function opens a viewer panel in RStudio which renders the collection information
+#' in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
 #' 
 #' @param x character with the name of a collection or the \code{Collection} obtained
 #' with \code{\link{describe_collection}}.

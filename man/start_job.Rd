@@ -7,7 +7,7 @@
 start_job(job, log = FALSE, con = NULL)
 }
 \arguments{
-\item{job}{the job object or the job id of the defined job}
+\item{job}{the job object or the job id}
 
 \item{log}{logical - whether to enable automatic logging after starting the job}
 
@@ -18,6 +18,5 @@ is used.}
 the job_id of the defined job
 }
 \description{
-The function sends a start signal to the backend in order to start processing the results
-for a defined job.
+The function sends a start signal to the back-end triggering a defined job.
 }

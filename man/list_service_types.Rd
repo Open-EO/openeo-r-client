@@ -2,7 +2,7 @@
 % Please edit documentation in R/server_metadata.R
 \name{list_service_types}
 \alias{list_service_types}
-\title{Returns the offered webservice types of the back-end}
+\title{Returns the webservice types of the back-end}
 \usage{
 list_service_types(con = NULL)
 }
@@ -14,7 +14,7 @@ is used.}
 a \code{ServiceTypeList}
 }
 \description{
-The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
-\code{ServiceType}, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
-out of the user defined process (process graph).
+The function queries the back-end for the supported webservice types usable by the client and returns a named list of
+\code{ServiceType} indexed by the service type ID. ServiceTypes can be used when creating a supported web service
+from the user defined process (process graph).
 }

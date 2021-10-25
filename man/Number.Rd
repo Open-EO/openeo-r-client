@@ -4,7 +4,7 @@
 \alias{Number}
 \title{Number class}
 \value{
-Object of \code{\link{R6Class}} which represents a Number
+Object of \code{\link{R6Class}} representing a number
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a numeric value.

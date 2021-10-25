@@ -4,7 +4,7 @@
 \alias{OpenEOClient}
 \title{OpenEO client class}
 \description{
-A R6Class that interacts with an openEO-conformant back-end.
+An R6Class that interacts with an openEO-conform back-end.
 }
 \section{Fields}{
 
@@ -21,17 +21,17 @@ A R6Class that interacts with an openEO-conformant back-end.
 \describe{
   \item{\code{$new(host=NULL)}}{the constructor with an optional host URL to connect to}
   \item{\code{$getBackendEndpoint(endpoint_name)}}{returns the URL for the requested endpoint tag}
-  \item{\code{$request(tag,parameters=NULL, authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
-  path parameters and whether or not authorization (access_token) has to be used.}
+  \item{\code{$request(tag,parameters=NULL,authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
+  path parameters and whether or not authorization (access_token) is necessary}
   \item{\code{$isConnected()}}{whether or not the client has a host set}
   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
   \item{\code{$getHost()}}{returns the host URL}
   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
   \item{\code{$connect(url,version)}}{connects to a specific version of a backend}
-  \item{\code{$api_version()}}{returns the openEO API version which this client complies to}
-  \item{\code{$login(login_type = NULL,user=NULL, password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
+  \item{\code{$api_version()}}{returns the openEO API version this client is complient to}
+  \item{\code{$login(login_type = NULL,user=NULL,password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
-  \item{\code{$getAuthClient()}}{returns the Authentication client}
+  \item{\code{$getAuthClient()}}{returns the authentication client}
   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
   \item{\code{$getCapabilities()}}{}
   \item{\code{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
@@ -44,15 +44,15 @@ A R6Class that interacts with an openEO-conformant back-end.
 \section{Arguments}{
 
 \describe{
-  \item{\code{host}}{the openeo host URL}
+  \item{\code{host}}{the openEO host URL}
   \item{\code{endpoint_name}}{the endpoint tag the client uses for the endpoints}
   \item{\code{tag}}{endpoint tag}
   \item{\code{parameters}}{named list of values to be replaced in the endpoint}
   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
   \item{\code{url}}{url of an openeo backend either directly versioned or with the separate version statement}
-  \item{\code{version}}{the openeo API version to be used, or lists available API versions if set to NULL}
+  \item{\code{version}}{the openeo API version to be used, or a list of available API versions if set to NULL}
   \item{\code{user}}{the user name}
-  \item{\code{password}}{the users password}
+  \item{\code{password}}{the user password}
   \item{\code{login_type}}{'basic', 'oidc' or NULL to control the authentication}
   \item{\code{value}}{an authentication object}
 }

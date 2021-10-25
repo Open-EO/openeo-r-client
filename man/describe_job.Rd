@@ -16,5 +16,5 @@ is used.}
 a detailed description about the job
 }
 \description{
-Returns a detailed description about a specified job. For example to check the status of a job.
+Returns a detailed description about a specified job (e.g., the status)
 }

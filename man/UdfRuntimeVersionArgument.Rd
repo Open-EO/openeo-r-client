@@ -4,10 +4,10 @@
 \alias{UdfRuntimeVersionArgument}
 \title{UdfRuntimeVersionArgument class}
 \value{
-Object of \code{\link{R6Class}} is an argument that expects a udf runtime version or character as value.
+Object of \code{\link{R6Class}} is an argument that expects a UDF runtime version or character as value.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+Inheriting from \code{\link{Argument}} in order to represent the id of a UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

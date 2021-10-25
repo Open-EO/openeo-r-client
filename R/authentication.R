@@ -41,12 +41,12 @@ IAuth <- R6Class(
 #' OIDC Authentication
 #'
 #' A class that handles the authentication via Open ID Connect. The \code{httr} package is used to handle OIDCs underlying
-#' OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+#' OAuth2.0 mechanism. In order to align authentication between the two supported authentication methods this class inherits and implements
 #' all fields and functions from \code{\link{IAuth}}. 
 #' 
 #' The OIDC login interacts with the OIDC provider via the \code{Authorization Code Grant}. During the login process an internet browser window 
 #' will be opened and you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-#' chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
+#' chosen openeo back-end. Meanwhile, the client will start a server daemon in the background that listens to the callback from
 #' the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a 
 #' configuration file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the 
 #' provider is 'http://localhost:1410/' (\code{\link[httr]{oauth_listener}}).
@@ -69,8 +69,8 @@ IAuth <- R6Class(
 #' @section Arguments:
 #' \describe{
 #'   \item{\code{provider}}{the name of an OIDC provider registered at the back-end or a provider object as returned by \code{list_oidc_providers()}}
-#'   \item{\code{config}}{either a file to JSON containing information about 'client_id' and 
-#'   'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+#'   \item{\code{config}}{either a JSON file containing information about 'client_id' and 
+#'   'secret' or a named list. Experienced user and developer can also add 'scopes' to 
 #'   overwrite the default settings of the OIDC provider}
 #' }
 #'
@@ -127,7 +127,7 @@ OIDCAuth <- R6Class(
         if (file.exists(config)) {
           config = jsonlite::read_json(config)
         } else {
-          stop("Please provide any configuration details about the client_id and the secret. If you chose to pass the credentials as file, then please provide valid file path.")
+          stop("Please provide any configuration details about the client_id and the secret. If you add the credentials as file please provide a valid file path.")
         }
       } 
       
@@ -223,7 +223,7 @@ OIDCAuth <- R6Class(
             private$auth$refresh()
             private$token_expiry_time = Sys.time() + private$auth$credentials$expiry
           } else {
-            stop("Cannot provide access_token. You have to login.")
+            stop("Cannot provide access_token. You have to log in.")
             return(invisible(NULL))
           }
         }
@@ -237,7 +237,7 @@ OIDCAuth <- R6Class(
       if (!is.null(private$auth)) {
         private$auth$credentials$id_token
       } else {
-        stop("Please login first, before accessing the identity token")
+        stop("Please login before accessing the identity token")
         return(invisible(NULL))
       }
     }
@@ -301,10 +301,10 @@ OIDCAuth <- R6Class(
 #' Basic Authentication class
 #'
 #' This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
-#' of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In
-#' general the authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
-#' is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token is obtained which
-#' will be used as Bearer token for the password restricted webservices.
+#' of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
+#' The authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
+#' is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token are obtained and 
+#' used as "bearer token" for the password restricted webservices.
 #'
 #' The class inherits all fields and function from \code{\link{IAuth}}
 #'

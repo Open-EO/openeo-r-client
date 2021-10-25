@@ -35,14 +35,14 @@ is used.}
 \item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
-The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
-that shall be replaced or removed. Shows a message of result or failure.
+The function modifies a stores a job with a given parameter. The dot parameter contains all the values
+that will be replaced or removed. The return shows a message of result or failure.
 }
 \details{
 The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
 keys. 
-'process_graph' will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
-'format' will change the desired output format.
+The 'process_graph' option will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
+The 'format' option will change the desired output format.
 All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 e.g. if you just want to update the output format. 
 To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.

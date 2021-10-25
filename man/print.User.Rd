@@ -12,5 +12,5 @@
 \item{...}{additional parameters (not used)}
 }
 \description{
-A nice visualization for the user account information obtained by /me
+A visualization for the user account information obtained by /me
 }

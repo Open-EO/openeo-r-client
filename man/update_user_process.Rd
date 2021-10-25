@@ -2,7 +2,7 @@
 % Please edit documentation in R/user_defined_processes.R
 \name{update_user_process}
 \alias{update_user_process}
-\title{Modify the current graph with a given}
+\title{Update the current process graph}
 \usage{
 update_user_process(
   id,
@@ -16,7 +16,7 @@ update_user_process(
 \arguments{
 \item{id}{process graph id}
 
-\item{graph}{a process graph definition created by chaining 'process()', 'collection()' or using a ProcessGraphBuilder}
+\item{graph}{a process graph definition created by combining 'process()', 'collection()' or using a ProcessGraphBuilder}
 
 \item{summary}{summary of the process graph (optional)}
 

@@ -1,6 +1,6 @@
 # user endpoint ----
 
-#' Lists workspace files
+#' List workspace files
 #' 
 #' Lists all files in the workspaces of the authenticated user.
 #' 
@@ -35,9 +35,9 @@ list_files = function(con=NULL) {
 }
 
 
-#' Uploads data into the users workspace
+#' Upload data into the users workspace
 #'
-#' This function sends the file given by 'content' to the specified target location (relative file path in the
+#' This function sends the file retrieved by the 'content' parameter to the specified target location (relative file path in the
 #' user workspace) on the back-end.
 #'
 #' @param con authorized Connection (optional) otherwise \code{\link{active_connection}}
@@ -78,9 +78,9 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
     
 }
 
-#' Downloads a file from the users workspace
+#' Download a file from the user workspace
 #' 
-#' Sends a request to an openeo back-end to access the users files and downloads them to a given location
+#' Sends a request to an openeo back-end to access the users files and downloads them to a given location.
 #' 
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -114,9 +114,9 @@ download_file = function(src, dst = NULL, con=NULL) {
     })
 }
 
-#' Deletes a file from the users workspace
+#' Delete a file from the user workspace
 #'
-#' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
+#' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces.
 #' 
 #' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
@@ -139,9 +139,9 @@ delete_file = function(src, con=NULL) {
 }
 
 
-#' Retrieves the current users account information
+#' Get the current user account information
 #' 
-#' Calls endpoint \code{/me} to fetch the user account information of the user that is currently logged in to the back-end
+#' Calls endpoint \code{/me} to fetch the user account information of the user currently logged in.
 #' 
 #' @param con authenticated client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -164,20 +164,20 @@ describe_account = function(con=NULL) {
 # authentication ----
 #' Connect to a openeEO service
 #'
-#' Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
-#' specific versions, then you should provide the versions parameter.
+#' Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
+#' specific versions you should provide the version parameter.
 #' 
 #' @details 
 #' You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
-#' have an overview about their status, connection details like the URL and supported features. You can always explore the
-#' service for free, meaning you have access to publicly available metadata of data collections as well as the offered
-#' processing functions. For any computations and the creation of webservices you need to register the openEO partner of
-#' your choice. Then you will get further information on credentials and the login procedure.
+#' have an overview about their status and connection details like the URL and supported features. You can explore the
+#' service for free through the access to publicly available metadata of data collections as well as the offered
+#' processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
+#' your choice. There you will get further information on credentials and the login procedure.
 #' 
-#' Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
-#' just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
-#' open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
-#' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
+#' Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
+#' with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+#' open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
+#' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.
 #' 
 #' The parameter \code{version} is not required. If the service offers a well-known document of the
 #' service the client will choose an appropriate version (default the most recent production ready version).
@@ -245,10 +245,10 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
     return(invisible(con))
 }
 
-#' Function to login to a specific backend
+#' Log in on a specific back-end
 #' 
-#' Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
-#' is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
+#' Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step
+#' is usually performed during the 'connect' step. If you only connected to a back-end in order to 
 #' explore the functionalities and want to compute something, then you need to log in afterwards.
 #' 
 #' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
@@ -298,12 +298,12 @@ logout = function(con=NULL) {
 
 #' Active Connection
 #' 
-#' The function gets or sets the currently active connection to an openEO service. Usually the
-#' active connection is set when calling the \code{\link{connect}} function. Only the last 
+#' The function gets or sets the currently active connection to an openEO service. Usually, the
+#' active connection is set when calling the \code{\link{connect}} function. Just the last 
 #' connection is set as active.
 #' An application for the active connection is the optional connection within all the functions
 #' that interact with the openEO service and require a connection. If the connection is omitted 
-#' in those function, this function will be called in order to try to fetch a connection. If you 
+#' in the function, this function is called in order to try to fetch a connection. If you 
 #' want to operate on multiple services at once, you should use an explicit connection.
 #' 
 #' @param con optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
@@ -340,7 +340,7 @@ active_connection = function(con=NULL) {
 #' Available OIDC provider
 #' 
 #' In case the openEO service provider supports OpenID connect authentication, this function will return a list
-#' of supported provider that can be used on this specific service.
+#' of supported provider that can be used by this specific service.
 #' 
 #' @param con active openEO service connection (\code{\link{OpenEOClient}})
 #' 

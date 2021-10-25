@@ -2,7 +2,7 @@
 % Please edit documentation in R/user_defined_processes.R
 \name{create_user_process}
 \alias{create_user_process}
-\title{Stores a graph as user defined process at the back-end}
+\title{Stores a graph as user defined process on the back-end}
 \usage{
 create_user_process(
   graph,
@@ -34,11 +34,11 @@ is used.}
 a list assembling a process graph description or the graph id if send
 }
 \description{
-Uploads the process graph information to the back-end and stores it for reuse as a user defined process.
+Uploads the process graph information to the back-end and stores it. This can be used as a user defined process.
 }
 \details{
-The parameter \code{submit} will be deprecated in the future. Please use \code{as(obj, "Process")} in the 
-future. In general you might use this when copying a JSON representation of your process graph to
+The parameter \code{submit} will be deprecated in the future. Please use \code{as(obj, "Process")}.
+This function is useful when copying a JSON representation of your process graph to
 another software. In that case use \code{udp = as(obj, "Process")} and simply print or call 
 object \code{udp} on the console.
 }

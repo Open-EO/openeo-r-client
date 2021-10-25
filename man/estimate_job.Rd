@@ -16,7 +16,6 @@ is used.}
 JobCostsEstimation containing information how much money and time will be spent
 }
 \description{
-Calls the back-end and asks for an approximation about the costs in money and how much time
-will be required to finish the job and whether or not the job owners data download is already
-included in the monetary costs.
+Calls the back-end and asks for an approximation about the monetary costs, the required time, 
+and whether or not the job owners data download is already included in the monetary costs.
 }

@@ -33,20 +33,20 @@ connect(
 \item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)}
 }
 \description{
-Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
-specific versions, then you should provide the versions parameter.
+Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
+specific versions you should provide the version parameter.
 }
 \details{
 You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
-have an overview about their status, connection details like the URL and supported features. You can always explore the
-service for free, meaning you have access to publicly available metadata of data collections as well as the offered
-processing functions. For any computations and the creation of webservices you need to register the openEO partner of
-your choice. Then you will get further information on credentials and the login procedure.
+have an overview about their status and connection details like the URL and supported features. You can explore the
+service for free through the access to publicly available metadata of data collections as well as the offered
+processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
+your choice. There you will get further information on credentials and the login procedure.
 
-Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals
-just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
-open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
-use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.
+Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
+with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
+use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.
 
 The parameter \code{version} is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).

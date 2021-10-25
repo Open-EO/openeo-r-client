@@ -17,6 +17,6 @@ a FileFormatList object
 The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
 }
 \details{
-The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. At each category we have another
-named list with the \code{FileFormat} indexed by its format ID.
+The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. For each category a different 
+named list with the \code{FileFormat} is indexed by its format ID.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{delete_file}
 \alias{delete_file}
-\title{Deletes a file from the users workspace}
+\title{Delete a file from the user workspace}
 \usage{
 delete_file(src, con = NULL)
 }
@@ -16,5 +16,5 @@ is used.}
 logical
 }
 \description{
-Sends a request to an openeo back-end in order to remove a specific file from the users workspaces
+Sends a request to an openeo back-end in order to remove a specific file from the users workspaces.
 }

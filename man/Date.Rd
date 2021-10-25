@@ -4,7 +4,7 @@
 \alias{Date}
 \title{Date}
 \value{
-Object of \code{\link{R6Class}} which represents a date.
+Object of \code{\link{R6Class}} representing a date.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a date.

@@ -16,5 +16,5 @@ is used.}
 a Collection object with detailed information about a collection.
 }
 \description{
-Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
+Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end.
 }

@@ -27,5 +27,5 @@ create_variable(
 a \code{\link{ProcessGraphParameter}} object
 }
 \description{
-This function will create a variable to be used in the designated process graph with additional optional information.
+This function creates a variable to be used in the designated process graph with additional optional information.
 }

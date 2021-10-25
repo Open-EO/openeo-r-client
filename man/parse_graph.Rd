@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_graph_building.R
 \name{parse_graph}
 \alias{parse_graph}
-\title{Parses a JSON openeo graph into a R graph}
+\title{Converts a JSON openeo graph into an R graph}
 \usage{
 parse_graph(json, parameters = NULL, con = NULL)
 }
@@ -18,6 +18,5 @@ is used.}
 Graph object
 }
 \description{
-The function reads and parses the given json text and creates based on the information of the
-text a Graph object.
+The function reads and parses a json text and creates a Graph object.
 }

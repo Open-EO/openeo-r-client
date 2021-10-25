@@ -2,7 +2,7 @@
 % Please edit documentation in R/jobs.R
 \name{list_jobs}
 \alias{list_jobs}
-\title{List the jobs that a user has}
+\title{List the jobs of a user}
 \usage{
 list_jobs(con = NULL)
 }
@@ -11,5 +11,5 @@ list_jobs(con = NULL)
 is used.}
 }
 \description{
-lists the jobs that a user has uploaded or in execution
+Lists the jobs that a user has uploaded or in that are in execution
 }

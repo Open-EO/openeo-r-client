@@ -15,7 +15,7 @@ remove_variable(graph, variable)
 TRUE
 }
 \description{
-The function removes a selected variable from the graph. It only removes it from the list of defined 
-variables that are obtainable with \code{\link{variables}}. Those that are already placed in the graph 
-won't be deleted in the graph, only in the defined variables list.
+The function that removes a selected variable from the graph. It is removed from the list of defined 
+variables that are obtainable with \code{\link{variables}}. The variables already placed in the graph 
+won't be deleted, only in the defined variables list.
 }

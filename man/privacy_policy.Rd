@@ -2,7 +2,7 @@
 % Please edit documentation in R/server_metadata.R
 \name{privacy_policy}
 \alias{privacy_policy}
-\title{Visualizes the privacy policy}
+\title{Visualize the privacy policy}
 \usage{
 privacy_policy(con = NULL)
 }
@@ -14,6 +14,6 @@ is used.}
 a list of the link identifying the privacy policy from the service capabilities or NULL
 }
 \description{
-If the service provides information in their capabilities about their privacy policy, the function opens a new RStudio 
+If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
 viewer panel and visualizes the HTML content of the link.
 }

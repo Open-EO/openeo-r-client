@@ -13,6 +13,6 @@ delete_user_process(id, con = NULL)
 is used.}
 }
 \description{
-The function initiates the deletion of a user defined process at the back-end. Only the owning user can delete
+The function initiates the deletion of a user defined process on the back-end. Only the owning user can delete
 their process. The user defined process also should not be part of any particular job.
 }

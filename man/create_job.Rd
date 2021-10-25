@@ -2,7 +2,7 @@
 % Please edit documentation in R/jobs.R
 \name{create_job}
 \alias{create_job}
-\title{Creates a job on the back-end from a Graph object}
+\title{Creates a job from a Graph object on the back-end}
 \usage{
 create_job(
   graph = NULL,
@@ -18,9 +18,9 @@ create_job(
 \item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 will return the results}
 
-\item{title}{Optional title of a job to be found}
+\item{title}{Optional title of a job}
 
-\item{description}{Optional a more detailed information about a job}
+\item{description}{Optional detailed information about a job}
 
 \item{plan}{An optional execution plan offered by the back-end, determining how the job will be executed}
 
@@ -35,8 +35,8 @@ is used.}
 the id of the job
 }
 \description{
-This function shall be called after the user defined a process graph for the back-end to create a job on the
-back-end. Therefore the user sends the process graph and the optional output specifications like
+This function is called after the user defines a process graph to create a job on the
+back-end. The user sends the process graph and the optional output specifications like
 format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
 description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
 back-end provider.

@@ -4,12 +4,12 @@
 \alias{AnyOf}
 \title{AnyOf}
 \value{
-Object of \code{\link{R6Class}} which represents a list temporal intervals.
+Object of \code{\link{R6Class}} representing an argument choice object.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a argument choice object. It means that multiple
-types can be stated, but at least on data type has to be picked. In JSON schema this is oftern used to make
-objects nullable - meaning that they allow NULL as value. The AnyOf is resolved into a simple nullable argument
+Inheriting from \code{\link{Argument}} in order to represent an argument choice object. Multiple
+types can be stated, but at least one data type has to be picked. In a JSON-schema this is often used to make
+objects nullable - meaning that they allow NULL as value. The AnyOf parameter is resolved into a simple nullable argument
 if this applies.
 }
 \section{Methods}{

@@ -16,5 +16,5 @@ dimension information as list
 }
 \description{
 The function returns the dimension information of a Collection object. This object is usually obtained when calling 
-\link{describe_collection}. It returns than the meta data information for the cube dimensions.
+\link{describe_collection}. It returns the meta data information for the cube dimensions.
 }

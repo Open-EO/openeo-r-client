@@ -13,5 +13,5 @@ variables(x)
 a named list of Variables
 }
 \description{
-The function creates a list of the defined (not necessarily used) variables of a process graph.
+The function creates a list of the defined (but not necessarily used) variables of a process graph.
 }

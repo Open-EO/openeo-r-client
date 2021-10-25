@@ -7,7 +7,7 @@
 dimensions(x, ...)
 }
 \arguments{
-\item{x}{an object from which dimension information shall be returned}
+\item{x}{an object from which dimension information is returned}
 
 \item{...}{additional parameters to pass on to internal functions}
 }

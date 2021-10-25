@@ -4,11 +4,11 @@
 \alias{TemporalInterval}
 \title{TemporalInterval}
 \value{
-Object of \code{\link{R6Class}} which represents a temporal interval.
+Object of \code{\link{R6Class}} representing a temporal interval.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a temporal interval. Open interval borders are
-denoted with NA. Exactly two objects are in the temporal interval.
+denoted by NA. Exactly two objects form the temporal interval.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

@@ -4,7 +4,7 @@
 \alias{ProjDefinition}
 \title{ProjDefinition}
 \value{
-Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
+Object of \code{\link{R6Class}} representing a projection definition based on PROJ.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a projection definition as a PROJ string.

@@ -4,7 +4,7 @@
 \alias{UdfCodeArgument}
 \title{UdfCodeArgument class}
 \value{
-Object of \code{\link{R6Class}} is an argument that expects an udf code or a file path.
+Object of \code{\link{R6Class}} is an argument that expects an UDF code or a file path.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.

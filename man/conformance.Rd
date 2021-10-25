@@ -11,7 +11,7 @@ conformance(con = NULL)
 is used.}
 }
 \description{
-Queries the openEO service for the conformance. As mentioned in the API it is highly optional and is only available if the service
+Queries the openEO service for the conformance. As stated in the API it is highly optional and  only available if the service
 wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
 as a list object translated from JSON using the jsonlite package.
 }

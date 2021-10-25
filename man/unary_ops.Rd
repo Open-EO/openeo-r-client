@@ -176,10 +176,9 @@ log10.ProcessGraphParameter(x)
 \method{quantile}{ProcessGraphParameter}(x, ...)
 }
 \arguments{
-\item{x}{\code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
-the function}
+\item{x}{\code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector. Passes internal data to the function}
 
-\item{...}{further arguments to pass on, see the documentation of those primitive functions of R for further information}
+\item{...}{further arguments to pass on, see the documentation of primitive functions of R for further information}
 
 \item{digits}{the amount of decimal digits to round to}
 
@@ -187,13 +186,13 @@ the function}
 
 \item{i}{the index of the element in a vector or list}
 
-\item{drop}{for completenes listed here but not used in openEO processes}
+\item{drop}{listed for completeness but not used in openEO processes.}
 }
 \value{
 a \code{ProcessNode}
 }
 \description{
-The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
-it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} and facilitate
+writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
 processes counterparts.
 }

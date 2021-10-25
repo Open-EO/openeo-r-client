@@ -4,12 +4,12 @@
 \alias{RasterCube}
 \title{RasterCube}
 \value{
-Object of \code{\link{R6Class}} which represents a raster cube.
+Object of \code{\link{R6Class}} representing a raster cube.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a raster cube. This is usually the in- and 
-output format of a process. Unless the process operates within a ProcessGraph on reduced data. Analogous to
-this the \code{\link{VectorCube}} behaves in the same manner, but with spatial feature data.
+output format of a process unless the process operates within a ProcessGraph on reduced data.  
+The \code{\link{VectorCube}} behaves comparably, but with underlying spatial feature data.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

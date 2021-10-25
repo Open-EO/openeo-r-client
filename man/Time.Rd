@@ -4,7 +4,7 @@
 \alias{Time}
 \title{Time}
 \value{
-Object of \code{\link{R6Class}} which represents the time of a day.
+Object of \code{\link{R6Class}} representing the time of a day.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent the time of a day.

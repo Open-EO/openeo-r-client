@@ -2,7 +2,7 @@
 % Please edit documentation in R/collections.R
 \name{list_collections}
 \alias{list_collections}
-\title{List Data on conected server}
+\title{List data on connected server}
 \usage{
 list_collections(con = NULL)
 }
@@ -14,7 +14,7 @@ is used.}
 object of class 'CollectionList'
 }
 \description{
-List available collections stored on a openEO server and return them as a CollectionList which is a named list of Collection objects. 
-The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this functions result will contain
-lesser information than the detailed description received at the other function.
+List available collections stored on an openEO server and return them as a CollectionList - a named list of Collection objects. 
+The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this function's result contains
+less information than the detailed description received from the other function.
 }

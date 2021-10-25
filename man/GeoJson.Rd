@@ -4,13 +4,13 @@
 \alias{GeoJson}
 \title{GeoJson}
 \value{
-Object of \code{\link{R6Class}} which represents an object in geojson.
+Object of \code{\link{R6Class}} representing an object in GeoJson.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
-allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
-in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
+Allowed values are either a list directly convertible into a valid GeoJson or polygon features from package 'sf'. 
+If sf-objects are used, keep in mind that the objects are projected in  Lat/Long EPSG:4326, unless marked otherwise.
+It is assumed that the coordinates have a projection. If the crs-object is set and does not match 
 EPSG:4326, the polygon is transformed accordingly.
 }
 \seealso{

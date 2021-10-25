@@ -25,20 +25,20 @@ send_udf(
 
 \item{host}{URL to the UDF service}
 
-\item{port}{optional port of the UDF service host}
+\item{port}{(optional) port of the UDF service host}
 
 \item{language}{programming language (R or Python) of the source code}
 
-\item{debug}{(optional) logical. Switch on / off debugging information for time taken}
+\item{debug}{(optional) logical - Switch on / off debugging information}
 
-\item{user_context}{list. Context parameter that are shipped from the user into the udf_service}
+\item{user_context}{list - Context parameter that are shipped from the user into the udf_service}
 
-\item{server_context}{list. Context usually sent from the back-end to trigger certain settings.}
+\item{server_context}{list - Context usually sent from the back-end to trigger certain settings}
 
-\item{download_info}{(optional) logical. Whether or not to print the time taken separately for 
+\item{download_info}{(optional) logical - Whether or not to print the time taken separately for 
 the download}
 
-\item{legacy}{logical. Whether or not the legacy endpoint shall be used (default: FALSE)}
+\item{legacy}{logical - Whether or not the legacy endpoint is used (default: FALSE)}
 
 \item{...}{parameters passed on to httr::content or to be more precise to jsonlite::fromJSON}
 }
@@ -46,8 +46,8 @@ the download}
 the textual JSON representation of the result
 }
 \description{
-This function is a testing function for UDF requests against a UDF service. If an 
-openEO UDF service is available (external via an URL or a local setup) and if you can obtain 
+This function tests UDF requests against a UDF service. If an 
+openEO UDF service is available (externally via URL or local setup) and if you can obtain 
 sample data that fit the context of your UDF use case, you can use this function to send the 
 code and the data to the UDF service. Depending on the state of the service (error or success)
 you can debug your code.

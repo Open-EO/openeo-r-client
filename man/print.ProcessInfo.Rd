@@ -2,7 +2,7 @@
 % Please edit documentation in R/print-functions.R
 \name{print.ProcessInfo}
 \alias{print.ProcessInfo}
-\title{Pretty print an openeo process}
+\title{Print an openeo process}
 \usage{
 \method{print}{ProcessInfo}(x, ...)
 }

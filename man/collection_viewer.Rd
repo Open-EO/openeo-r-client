@@ -2,7 +2,7 @@
 % Please edit documentation in R/viewer.R
 \name{collection_viewer}
 \alias{collection_viewer}
-\title{View for openEO collections}
+\title{View openEO collections}
 \usage{
 collection_viewer(x, con = NULL)
 }
@@ -13,6 +13,6 @@ with \code{\link{describe_collection}}.}
 \item{con}{a specific connection (optional), last connected service if omitted.}
 }
 \description{
-The function opens up a viewer panel in RStudio which renders the collection information
-nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
+The function opens a viewer panel in RStudio which renders the collection information
+in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
 }

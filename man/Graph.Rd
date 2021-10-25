@@ -13,9 +13,9 @@ in the exchange objects of the API. The graph consists of \code{\link{ProcessNod
 required and discouraged, because this will be handled automatically.
 }
 \details{
-In terms of the openEO API the process graph is the technical description of a process. To create an
+In terms of the openEO API the process graph is the technical description of a process. To create a
 user-defined process it requires a process graph and additional meta data. The process graph is not
-accepted at any openEO endpoint directly. For that it has to be wrapped in a \code{\link{Process}} 
+accepted at any openEO endpoint directly. Therefore, it has to be wrapped in a \code{\link{Process}} 
 object. Use \code{\link{as.Process}} in those cases. It is similarly handled in other functions of 
 this package.
 }
@@ -45,8 +45,8 @@ this package.
 \section{Arguments}{
 
 \describe{
-   \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
-   \item{final_node}{optional the final node (end node) that was used to create a graph}
+   \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used}
+   \item{final_node}{optional, the final node (end node) that was used to create a graph}
    \item{node_id}{the id of a process node}
    \item{node}{process node or  its node id}
    \item{parameter}{the name of a parameter in a process}

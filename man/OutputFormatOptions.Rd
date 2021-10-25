@@ -4,7 +4,7 @@
 \alias{OutputFormatOptions}
 \title{OutputFormatOptions}
 \value{
-Object of \code{\link{R6Class}} which represents output format options.
+Object of \code{\link{R6Class}} representing output format options.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent the additional output format options of a back-end.

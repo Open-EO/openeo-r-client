@@ -4,12 +4,12 @@
 \alias{Kernel}
 \title{Kernel}
 \value{
-Object of \code{\link{R6Class}} which represents a Kernel.
+Object of \code{\link{R6Class}} representing a Kernel.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a 2 dimensional array of weights that shall be applied 
-on the x and y (spatial) dimensions of the data cube. The inner level of the nested array aligns with the x axis and 
-the outer level aligns with the y axis. Each level of the kernel must have an uneven number of elements.
+Inheriting from \code{\link{Argument}} in order to represent a 2-dimensional array of weights applied 
+to the x and y (spatial) dimensions of the data cube. The inner level of the nested array is aligned to the x-axis and 
+the outer level is aligned to the y-axis. Each level of the kernel must have an uneven number of elements.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

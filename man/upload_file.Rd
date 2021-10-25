@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{upload_file}
 \alias{upload_file}
-\title{Uploads data into the users workspace}
+\title{Upload data into the users workspace}
 \usage{
 upload_file(
   content,
@@ -28,6 +28,6 @@ is used.}
 the relative file path on the server
 }
 \description{
-This function sends the file given by 'content' to the specified target location (relative file path in the
+This function sends the file retrieved by the 'content' parameter to the specified target location (relative file path in the
 user workspace) on the back-end.
 }

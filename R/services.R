@@ -4,7 +4,7 @@
 #' 
 #' Queries the back-end to retrieve a list of services that the current user owns. Services are 
 #' webservices like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
-#' indices are the service IDs, the service object that is indexed by its ID can be used other functions instead of its service ID.
+#' indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -37,15 +37,15 @@ list_services = function(con=NULL) {
 #' 
 #' The function will create a web service of a process graph / workflow on the connected openEO service.
 #' 
-#' @param type character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()
+#' @param type character - the OGC web service type name to be created or an object of type ServiceType obtainable through list_service_types()
 #' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
-#' @param title character (optional) - a title for the service intended for visualization purposes in clients for humans to read
+#' @param title character (optional) - a title for the service intended for visualization purposes in clients
 #' @param description character (optional) - a short description of the service
 #' @param enabled logical - whether or not the service is active or not
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character - the billing plan
-#' @param budget numeric the amount of credits that can be spent on this service
+#' @param budget numeric - the amount of credits that can be spent on this service
 #' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
@@ -104,19 +104,19 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' Modifies a service
 #' 
 #' The function updates a service with the given information. If a parameter is NULL then it will
-#' not be overwritten at the backend. If the parameter is set to NA then the value on the backend
-#' will be deleted and also set to NULL.
+#' not be overwritten on the back-end. If the parameter is set to NA then the value on the back-end
+#' will be deleted and set to NULL.
 #' 
 #' @param service the Service or its ID
-#' @param type character the ogc web service type name to be created
+#' @param type character - the OGC web service type name to be created
 #' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
-#' @param title character (optional) the title in human readabled form for the service
-#' @param description character (optional) the description for the service
+#' @param title character (optional) - the title of for the service
+#' @param description character (optional) - the description for the service
 #' @param enabled logical 
 #' @param configuration a list of service creation configuration
-#' @param plan character the billing plan
-#' @param budget numeric the amount of credits that can be spent for this service
+#' @param plan character - the billing plan
+#' @param budget numeric - the amount of credits that can be spent for this service
 #' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
@@ -292,7 +292,7 @@ delete_service = function(service, con=NULL) {
 
 #' Service log
 #' 
-#' Attempts to open the log of secondary service.
+#' Opens the log of secondary service.
 #' 
 #' @param service the service or the service_id
 #' @param offset the id of the log entry to start from

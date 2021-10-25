@@ -5,7 +5,7 @@ NULL
 
 #' List available processes on server
 #'
-#' list all processes available on the back-end
+#' List all processes available on the back-end
 #' @param con Connection object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a list of lists with process_id and description
@@ -72,7 +72,7 @@ describe_process = function(process = NA, con=NULL) {
 #' Process Collection
 #' 
 #' This object contains template functions for process graph building from the processes offered by an openEO service. This object is
-#' an R6 object that is not locked, in order to add new functions at runtime. 
+#' an unlocked R6 object, in order to add new functions at runtime. 
 #' 
 #' @name ProcessCollection
 #' 

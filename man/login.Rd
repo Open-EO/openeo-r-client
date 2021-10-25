@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{login}
 \alias{login}
-\title{Function to login to a specific backend}
+\title{Log in on a specific back-end}
 \usage{
 login(
   user = NULL,
@@ -31,8 +31,8 @@ is used.}
 a connected and authenticated back-end connection
 }
 \description{
-Retrieves the bearer-token from the backend by sending user name and password to the backend. This step
-is usually also performed in the 'connect' step. But if you only connected to a back-end in order to 
+Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step
+is usually performed during the 'connect' step. If you only connected to a back-end in order to 
 explore the functionalities and want to compute something, then you need to log in afterwards.
 }
 \examples{

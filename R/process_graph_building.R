@@ -8,9 +8,9 @@
 #' \code{\link{ProcessGraphParameter}} (former variables). The explicit creation of a Graph is usually not 
 #' required and discouraged, because this will be handled automatically. 
 #' 
-#' In terms of the openEO API the process graph is the technical description of a process. To create an
+#' In terms of the openEO API the process graph is the technical description of a process. To create a
 #' user-defined process it requires a process graph and additional meta data. The process graph is not
-#' accepted at any openEO endpoint directly. For that it has to be wrapped in a \code{\link{Process}} 
+#' accepted at any openEO endpoint directly. Therefore, it has to be wrapped in a \code{\link{Process}} 
 #' object. Use \code{\link{as.Process}} in those cases. It is similarly handled in other functions of 
 #' this package.
 #' 
@@ -35,8 +35,8 @@
 #' }
 #' @section Arguments:
 #' \describe{
-#'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used.}
-#'    \item{final_node}{optional the final node (end node) that was used to create a graph}
+#'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used}
+#'    \item{final_node}{optional, the final node (end node) that was used to create a graph}
 #'    \item{node_id}{the id of a process node}
 #'    \item{node}{process node or  its node id}
 #'    \item{parameter}{the name of a parameter in a process}
@@ -190,14 +190,14 @@ setOldClass(c("Graph","R6"))
 #' 
 #' @return Object of \code{\link{R6Class}} with methods for storing meta data of back-end processes and user assigned data
 #' 
-#' @field parameters a named list of Argument objects
+#' @field parameters - a named list of Argument objects
 #' @field isUserDefined logical - depending if the process is offered by the openEO service or if it was user defined
 #' 
 #' @section Methods:
 #' \describe{
 #'    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
 #'    \item{$getId()}{returns the id of a process which was defined on the back-end}
-#'    \item{$getParameters()}{returns a named list of Arguments}
+#'    \item{$getParameters()}{returns a named list of arguments}
 #'    \item{$getReturns()}{returns the schema for the return type as list}
 #'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
 #'    corresponds to the parameter name}
@@ -558,7 +558,7 @@ ProcessNode = R6Class(
         return(private$.namespace)
       } else {
         if (!is.na(value) || (!is.character(value) && !tolower(value) %in% c("user","backend"))) {
-          warning("Cannot assign namespace of the process. It has to be NA, 'user' or 'backend'")
+          warning("Cannot assign namespace to the process. It has to be NA, 'user' or 'backend'")
         } else {
           private$.namespace = value
           return(invisible(self))
@@ -595,10 +595,9 @@ setOldClass(c("ProcessNode","Process","R6"))
 
 # Extra functions / wrapper ----
 
-#' Parses a JSON openeo graph into a R graph
+#' Converts a JSON openeo graph into an R graph
 #' 
-#' The function reads and parses the given json text and creates based on the information of the
-#' text a Graph object.
+#' The function reads and parses a json text and creates a Graph object.
 #' 
 #' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -734,7 +733,7 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
 
 #' Creates a variable in a process graph
 #' 
-#' This function will create a variable to be used in the designated process graph with additional optional information.
+#' This function creates a variable to be used in the designated process graph with additional optional information.
 #' 
 #' @param name the name of the variable
 #' @param description an optional description of the variable
@@ -754,7 +753,7 @@ create_variable = function(name,description=NULL,type=NULL,subtype=NULL,default=
 
 #' Lists the defined variables for a graph
 #' 
-#' The function creates a list of the defined (not necessarily used) variables of a process graph.
+#' The function creates a list of the defined (but not necessarily used) variables of a process graph.
 #' 
 #' @param x a process graph object or a process node
 #' @return a named list of Variables
@@ -878,7 +877,7 @@ variables = function(x) {
     # at this point we don't have a check, whether or not there are conflicts in setting the process graph parameter (e.g. different types)
     for (i in 1:length(variables)) {
       if (! "Argument" %in% class(variables[[i]])) {
-        warning("Can't translate process graph parameter into R object")
+        warning("Can't translate process graph parameter into R-object")
       }
       variables[[i]]$adaptType(most_probable_types[[i]])
       
@@ -893,9 +892,9 @@ variables = function(x) {
   
 #' Removes a variable from the Graph
 #' 
-#' The function removes a selected variable from the graph. It only removes it from the list of defined 
-#' variables that are obtainable with \code{\link{variables}}. Those that are already placed in the graph 
-#' won't be deleted in the graph, only in the defined variables list.
+#' The function that removes a selected variable from the graph. It is removed from the list of defined 
+#' variables that are obtainable with \code{\link{variables}}. The variables already placed in the graph 
+#' won't be deleted, only in the defined variables list.
 #' 
 #' @param graph a \code{\link{Graph}} object
 #' @param variable a variable id or a variable object

@@ -16,5 +16,5 @@ is used.}
 logical with state of success
 }
 \description{
-Deletes a job from the backend.
+Deletes a job from the back-end.
 }

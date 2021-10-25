@@ -3,9 +3,9 @@ NULL
 
 # jobs endpoint ----
 
-#' List the jobs that a user has
+#' List the jobs of a user
 #'
-#' lists the jobs that a user has uploaded or in execution
+#' Lists the jobs that a user has uploaded or in that are in execution
 #'
 #' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -39,24 +39,24 @@ list_jobs = function(con=NULL) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Executes a job directly and returns the data immediately
+#' Executes a job and returns the data immediately
 #'
 #' Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
-#' the server remains open. The functions and enpoints main purpose is the debugging of code, where results can be immediately
-#' checked. Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
-#' So make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
+#' the server remains open. This function allows to debug the code and check the results immediately. 
+#' Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+#' Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
 #' e.g. not supporting UDFs at this endpoint.
 #'
-#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' @param graph a \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
-#' @param output_file Where to store the retrieved data under
-#' @param budget numeric, how much to spend at maximum on testing
+#' @param output_file storage location for the returned data
+#' @param budget numeric, maximum spendable amount for testing
 #' @param plan character, selection of a service plan
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
-#' @return a connection to file if output was provided, the raw data if not
+#' @return A connection to a file if an output was provided, the raw data if not
 #' 
 #' @importFrom methods as
 #' @export
@@ -76,7 +76,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
         } else if (any(c("function","ProcessNode") %in% class(graph))){
             graph = as(graph, "Graph")
         } else {
-            stop("Parameter graph is not a Graph object. Awaiting a list.")
+            stop("Parameter graph is not a Graph object. Awaiting a list object.")
         }
         
         process = Process$new(id=NA,description = NA,
@@ -113,18 +113,18 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 }
 
 
-#' Creates a job on the back-end from a Graph object
+#' Creates a job from a Graph object on the back-end 
 #' 
-#' This function shall be called after the user defined a process graph for the back-end to create a job on the
-#' back-end. Therefore the user sends the process graph and the optional output specifications like
+#' This function is called after the user defines a process graph to create a job on the
+#' back-end. The user sends the process graph and the optional output specifications like
 #' format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
 #' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
 #' back-end provider.
 #' 
 #' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
-#' @param title Optional title of a job to be found
-#' @param description Optional a more detailed information about a job
+#' @param title Optional title of a job
+#' @param description Optional detailed information about a job
 #' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
@@ -177,10 +177,9 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 
 #' Starts remote asynchronous evaluation of a job
 #' 
-#' The function sends a start signal to the backend in order to start processing the results
-#' for a defined job.
+#' The function sends a start signal to the back-end triggering a defined job.
 #' 
-#' @param job the job object or the job id of the defined job
+#' @param job the job object or the job id
 #' @param log logical - whether to enable automatic logging after starting the job
 #' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -216,13 +215,13 @@ start_job = function(job, log=FALSE, con=NULL) {
 
 #' Modifies a job with given parameter
 #' 
-#' The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
-#' that shall be replaced or removed. Shows a message of result or failure.
+#' The function modifies a stores a job with a given parameter. The dot parameter contains all the values
+#' that will be replaced or removed. The return shows a message of result or failure.
 #' 
 #' @details The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
 #' keys. 
-#' 'process_graph' will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
-#' 'format' will change the desired output format.
+#' The 'process_graph' option will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
+#' The 'format' option will change the desired output format.
 #' All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 #' e.g. if you just want to update the output format. 
 #' To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.
@@ -315,10 +314,10 @@ list_results = function(job, con=NULL) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Downloads the results of a job into a specific folder
+#' Downloads the results of a job
 #' 
 #' The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
-#' 'folder' will be the target location on the local computer.
+#' 'folder' is the target location on the local computer.
 #' 
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
@@ -357,7 +356,7 @@ download_results = function(job, folder, con=NULL) {
 
 #' Terminates a running job
 #'
-#' Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
+#' Informs the server that the specified job needs to be terminated and the token 'canceled' to prevent 
 #' further executions and related costs.
 #'
 #' @param job the job object or the id of job that will be canceled
@@ -392,7 +391,7 @@ stop_job = function(job, con=NULL) {
 
 #' Fetches information about a job
 #'
-#' Returns a detailed description about a specified job. For example to check the status of a job.
+#' Returns a detailed description about a specified job (e.g., the status)
 #'
 #' @param job the job object or the id of the job
 #' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
@@ -424,7 +423,7 @@ describe_job = function(job,con=NULL) {
 
 #' Delete a job
 #'
-#' Deletes a job from the backend.
+#' Deletes a job from the back-end.
 #'
 #' @param job the job or the id of the job
 #' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
@@ -453,9 +452,8 @@ delete_job = function(job, con=NULL) {
 
 #' Estimates job costs
 #'
-#' Calls the back-end and asks for an approximation about the costs in money and how much time
-#' will be required to finish the job and whether or not the job owners data download is already
-#' included in the monetary costs.
+#' Calls the back-end and asks for an approximation about the monetary costs, the required time, 
+#' and whether or not the job owners data download is already included in the monetary costs.
 #'
 #' @param job the job or the id of the job
 #' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
@@ -486,7 +484,7 @@ estimate_job = function(job, con=NULL) {
 
 #' Job log
 #' 
-#' Attempts to open the log of job.
+#' Opens the log of job.
 #' 
 #' @param job the job or the job_id
 #' @param offset the id of the log entry to start from

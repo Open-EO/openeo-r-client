@@ -3,12 +3,12 @@
 
 #' Parameter class
 #' 
-#' This class defines parameters of \code{\link{Process}}. They store information about the type, format and
-#' the pattern. Those classes are designed to not carry any value, because if the would it would be a 
+#' This class defines parameters of \code{\link{Process}}. They store information about the type, format and 
+#' pattern. A parameter class is designed to not carry any value, as opposed to an 
 #' \code{\link{Argument}}. 
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
-#' objects returned for the parameters in processes. Find a list of openEO specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
+#' objects returned for the parameters in processes. Find a list of openEO-specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
 #' 
 #' @name Parameter
 #' 
@@ -17,30 +17,30 @@
 #' 
 #' @section Methods:
 #' \describe{
-#'  \item{\code{$new(name, description,required=FALSE)}}{}
+#'  \item{\code{$new(name, description, required=FALSE)}}{}
 #'  \item{\code{$getName}}{returns the name of a parameter as string}
 #'  \item{\code{$setName(name)}}{sets the name of a parameter}
 #'  \item{\code{$getDescription()}}{returns the description of a parameter}
 #'  \item{\code{$setDescription(description)}}{sets the description of a parameter}
 #'  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
 #'  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
-#'  \item{\code{$getDefault()}}{returns the parameters default value}
+#'  \item{\code{$getDefault()}}{returns the parameter's default value}
 #'  \item{\code{$setDefault(default)}}{sets the default value of a parameter}
 #'  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
-#'  API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+#'  API schema object - matches the parameter's schema, which is used for finding the corresponding parameter}
 #'  \item{\code{$getSchema()}}{returns the schema definition}
 #'  \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
 #'  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
-#'  \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
-#'  \item{\code{$isAny()}}{return TRUE if this parameter describes a choice of parameters}
+#'  \item{\code{$isRequired()}}{returns whether a parameter is mandatory or not}
+#'  \item{\code{$isAny()}}{returns TRUE if this parameter describes a choice of parameters}
 #' }
 #' @section Arguments:
 #' \describe{
 #'   \item{\code{name}}{character - The name of a parameter}
 #'   \item{\code{description}}{character - The description of a parameter}
-#'   \item{\code{required}}{logical - whether or not }
-#'   \item{\code{pattern}}{the regexp as a string how to formulate the value}
-#'   \item{\code{default}}{the regexp as a string how to formulate the value}   
+#'   \item{\code{required}}{logical - whether it is required or not }
+#'   \item{\code{pattern}}{the regexp as a string indicating how to formulate the value}
+#'   \item{\code{default}}{the regexp as a string indicating how to formulate the value}   
 #'   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
 #' }
 NULL
@@ -107,7 +107,7 @@ Parameter = R6Class(
       
       info = list()
       info$name = self$getName()
-      
+
       if (length(self$getDescription()) > 0) {
         if (!is.na(self$getDescription()) || nchar(self$getDescription()) > 0) {
           info$description = self$getDescription()
@@ -204,23 +204,23 @@ Parameter = R6Class(
 # Argument ====
 #' Argument class
 #' 
-#' This class inherits all fields and functions from \code{\link{Parameter}} and augments this class for 
-#' managing a value. This includes getter/setter, validation and serilization. Since this is the parent class
-#' for the type specific argument classes the inheriting classes implement their own version of the private
+#' This class inherits all fields and functions from \code{\link{Parameter}} adds the functionality to
+#' manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
+#' for the type specific argument classes, the inheriting classes implement their own version of the private
 #' functions \code{$typeCheck()} and \code{$typeSerialization()}.
 #' 
 #' @name Argument
 #' 
-#' @return Object of \code{\link{R6Class}} which represents an argument.
+#' @return Object of \code{\link{R6Class}} representing an argument.
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$setValue(value)}}{Assigns a value for this argument}
+#'   \item{\code{$setValue(value)}}{Assigns a value to this argument}
 #'   \item{\code{$getValue()}}{Returns the value of this argument}
 #'   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
 #'   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
 #'   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
-#'   \item{\code{$getProcess()}}{returns the process to which this parameter belongs to}
+#'   \item{\code{$getProcess()}}{returns the process this parameter belongs ro}
 #'   \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 #' }
 #' @section Arguments: 
@@ -399,7 +399,7 @@ Argument = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents an Integer
+#' @return Object of \code{\link{R6Class}} representing an Integer
 NULL
 
 Integer = R6Class(
@@ -452,7 +452,7 @@ Integer = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents an EPSG code as Integer
+#' @return Object of \code{\link{R6Class}} representing an EPSG code as Integer
 NULL
 
 EPSGCode = R6Class(
@@ -505,7 +505,7 @@ EPSGCode = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a Number
+#' @return Object of \code{\link{R6Class}} representing a number
 NULL
 
 Number = R6Class(
@@ -532,7 +532,7 @@ Number = R6Class(
         if (!any(c("number","integer") %in% class(return_value) && 
                  length(return_value$getSchema()$type)) != 0) {
           
-          stop(paste0("Value 'ProcessNode' does not return the ANY object nor a number."))
+          stop(paste0("Value 'ProcessNode' returns neither the ANY object nor a number."))
         }
         
         # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
@@ -578,7 +578,7 @@ Number = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a string.
+#' @return Object of \code{\link{R6Class}} representing a string.
 NULL
 
 String = R6Class(
@@ -608,7 +608,7 @@ String = R6Class(
       
       if (length(self$getEnum()) > 0) {
         if (!private$value %in% self$getEnum()) {
-          stop(paste0("Enum was stated, but value does not match any enum."))
+          stop(paste0("Enum was stated, but the value does not match any enum."))
         }
       }
       
@@ -695,7 +695,7 @@ URI = R6Class(
 # Output Format ====
 #' OutputFormat class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent an output format of a back-end as  a 
+#' Inheriting from \code{\link{Argument}} in order to represent an output format of a back-end as a 
 #' character string value.
 #' 
 #' @name OutputFormat
@@ -708,7 +708,7 @@ URI = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents an output format of a back-end.
+#' @return Object of \code{\link{R6Class}} representing an output format of a back-end.
 NULL
 
 OutputFormat = R6Class(
@@ -758,7 +758,7 @@ OutputFormat = R6Class(
 # CollectionId ====
 #' CollectionId class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a collection id on an openeo back-end.
+#' Inheriting from \code{\link{Argument}} in order to represent a CollectionId on an openeo back-end.
 #' 
 #' @name CollectionId
 #' 
@@ -770,7 +770,7 @@ OutputFormat = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a collection id.
+#' @return Object of \code{\link{R6Class}} representing a CollectionId.
 NULL
 
 CollectionId = R6Class(
@@ -809,7 +809,7 @@ CollectionId = R6Class(
           
           if (is.null(coerced) || 
               is.na(coerced) ||
-              length(coerced) == 0) stop(paste0("Collection ID obtained from service is not valid, please contact the openEO service support."))
+              length(coerced) == 0) stop(paste0("CollectionId obtained from service is not valid, please contact the openEO service support."))
         }
       } else {
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
@@ -831,7 +831,7 @@ CollectionId = R6Class(
 # JobId ====
 #' JobId class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a job id on an openeo back-end.
+#' Inheriting from \code{\link{Argument}} in order to represent a jobId on an openeo back-end.
 #' 
 #' @name JobId
 #' 
@@ -843,7 +843,7 @@ CollectionId = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents the id of a job.
+#' @return Object of \code{\link{R6Class}} representing the id of a job.
 NULL
 
 JobId = R6Class(
@@ -898,7 +898,7 @@ JobId = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents the udf runtime in an process argument
+#' @return Object of \code{\link{R6Class}} representing the udf runtime in a process argument.
 NULL
 
 UdfRuntimeArgument = R6Class(
@@ -938,7 +938,7 @@ UdfRuntimeArgument = R6Class(
 # UdfRuntimeVersion argument ====
 #' UdfRuntimeVersionArgument class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' Inheriting from \code{\link{Argument}} in order to represent the id of a UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
 #' 
 #' @name UdfRuntimeVersionArgument
 #' 
@@ -950,7 +950,7 @@ UdfRuntimeArgument = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} is an argument that expects a udf runtime version or character as value.
+#' @return Object of \code{\link{R6Class}} is an argument that expects a UDF runtime version or character as value.
 NULL
 
 UdfRuntimeVersionArgument = R6Class(
@@ -1002,7 +1002,7 @@ UdfRuntimeVersionArgument = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} is an argument that expects an udf code or a file path.
+#' @return Object of \code{\link{R6Class}} is an argument that expects an UDF code or a file path.
 NULL
 
 UdfCodeArgument = R6Class(
@@ -1072,7 +1072,7 @@ UdfCodeArgument = R6Class(
 # ProcessGraphId ====
 #' ProcessGraphId
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a process graph id on an openeo back-end.
+#' Inheriting from \code{\link{Argument}} in order to represent a process graph Id on an openeo back-end.
 #' 
 #' @name ProcessGraphId
 #' 
@@ -1084,7 +1084,7 @@ UdfCodeArgument = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents the id of a process graph.
+#' @return Object of \code{\link{R6Class}} representing the id of a process graph.
 NULL
 
 ProcessGraphId = R6Class(
@@ -1140,7 +1140,7 @@ ProcessGraphId = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a projection definition based on PROJ.
+#' @return Object of \code{\link{R6Class}} representing a projection definition based on PROJ.
 NULL
 
 ProjDefinition = R6Class(
@@ -1180,8 +1180,8 @@ ProjDefinition = R6Class(
 # Bounding Box ====
 #' BoundingBox
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of a certain area of 
-#' interest. Its value is usually a named list with "west","south","east" and "north". A NA value means a open
+#' Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of an area of 
+#' interest. Its value is usually a named list with "west","south","east" and "north". An NA value means an open
 #' interval.
 #' 
 #' @name BoundingBox
@@ -1194,7 +1194,7 @@ ProjDefinition = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a bounding box / extent.
+#' @return Object of \code{\link{R6Class}} representing a bounding box / extent.
 NULL
 
 BoundingBox = R6Class(
@@ -1225,7 +1225,7 @@ BoundingBox = R6Class(
       
       obj_names = names(private$value)
       
-      if (length(obj_names) == 0) stop("Bounding box parameter are unnamed. Cannot distinguish values.") 
+      if (length(obj_names) == 0) stop("Bounding box parameter are unnamed. Cannot distinguish between values.") 
       
       # check if west, south, east, north are set and all are numeric values or coercable as numeric
       required_dir_params = c("west","south","east","north")
@@ -1238,7 +1238,7 @@ BoundingBox = R6Class(
         nas = sapply(vals, is.na)
         
         if (any(nas)) {
-          stop("Not all bbox parameters are numeric or can be automatically coerced into numeric: ",paste0(obj_names[nas],collapse = ", "))
+          stop("Not all bbox parameters are numeric or can be coerced into numeric automatically: ",paste0(obj_names[nas],collapse = ", "))
         } else {
           private$value[obj_names] = vals
         }
@@ -1304,7 +1304,7 @@ BoundingBox = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a boolean / logical.
+#' @return Object of \code{\link{R6Class}} representing a boolean / logical.
 NULL
 
 Boolean = R6Class(
@@ -1355,7 +1355,7 @@ Boolean = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a date.
+#' @return Object of \code{\link{R6Class}} representing a date.
 NULL
 
 Date = R6Class(
@@ -1407,7 +1407,7 @@ Date = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a date with time component.
+#' @return Object of \code{\link{R6Class}} representing a date with time component.
 NULL
 
 DateTime = R6Class(
@@ -1459,7 +1459,7 @@ DateTime = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents the time of a day.
+#' @return Object of \code{\link{R6Class}} representing the time of a day.
 NULL
 
 Time = R6Class(
@@ -1510,10 +1510,10 @@ Time = R6Class(
 # GeoJson ====
 #' GeoJson
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a geojson object. This basically means that this
-#' class represents geospatial features. As value either a list that can be directly converted into valid GeoJson is
-#' allowed or polygon features from package 'sf'. If sf objects are used please keep in mind that unless marked otherwise
-#' in the data, it is assumed that the coordinates have a crs of EPSG:4326. If the crs object is set and does not match 
+#' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
+#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features from package 'sf'. 
+#' If sf-objects are used, keep in mind that the objects are projected in  Lat/Long EPSG:4326, unless marked otherwise.
+#' It is assumed that the coordinates have a projection. If the crs-object is set and does not match 
 #' EPSG:4326, the polygon is transformed accordingly.
 #' 
 #' @name GeoJson
@@ -1526,7 +1526,7 @@ Time = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents an object in geojson.
+#' @return Object of \code{\link{R6Class}} representing an object in GeoJson.
 NULL
 
 GeoJson = R6Class(
@@ -1544,7 +1544,7 @@ GeoJson = R6Class(
     setValue = function(value) {
       
       if (!.is_package_installed("sf")) {
-        warnings("Package sf is not installed which is required for GeoJson support.")
+        warnings("Package sf is not installed but required for GeoJson support.")
       }
       
       if (isNamespaceLoaded("sf")) {
@@ -1576,7 +1576,7 @@ GeoJson = R6Class(
       if ("sf" %in% class(private$value)) {
         return(NULL)
       } else {
-        stop("Class ",class(private$value)[[1]], " not supported in GeoJson Argument")
+        stop("Class ",class(private$value)[[1]], " not supported in GeoJson argument")
       }
         
       
@@ -1615,7 +1615,7 @@ GeoJson = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents output format options.
+#' @return Object of \code{\link{R6Class}} representing output format options.
 NULL
 
 OutputFormatOptions = R6Class(
@@ -1649,8 +1649,8 @@ OutputFormatOptions = R6Class(
 #' RasterCube
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a raster cube. This is usually the in- and 
-#' output format of a process. Unless the process operates within a ProcessGraph on reduced data. Analogous to
-#' this the \code{\link{VectorCube}} behaves in the same manner, but with spatial feature data.
+#' output format of a process unless the process operates within a ProcessGraph on reduced data.  
+#' The \code{\link{VectorCube}} behaves comparably, but with underlying spatial feature data.
 #' 
 #' @name RasterCube
 #' 
@@ -1662,7 +1662,7 @@ OutputFormatOptions = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a raster cube.
+#' @return Object of \code{\link{R6Class}} representing a raster cube.
 NULL
 
 RasterCube = R6Class(
@@ -1698,7 +1698,7 @@ RasterCube = R6Class(
 # VectorCube ====
 #' VectorCube
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a vector cube. This is in analogy to
+#' Inheriting from \code{\link{Argument}} in order to represent a vector cube. This is analogous to
 #' the \code{\link{RasterCube}}.
 #' 
 #' @name VectorCube
@@ -1711,7 +1711,7 @@ RasterCube = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a vector cube.
+#' @return Object of \code{\link{R6Class}} representing a vector cube.
 NULL
 
 VectorCube = R6Class(
@@ -1750,7 +1750,7 @@ VectorCube = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 #' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-#' injected data. Hints from the openeo api documention:
+#' added data. Additional information can be found in the openeo api documention:
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
@@ -1764,7 +1764,7 @@ VectorCube = R6Class(
 #' 
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{parameters}}{the list \code{\link{ProcessGraphParameter}}}
+#'   \item{\code{parameters}}{the \code{\link{ProcessGraphParameter}} list}
 #' }
 #' 
 #' @name ProcessGraphArgument
@@ -1777,7 +1777,7 @@ VectorCube = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph.
+#' @return Object of \code{\link{R6Class}} representing a ProcessGraph.
 NULL
 
 ProcessGraphArgument = R6Class(
@@ -1826,7 +1826,7 @@ ProcessGraphArgument = R6Class(
       } else if ("Graph" %in% class(value) || is.na(value)) {
         private$value = value
       } else {
-        stop("Assigned value for process graph is neiter function, Graph nor a final process node.")
+        stop("Assigned value for process graph needs to be function, graph or a final process node.")
       }
       
       
@@ -1881,7 +1881,7 @@ ProcessGraphArgument = R6Class(
 #' ProcessGraphParameter
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
-#' Hints from the openeo api documention:
+#' Additional information can be found in the openeo api documention:
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
@@ -1897,10 +1897,10 @@ ProcessGraphArgument = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a ProcessGraph value.
+#' @return Object of \code{\link{R6Class}} representing a ProcessGraph value.
 NULL
 
-# in case the ProcessGraphParameter is an arry - which it will be in most cases - we have to store
+# in case the ProcessGraphParameter is an array - which it will be in most cases - we have to store
 # process nodes for array subsetting in the object with its index. This should be done to 
 # reuse the results of previous steps
 ProcessGraphParameter = R6Class(
@@ -1982,7 +1982,7 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a single valued array.
+#' @return Object of \code{\link{R6Class}} representing a single valued array.
 NULL
 
 Array = R6Class(
@@ -2063,7 +2063,7 @@ Array = R6Class(
       }
       if (length(private$schema$maxItems) == 1 && 
           length(private$value) > private$schema$maxItems) {
-        stop(paste0("More items than are maximal required. Found ",length(private$value)," items of maximal ",private$schema$maxItems," items."))
+        stop(paste0("More items than maximum. Found ",length(private$value)," items of maximal ",private$schema$maxItems," items."))
       }
 
       if (itemType == "array") {
@@ -2110,7 +2110,7 @@ Array = R6Class(
           
         }))
         
-        if (!allOK) stop("At least one of the nested array has not the correct item type or the min/max constraint was triggered.")
+        if (!allOK) stop("At least one of the nested arrays has an invalid item type or the min/max constraint was triggered.")
         
       } else {
         if (!"ProcessGraphParameter" %in% class(private$value[[1]])) {
@@ -2199,9 +2199,9 @@ Array = R6Class(
 # Kernel ====
 #' Kernel
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a 2 dimensional array of weights that shall be applied 
-#' on the x and y (spatial) dimensions of the data cube. The inner level of the nested array aligns with the x axis and 
-#' the outer level aligns with the y axis. Each level of the kernel must have an uneven number of elements.
+#' Inheriting from \code{\link{Argument}} in order to represent a 2-dimensional array of weights applied 
+#' to the x and y (spatial) dimensions of the data cube. The inner level of the nested array is aligned to the x-axis and 
+#' the outer level is aligned to the y-axis. Each level of the kernel must have an uneven number of elements.
 #' 
 #' @name Kernel
 #' 
@@ -2213,7 +2213,7 @@ Array = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a Kernel.
+#' @return Object of \code{\link{R6Class}} representing a Kernel.
 NULL
 
 Kernel = R6Class(
@@ -2266,7 +2266,7 @@ Kernel = R6Class(
 #' TemporalInterval
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a temporal interval. Open interval borders are
-#' denoted with NA. Exactly two objects are in the temporal interval.
+#' denoted by NA. Exactly two objects form the temporal interval.
 #' 
 #' @name TemporalInterval
 #' 
@@ -2278,7 +2278,7 @@ Kernel = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a temporal interval.
+#' @return Object of \code{\link{R6Class}} representing a temporal interval.
 NULL
 
 TemporalInterval = R6Class(
@@ -2321,7 +2321,7 @@ TemporalInterval = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
+#' @return Object of \code{\link{R6Class}} representing a list of temporal intervals.
 NULL
 
 TemporalIntervals = R6Class(
@@ -2347,9 +2347,9 @@ TemporalIntervals = R6Class(
 # AnyOf ====
 #' AnyOf
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent a argument choice object. It means that multiple
-#' types can be stated, but at least on data type has to be picked. In JSON schema this is oftern used to make
-#' objects nullable - meaning that they allow NULL as value. The AnyOf is resolved into a simple nullable argument
+#' Inheriting from \code{\link{Argument}} in order to represent an argument choice object. Multiple
+#' types can be stated, but at least one data type has to be picked. In a JSON-schema this is often used to make
+#' objects nullable - meaning that they allow NULL as value. The AnyOf parameter is resolved into a simple nullable argument
 #' if this applies. 
 #' 
 #' @section Methods:
@@ -2368,7 +2368,7 @@ TemporalIntervals = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} which represents a list temporal intervals.
+#' @return Object of \code{\link{R6Class}} representing an argument choice object.
 NULL
 
 AnyOf = R6Class(

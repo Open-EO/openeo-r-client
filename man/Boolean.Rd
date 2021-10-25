@@ -4,7 +4,7 @@
 \alias{Boolean}
 \title{Boolean}
 \value{
-Object of \code{\link{R6Class}} which represents a boolean / logical.
+Object of \code{\link{R6Class}} representing a boolean / logical.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a boolean / logical.

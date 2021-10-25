@@ -4,7 +4,7 @@
 \alias{EPSGCode}
 \title{EPSGCode class}
 \value{
-Object of \code{\link{R6Class}} which represents an EPSG code as Integer
+Object of \code{\link{R6Class}} representing an EPSG code as Integer
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent an EPSG Code as a single integer value.

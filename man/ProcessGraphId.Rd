@@ -4,10 +4,10 @@
 \alias{ProcessGraphId}
 \title{ProcessGraphId}
 \value{
-Object of \code{\link{R6Class}} which represents the id of a process graph.
+Object of \code{\link{R6Class}} representing the id of a process graph.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a process graph id on an openeo back-end.
+Inheriting from \code{\link{Argument}} in order to represent a process graph Id on an openeo back-end.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

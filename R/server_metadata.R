@@ -4,7 +4,7 @@
 #' The function queries the back-end for its supported versions. The endpoint \href{https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get}{/.well-known/openeo} 
 #' is called on the given host URL and the JSON result is coerced into a tibble.
 #' 
-#' @param url the url as String pointing to the base host of the back-end
+#' @param url the url as string pointing to the base host of the back-end
 #' 
 #' @return a data.frame or a tibble containing all supported API versions of the back-end
 #' @export
@@ -28,7 +28,7 @@ api_versions = function(url) {
             }
             return(as.data.frame(vlist))
         } else {
-            stop("Host is not reachable. Please check the stated URL.")
+            stop("Host is not reachable. Please check the URL.")
         }
         
     }, error = .capturedErrorToMessage)
@@ -36,7 +36,7 @@ api_versions = function(url) {
 
 #' Capabilities overview
 #' 
-#' The function queries the openEO service to which was connected for general information about the service. 
+#' The function queries the connected openEO service for general information about the service. 
 #' 
 #' @param con A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used
 #' 
@@ -78,8 +78,8 @@ list_features = function(con=NULL) {
 #' 
 #' The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
 #' 
-#' @details The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. At each category we have another
-#' named list with the \code{FileFormat} indexed by its format ID.
+#' @details The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. For each category a different 
+#' named list with the \code{FileFormat} is indexed by its format ID.
 #' 
 #' @param con openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -123,11 +123,11 @@ list_file_formats = function(con=NULL) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Returns the offered webservice types of the back-end
+#' Returns the webservice types of the back-end
 #' 
-#' The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
-#' \code{ServiceType}, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
-#' out of the user defined process (process graph).
+#' The function queries the back-end for the supported webservice types usable by the client and returns a named list of
+#' \code{ServiceType} indexed by the service type ID. ServiceTypes can be used when creating a supported web service
+#' from the user defined process (process graph).
 #' 
 #' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -161,9 +161,9 @@ list_service_types = function(con=NULL) {
     return(con$list_service_types())
 }
 
-#' Visualizes the terms of service
+#' Visualize the terms of service
 #' 
-#' If the service provides information in their capabilities about their terms of service, the function opens a new RStudio 
+#' If the service provides information about their terms of service in the capabilities, the function opens a new RStudio 
 #' viewer panel and visualizes the HTML content of the link.
 #' 
 #' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
@@ -196,9 +196,9 @@ terms_of_service = function(con = NULL) {
     }, error = .capturedErrorToMessage)
 }
 
-#' Visualizes the privacy policy
+#' Visualize the privacy policy
 #' 
-#' If the service provides information in their capabilities about their privacy policy, the function opens a new RStudio 
+#' If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
 #' viewer panel and visualizes the HTML content of the link.
 #' 
 #' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
@@ -233,7 +233,7 @@ privacy_policy = function(con = NULL) {
 
 #' OGC conformance
 #' 
-#' Queries the openEO service for the conformance. As mentioned in the API it is highly optional and is only available if the service
+#' Queries the openEO service for the conformance. As stated in the API it is highly optional and  only available if the service
 #' wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
 #' as a list object translated from JSON using the jsonlite package.
 #' 

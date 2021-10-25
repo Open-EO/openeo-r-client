@@ -14,5 +14,5 @@ a \code{ProviderList} object which is a named list of \code{Provider} objects.
 }
 \description{
 In case the openEO service provider supports OpenID connect authentication, this function will return a list
-of supported provider that can be used on this specific service.
+of supported provider that can be used by this specific service.
 }

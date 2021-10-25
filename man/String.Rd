@@ -4,7 +4,7 @@
 \alias{String}
 \title{String class}
 \value{
-Object of \code{\link{R6Class}} which represents a string.
+Object of \code{\link{R6Class}} representing a string.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a character string value.

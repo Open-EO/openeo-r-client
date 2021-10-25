@@ -7,16 +7,15 @@
 
 #' Unary function wrappers
 #' 
-#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
-#' it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} and facilitate
+#' writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
 #' processes counterparts.
 #' 
-#' @param x \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
-#' the function
-#' @param ... further arguments to pass on, see the documentation of those primitive functions of R for further information
+#' @param x \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector. Passes internal data to the function
+#' @param ... further arguments to pass on, see the documentation of primitive functions of R for further information
 #' @param digits the amount of decimal digits to round to
 #' @param i the index of the element in a vector or list
-#' @param drop for completenes listed here but not used in openEO processes
+#' @param drop listed for completeness but not used in openEO processes.
 #' @param base the base of the exponential operation
 #' 
 #' @return a \code{ProcessNode}
@@ -633,11 +632,11 @@ NULL
 
 #' Group operator wrappers
 #' 
-#' R's mathematical group primitives that are mapped into openEO processes.
+#' R's mathematical group primitives that are translated to openEO processes.
 #' 
 #' @param ... multiple arguments that start with a \code{ProcessNode} or a \code{ProcessGraphParameter}
-#' @param na.rm logical to determine if NA values shall be removed in the calculation or if they are propagated
-#' @param x a vector or list of values that are mixed or consits fully of \code{ProcessNode}, 
+#' @param na.rm logical to determine if NA values shall be removed in the calculation
+#' @param x a vector or list of values that are mixed or consist fully of \code{ProcessNode}, 
 #' \code{ProcessGraphParameter} or numerical values
 #' 
 #' @return \code{ProcessNode}

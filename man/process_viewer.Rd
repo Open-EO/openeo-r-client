@@ -13,6 +13,6 @@ process_viewer(x, con = NULL)
 \item{con}{a specific connection (optional), last connected service if omitted.}
 }
 \description{
-Opens up a viewer panel in RStudio and renders nicely one or more processes of the connected 
+Opens up a viewer panel in RStudio and renders one or more processes of the connected 
 openEO service in HTML. The components of openeo-js-commons / openEO webeditor are reused.
 }

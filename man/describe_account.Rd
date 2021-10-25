@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{describe_account}
 \alias{describe_account}
-\title{Retrieves the current users account information}
+\title{Get the current user account information}
 \usage{
 describe_account(con = NULL)
 }
@@ -14,5 +14,5 @@ is used.}
 object of type user
 }
 \description{
-Calls endpoint \code{/me} to fetch the user account information of the user that is currently logged in to the back-end
+Calls endpoint \code{/me} to fetch the user account information of the user currently logged in.
 }

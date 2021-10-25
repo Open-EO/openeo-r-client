@@ -4,7 +4,7 @@
 \alias{Array}
 \title{Array}
 \value{
-Object of \code{\link{R6Class}} which represents a single valued array.
+Object of \code{\link{R6Class}} representing a single valued array.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent an array of a single data type.

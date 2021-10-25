@@ -23,5 +23,5 @@ as.Process.Service(from)
 \code{\link{Process}}
 }
 \description{
-This function converts objects into a process. If no meta data is provided it will return a valid, but yet not back-end storeable user defined process.
+This function converts objects into a process. If no meta data is provided it will return a valid user defined process, not yet storable in the back-end.
 }

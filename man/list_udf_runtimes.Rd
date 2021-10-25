@@ -11,9 +11,9 @@ list_udf_runtimes(con = NULL)
 is used.}
 }
 \value{
-list of udf runtimes with supported udf types, versions and installed packages
+list of UDF runtimes with supported UDF types, versions and installed packages
 }
 \description{
-The function queries the back-end for its supported udf runtimes and returns detailed information about each
+The function queries the back-end for its supported UDF runtimes and returns detailed information about each
 runtime.
 }

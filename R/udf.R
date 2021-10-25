@@ -2,12 +2,12 @@
 
 #' Lists the supported UDF runtimes
 #' 
-#' The function queries the back-end for its supported udf runtimes and returns detailed information about each
+#' The function queries the back-end for its supported UDF runtimes and returns detailed information about each
 #' runtime.
 #' 
 #' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return list of udf runtimes with supported udf types, versions and installed packages
+#' @return list of UDF runtimes with supported UDF types, versions and installed packages
 #' @export
 list_udf_runtimes = function(con=NULL) {
     tryCatch({
@@ -47,8 +47,8 @@ list_udf_runtimes = function(con=NULL) {
 
 #' Test a UDF operation
 #' 
-#' This function is a testing function for UDF requests against a UDF service. If an 
-#' openEO UDF service is available (external via an URL or a local setup) and if you can obtain 
+#' This function tests UDF requests against a UDF service. If an 
+#' openEO UDF service is available (externally via URL or local setup) and if you can obtain 
 #' sample data that fit the context of your UDF use case, you can use this function to send the 
 #' code and the data to the UDF service. Depending on the state of the service (error or success)
 #' you can debug your code.
@@ -58,14 +58,14 @@ list_udf_runtimes = function(con=NULL) {
 #' @param data file path or a list object with the UDF-API data object
 #' @param code a call object or a file path of the user defined code
 #' @param host URL to the UDF service
-#' @param port optional port of the UDF service host
+#' @param port (optional) port of the UDF service host
 #' @param language programming language (R or Python) of the source code
-#' @param debug (optional) logical. Switch on / off debugging information for time taken
-#' @param user_context list. Context parameter that are shipped from the user into the udf_service
-#' @param server_context list. Context usually sent from the back-end to trigger certain settings.
-#' @param download_info (optional) logical. Whether or not to print the time taken separately for 
+#' @param debug (optional) logical - Switch on / off debugging information
+#' @param user_context list - Context parameter that are shipped from the user into the udf_service
+#' @param server_context list - Context usually sent from the back-end to trigger certain settings
+#' @param download_info (optional) logical - Whether or not to print the time taken separately for 
 #' the download
-#' @param legacy logical. Whether or not the legacy endpoint shall be used (default: FALSE)
+#' @param legacy logical - Whether or not the legacy endpoint is used (default: FALSE)
 #' @param ... parameters passed on to httr::content or to be more precise to jsonlite::fromJSON
 #' 
 #' @return the textual JSON representation of the result

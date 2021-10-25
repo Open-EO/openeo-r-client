@@ -13,5 +13,5 @@ capabilities(con = NULL)
 capabilities object
 }
 \description{
-The function queries the openEO service to which was connected for general information about the service.
+The function queries the connected openEO service for general information about the service.
 }

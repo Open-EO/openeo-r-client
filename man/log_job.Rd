@@ -19,5 +19,5 @@ log_job(job, offset = NULL, limit = NULL, con = NULL)
 a \code{Log} object
 }
 \description{
-Attempts to open the log of job.
+Opens the log of job.
 }

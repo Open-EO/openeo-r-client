@@ -88,14 +88,14 @@ var.list(x, na.rm = FALSE)
 \arguments{
 \item{...}{multiple arguments that start with a \code{ProcessNode} or a \code{ProcessGraphParameter}}
 
-\item{na.rm}{logical to determine if NA values shall be removed in the calculation or if they are propagated}
+\item{na.rm}{logical to determine if NA values shall be removed in the calculation}
 
-\item{x}{a vector or list of values that are mixed or consits fully of \code{ProcessNode}, 
+\item{x}{a vector or list of values that are mixed or consist fully of \code{ProcessNode}, 
 \code{ProcessGraphParameter} or numerical values}
 }
 \value{
 \code{ProcessNode}
 }
 \description{
-R's mathematical group primitives that are mapped into openEO processes.
+R's mathematical group primitives that are translated to openEO processes.
 }

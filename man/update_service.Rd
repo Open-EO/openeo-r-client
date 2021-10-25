@@ -21,22 +21,22 @@ update_service(
 \arguments{
 \item{service}{the Service or its ID}
 
-\item{type}{character the ogc web service type name to be created}
+\item{type}{character - the OGC web service type name to be created}
 
 \item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 will return the results}
 
-\item{title}{character (optional) the title in human readabled form for the service}
+\item{title}{character (optional) - the title of for the service}
 
-\item{description}{character (optional) the description for the service}
+\item{description}{character (optional) - the description for the service}
 
 \item{enabled}{logical}
 
 \item{configuration}{a list of service creation configuration}
 
-\item{plan}{character the billing plan}
+\item{plan}{character - the billing plan}
 
-\item{budget}{numeric the amount of credits that can be spent for this service}
+\item{budget}{numeric - the amount of credits that can be spent for this service}
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
@@ -48,6 +48,6 @@ Service object
 }
 \description{
 The function updates a service with the given information. If a parameter is NULL then it will
-not be overwritten at the backend. If the parameter is set to NA then the value on the backend
-will be deleted and also set to NULL.
+not be overwritten on the back-end. If the parameter is set to NA then the value on the back-end
+will be deleted and set to NULL.
 }

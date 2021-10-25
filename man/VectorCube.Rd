@@ -4,10 +4,10 @@
 \alias{VectorCube}
 \title{VectorCube}
 \value{
-Object of \code{\link{R6Class}} which represents a vector cube.
+Object of \code{\link{R6Class}} representing a vector cube.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a vector cube. This is in analogy to
+Inheriting from \code{\link{Argument}} in order to represent a vector cube. This is analogous to
 the \code{\link{RasterCube}}.
 }
 \seealso{

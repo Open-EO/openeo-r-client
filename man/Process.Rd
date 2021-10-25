@@ -14,7 +14,7 @@ into \code{\link{Argument}} objects.
 \section{Fields}{
 
 \describe{
-\item{\code{parameters}}{a named list of Argument objects}
+\item{\code{parameters}}{- a named list of Argument objects}
 
 \item{\code{isUserDefined}}{logical - depending if the process is offered by the openEO service or if it was user defined}
 }}
@@ -24,7 +24,7 @@ into \code{\link{Argument}} objects.
 \describe{
    \item{$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)}{}
    \item{$getId()}{returns the id of a process which was defined on the back-end}
-   \item{$getParameters()}{returns a named list of Arguments}
+   \item{$getParameters()}{returns a named list of arguments}
    \item{$getReturns()}{returns the schema for the return type as list}
    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
    corresponds to the parameter name}

@@ -16,5 +16,5 @@ named list of Services (class ServiceList)
 \description{
 Queries the back-end to retrieve a list of services that the current user owns. Services are 
 webservices like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
-indices are the service IDs, the service object that is indexed by its ID can be used other functions instead of its service ID.
+indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 }

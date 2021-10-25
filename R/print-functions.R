@@ -1,6 +1,6 @@
 #' Prints a User object
 #' 
-#' A nice visualization for the user account information obtained by /me
+#' A visualization for the user account information obtained by /me
 #' 
 #' @param x an User object that can be retrieved at \link{describe_account}
 #' @param ... additional parameters (not used)
@@ -25,7 +25,7 @@ print.User = function(x, ...) {
 }
 
 
-#' Pretty print an openeo process
+#' Print an openeo process
 #' 
 #' Print function to visualize relevant information about an openeo process
 #' 

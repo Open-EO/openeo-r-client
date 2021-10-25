@@ -14,12 +14,12 @@ connection is returned}
 \code{\link{OpenEOClient}}
 }
 \description{
-The function gets or sets the currently active connection to an openEO service. Usually the
-active connection is set when calling the \code{\link{connect}} function. Only the last 
+The function gets or sets the currently active connection to an openEO service. Usually, the
+active connection is set when calling the \code{\link{connect}} function. Just the last 
 connection is set as active.
 An application for the active connection is the optional connection within all the functions
 that interact with the openEO service and require a connection. If the connection is omitted 
-in those function, this function will be called in order to try to fetch a connection. If you 
+in the function, this function is called in order to try to fetch a connection. If you 
 want to operate on multiple services at once, you should use an explicit connection.
 }
 \examples{

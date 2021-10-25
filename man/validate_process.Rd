@@ -2,12 +2,12 @@
 % Please edit documentation in R/user_defined_processes.R
 \name{validate_process}
 \alias{validate_process}
-\title{Validates a user process}
+\title{Validate a user process}
 \usage{
 validate_process(graph, con = NULL, ...)
 }
 \arguments{
-\item{graph}{the process graph that will be sent to the service and is going to be validated}
+\item{graph}{the process graph that will be sent to the service to be validated}
 
 \item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
 is used.}
@@ -15,6 +15,6 @@ is used.}
 \item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
-Sends the process graph as a user process to the openEO service and validates it against the predefined and user-defined 
+Sends the process graph as a user process to the openEO service and validates it with the predefined and user-defined 
 processes of the service.
 }

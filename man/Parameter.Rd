@@ -7,33 +7,33 @@
 Object of \code{\link{R6Class}} which represents a parameter.
 }
 \description{
-This class defines parameters of \code{\link{Process}}. They store information about the type, format and
-the pattern. Those classes are designed to not carry any value, because if the would it would be a 
+This class defines parameters of \code{\link{Process}}. They store information about the type, format and 
+pattern. A parameter class is designed to not carry any value, as opposed to an 
 \code{\link{Argument}}.
 }
 \details{
 The parameters are parsed from the specific description and format of the JSON
-objects returned for the parameters in processes. Find a list of openEO specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
+objects returned for the parameters in processes. Find a list of openEO-specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
 }
 \section{Methods}{
 
 \describe{
- \item{\code{$new(name, description,required=FALSE)}}{}
+ \item{\code{$new(name, description, required=FALSE)}}{}
  \item{\code{$getName}}{returns the name of a parameter as string}
  \item{\code{$setName(name)}}{sets the name of a parameter}
  \item{\code{$getDescription()}}{returns the description of a parameter}
  \item{\code{$setDescription(description)}}{sets the description of a parameter}
  \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
  \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
- \item{\code{$getDefault()}}{returns the parameters default value}
+ \item{\code{$getDefault()}}{returns the parameter's default value}
  \item{\code{$setDefault(default)}}{sets the default value of a parameter}
  \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
- API schema object - matches this parameters schema, which is used for finding the corresponding parameter}
+ API schema object - matches the parameter's schema, which is used for finding the corresponding parameter}
  \item{\code{$getSchema()}}{returns the schema definition}
  \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
  \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
- \item{\code{$isRequired()}}{return whether a parameter is mandatory or not}
- \item{\code{$isAny()}}{return TRUE if this parameter describes a choice of parameters}
+ \item{\code{$isRequired()}}{returns whether a parameter is mandatory or not}
+ \item{\code{$isAny()}}{returns TRUE if this parameter describes a choice of parameters}
 }
 }
 
@@ -42,9 +42,9 @@ objects returned for the parameters in processes. Find a list of openEO specific
 \describe{
   \item{\code{name}}{character - The name of a parameter}
   \item{\code{description}}{character - The description of a parameter}
-  \item{\code{required}}{logical - whether or not }
-  \item{\code{pattern}}{the regexp as a string how to formulate the value}
-  \item{\code{default}}{the regexp as a string how to formulate the value}   
+  \item{\code{required}}{logical - whether it is required or not }
+  \item{\code{pattern}}{the regexp as a string indicating how to formulate the value}
+  \item{\code{default}}{the regexp as a string indicating how to formulate the value}   
   \item{\code{schema}}{the parsed schema object of a process parameter as a list}
 }
 }

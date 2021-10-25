@@ -2,7 +2,7 @@
 % Please edit documentation in R/user_defined_processes.R
 \name{list_user_processes}
 \alias{list_user_processes}
-\title{Lists the Ids of the process graphs from the current user}
+\title{Lists the IDs of the process graphs from the current user.}
 \usage{
 list_user_processes(con = NULL)
 }

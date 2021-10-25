@@ -7,7 +7,7 @@
 api_versions(url)
 }
 \arguments{
-\item{url}{the url as String pointing to the base host of the back-end}
+\item{url}{the url as string pointing to the base host of the back-end}
 }
 \value{
 a data.frame or a tibble containing all supported API versions of the back-end

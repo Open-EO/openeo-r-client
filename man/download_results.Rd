@@ -2,7 +2,7 @@
 % Please edit documentation in R/jobs.R
 \name{download_results}
 \alias{download_results}
-\title{Downloads the results of a job into a specific folder}
+\title{Downloads the results of a job}
 \usage{
 download_results(job, folder, con = NULL)
 }
@@ -19,5 +19,5 @@ a list of the target file paths
 }
 \description{
 The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
-'folder' will be the target location on the local computer.
+'folder' is the target location on the local computer.
 }

@@ -16,6 +16,6 @@ is used.}
 logical - whether the back-end supports the endpoint or not
 }
 \description{
-Looks up the client tag for a particular endpoint on the back-end and returns whether it is available
+Finds the client tag for a particular endpoint on the back-end and returns whether it is available
 or not.
 }

@@ -4,10 +4,10 @@
 \alias{OutputFormat}
 \title{OutputFormat class}
 \value{
-Object of \code{\link{R6Class}} which represents an output format of a back-end.
+Object of \code{\link{R6Class}} representing an output format of a back-end.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent an output format of a back-end as  a 
+Inheriting from \code{\link{Argument}} in order to represent an output format of a back-end as a 
 character string value.
 }
 \seealso{

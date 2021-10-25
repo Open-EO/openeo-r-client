@@ -4,13 +4,13 @@
 \alias{ProcessGraphArgument}
 \title{ProcessGraphArgument}
 \value{
-Object of \code{\link{R6Class}} which represents a ProcessGraph.
+Object of \code{\link{R6Class}} representing a ProcessGraph.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-injected data. Hints from the openeo api documention:
+added data. Additional information can be found in the openeo api documention:
 \itemize{
   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
@@ -27,7 +27,7 @@ injected data. Hints from the openeo api documention:
 \section{Arguments}{
 
 \describe{
-  \item{\code{parameters}}{the list \code{\link{ProcessGraphParameter}}}
+  \item{\code{parameters}}{the \code{\link{ProcessGraphParameter}} list}
 }
 }
 

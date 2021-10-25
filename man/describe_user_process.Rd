@@ -16,5 +16,5 @@ is used.}
 the user process as a ProcessInfo class (list object)
 }
 \description{
-The function queries the back-end for a specific user defined process and returns detailled information.
+The function queries the back-end for a specific user defined process and returns detailed information.
 }

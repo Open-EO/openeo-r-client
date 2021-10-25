@@ -1,9 +1,9 @@
 # data endpoint ----
-#' List Data on conected server
+#' List data on connected server
 #'
-#' List available collections stored on a openEO server and return them as a CollectionList which is a named list of Collection objects. 
-#' The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this functions result will contain
-#' lesser information than the detailed description received at the other function.
+#' List available collections stored on an openEO server and return them as a CollectionList - a named list of Collection objects. 
+#' The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this function's result contains
+#' less information than the detailed description received from the other function.
 #' 
 #' @param con Connection object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -24,7 +24,7 @@ list_collections = function(con=NULL) {
 
 #' Describe a product
 #' 
-#' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end
+#' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end.
 #' 
 #' @param collection Collection object or the collections id
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}

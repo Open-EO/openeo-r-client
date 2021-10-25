@@ -19,5 +19,5 @@ log_service(service, offset = NULL, limit = NULL, con = NULL)
 a \code{Log} object
 }
 \description{
-Attempts to open the log of secondary service.
+Opens the log of secondary service.
 }
