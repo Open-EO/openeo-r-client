@@ -13,7 +13,6 @@ Suggests:
 Imports:
     jsonlite,
     httr,
-    methods,
     R6,
     lubridate,
     commonmark,
