@@ -8,7 +8,8 @@
 #' \code{\link{Argument}}. 
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
-#' objects returned for the parameters in processes. Find a list of openEO-specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
+#' objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
+#' \url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
 #' 
 #' @name Parameter
 #' 
@@ -1883,8 +1884,8 @@ ProcessGraphArgument = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
 #' Additional information can be found in the openeo api documention:
 #' \itemize{
-#'   \item \url{https://open-eo.github.io/openeo-api/processes/#callbacks}
-#'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+#'   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
+#'   \item \url{https://api.openeo.org/v/0.4.2/processgraphs/#callbacks}
 #' }
 #' 
 #' @name ProcessGraphParameter

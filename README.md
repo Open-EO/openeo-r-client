@@ -3,7 +3,7 @@
 
 # openEO client in R
 
-This R package contains functions and classes that allow interactions with openEO backend server. The package will be under constant development. The master branch should always contain a version that is ready to use.
+This R package contains functions and classes that allow interactions with openEO back-end server. The package will be under constant development. The master branch should always contain a version that is ready to use.
 
 ## Installation
 Install the package by using `install_github` from the devtools package.
@@ -19,15 +19,15 @@ library(openeo)
 
 If you want use a different version, then use for the parameter `ref` either "master", "develop" or another version specified under [releases](https://github.com/Open-EO/openeo-r-client/releases).
 
-Since the openEO project is under heavy development regarding the openeo API that connects clients and backends, all R client versions < 1.0.0 versions will only be compatible with a certain API version.
+Since the openEO project is under heavy development regarding the openEO API that connects clients and back-ends, all R client versions < 1.0.0 versions will only be compatible with a certain API version.
 
 | openeo R client version | openeo API version |
 | --- | --- |
-| v0.0.1 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
-| 0.1.0 | [v0.0.1](https://open-eo.github.io/openeo-api/v/0.0.1/) |
-| v0.2.0-poc | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
-| v0.2.2 | [v0.0.2](https://open-eo.github.io/openeo-api/v/0.0.2/) |
-| v0.3.1 | [v0.3.1](https://open-eo.github.io/openeo-api/v/0.3.1/) |
+| v0.0.1 | v0.0.1 |
+| 0.1.0 | v0.0.1 |
+| v0.2.0-poc | v0.0.2 |
+| v0.2.2 | v0.0.2 |
+| v0.3.1 | v0.3.1 |
 | v0.4.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) |
@@ -38,14 +38,14 @@ Since the openEO project is under heavy development regarding the openeo API tha
 The openeo package won't process anything at the local machine. It will always interact with a designated back-end. Only at the back-end the data is stored and the computations are performed. Therefore please make sure you are registered with any of the available openEO back-ends, in order to obtain credentials and the access URLs (see: [openEO Hub](https://hub.openeo.org/) for getting an overview about available back-ends). 
 
 ## Getting Started
-After loading the package, you need to connect to the openeo backend you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular backend. For example you can explore offered data and processes and explore their detailed information.
+After loading the package, you need to connect to the openeo back-end you want to use. The object that is returned by the `connect` function is essential for the interaction with this particular back-end. For example you can explore offered data and processes and explore their detailed information.
 To get started with the process graph creation, please [see Wiki: Process Graph Building](https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building) for further information.
 
-After we defined the process graph, we send it as a task to the backend where it is processed. It can be processed _immediately_ (the client is holding the connection and waits for the results), _directly asynchronous_ (the client sends the task and queues the process execution and the results are stored in the user workspace on the backend, meanwhile the client receives an acceptance notification).
+After we defined the process graph, we send it as a task to the back-end where it is processed. It can be processed _immediately_ (the client is holding the connection and waits for the results), _directly asynchronous_ (the client sends the task and queues the process execution and the results are stored in the user workspace on the back-end, meanwhile the client receives an acceptance notification).
 
 ```
 library(openeo)
-conn = connect(host="http://backend1.openeo.org/",user="test",password="test",login_type="basic")
+conn = connect(host="http://back-end1.openeo.org/",user="test",password="test",login_type="basic")
 
 # list collection and processes
 colls = list_collections()
@@ -117,7 +117,7 @@ The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains also additi
 The package documentation can be found here: <https://open-eo.github.io/openeo-r-client/index.html>
 
 ## Links
-* [openEO.org](http://openeo.org/)
+* [openEO.org](https://openeo.org/)
 * [openEO core API](https://openeo.org/documentation/1.0/developers/api/reference.html)
 * [openEO hub](https://hub.openeo.org/)
 * [openEO R Client package API](https://open-eo.github.io/openeo-r-client/)

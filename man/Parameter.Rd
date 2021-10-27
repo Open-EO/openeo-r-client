@@ -13,7 +13,8 @@ pattern. A parameter class is designed to not carry any value, as opposed to an
 }
 \details{
 The parameters are parsed from the specific description and format of the JSON
-objects returned for the parameters in processes. Find a list of openEO-specific formats here: \url{https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats}
+objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
+\url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
 }
 \section{Methods}{
 
