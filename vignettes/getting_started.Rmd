@@ -2,7 +2,7 @@
 title: "Getting Started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{getting_started}
+  %\VignetteIndexEntry{Getting Started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,7 +11,7 @@ vignette: >
 
 The openEO concept thrives in context of an ever increasing amount gathered EO data which leads to problems in terms of managing the amount of data and more importantly processing this amount of data in a researchers or companies analysis. The core idea was to provide open-source tools to interact with back-end providers via an open API with predefined set of processes. Those processes are intended to manipulate the underlying multidimensional data cubes, which works as a data abstraction layer. The back-end provider offers in this case the EO data and the processing infrastructure and end-users provide the code to drive their analysis. Therefore different client software comes in handy to aid users in doing so. There are currently openEO clients for Python, JavaScript (web based), R and QGIS.
 
-I know this is scratches only the surface of openEO, so if you want to dive deeper you can use the [openEOs official web page](https://openeo.org) as a starting point or you get more involved in the various projects at [Github](https://github.com/Open-EO).
+I know this is scratches only the surface of openEO. So if you want to dive deeper you can use the [openEOs official web page](https://openeo.org) as a starting point or you get more involved in the various projects at [Github](https://github.com/Open-EO).
 
 # openEO R client
 
@@ -134,8 +134,6 @@ service_types
 ```
 
 
-## User-defined process
-
 ## Login
 
 ```{r, eval=FALSE}
@@ -144,10 +142,9 @@ pwd = ""
 
 login(user = user,password = pwd,login_type = "basic")
 ```
-
+Note: You might explore more data collections and processes once you are registered and logged in. Without a log in you can only view the free data sets that do not conflict with any terms of use.
 
 ## User data
-
 
 As a registered user, you will have a file space / workspace to upload data to, as well as a list of created, ongoing and completed jobs and services, and to access your account data, where you view the credits available / spent.
 
@@ -247,78 +244,17 @@ class(p$load_collection)
 formals(p$load_collection)
 ```
 
-You can see that there are 4 defined parameters. They are initialized with `NA`. More detailled information can be obtained by using the `describe_process()`. By typing in the different arguments and evaluating the function you receive a `ProcessNode` object, which are the building blocks of the process graph / workflow.
+You can see that there are 4 defined parameters. They are initialized with `NA`. More detailed information can be obtained by using the `describe_process()`. By typing in the different arguments and evaluating the function you receive a `ProcessNode` object, which are the building blocks of the process graph / workflow.
 
 ```{r, paged.print=FALSE, eval=FALSE}
 describe_process(process = "load_collection")
 ```
 
-### EVI Graph
+## Example: Setup the analysis
 
-In the following we will create the EVI calculation and store it as a process graph on the openEO service.
+Now I will present a simple use cases, how to create your first process using the openEO processes. First, please bear in mind, that the initial data set has to be seen as a multidimensional data cube, which often consists of space (2 dimensions), time (another dimension) and bands or maybe even the wavelengths or polarization (yet another dimension). As main operations on data cubes we have reducers and aggregation functions, which basically means to get rid of a certain dimension or to restructure the dimension like changing the spatial or temporal resolution. In any case you need to define a function that handles the data accordingly.
 
-Most of the processes offered by openEO services are standardized, this means that it will be possible to use mathematical operators like `+`, `-` and alike coherently between different services. That also allowed us to overload the primitive mathematical operators in R so that it becomes easy to use.
-
-The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands "red", "blue" and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like `raster::calc`. Similarly we use this mechanism in the openeo package.
-
-```{r, eval=FALSE}
-evi = function(data,context) {
-  B08 = data[1]
-  B04 = data[2]
-  B02 = data[3]
-  return((2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1))
-}
-```
-
-The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
-
-```{r, eval=FALSE}
-as(evi,"Graph")
-```
-The example before should demonstrate what would happen behind the scenes, that such a small code fragment for the band arithmetic translates into a more complex process graph. But usually you would not need to use that coerce function directly.
-
-So, now we have created a small graph and we want to store it for later use at the openEO service.
-
-```{r, paged.print=FALSE, eval=FALSE}
-list_user_processes()
-```
-With the next command you can check your process graph locally for potential problems, before even sending it to the back-end.
-
-```{r, eval=FALSE}
-validate_process(graph = evi)
-```
-
-```{r, eval=FALSE}
-graph_id = create_user_process(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
-```
-
-```{r, paged.print=FALSE, eval=FALSE}
-list_user_processes()
-```
-
-Fetch the process graph definition as a user define openEO process and print it.
-
-```{r, paged.print=FALSE, eval=FALSE}
-evi_process = describe_user_process(id = "evi")
-class(evi_process)
-```
-
-```{r, paged.print = FALSE, eval=FALSE}
-evi_process
-```
-
-If you want the graph representation reimported into R, you can use `parse_graph` on this received `ProcessInfo` object or you can use the coerce function.
-
-```{r, eval=FALSE}
-evi_graph = parse_graph(json = evi_process) # or use as(evi_process,"Graph")
-```
-
-
-### Minimum EVI example
-
-The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetic as an inbound function.
-
-We have used the variables `colls` and `formats` before. They originate from their respective list_* function.
+In the following example we will select a collection (Sentinel-2) and with a certain spatial and temporal extent and also filter the bands, as we need just the bands for red and near-infrared. Then we will calculate the NDVI for each time step by reducing over "bands" and stating the NDVI band arithmetic function. Afterwards we will reduce the temporal dimension by selecting the minimum NDVI value per "pixel" (x and y coordinate). As the selected back-end offers PNG as an image format, which we might need for a web service like WMS, we need to scale the NDVI value range from (-1 to 1) to the PNG value range (0,255). Lastly, we store the results as a PNG image.
 
 ```{r, eval=FALSE}
 data = p$load_collection(id = colls$`COPERNICUS/S2`,
@@ -331,90 +267,13 @@ data = p$load_collection(id = colls$`COPERNICUS/S2`,
                              temporal_extent = list(
                                "2018-04-01", "2018-05-01"
                              ),
-                             bands=list("B8","B4","B2"))
-```
-
-Here we are using the EVI calculation as used in the previous example.
-```{r, eval=FALSE}
-spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
-  B08 = data[1]
-  B04 = data[2]
-  B02 = data[3]
-  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
-})
-```
-
-
-```{r, eval=FALSE}
-temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
-  min(x)
-})
-```
-
-As a "reducer" or "aggregator" function you will have to always create an anonymous function or use a predefined one, with the same amount of parameters. The naming of parameters does not matter, because simply the order matters. To know how to formulate the function, you need to check the back-end processes documentation, e.g. `process_viewer(p$reduce_dimension)` or `describe_process(p$reduce_dimension)`.
-
-```{r, eval=FALSE}
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
-  p$linear_scale_range(x = value, 
-                           inputMin = -1, 
-                           inputMax = 1, 
-                           outputMin = 0, 
-                           outputMax = 255)
-})
-```
-
-As a last step we will store the results as a PNG file. The `ProcessNode` returned from that function will be our endnode in the graph and so we will pass it on towards openEO service functions.
-
-```{r, eval=FALSE}
-result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
-```
-
-```{r, eval=FALSE}
-min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
-```
-
-```{r, paged.print = FALSE, eval=FALSE}
-list_user_processes()
-```
-
-Feel free to delete the example process again.
-
-```{r, eval=FALSE}
-delete_user_process(id = min_evi_graph_id)
-```
-
-### Integration of user defined processes
-
-In the section "EVI Graph" we created and stored a sub graph that resembles the same code that was used as a reducer when creating the node 'spectral_reduce'. In an alternative approach we can load and reuse user defined processes. In analogy to the predefined processes of the openEO service we use `user_processes()` to create an easy-to-use ProcessNode builder.
-
-```{r, eval=FALSE}
-p = processes()
-udps = user_processes()
-colls = list_collections()
-formats = list_file_formats()
-```
-
-```{r, eval=FALSE}
-example_udp_node = udps$evi()
-
-example_udp_node
-```
-
-```{r, eval=FALSE}
-data = p$load_collection(id = colls$`COPERNICUS/S2`,
-                             spatial_extent = list(
-                               west=16.1,
-                               east=16.6,
-                               north=48.6,
-                               south= 47.2
-                             ),
-                             temporal_extent = list(
-                               "2018-04-01", "2018-05-01"
-                             ),
-                             bands=list("B8","B4","B2"))
+                             bands=list("B8","B4"))
 
 spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
-  udps$evi(data = data)
+  b8 = data[1]
+  b4 = data[2]
+  
+  return((b8-b4)/(b8+b4))
 })
 
 temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
@@ -430,19 +289,13 @@ apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,.
 })
 
 result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
-
-min_evi_graph = as(result,"Process")
-
 ```
-
-Note that we reused our pre defined user process "evi" in the aggregation function, which shows that you can reuse your code in different contexts.
 
 ## Calculate immediate results
 
 For development and testing you process graph you can use the `compute_result` function. Please keep in mind, that depending on the payment plan chosen or available at the openEO service, that there might be costs involved. Since it will block your command line until the calculations are done and the results are sent, choose a small data sample when using this function. It might also be the case that some provider won't allow UDF at this function. In cases where payments are involved you have the possibility to set the payment plan and the maximum amount of credits spent.
 
 ```{r, eval=FALSE}
-# FIXME
 temp = tempfile()
 file = compute_result(graph = result, output_file = temp)
 ```
@@ -455,37 +308,25 @@ raster::spplot(r)
 
 ## Creating a job
 
-- pass on the defined function, result node or graph
+In contrast to the synchronous execution of the UDP you can also create a job at the back-end, which means that the console is not blocked in the meantime. The job has then to be started in order to perform the analysis and obtain the results.
 
 ```{r, eval=FALSE}
-job = create_job(graph=result,title = "Minimum EVI", description = "Minimum EVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file.")
+job = create_job(graph=result,title = "Minimum NDVI", description = "Minimum NDVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file.")
 ```
+
+Additionally to the response message, when creating the job, you can also list your jobs and look if the new job is there.
 
 ```{r, eval=FALSE}
 jobs = list_jobs()
 jobs
 ```
 
-The job list is also printed as data.frame or tibble. But it is a list of job objects.
-
-```{r, eval=FALSE}
-class(jobs)
-```
-
-```{r, eval=FALSE}
-job$id
-```
-
-
-```{r, eval=FALSE}
-class(jobs[[job$id]])
-```
 
 ```{r, eval=FALSE}
 jobs[[job$id]]
 ```
 
-Similarly as for the process graph `describe_job()` returns a more detailled description of the job.
+Similarly as for the process graph `describe_job()` returns a more detailed description of the job.
 
 ```{r, eval=FALSE}
 describe_job(job = job)
@@ -529,14 +370,23 @@ delete_job(job=job)
 
 ## Creating a service
 
+If the openEO back-end supports providing the results as a service, you might want to do that. For example if you want to have a WMS layer or a Web Map Tile service in leaflet, QGIS or mapview.
+
+First, you can explore the different offered service types of the back-end.
+
 ```{r, eval=FALSE}
 service_types = list_service_types()
 ```
 
+Then you create a service similarly to creating a job, but also stating the kind of service to be created and whether or not it shall be enabled already.
 
 ```{r, eval=FALSE}
 test_service = create_service(type = service_types$xyz, graph = result, title = "XYZ service for minimum EVI", description = "XYZ service for minimum EVI from the getting_started guide.",enabled = TRUE)
 ```
+
+The idea behind services is that you might want the analysis results for a interactive web application for users to explore the data. The back-end then decides whether or not it caches the results or if it processes the result on-the-fly.
+
+As for the other endpoints, you are able to explore your services by listing them, getting detailed information, updating and deleting.
 
 ```{r, eval=FALSE}
 list_services()
@@ -545,6 +395,8 @@ list_services()
 ```{r, eval=FALSE}
 describe_service(service = test_service)
 ```
+
+As a practical use case for this we prepared a small web map example with leaflet which uses the WMTS created before.
 
 ```{r, eval=FALSE}
 library(magrittr)
