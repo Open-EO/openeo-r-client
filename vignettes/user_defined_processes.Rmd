@@ -1,0 +1,196 @@
+---
+title: "User Defined Processes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{User Defined Processes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# User Defined Processes
+
+As the title suggests, we will describe in more detail how to create "User Defined Processes" (UDP). Those processes can be seen as the analysis workflows you want to run at the openEO back-end of your choice. You might call them later directly or you might add some variables to the UDP to customize the processes at runtime, e.g. set the temporal interval or the area of interest.
+
+
+### EVI Graph
+
+In the following we will create the EVI calculation and store it as a process graph on the openEO service.
+
+Most of the processes offered by openEO services are standardized, this means that it will be possible to use mathematical operators like `+`, `-` and alike coherently between different services. That also allowed us to overload the primitive mathematical operators in R so that it becomes easy to use.
+
+The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands "red", "blue" and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like `raster::calc`. Similarly we use this mechanism in the openeo package.
+
+```{r, eval=FALSE}
+evi = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  return((2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1))
+}
+```
+
+The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
+
+```{r, eval=FALSE}
+as(evi,"Graph")
+```
+The example before should demonstrate what would happen behind the scenes, that such a small code fragment for the band arithmetic translates into a more complex process graph. But usually you would not need to use that coerce function directly.
+
+So, now we have created a small graph and we want to store it for later use at the openEO service.
+
+```{r, paged.print=FALSE, eval=FALSE}
+list_user_processes()
+```
+With the next command you can check your process graph locally for potential problems, before even sending it to the back-end.
+
+```{r, eval=FALSE}
+validate_process(graph = evi)
+```
+
+```{r, eval=FALSE}
+graph_id = create_user_process(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
+```
+
+```{r, paged.print=FALSE, eval=FALSE}
+list_user_processes()
+```
+
+Fetch the process graph definition as a user define openEO process and print it.
+
+```{r, paged.print=FALSE, eval=FALSE}
+evi_process = describe_user_process(id = "evi")
+class(evi_process)
+```
+
+```{r, paged.print = FALSE, eval=FALSE}
+evi_process
+```
+
+If you want the graph representation reimported into R, you can use `parse_graph` on this received `ProcessInfo` object or you can use the coerce function.
+
+```{r, eval=FALSE}
+evi_graph = parse_graph(json = evi_process) # or use as(evi_process,"Graph")
+```
+
+### Minimum EVI example
+
+The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetic as an inbound function.
+
+We have used the variables `colls` and `formats` before. They originate from their respective list_* function.
+
+```{r, eval=FALSE}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+```
+
+Here we are using the EVI calculation as used in the previous example.
+```{r, eval=FALSE}
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  B08 = data[1]
+  B04 = data[2]
+  B02 = data[3]
+  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
+})
+```
+
+
+```{r, eval=FALSE}
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+```
+
+As a "reducer" or "aggregator" function you will have to always create an anonymous function or use a predefined one, with the same amount of parameters. The naming of parameters does not matter, because simply the order matters. To know how to formulate the function, you need to check the back-end processes documentation, e.g. `process_viewer(p$reduce_dimension)` or `describe_process(p$reduce_dimension)`.
+
+```{r, eval=FALSE}
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+```
+
+As a last step we will store the results as a PNG file. The `ProcessNode` returned from that function will be our endnode in the graph and so we will pass it on towards openEO service functions.
+
+```{r, eval=FALSE}
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+```
+
+```{r, eval=FALSE}
+min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
+```
+
+```{r, paged.print = FALSE, eval=FALSE}
+list_user_processes()
+```
+
+Feel free to delete the example process again.
+
+```{r, eval=FALSE}
+delete_user_process(id = min_evi_graph_id)
+```
+
+### Integration of user defined processes
+
+In the section "EVI Graph" we created and stored a sub graph that resembles the same code that was used as a reducer when creating the node 'spectral_reduce'. In an alternative approach we can load and reuse user defined processes. In analogy to the predefined processes of the openEO service we use `user_processes()` to create an easy-to-use ProcessNode builder.
+
+```{r, eval=FALSE}
+p = processes()
+udps = user_processes()
+colls = list_collections()
+formats = list_file_formats()
+```
+
+```{r, eval=FALSE}
+example_udp_node = udps$evi()
+
+example_udp_node
+```
+
+```{r, eval=FALSE}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4","B2"))
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  udps$evi(data = data)
+})
+
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+
+min_evi_graph = as(result,"Process")
+
+```
+
+Note that we reused our pre defined user process "evi" in the aggregation function, which shows that you can reuse your code in different contexts.
