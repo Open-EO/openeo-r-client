@@ -26,6 +26,7 @@
 - fixed process parsing of processes with completely nullable arrays [#79](https://github.com/Open-EO/openeo-r-client/issues/79)
 - fixed a problem with NULL values set as value for AnyOf, the traversion of the graph did not work properly, because of a NULL-pointer issue
 - fixed a parsing problem, where the "optional" field was not correctly interpreted in every case
+- fixed stale URLs in documentation [#84](https://github.com/Open-EO/openeo-r-client/issues/84)
 
 ### Removed
 - deleted some out-dated example scripts
