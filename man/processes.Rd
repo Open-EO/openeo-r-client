@@ -7,11 +7,11 @@
 processes(con = NULL)
 }
 \arguments{
-\item{con}{a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connection to an openEO back-end (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{
-a ProcessCollection object with the offered processes of the backend
+a ProcessCollection object with the offered processes of the back-end
 }
 \description{
 Queries the connected back-end for all available processes and collection names and registers them via R functions on

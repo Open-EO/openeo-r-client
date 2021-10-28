@@ -30,7 +30,7 @@ will return the results}
 
 \item{description}{character (optional) - the description for the service}
 
-\item{enabled}{logical}
+\item{enabled}{logical - whether the service shall be active for querying or disabled}
 
 \item{configuration}{a list of service creation configuration}
 
@@ -38,7 +38,7 @@ will return the results}
 
 \item{budget}{numeric - the amount of credits that can be spent for this service}
 
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}

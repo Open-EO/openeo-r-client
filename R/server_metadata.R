@@ -56,12 +56,12 @@ capabilities = function(con=NULL) {
     
 }
 
-#' List the openeo endpoints
+#' List the openEO endpoints
 #' 
 #' The client queries the version resolved back-end for its endpoint capabilities and returns it as
 #' a tibble.
 #' 
-#' @param con A connected OpenEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con A connected openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return data.frame or tibble (if available)
@@ -81,7 +81,7 @@ list_features = function(con=NULL) {
 #' @details The \code{FileFormatList} object ist a named list, which is organized into 'input' and 'output'. For each category a different 
 #' named list with the \code{FileFormat} is indexed by its format ID.
 #' 
-#' @param con openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a FileFormatList object
 #' @export
@@ -129,7 +129,7 @@ list_file_formats = function(con=NULL) {
 #' \code{ServiceType} indexed by the service type ID. ServiceTypes can be used when creating a supported web service
 #' from the user defined process (process graph).
 #' 
-#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a \code{ServiceTypeList}
 #' @export
@@ -166,7 +166,7 @@ list_service_types = function(con=NULL) {
 #' If the service provides information about their terms of service in the capabilities, the function opens a new RStudio 
 #' viewer panel and visualizes the HTML content of the link.
 #' 
-#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a list of the link identifying the terms of service from the service capabilities or NULL
 #' @export
@@ -201,7 +201,7 @@ terms_of_service = function(con = NULL) {
 #' If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
 #' viewer panel and visualizes the HTML content of the link.
 #' 
-#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a list of the link identifying the privacy policy from the service capabilities or NULL
 #' @export
@@ -237,7 +237,7 @@ privacy_policy = function(con = NULL) {
 #' wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
 #' as a list object translated from JSON using the jsonlite package.
 #' 
-#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @export
 conformance = function(con=NULL) {

@@ -52,11 +52,11 @@ list_jobs = function(con=NULL) {
 #' @param output_file storage location for the returned data
 #' @param budget numeric, maximum spendable amount for testing
 #' @param plan character, selection of a service plan
-#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
-#' @return A connection to a file if an output was provided, the raw data if not
+#' @return A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data
 #' 
 #' @importFrom methods as
 #' @export
@@ -113,13 +113,11 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 }
 
 
-#' Creates a job from a Graph object on the back-end 
+#' Creates a new job on the back-end 
 #' 
-#' This function is called after the user defines a process graph to create a job on the
-#' back-end. The user sends the process graph and the optional output specifications like
-#' format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
-#' description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
-#' back-end provider.
+#' In preparation to execute the users analysis workflow (user defined process) asynchronously, they need to register a job that
+#' will be scheduled when the required resources are available. To do so the user provides the process graph with optional descriptive meta
+#' data and the desired execution plan or the maximum amount of credits spent.
 #' 
 #' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
@@ -127,9 +125,9 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 #' @param description Optional detailed information about a job
 #' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
-#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to \link{jsonlite}{toJSON} (like 'digits')
 #' 
 #' @return the id of the job
 #' @export
@@ -165,7 +163,7 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
         
         response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE, ...)
         
-        message("Job was sucessfully registered on the backend.")
+        message("Job was sucessfully registered on the back-end.")
         
         job_id = headers(response)$`openeo-identifier`
         
@@ -181,7 +179,7 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 #' 
 #' @param job the job object or the job id
 #' @param log logical - whether to enable automatic logging after starting the job
-#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return the job_id of the defined job
@@ -233,7 +231,7 @@ start_job = function(job, log=FALSE, con=NULL) {
 #' will return the results or a self defined \code{\link{Process}}
 #' @param plan replaces plan with the set value
 #' @param budget replaces or sets the credits that can be spent at maximum
-#' @param con connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
@@ -290,7 +288,7 @@ update_job = function(id, title = NULL, description = NULL, process = NULL, plan
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
 #' @param job the job object or the id of the job
-#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return result object containing of URLs for download
@@ -356,8 +354,7 @@ download_results = function(job, folder, con=NULL) {
 
 #' Terminates a running job
 #'
-#' Informs the server that the specified job needs to be terminated and the token 'canceled' to prevent 
-#' further executions and related costs.
+#' Informs the server that the specified job needs to be terminated to prevent further costs.
 #'
 #' @param job the job object or the id of job that will be canceled
 #' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}

@@ -1750,7 +1750,7 @@ VectorCube = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 #' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-#' added data. Additional information can be found in the openeo api documention:
+#' added data. Additional information can be found in the openEO API documention:
 #' \itemize{
 #'   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
 #'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
@@ -1881,7 +1881,7 @@ ProcessGraphArgument = R6Class(
 #' ProcessGraphParameter
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
-#' Additional information can be found in the openeo api documention:
+#' Additional information can be found in the openEO API documention:
 #' \itemize{
 #'   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 #'   \item \url{https://api.openeo.org/v/0.4.2/processgraphs/#callbacks}

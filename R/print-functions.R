@@ -25,9 +25,9 @@ print.User = function(x, ...) {
 }
 
 
-#' Print an openeo process
+#' Print an openEO process
 #' 
-#' Print function to visualize relevant information about an openeo process
+#' Print function to visualize relevant information about an openEO process
 #' 
 #' @param x process info that is received on \link{list_processes} and \link{describe_process}
 #' @param ... additional parameters (not used)

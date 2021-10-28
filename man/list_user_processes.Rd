@@ -7,7 +7,7 @@
 list_user_processes(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

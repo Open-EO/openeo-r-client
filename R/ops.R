@@ -90,7 +90,7 @@ NULL
   graph = .getProcessCollection(x)
   
   FUN = "round"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
   x = .autoArraySubset(x)
   x = .checkMathConstants(x,graph)
@@ -123,7 +123,7 @@ NULL
     FUN = "log"
   }
   
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
   x = .autoArraySubset(x)
   x = .checkMathConstants(x,graph)
@@ -296,7 +296,7 @@ NULL
 #     graph = .getProcessCollection(y,x)
 # 
 #     FUN = "arctan2"
-#     if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+#     if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
 #     graph[[FUN]](y=y,x=x)
 # }
 # @export
@@ -367,7 +367,7 @@ NULL
   # }
   
   FUN = "array_element"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
   if (is.numeric(i)) {
     graph[[FUN]](data=x,index=i-1) # do index shift because javascript / JSON addresses an element of an array from 0 to n-1
@@ -435,7 +435,7 @@ NULL
   } else if ("product" %in% names(graph)) {
     FUN = "product"
   } else {
-    stop("Neither 'multiply' nor 'product' are available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'.")
+    stop("Neither 'multiply' nor 'product' are available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'.")
   }
   .genericBinaryFunction(e1,e2,FUN)
 }
@@ -497,7 +497,7 @@ NULL
   
   # v0.5 -> and only has two arguments
   FUN = "and"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
 #' @rdname binary_ops
@@ -513,7 +513,7 @@ NULL
   
   # v0.5 -> or only has two arguments, now it takes an array
   FUN = "or"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](expressions=c(e1,e2)) 
 }
 #' @rdname binary_ops
@@ -528,7 +528,7 @@ NULL
   graph = .getProcessCollection(x,y)
   
   FUN = "xor"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](expressions=c(x,y)) 
 }
 #' @rdname binary_ops
@@ -543,7 +543,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "eq"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -558,7 +558,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "neq"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -573,7 +573,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "lt"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -588,7 +588,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "lte"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -603,7 +603,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "gte"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -618,7 +618,7 @@ NULL
   graph = .getProcessCollection(e1,e2)
   
   FUN = "gt"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](x=e1,y=e2) 
 }
 #' @rdname binary_ops
@@ -796,7 +796,7 @@ NULL
   
   
   FUN = "quantiles"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   graph[[FUN]](data = x,probabilites = probs)
 }
 #' @rdname unary_ops
@@ -919,7 +919,7 @@ NULL
   graph = .getProcessCollection(e1=x)
   
   if (!FUN %in% names(graph)) {
-    stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+    stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   }
   
   x = .autoArraySubset(x)
@@ -930,7 +930,7 @@ NULL
 .genericBinaryFunction = function(e1,e2,FUN) {
   graph = .getProcessCollection(e1,e2)
   
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
   # if ProcessGraphParameter, then check if array or single value
   e1 = .autoArraySubset(e1)
@@ -977,7 +977,7 @@ NULL
       })
     }
     
-    if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available at the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+    if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
     
     if ("ignore_nodata" %in% names(formals(graph[[FUN]]))) {
       graph[[FUN]](data = x,ignore_nodata=na.rm) 

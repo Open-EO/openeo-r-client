@@ -7,7 +7,7 @@
 list_file_formats(con = NULL)
 }
 \arguments{
-\item{con}{openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

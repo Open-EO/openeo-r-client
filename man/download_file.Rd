@@ -7,7 +7,7 @@
 download_file(src, dst = NULL, con = NULL)
 }
 \arguments{
-\item{src}{the relative filepath of the source file on the openeo back-end}
+\item{src}{the relative filepath of the source file on the openEO back-end}
 
 \item{dst}{the destination file path on the local file system}
 
@@ -18,5 +18,5 @@ is used.}
 The file path of the stored file on your machine
 }
 \description{
-Sends a request to an openeo back-end to access the users files and downloads them to a given location.
+Sends a request to an openEO back-end to access the users files and downloads them to a given location.
 }

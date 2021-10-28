@@ -23,13 +23,13 @@ will return the results}
 
 \item{plan}{character, selection of a service plan}
 
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \value{
-A connection to a file if an output was provided, the raw data if not
+A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data
 }
 \description{
 Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 

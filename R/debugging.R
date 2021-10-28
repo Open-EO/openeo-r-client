@@ -75,7 +75,7 @@ print.request = function(x) {
 #' @param obj Service or Job object
 #' @param job_id character the jobs ID
 #' @param service_id character - the services ID
-#' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param timeout integer the timeout for the logging after no update in seconds, default is 10
 #' 

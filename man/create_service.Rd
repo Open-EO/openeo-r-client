@@ -35,7 +35,7 @@ will return the results}
 
 \item{budget}{numeric - the amount of credits that can be spent on this service}
 
-\item{con}{connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO clien object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}

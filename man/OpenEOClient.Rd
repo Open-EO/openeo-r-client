@@ -27,13 +27,13 @@ An R6Class that interacts with an openEO-conform back-end.
   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
   \item{\code{$getHost()}}{returns the host URL}
   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
-  \item{\code{$connect(url,version)}}{connects to a specific version of a backend}
+  \item{\code{$connect(url,version)}}{connects to a specific version of a back-end}
   \item{\code{$api_version()}}{returns the openEO API version this client is complient to}
   \item{\code{$login(login_type = NULL,user=NULL,password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
   \item{\code{$getAuthClient()}}{returns the authentication client}
   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
-  \item{\code{$getCapabilities()}}{}
+  \item{\code{$getCapabilities()}}{service exploration to retrieve the supported openEO endpoints}
   \item{\code{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
   \item{\code{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
   \item{\code{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
@@ -49,8 +49,8 @@ An R6Class that interacts with an openEO-conform back-end.
   \item{\code{tag}}{endpoint tag}
   \item{\code{parameters}}{named list of values to be replaced in the endpoint}
   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
-  \item{\code{url}}{url of an openeo backend either directly versioned or with the separate version statement}
-  \item{\code{version}}{the openeo API version to be used, or a list of available API versions if set to NULL}
+  \item{\code{url}}{url of an openEO back-end either directly versioned or with the separate version statement}
+  \item{\code{version}}{the openEO API version to be used, or a list of available API versions if set to NULL}
   \item{\code{user}}{the user name}
   \item{\code{password}}{the user password}
   \item{\code{login_type}}{'basic', 'oidc' or NULL to control the authentication}

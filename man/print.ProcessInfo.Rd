@@ -2,7 +2,7 @@
 % Please edit documentation in R/print-functions.R
 \name{print.ProcessInfo}
 \alias{print.ProcessInfo}
-\title{Print an openeo process}
+\title{Print an openEO process}
 \usage{
 \method{print}{ProcessInfo}(x, ...)
 }
@@ -12,5 +12,5 @@
 \item{...}{additional parameters (not used)}
 }
 \description{
-Print function to visualize relevant information about an openeo process
+Print function to visualize relevant information about an openEO process
 }

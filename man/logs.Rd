@@ -13,7 +13,7 @@ logs(obj = NULL, job_id = NULL, service_id = NULL, con = NULL, timeout = 10)
 
 \item{service_id}{character - the services ID}
 
-\item{con}{a connected openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{timeout}{integer the timeout for the logging after no update in seconds, default is 10}

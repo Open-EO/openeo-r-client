@@ -9,7 +9,7 @@ An interface that states the intended behavior for the authentication.
 \section{Fields}{
 
 \describe{
-\item{\code{access_token}}{The access_token to query password restricted web services of an openeo back-end}
+\item{\code{access_token}}{The access_token to query password restricted web services of an openEO back-end}
 
 \item{\code{id_token}}{The id_token retrieved when exchanging the access_token at the identity provider}
 }}
@@ -18,7 +18,7 @@ An interface that states the intended behavior for the authentication.
 
 \describe{
   \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
-  \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openeo back-end}
+  \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
 }
 }
 

@@ -7,7 +7,7 @@
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return a tibble of for filenames and their sizes
+#' @return a data.frame or tibble with file names and storage sizes
 #' 
 #' @export
 list_files = function(con=NULL) {
@@ -80,11 +80,11 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
 
 #' Download a file from the user workspace
 #' 
-#' Sends a request to an openeo back-end to access the users files and downloads them to a given location.
+#' Sends a request to an openEO back-end to access the users files and downloads them to a given location.
 #' 
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param src the relative filepath of the source file on the openeo back-end
+#' @param src the relative filepath of the source file on the openEO back-end
 #' @param dst the destination file path on the local file system
 #' 
 #' @return The file path of the stored file on your machine
@@ -116,9 +116,9 @@ download_file = function(src, dst = NULL, con=NULL) {
 
 #' Delete a file from the user workspace
 #'
-#' Sends a request to an openeo back-end in order to remove a specific file from the users workspaces.
+#' Sends a request to an openEO back-end in order to remove a specific file from the users workspaces.
 #' 
-#' @param src the relative filepath of the source file on the openeo back-end that shall be deleted
+#' @param src the relative filepath of the source file on the openEO back-end that shall be deleted
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
@@ -283,7 +283,7 @@ login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL,
 #' 
 #' Logs out or closes the active connection to an openEO service.
 #' 
-#' @param con a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @export

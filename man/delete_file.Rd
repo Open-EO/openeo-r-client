@@ -7,7 +7,7 @@
 delete_file(src, con = NULL)
 }
 \arguments{
-\item{src}{the relative filepath of the source file on the openeo back-end that shall be deleted}
+\item{src}{the relative filepath of the source file on the openEO back-end that shall be deleted}
 
 \item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
 is used.}
@@ -16,5 +16,5 @@ is used.}
 logical
 }
 \description{
-Sends a request to an openeo back-end in order to remove a specific file from the users workspaces.
+Sends a request to an openEO back-end in order to remove a specific file from the users workspaces.
 }

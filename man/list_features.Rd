@@ -2,12 +2,12 @@
 % Please edit documentation in R/server_metadata.R
 \name{list_features}
 \alias{list_features}
-\title{List the openeo endpoints}
+\title{List the openEO endpoints}
 \usage{
 list_features(con = NULL)
 }
 \arguments{
-\item{con}{A connected OpenEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{A connected openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

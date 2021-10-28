@@ -7,7 +7,7 @@
 user_processes(con = NULL)
 }
 \arguments{
-\item{con}{a connection to an openeo back-end (optional). Otherwise \code{\link{active_connection}}
+\item{con}{a connection to an openEO back-end (optional). Otherwise \code{\link{active_connection}}
 is used in order to access personal user defined processes. You need to be logged in}
 }
 \value{

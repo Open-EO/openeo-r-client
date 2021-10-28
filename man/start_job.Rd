@@ -11,7 +11,7 @@ start_job(job, log = FALSE, con = NULL)
 
 \item{log}{logical - whether to enable automatic logging after starting the job}
 
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

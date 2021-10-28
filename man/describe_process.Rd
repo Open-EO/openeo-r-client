@@ -16,5 +16,5 @@ is used.}
 a list of detailed information
 }
 \description{
-Queries an openeo back-end and retrieves more detailed information about offered processes
+Queries an openEO back-end and retrieves more detailed information about offered processes
 }

@@ -16,7 +16,7 @@
 #' 
 #' 
 #' @name Graph
-#' @return Object of \code{\link{R6Class}} with methods for building an openeo process graph
+#' @return Object of \code{\link{R6Class}} with methods for building an openEO process graph
 #' 
 #' @field data a named list of collection ids or process graph parameters depending on the context
 #' @section Methods:
@@ -26,7 +26,7 @@
 #'    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize}} 
 #'    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
 #'    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
-#'    \item{$addNode(node)}{}
+#'    \item{$addNode(node)}{adds a \code{\link{ProcessNode}} to the graph}
 #'    \item{$removeNode(node_id)}{removes a process node from the graph}
 #'    \item{$getFinalNode()}{gets the result process node of a process graph}
 #'    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
@@ -600,11 +600,11 @@ setOldClass(c("ProcessNode","Process","R6"))
 
 # Extra functions / wrapper ----
 
-#' Converts a JSON openeo graph into an R graph
+#' Converts a JSON openEO graph into an R graph
 #' 
 #' The function reads and parses a json text and creates a Graph object.
 #' 
-#' @param con a connected openeo client (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
 #' @param parameters optional parameters

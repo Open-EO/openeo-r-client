@@ -11,7 +11,7 @@ list_files(con = NULL)
 is used.}
 }
 \value{
-a tibble of for filenames and their sizes
+a data.frame or tibble with file names and storage sizes
 }
 \description{
 Lists all files in the workspaces of the authenticated user.

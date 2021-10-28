@@ -29,7 +29,7 @@ will return the results or a self defined \code{\link{Process}}}
 
 \item{budget}{replaces or sets the credits that can be spent at maximum}
 
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}

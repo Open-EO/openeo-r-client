@@ -31,7 +31,7 @@
 a data.frame
 }
 \description{
-The openeo package offers functions to transform list objects obtained from JSON
+The openEO package offers functions to transform list objects obtained from JSON
 into data.frames. This is mostly applied in list_* functions.
 }
 \details{

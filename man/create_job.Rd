@@ -2,7 +2,7 @@
 % Please edit documentation in R/jobs.R
 \name{create_job}
 \alias{create_job}
-\title{Creates a job from a Graph object on the back-end}
+\title{Creates a new job on the back-end}
 \usage{
 create_job(
   graph = NULL,
@@ -26,18 +26,16 @@ will return the results}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
 
-\item{con}{connected and authenticated openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to \link{jsonlite}{toJSON} (like 'digits')}
 }
 \value{
 the id of the job
 }
 \description{
-This function is called after the user defines a process graph to create a job on the
-back-end. The user sends the process graph and the optional output specifications like
-format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
-description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
-back-end provider.
+In preparation to execute the users analysis workflow (user defined process) asynchronously, they need to register a job that
+will be scheduled when the required resources are available. To do so the user provides the process graph with optional descriptive meta
+data and the desired execution plan or the maximum amount of credits spent.
 }

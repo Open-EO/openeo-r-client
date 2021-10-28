@@ -4,11 +4,13 @@
 \alias{UserProcessCollection}
 \title{User Defined Process Collection}
 \description{
-This object contains template functions for building process graphs from user defined processes at an openEO service. 
-This object is an unlocked R6 object, in order to add new functions at runtime, in the same fashion as 
-\code{\link{ProcessCollection}} for predefined processes. The object is usually created at 
-\code{\link{user_processes}} and resembles a given status, meaning, when a new user process is created or another one
-is updated the \code{UserProcessCollection} needs to be recreated with "fresh" data.
+This object contains template functions from the users stored user defined processes (UDP), which can be reused in other process graphs.
+}
+\details{
+This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way 
+as the \code{\link{ProcessCollection}} for predefined processes by the openEO back-end. A \code{\link{UserProcessCollection}} is usually created at 
+\code{\link{user_processes}}. If you have submitted new user defined processes to the back-end, make sure to call \code{\link{user_processes}} again
+to fetch the latest status.
 }
 \section{Methods}{
 

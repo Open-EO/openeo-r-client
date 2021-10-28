@@ -9,7 +9,7 @@ delete_service(service, con = NULL)
 \arguments{
 \item{service}{the Service or its id}
 
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \description{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_graph_building.R
 \name{parse_graph}
 \alias{parse_graph}
-\title{Converts a JSON openeo graph into an R graph}
+\title{Converts a JSON openEO graph into an R graph}
 \usage{
 parse_graph(json, parameters = NULL, con = NULL)
 }
@@ -11,7 +11,7 @@ parse_graph(json, parameters = NULL, con = NULL)
 
 \item{parameters}{optional parameters}
 
-\item{con}{a connected openeo client (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

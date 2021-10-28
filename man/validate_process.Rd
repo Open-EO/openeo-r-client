@@ -9,7 +9,7 @@ validate_process(graph, con = NULL, ...)
 \arguments{
 \item{graph}{the process graph that will be sent to the service to be validated}
 
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}

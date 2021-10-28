@@ -32,7 +32,7 @@ list_processes = function(con=NULL) {
 
 #' Describe a process
 #'
-#' Queries an openeo back-end and retrieves more detailed information about offered processes
+#' Queries an openEO back-end and retrieves more detailed information about offered processes
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param process id of a process to be described or the ProcessInfo object
@@ -175,9 +175,9 @@ ProcessCollection = R6Class(
 #' a ProcessCollection object to build a process graph in R. To get a better overview about the process graph building, please have
 #' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
 #' 
-#' @param con a connection to an openeo back-end (optional) otherwise \code{\link{active_connection}}
+#' @param con a connection to an openEO back-end (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @return a ProcessCollection object with the offered processes of the backend
+#' @return a ProcessCollection object with the offered processes of the back-end
 #' @export
 processes = function(con = NULL) {
     tryCatch({

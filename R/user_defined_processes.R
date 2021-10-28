@@ -7,7 +7,7 @@ NULL
 #' 
 #' Queries the back-end to retrieve a list of graph ids that the current user has stored on the back-end.
 #' 
-#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @return a named list of user defined processes (\code{ProcessInfo})
 #' @export
@@ -35,9 +35,9 @@ list_user_processes = function(con=NULL) {
 #' 
 #' The function queries the back-end for a specific user defined process and returns detailed information.
 #' 
-#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param id The id of the user process at the back-end
+#' @param id The id of the user process on the back-end
 #' 
 #' @return the user process as a ProcessInfo class (list object)
 #' @export
@@ -67,7 +67,7 @@ describe_user_process = function(id, con=NULL) {
 #' The function initiates the deletion of a user defined process on the back-end. Only the owning user can delete
 #' their process. The user defined process also should not be part of any particular job.
 #' 
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param id the id of the user process
 #' 
@@ -95,7 +95,7 @@ delete_user_process = function(id, con=NULL) {
 #' another software. In that case use \code{udp = as(obj, "Process")} and simply print or call 
 #' object \code{udp} on the console.
 #' 
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph a process graph definition
 #' @param id the title of the user process
@@ -153,7 +153,7 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
         process_graph_id = id
       ), authorized = TRUE, data = process_graph_description, raw = TRUE, ...)
       
-      message("Process was sucessfully stored on the backend.")
+      message("Process was sucessfully stored on the back-end.")
       return(id) 
     } else {
       return(process_graph_description)
@@ -164,11 +164,13 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
   }, error = .capturedErrorToMessage)
 }
 
-#' Update the current process graph
+#' Update an user defined process
 #' 
-#' Upload a process graph to the back-end under a given (existing) process graph.
+#' You can change details on an already created user defined process. You can either edit the meta data like the summary or the description. Or
+#' you can replace the process graph. However, you cannot delete the process graph, but by passing NA to the meta data fields you can empty those
+#' fields in the user defined process.
 #' 
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param id process graph id
 #' @param graph a process graph definition created by combining 'process()', 'collection()' or using a ProcessGraphBuilder
@@ -224,7 +226,7 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
 #' Sends the process graph as a user process to the openEO service and validates it with the predefined and user-defined 
 #' processes of the service.
 #' 
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph the process graph that will be sent to the service to be validated
 #' @param ... additional parameters passed to toJSON (like 'digits')
@@ -268,11 +270,13 @@ validate_process = function(graph, con=NULL, ...) {
 # User Defined Process Collection ====
 #' User Defined Process Collection
 #' 
-#' This object contains template functions for building process graphs from user defined processes at an openEO service. 
-#' This object is an unlocked R6 object, in order to add new functions at runtime, in the same fashion as 
-#' \code{\link{ProcessCollection}} for predefined processes. The object is usually created at 
-#' \code{\link{user_processes}} and resembles a given status, meaning, when a new user process is created or another one
-#' is updated the \code{UserProcessCollection} needs to be recreated with "fresh" data.
+#' This object contains template functions from the users stored user defined processes (UDP), which can be reused in other process graphs.
+#' 
+#' @details
+#' This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way 
+#' as the \code{\link{ProcessCollection}} for predefined processes by the openEO back-end. A \code{\link{UserProcessCollection}} is usually created at 
+#' \code{\link{user_processes}}. If you have submitted new user defined processes to the back-end, make sure to call \code{\link{user_processes}} again
+#' to fetch the latest status.
 #' 
 #' @name UserProcessCollection
 #' 
@@ -379,7 +383,7 @@ UserProcessCollection = R6Class(
 #' Analogous to this idea, this function creates a builder object for user defined processes listed and described
 #' in \code{\link{describe_user_process}} and \code{\link{list_user_processes}}.
 #' 
-#' @param con a connection to an openeo back-end (optional). Otherwise \code{\link{active_connection}}
+#' @param con a connection to an openEO back-end (optional). Otherwise \code{\link{active_connection}}
 #' is used in order to access personal user defined processes. You need to be logged in
 #' 
 #' @return \code{\link{UserProcessCollection}}

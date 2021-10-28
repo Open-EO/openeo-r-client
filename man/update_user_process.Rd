@@ -2,7 +2,7 @@
 % Please edit documentation in R/user_defined_processes.R
 \name{update_user_process}
 \alias{update_user_process}
-\title{Update the current process graph}
+\title{Update an user defined process}
 \usage{
 update_user_process(
   id,
@@ -22,11 +22,13 @@ update_user_process(
 
 \item{description}{description of the process graph (optional)}
 
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to toJSON (like 'digits')}
 }
 \description{
-Upload a process graph to the back-end under a given (existing) process graph.
+You can change details on an already created user defined process. You can either edit the meta data like the summary or the description. Or
+you can replace the process graph. However, you cannot delete the process graph, but by passing NA to the meta data fields you can empty those
+fields in the user defined process.
 }

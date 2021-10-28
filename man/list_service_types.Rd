@@ -7,7 +7,7 @@
 list_service_types(con = NULL)
 }
 \arguments{
-\item{con}{a connected openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

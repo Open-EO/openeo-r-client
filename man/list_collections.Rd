@@ -14,7 +14,7 @@ is used.}
 object of class 'CollectionList'
 }
 \description{
-List available collections stored on an openEO server and return them as a CollectionList - a named list of Collection objects. 
-The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this function's result contains
-less information than the detailed description received from the other function.
+List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects. 
+The names are the collection IDs. Although the result at \code{\link{describe_collection}} is also a Collection, the Collection object of returned
+from \code{list_collections()} is considered a list entry with less detailed information.
 }

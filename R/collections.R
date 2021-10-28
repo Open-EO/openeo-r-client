@@ -1,9 +1,9 @@
 # data endpoint ----
 #' List data on connected server
 #'
-#' List available collections stored on an openEO server and return them as a CollectionList - a named list of Collection objects. 
-#' The names are the collection IDs. Although the result at 'describe_collection' is also a Collection, this function's result contains
-#' less information than the detailed description received from the other function.
+#' List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects. 
+#' The names are the collection IDs. Although the result at \code{\link{describe_collection}} is also a Collection, the Collection object of returned
+#' from \code{list_collections()} is considered a list entry with less detailed information.
 #' 
 #' @param con Connection object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -22,9 +22,9 @@ list_collections = function(con=NULL) {
     return(con$getDataCollection())
 }
 
-#' Describe a product
+#' Describe a collection
 #' 
-#' Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end.
+#' Queries an openEO back-end and retrieves a detailed description about one or more collections offered by the back-end.
 #' 
 #' @param collection Collection object or the collections id
 #' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
@@ -91,7 +91,7 @@ describe_collection = function(collection = NA, con=NULL) {
                 
                 class(info$`cube:dimensions`) = "CubeDimensions"
             } else {
-                warning(paste0("Description of collection '","' does not contain the mandatory data cube dimensions field."))
+                warning(paste0("Description of collection '",collection,"' does not contain the mandatory data cube dimensions field."))
             }
             
             info$extent$spatial = unlist(info$extent$spatial$bbox)

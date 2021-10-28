@@ -46,14 +46,14 @@ the download}
 the textual JSON representation of the result
 }
 \description{
-This function tests UDF requests against a UDF service. If an 
-openEO UDF service is available (externally via URL or local setup) and if you can obtain 
-sample data that fit the context of your UDF use case, you can use this function to send the 
-code and the data to the UDF service. Depending on the state of the service (error or success)
-you can debug your code.
+This function is still under development and depends heavily on test data in a specific format and whether or not the back-end provider
+exposes their UDF service endpoint or if you have setup a local UDF service (see notes). The openEO UDF API v0.1.0 had foreseen to ship
+data and code in a single message and to be interpretable by a computing service a specific format was designed. Usually this whole operation
+is neatly hidden within the back-end, but if you want to test and debug the code, you need to create such data first. Some examples are available
+at \url{https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data}.
 }
 \details{
-If you use a local R UDF service you might want to debug using the 'browser()' function.
+Hint: If you use a local R UDF service you might want to debug using the 'browser()' function.
 }
 \note{
 The debug options are only available for the R-UDF service. The R UDF-API version has to be of version 0.1.0 (not the old alpha 

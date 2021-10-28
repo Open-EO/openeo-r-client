@@ -95,7 +95,17 @@ process_list = list_processes()
 process_list[1:3]
 ```
 
-In the example above you print the basic information about the processes to the console. If you want to have a nicer visualization of the process in HTML, you can use `process_viewer()`. Simply pass the 
+In the example above you print the basic information about the processes to the console. If you want to have a nicer visualization of the process in HTML, you can use `process_viewer()`. Simply pass the process name, function or process object to the function.
+
+```{r, eval=FALSE}
+process_viewer(x = "load_collection")
+
+process_viewer(x=process_list[1])
+
+p = processes()
+process_viewer(x=p$load_collection)
+```
+
 
 As beforehand you can access particular objects by their ID.
 
@@ -148,7 +158,7 @@ Note: You might explore more data collections and processes once you are registe
 
 ## User data
 
-As a registered user, you will have a dedicated file space / workspace for your uploads, as well as a list of created, ongoing and completed jobs and services and an access to your account data with the credits available / spent.
+As a registered user, you will have a dedicated file space for your uploads (like a workspace), as well as the jobs and services linked to your account. Further more you can explore your accounts quota in terms of used and available disk space and credits.
 
 ### User account 
 ```{r, paged.print = FALSE, eval=FALSE}
@@ -157,9 +167,9 @@ describe_account()
 
 ### File workspace
 
-For the file space the data you will upload will oftentimes be areas of interests in JSON or SHP, some masks or scripts to use in user defined functions.
+In your file space you can upload a variety of data. You can put here all external data you need for your analysis. This can range from area of interests, over scripts for user defined functions (UDF scripts) to trained machine learning models that shall be applied on a larger scale.
 
-To get an overview of the uploaded files, you can use the `list_*` function. Here it is `list_files()`. If the workspace is empty, then it will say so.
+To get an overview of the uploaded files, you can use the `list_*` function - in this case it is `list_files()`.
 
 ```{r, eval=FALSE}
 list_files()
@@ -259,6 +269,8 @@ Now I will present a simple use case on how to create your first analysis using 
 
 In the following example we will select a collection (Sentinel-2) and with a certain spatial and temporal extent. Additionally, we filter the bands, as we need just red and near-infrared wavelengths. Afterwards we calculate the NDVI for each time step by reducing "bands" and stating the NDVI band arithmetic function. Afterwards we will reduce the temporal dimension by selecting the minimum NDVI value per "pixel" (x and y coordinate). As the selected back-end offers PNG as an image format, which we might need for a web service like WMS, we need to scale the NDVI value range from (-1 to 1) to the PNG value range (0,255). Lastly, we store the results as a PNG image.
 
+In openEO terminology the defined analysis workflow will be called "user defined process" (UDP).
+
 ```{r, eval=FALSE}
 data = p$load_collection(id = colls$`COPERNICUS/S2`,
                              spatial_extent = list(
@@ -311,7 +323,7 @@ raster::spplot(r)
 
 ## Creating a job
 
-In contrast to the synchronous execution of the UDP you can also create a job at the back-end, which means that the console is not blocked in the meantime. The job needs to be started in order to perform the analysis and obtain the results.
+In contrast to the synchronous execution of the user defined process (UDP), you can also create a job at the back-end, which means that the console is not blocked in the meantime. The job needs to be started in order to perform the analysis and obtain the results.
 
 ```{r, eval=FALSE}
 job = create_job(graph=result,title = "Minimum NDVI", description = "Minimum NDVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file.")

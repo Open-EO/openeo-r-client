@@ -6,7 +6,7 @@
 #' webservices like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
 #' indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 #' 
-#' @param con connected and authenticated openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return named list of Services (class ServiceList)
@@ -46,7 +46,7 @@ list_services = function(con=NULL) {
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent on this service
-#' @param con connected and authenticated openeo clien object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO clien object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
 #'  
@@ -113,11 +113,11 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' will return the results
 #' @param title character (optional) - the title of for the service
 #' @param description character (optional) - the description for the service
-#' @param enabled logical 
+#' @param enabled logical - whether the service shall be active for querying or disabled
 #' @param configuration a list of service creation configuration
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent for this service
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to toJSON (like 'digits')
 #' 
@@ -235,7 +235,7 @@ update_service = function(service, type = NULL, graph = NULL, title = NULL, desc
 #' Queries the server and returns information about a particular service
 #' 
 #' @param service the Service object or its id
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return Service object
@@ -269,7 +269,7 @@ describe_service = function(service, con=NULL) {
 #' Queries the back-end and removes the current set service function of job.
 #' 
 #' @param service the Service or its id
-#' @param con connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @export
 delete_service = function(service, con=NULL) {

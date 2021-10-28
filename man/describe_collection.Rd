@@ -2,7 +2,7 @@
 % Please edit documentation in R/collections.R
 \name{describe_collection}
 \alias{describe_collection}
-\title{Describe a product}
+\title{Describe a collection}
 \usage{
 describe_collection(collection = NA, con = NULL)
 }
@@ -16,5 +16,5 @@ is used.}
 a Collection object with detailed information about a collection.
 }
 \description{
-Queries an openeo back-end and retrieves a detailed description about one or more collections offered by the back-end.
+Queries an openEO back-end and retrieves a detailed description about one or more collections offered by the back-end.
 }

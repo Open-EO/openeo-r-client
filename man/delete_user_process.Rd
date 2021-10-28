@@ -9,7 +9,7 @@ delete_user_process(id, con = NULL)
 \arguments{
 \item{id}{the id of the user process}
 
-\item{con}{connected and authorized openeo client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \description{
