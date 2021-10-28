@@ -380,6 +380,11 @@ Process = R6Class(
       
       results$returns = self$getReturns()$asParameterInfo()
       
+      # clean the optional flag in the result
+      if ("optional" %in% names(results$returns)) {
+        results$returns[["optional"]] = NULL
+      }
+      
       return(results)
     },
     validate = function() {

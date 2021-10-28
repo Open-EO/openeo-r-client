@@ -118,9 +118,8 @@ Parameter = R6Class(
       if (self$isNullable) {
         info$optional = TRUE
         info$default = NA
-      } else if (self$isRequired){
-        info$optional = FALSE
-      }
+      } 
+      # if the parameter is required "optional" can be left out
       
       if (all(c("Argument","Parameter","R6") %in% class(self)) && 
           all(class(self) %in% c("Argument","Parameter","R6"))) {
