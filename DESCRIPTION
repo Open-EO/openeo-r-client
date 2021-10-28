@@ -24,6 +24,7 @@ Imports:
 Encoding: UTF-8
 LazyData: true
 BugReports: https://github.com/Open-EO/openeo-r-client/issues
+URL: https://github.com/Open-EO/openeo-r-client
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 License: Apache License (>= 2)
