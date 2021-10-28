@@ -73,7 +73,7 @@ specific versions, then you should provide the versions parameter." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -81,7 +81,7 @@ specific versions, then you should provide the versions parameter." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +134,7 @@ specific versions, then you should provide the versions parameter.</p>
     </tr>
     <tr>
       <th>version</th>
-      <td><p>the version number as string (optional)</p></td>
+      <td><p>the openEO API version number as string (optional), see also <code><a href='api_versions.html'>api_versions</a></code></p></td>
     </tr>
     <tr>
       <th>user</th>
@@ -158,7 +158,7 @@ specific versions, then you should provide the versions parameter.</p>
     </tr>
     <tr>
       <th>config</th>
-      <td><p>named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)</p></td>
+      <td><p>named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)</p></td>
     </tr>
     </table>
 
@@ -198,7 +198,6 @@ which marks the latest service that was connected to.</p>
 
 <span class='co'># connect to a host with open id connect authentication</span>
 <span class='va'>con</span> <span class='op'>=</span> <span class='fu'>connect</span><span class='op'>(</span>host<span class='op'>=</span><span class='st'>'http://example.openeo.org'</span>,
-              version<span class='op'>=</span><span class='st'>'1.0.0-rc.2'</span>,
               login_type<span class='op'>=</span><span class='st'>'oidc'</span><span class='op'>)</span>
 <span class='op'>}</span>
 

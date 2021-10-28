@@ -40,11 +40,9 @@
 
 
 <meta property="og:title" content="OIDC Authentication — OIDCAuth" />
-<meta property="og:description" content="A class that authenticates via Open ID Connect. It inherits all fields and functions from IAuth. The OIDC login
-will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
-the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a configuration 
-file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the provider is 'http://localhost:1410/'." />
+<meta property="og:description" content="A class that handles the authentication via Open ID Connect. The httr package is used to handle OIDCs underlying
+OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+all fields and functions from IAuth." />
 
 
 
@@ -76,7 +74,7 @@ file that will contain information about the 'client_id' and 'secret'. The redir
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -84,7 +82,7 @@ file that will contain information about the 'client_id' and 'secret'. The redir
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -113,19 +111,25 @@ file that will contain information about the 'client_id' and 'secret'. The redir
     </div>
 
     <div class="ref-description">
-    <p>A class that authenticates via Open ID Connect. It inherits all fields and functions from <code><a href='IAuth.html'>IAuth</a></code>. The OIDC login
-will open a browser window where you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
-the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a configuration 
-file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the provider is 'http://localhost:1410/'.</p>
+    <p>A class that handles the authentication via Open ID Connect. The <code>httr</code> package is used to handle OIDCs underlying
+OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+all fields and functions from <code><a href='IAuth.html'>IAuth</a></code>.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The <code>access_token</code> will be returned when queried. If the lease time has run out the client will refresh the access_token
+    <p>The OIDC login interacts with the OIDC provider via the <code>Authorization Code Grant</code>. During the login process an internet browser window 
+will be opened and you will be asked to enter your credentials. The website belongs to the OIDC provider of the
+chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
+the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a 
+configuration file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the 
+provider is 'http://localhost:1410/' (<code><a href='https://httr.r-lib.org/reference/oauth_listener.html'>oauth_listener</a></code>).</p>
+<p>The <code>access_token</code> will be returned when queried. If the lease time has run out the client will refresh the access_token
 automatically.</p>
+<p>Since the OIDC workflow is mainly based on OAuth2.0 we use httr to deal with this authentication by creating an 
+<code><a href='https://httr.r-lib.org/reference/oauth_app.html'>oauth_app</a></code></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
@@ -142,8 +146,10 @@ automatically.</p>
     
 
 <dl>
-  <dt><code>provider</code></dt><dd><p>a provider object as returned by <code><a href='list_oidc_providers.html'>list_oidc_providers()</a></code></p></dd>
-  <dt><code>config</code></dt><dd><p>either a file to JSON containing information about 'client_id' and 'secret' or a named list</p></dd>
+  <dt><code>provider</code></dt><dd><p>the name of an OIDC provider registered at the back-end or a provider object as returned by <code><a href='list_oidc_providers.html'>list_oidc_providers()</a></code></p></dd>
+  <dt><code>config</code></dt><dd><p>either a file to JSON containing information about 'client_id' and 
+  'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+  overwrite the default settings of the OIDC provider</p></dd>
 
 </dl>
 

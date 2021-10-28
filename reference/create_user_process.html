@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -80,7 +80,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -114,7 +114,7 @@
 
     <pre class="usage"><span class='fu'>create_user_process</span><span class='op'>(</span>
   <span class='va'>graph</span>,
-  <span class='va'>id</span>,
+  id <span class='op'>=</span> <span class='cn'>NULL</span>,
   summary <span class='op'>=</span> <span class='cn'>NULL</span>,
   description <span class='op'>=</span> <span class='cn'>NULL</span>,
   submit <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -159,6 +159,12 @@ is used.</p></td>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a list assembling a process graph description or the graph id if send</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The parameter <code>submit</code> will be deprecated in the future. Please use <code>as(obj, "Process")</code> in the 
+future. In general you might use this when copying a JSON representation of your process graph to
+another software. In that case use <code>udp = as(obj, "Process")</code> and simply print or call 
+object <code>udp</code> on the console.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.1</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -107,17 +107,55 @@
 
 <div id="changelog" class="section level1">
 
-<div id="section" class="section level2">
+<div id="101---unreleased" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section" class="anchor"></a>[1.0.0] - 2020-09-30</h2>
+<a href="#101---unreleased" class="anchor"></a>[1.0.1] - unreleased</h2>
+<div id="changes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#changes" class="anchor"></a>Changes</h3>
+<ul>
+<li>clarified the currently used OIDC code flow and adapted documentation <a href="https://github.com/Open-EO/openeo-r-client/issues/71">#71</a>
+</li>
+<li>usability improvements when selecting and configuring the OIDC Authentication provider <a href="https://github.com/Open-EO/openeo-r-client/issues/74">#74</a>
+</li>
+<li>cleaning empty fields when serializing user defined process results <a href="https://github.com/Open-EO/openeo-r-client/issues/68">#68</a>
+</li>
+<li>changes related to UDP visualization: prior the process graph was visualized as JSON, which caused trouble, when exchanging JSON code between different clients. Now you can use <code>as(x,"Process")</code> to get a valid process from the result node <a href="https://github.com/Open-EO/openeo-r-client/issues/54">#54</a>
+</li>
+</ul>
+</div>
+<div id="fixes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#fixes" class="anchor"></a>Fixes</h3>
+<ul>
+<li>modified a descriptive text for “production-readiness” of back-ends</li>
+<li>modified the documentation and examples of <code><a href="reference/connect.html">connect()</a></code> in terms of the parameter <code>version</code>
+</li>
+<li>modified the implemented openEO API version of the client (removed the release candidate suffix)</li>
+<li>fixed interpretation of an one entry discovery object <a href="https://github.com/Open-EO/openeo-r-client/issues/59">#59</a>
+</li>
+<li>fixed an issue when querying the versions of a back-end <a href="https://github.com/Open-EO/openeo-r-client/issues/72">#72</a>
+</li>
+<li>Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) <a href="https://github.com/Open-EO/openeo-r-client/issues/75">#75</a>
+</li>
+<li>fixed missing enum validation <a href="https://github.com/Open-EO/openeo-r-client/issues/65">#65</a>
+</li>
+<li>fixed process parsing of processes with completely nullable arrays <a href="https://github.com/Open-EO/openeo-r-client/issues/79">#79</a>
+</li>
+</ul>
+</div>
+</div>
+<div id="100---2020-09-30" class="section level2">
+<h2 class="hasAnchor">
+<a href="#100---2020-09-30" class="anchor"></a>[1.0.0] - 2020-09-30</h2>
 <p>In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here.</p>
-<p>Note: similarly named functions that work on different objects are abrreviated by a <code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code>, e.g. <code>describe_*()</code> for <code><a href="reference/describe_job.html">describe_job()</a></code>, <code><a href="reference/describe_service.html">describe_service()</a></code>, …</p>
+<p>Note: similarly named functions that work on different objects are abrreviated by a <code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code>, e.g. <code>describe_*()</code> for <code><a href="reference/describe_job.html">describe_job()</a></code>, <code><a href="reference/describe_service.html">describe_service()</a></code>, …</p>
 <div id="added" class="section level3">
 <h3 class="hasAnchor">
 <a href="#added" class="anchor"></a>Added</h3>
 <ul>
 <li>added a serialization of object <code>Parameter</code> into a descriptive form</li>
-<li>added a function to parse and coerce an R function into a <code>Graph</code> (e.g. <code>as(x,"Graph")</code>, where x is a R function returning a <code>ProcessNode</code>)</li>
+<li>added a function to parse and coerce an R function into a <code>Graph</code> (e.g. <code>as(x,"Graph")</code>, where x is a R function returning a <code>ProcessNode</code>)</li>
 <li>new functions <code><a href="reference/privacy_policy.html">privacy_policy()</a></code> and <code><a href="reference/terms_of_service.html">terms_of_service()</a></code> to view the privacy policy and the terms of service</li>
 <li>function <code><a href="reference/conformance.html">conformance()</a></code> operated on the new corresponding api endpoint</li>
 <li>added class <code>ProcessCollection</code> in order to divide the Graph object and the graph building. It is created upon connection and obtainable via <code><a href="reference/processes.html">processes()</a></code>.</li>
@@ -163,7 +201,7 @@
 <li>implemented the RStudio connection interface which shows the active connection and the available data sets with their dimensional description</li>
 <li>added classes for arguments: <code>UdfRuntimeArgument</code>, <code>UdfRuntimeVersionArgument</code>, <code>UdfCodeArgument</code>
 </li>
-<li>implemented and added a class <code>ArgumentList</code> to <code>Process</code> in order to allow an easier value assignment, e.g. <code>node1$parameter$x = ...</code>, which comes in handy, when the node is assigned to a variable and a parameter has to changed later</li>
+<li>implemented and added a class <code>ArgumentList</code> to <code>Process</code> in order to allow an easier value assignment, e.g. <code>node1$parameter$x = ...</code>, which comes in handy, when the node is assigned to a variable and a parameter has to changed later</li>
 <li>added a builder for user-defined processes (<code>UserProcessCollection</code> and <code><a href="reference/user_processes.html">user_processes()</a></code>) like <code>ProcessCollection</code> for predefined processes, which offers a users stored process graph as a usable function that creates a <code>ProcessNode</code>
 </li>
 <li>added function <code>status</code> for the connection, jobs and services to immediate get the status information. It also always queries the back-end for an update on call</li>
@@ -205,9 +243,9 @@
 <li>harmonized various function behavior:
 <ul>
 <li>
-<code>update_*</code> and <code>create_*</code> functions return their respective object (e.g. <code>update_job</code> –&gt; <code>Job</code>) instead of their ID (previous behaviour)</li>
+<code>update_*</code> and <code>create_*</code> functions return their respective object (e.g. <code>update_job</code> –&gt; <code>Job</code>) instead of their ID (previous behaviour)</li>
 <li>
-<code>list_*</code> functions return a named list of those particular exchange objects (e.g. <code>list_jobs</code> –&gt; named list of <code>Job</code>)</li>
+<code>list_*</code> functions return a named list of those particular exchange objects (e.g. <code>list_jobs</code> –&gt; named list of <code>Job</code>)</li>
 <li>parameters, where before only the ID of particular object was passed on, were changed to allow the overview or detailed object description also</li>
 </ul>
 </li>
@@ -268,9 +306,9 @@
 </ul>
 </div>
 </div>
-<div id="section-1" class="section level2">
+<div id="062---2020-04-09" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section-1" class="anchor"></a>[0.6.2] - 2020-04-09</h2>
+<a href="#062---2020-04-09" class="anchor"></a>[0.6.2] - 2020-04-09</h2>
 <div id="fixed-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fixed-1" class="anchor"></a>Fixed</h3>
@@ -298,9 +336,9 @@
 </ul>
 </div>
 </div>
-<div id="section-2" class="section level2">
+<div id="061---2020-03-23" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section-2" class="anchor"></a>[0.6.1] - 2020-03-23</h2>
+<a href="#061---2020-03-23" class="anchor"></a>[0.6.1] - 2020-03-23</h2>
 <div id="fixed-2" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fixed-2" class="anchor"></a>Fixed</h3>
@@ -317,9 +355,9 @@
 </ul>
 </div>
 </div>
-<div id="usability-update" class="section level2">
+<div id="060---2020-02-27-usability-update" class="section level2">
 <h2 class="hasAnchor">
-<a href="#usability-update" class="anchor"></a>[0.6.0] - 2020-02-27 Usability update</h2>
+<a href="#060---2020-02-27-usability-update" class="anchor"></a>[0.6.0] - 2020-02-27 Usability update</h2>
 <div id="added-2" class="section level3">
 <h3 class="hasAnchor">
 <a href="#added-2" class="anchor"></a>Added</h3>
@@ -364,9 +402,9 @@
 </ul>
 </div>
 </div>
-<div id="section-3" class="section level2">
+<div id="050---2019-12-03" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section-3" class="anchor"></a>[0.5.0] - 2019-12-03</h2>
+<a href="#050---2019-12-03" class="anchor"></a>[0.5.0] - 2019-12-03</h2>
 <div id="added-3" class="section level3">
 <h3 class="hasAnchor">
 <a href="#added-3" class="anchor"></a>Added</h3>
@@ -414,9 +452,9 @@ POST /validation</code></pre>
 </ul>
 </div>
 </div>
-<div id="section-4" class="section level2">
+<div id="042---2019-09-09" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section-4" class="anchor"></a>[0.4.2] - 2019-09-09</h2>
+<a href="#042---2019-09-09" class="anchor"></a>[0.4.2] - 2019-09-09</h2>
 <div id="changed-4" class="section level3">
 <h3 class="hasAnchor">
 <a href="#changed-4" class="anchor"></a>Changed</h3>
