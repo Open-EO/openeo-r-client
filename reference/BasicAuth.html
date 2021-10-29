@@ -41,10 +41,10 @@
 
 <meta property="og:title" content="Basic Authentication class — BasicAuth" />
 <meta property="og:description" content="This class handles the authentication to an openEO back-end that supports &quot;basic&quot; as login type. The class handles the retrieval
-of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In
-general the authentication will be done once via login or multiple times when the lease time runs out. This class
-is created and registered in the OpenEOClient. After the login the user_id and the access_token is obtained which
-will be used as Bearer token for the password restricted webservices." />
+of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
+The authentication will be done once via login or multiple times when the lease time runs out. This class
+is created and registered in the OpenEOClient. After the login the user_id and the access_token are obtained and 
+used as &quot;bearer token&quot; for the password restricted webservices." />
 
 
 
@@ -91,9 +91,26 @@ will be used as Bearer token for the password restricted webservices." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,16 +125,16 @@ will be used as Bearer token for the password restricted webservices." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Basic Authentication class</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/authentication.R'><code>R/authentication.R</code></a></small>
     <div class="hidden name"><code>BasicAuth.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
-of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. In
-general the authentication will be done once via <code><a href='login.html'>login</a></code> or multiple times when the lease time runs out. This class
-is created and registered in the <code><a href='OpenEOClient.html'>OpenEOClient</a></code>. After the login the user_id and the access_token is obtained which
-will be used as Bearer token for the password restricted webservices.</p>
+of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
+The authentication will be done once via <code><a href='login.html'>login</a></code> or multiple times when the lease time runs out. This class
+is created and registered in the <code><a href='OpenEOClient.html'>OpenEOClient</a></code>. After the login the user_id and the access_token are obtained and 
+used as "bearer token" for the password restricted webservices.</p>
     </div>
 
 

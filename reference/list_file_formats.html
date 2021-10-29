@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,7 +121,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Supported Input/Output formats</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>list_file_formats.Rd</code></div>
     </div>
 
@@ -119,7 +136,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>
@@ -129,8 +146,8 @@ is used.</p></td>
     <p>a FileFormatList object</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The <code>FileFormatList</code> object ist a named list, which is organized into 'input' and 'output'. At each category we have another
-named list with the <code>FileFormat</code> indexed by its format ID.</p>
+    <p>The <code>FileFormatList</code> object ist a named list, which is organized into 'input' and 'output'. For each category a different 
+named list with the <code>FileFormat</code> is indexed by its format ID.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

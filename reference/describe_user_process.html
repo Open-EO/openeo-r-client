@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Fetches the representation of a stored user defined process — describe_user_process" />
-<meta property="og:description" content="The function queries the back-end for a specific user defined process and returns detailled information." />
+<meta property="og:description" content="The function queries the back-end for a specific user defined process and returns detailed information." />
 
 
 
@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,12 +121,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Fetches the representation of a stored user defined process</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user_defined_processes.R'><code>R/user_defined_processes.R</code></a></small>
     <div class="hidden name"><code>describe_user_process.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function queries the back-end for a specific user defined process and returns detailled information.</p>
+    <p>The function queries the back-end for a specific user defined process and returns detailed information.</p>
     </div>
 
     <pre class="usage"><span class='fu'>describe_user_process</span><span class='op'>(</span><span class='va'>id</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -119,11 +136,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>id</th>
-      <td><p>The id of the user process at the back-end</p></td>
+      <td><p>The id of the user process on the back-end</p></td>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>

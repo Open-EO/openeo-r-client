@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Starts remote asynchronous evaluation of a job — start_job" />
-<meta property="og:description" content="The function sends a start signal to the backend in order to start processing the results
-for a defined job." />
+<meta property="og:description" content="The function sends a start signal to the back-end triggering a defined job." />
 
 
 
@@ -88,9 +87,26 @@ for a defined job." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,13 +121,12 @@ for a defined job." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Starts remote asynchronous evaluation of a job</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/jobs.R'><code>R/jobs.R</code></a></small>
     <div class="hidden name"><code>start_job.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function sends a start signal to the backend in order to start processing the results
-for a defined job.</p>
+    <p>The function sends a start signal to the back-end triggering a defined job.</p>
     </div>
 
     <pre class="usage"><span class='fu'>start_job</span><span class='op'>(</span><span class='va'>job</span>, log <span class='op'>=</span> <span class='cn'>FALSE</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -121,7 +136,7 @@ for a defined job.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>job</th>
-      <td><p>the job object or the job id of the defined job</p></td>
+      <td><p>the job object or the job id</p></td>
     </tr>
     <tr>
       <th>log</th>
@@ -129,7 +144,7 @@ for a defined job.</p>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>

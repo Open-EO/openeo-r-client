@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>View for openEO collections — collection_viewer • openeo</title>
+<title>View openEO collections — collection_viewer • openeo</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,9 @@
 
 
 
-<meta property="og:title" content="View for openEO collections — collection_viewer" />
-<meta property="og:description" content="The function opens up a viewer panel in RStudio which renders the collection information
-nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons." />
+<meta property="og:title" content="View openEO collections — collection_viewer" />
+<meta property="og:description" content="The function opens a viewer panel in RStudio which renders the collection information
+in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons." />
 
 
 
@@ -88,9 +88,26 @@ nicely in an HTML. It reuses common components from the openEO webeditor / opene
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,14 +121,14 @@ nicely in an HTML. It reuses common components from the openEO webeditor / opene
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>View for openEO collections</h1>
-    
+    <h1>View openEO collections</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/viewer.R'><code>R/viewer.R</code></a></small>
     <div class="hidden name"><code>collection_viewer.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function opens up a viewer panel in RStudio which renders the collection information
-nicely in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.</p>
+    <p>The function opens a viewer panel in RStudio which renders the collection information
+in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.</p>
     </div>
 
     <pre class="usage"><span class='fu'>collection_viewer</span><span class='op'>(</span><span class='va'>x</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>

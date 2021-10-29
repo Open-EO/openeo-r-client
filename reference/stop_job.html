@@ -40,8 +40,7 @@
 
 
 <meta property="og:title" content="Terminates a running job — stop_job" />
-<meta property="og:description" content="Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
-further executions and related costs." />
+<meta property="og:description" content="Informs the server that the specified job needs to be terminated to prevent further costs." />
 
 
 
@@ -88,9 +87,26 @@ further executions and related costs." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,13 +121,12 @@ further executions and related costs." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Terminates a running job</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/jobs.R'><code>R/jobs.R</code></a></small>
     <div class="hidden name"><code>stop_job.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Informs the server that the specified job needs to be terminated and taken 'canceled' to prevent from
-further executions and related costs.</p>
+    <p>Informs the server that the specified job needs to be terminated to prevent further costs.</p>
     </div>
 
     <pre class="usage"><span class='fu'>stop_job</span><span class='op'>(</span><span class='va'>job</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>

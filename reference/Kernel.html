@@ -40,9 +40,9 @@
 
 
 <meta property="og:title" content="Kernel — Kernel" />
-<meta property="og:description" content="Inheriting from Argument in order to represent a 2 dimensional array of weights that shall be applied 
-on the x and y (spatial) dimensions of the data cube. The inner level of the nested array aligns with the x axis and 
-the outer level aligns with the y axis. Each level of the kernel must have an uneven number of elements." />
+<meta property="og:description" content="Inheriting from Argument in order to represent a 2-dimensional array of weights applied 
+to the x and y (spatial) dimensions of the data cube. The inner level of the nested array is aligned to the x-axis and 
+the outer level is aligned to the y-axis. Each level of the kernel must have an uneven number of elements." />
 
 
 
@@ -89,9 +89,26 @@ the outer level aligns with the y axis. Each level of the kernel must have an un
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,21 +123,21 @@ the outer level aligns with the y axis. Each level of the kernel must have an un
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Kernel</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/argument_types.R'><code>R/argument_types.R</code></a></small>
     <div class="hidden name"><code>Kernel.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Inheriting from <code><a href='Argument.html'>Argument</a></code> in order to represent a 2 dimensional array of weights that shall be applied 
-on the x and y (spatial) dimensions of the data cube. The inner level of the nested array aligns with the x axis and 
-the outer level aligns with the y axis. Each level of the kernel must have an uneven number of elements.</p>
+    <p>Inheriting from <code><a href='Argument.html'>Argument</a></code> in order to represent a 2-dimensional array of weights applied 
+to the x and y (spatial) dimensions of the data cube. The inner level of the nested array is aligned to the x-axis and 
+the outer level is aligned to the y-axis. Each level of the kernel must have an uneven number of elements.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Object of <code>R6Class</code> which represents a Kernel.</p>
+    <p>Object of <code>R6Class</code> representing a Kernel.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='Array.html'>Array</a></code>, <code><a href='Integer.html'>Integer</a></code>, <code><a href='EPSGCode.html'>EPSGCode</a></code>, <code><a href='String.html'>String</a></code>, <code><a href='Number.html'>Number</a></code>, 

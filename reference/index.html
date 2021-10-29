@@ -86,9 +86,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -380,7 +397,7 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="as.Process.html">as.Process.ProcessInfo()</a></code> <code><a href="as.Process.html">as.Process.Graph()</a></code> <code><a href="as.Process.html">as.Process.ProcessNode()</a></code> </p>
+          <p><code><a href="as.Process.html">as.Process.ProcessInfo()</a></code> <code><a href="as.Process.html">as.Process.Graph()</a></code> <code><a href="as.Process.html">as.Process.ProcessNode()</a></code> <code><a href="as.Process.html">as.Process.Service()</a></code> </p>
         </td>
         <td><p>Coerce into a Process</p></td>
       </tr><tr>
@@ -412,13 +429,13 @@
         <td>
           <p><code><a href="collection_viewer.html">collection_viewer()</a></code> </p>
         </td>
-        <td><p>View for openEO collections</p></td>
+        <td><p>View openEO collections</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="compute_result.html">compute_result()</a></code> </p>
         </td>
-        <td><p>Executes a job directly and returns the data immediately</p></td>
+        <td><p>Executes a job and returns the data immediately</p></td>
       </tr><tr>
         
         <td>
@@ -436,7 +453,7 @@
         <td>
           <p><code><a href="create_job.html">create_job()</a></code> </p>
         </td>
-        <td><p>Creates a job on the back-end from a Graph object</p></td>
+        <td><p>Creates a new job on the back-end</p></td>
       </tr><tr>
         
         <td>
@@ -448,7 +465,7 @@
         <td>
           <p><code><a href="create_user_process.html">create_user_process()</a></code> </p>
         </td>
-        <td><p>Stores a graph as user defined process at the back-end</p></td>
+        <td><p>Stores a graph as user defined process on the back-end</p></td>
       </tr><tr>
         
         <td>
@@ -466,7 +483,7 @@
         <td>
           <p><code><a href="delete_file.html">delete_file()</a></code> </p>
         </td>
-        <td><p>Deletes a file from the users workspace</p></td>
+        <td><p>Delete a file from the user workspace</p></td>
       </tr><tr>
         
         <td>
@@ -490,13 +507,13 @@
         <td>
           <p><code><a href="describe_account.html">describe_account()</a></code> </p>
         </td>
-        <td><p>Retrieves the current users account information</p></td>
+        <td><p>Get the current user account information</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="describe_collection.html">describe_collection()</a></code> </p>
         </td>
-        <td><p>Describe a product</p></td>
+        <td><p>Describe a collection</p></td>
       </tr><tr>
         
         <td>
@@ -538,13 +555,13 @@
         <td>
           <p><code><a href="download_file.html">download_file()</a></code> </p>
         </td>
-        <td><p>Downloads a file from the users workspace</p></td>
+        <td><p>Download a file from the user workspace</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="download_results.html">download_results()</a></code> </p>
         </td>
-        <td><p>Downloads the results of a job into a specific folder</p></td>
+        <td><p>Downloads the results of a job</p></td>
       </tr><tr>
         
         <td>
@@ -568,13 +585,13 @@
         <td>
           <p><code><a href="list_collections.html">list_collections()</a></code> </p>
         </td>
-        <td><p>List Data on conected server</p></td>
+        <td><p>List data on connected server</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="list_features.html">list_features()</a></code> </p>
         </td>
-        <td><p>List the openeo endpoints</p></td>
+        <td><p>List the openEO endpoints</p></td>
       </tr><tr>
         
         <td>
@@ -586,13 +603,13 @@
         <td>
           <p><code><a href="list_files.html">list_files()</a></code> </p>
         </td>
-        <td><p>Lists workspace files</p></td>
+        <td><p>List workspace files</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="list_jobs.html">list_jobs()</a></code> </p>
         </td>
-        <td><p>List the jobs that a user has</p></td>
+        <td><p>List the jobs of a user</p></td>
       </tr><tr>
         
         <td>
@@ -616,7 +633,7 @@
         <td>
           <p><code><a href="list_service_types.html">list_service_types()</a></code> </p>
         </td>
-        <td><p>Returns the offered webservice types of the back-end</p></td>
+        <td><p>Returns the webservice types of the back-end</p></td>
       </tr><tr>
         
         <td>
@@ -634,7 +651,7 @@
         <td>
           <p><code><a href="list_user_processes.html">list_user_processes()</a></code> </p>
         </td>
-        <td><p>Lists the Ids of the process graphs from the current user</p></td>
+        <td><p>Lists the IDs of the process graphs from the current user.</p></td>
       </tr><tr>
         
         <td>
@@ -652,7 +669,7 @@
         <td>
           <p><code><a href="login.html">login()</a></code> </p>
         </td>
-        <td><p>Function to login to a specific backend</p></td>
+        <td><p>Log in on a specific back-end</p></td>
       </tr><tr>
         
         <td>
@@ -670,13 +687,13 @@
         <td>
           <p><code><a href="parse_graph.html">parse_graph()</a></code> </p>
         </td>
-        <td><p>Parses a JSON openeo graph into a R graph</p></td>
+        <td><p>Converts a JSON openEO graph into an R graph</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="print.ProcessInfo.html">print(<i>&lt;ProcessInfo&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Pretty print an openeo process</p></td>
+        <td><p>Print an openEO process</p></td>
       </tr><tr>
         
         <td>
@@ -688,7 +705,7 @@
         <td>
           <p><code><a href="privacy_policy.html">privacy_policy()</a></code> </p>
         </td>
-        <td><p>Visualizes the privacy policy</p></td>
+        <td><p>Visualize the privacy policy</p></td>
       </tr><tr>
         
         <td>
@@ -742,7 +759,7 @@
         <td>
           <p><code><a href="terms_of_service.html">terms_of_service()</a></code> </p>
         </td>
-        <td><p>Visualizes the terms of service</p></td>
+        <td><p>Visualize the terms of service</p></td>
       </tr><tr>
         
         <td>
@@ -766,13 +783,13 @@
         <td>
           <p><code><a href="update_user_process.html">update_user_process()</a></code> </p>
         </td>
-        <td><p>Modify the current graph with a given</p></td>
+        <td><p>Update an user defined process</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="upload_file.html">upload_file()</a></code> </p>
         </td>
-        <td><p>Uploads data into the users workspace</p></td>
+        <td><p>Upload data into the users workspace</p></td>
       </tr><tr>
         
         <td>
@@ -784,7 +801,7 @@
         <td>
           <p><code><a href="validate_process.html">validate_process()</a></code> </p>
         </td>
-        <td><p>Validates a user process</p></td>
+        <td><p>Validate a user process</p></td>
       </tr><tr>
         
         <td>

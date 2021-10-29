@@ -40,11 +40,7 @@
 
 
 <meta property="og:title" content="User Defined Process Collection — UserProcessCollection" />
-<meta property="og:description" content="This object contains template functions for process graph building from the user defined processes at an openEO service. 
-This object is an R6 object that is not locked, in order to add new functions at runtime, in the same fashion as 
-ProcessCollection for predefined processes. The object is usually created at 
-user_processes and resembles a given status, meaning, when a new user process is created or another one
-is updated the UserProcessCollection needs to be recreated with &quot;fresh&quot; data." />
+<meta property="og:description" content="This object contains template functions from the users stored user defined processes (UDP), which can be reused in other process graphs." />
 
 
 
@@ -91,9 +87,26 @@ is updated the UserProcessCollection needs to be recreated with &quot;fresh&quot
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,20 +121,22 @@ is updated the UserProcessCollection needs to be recreated with &quot;fresh&quot
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>User Defined Process Collection</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user_defined_processes.R'><code>R/user_defined_processes.R</code></a></small>
     <div class="hidden name"><code>UserProcessCollection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This object contains template functions for process graph building from the user defined processes at an openEO service. 
-This object is an R6 object that is not locked, in order to add new functions at runtime, in the same fashion as 
-<code><a href='ProcessCollection.html'>ProcessCollection</a></code> for predefined processes. The object is usually created at 
-<code><a href='user_processes.html'>user_processes</a></code> and resembles a given status, meaning, when a new user process is created or another one
-is updated the <code>UserProcessCollection</code> needs to be recreated with "fresh" data.</p>
+    <p>This object contains template functions from the users stored user defined processes (UDP), which can be reused in other process graphs.</p>
     </div>
 
 
 
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way 
+as the <code><a href='ProcessCollection.html'>ProcessCollection</a></code> for predefined processes by the openEO back-end. A <code>UserProcessCollection</code> is usually created at 
+<code><a href='user_processes.html'>user_processes</a></code>. If you have submitted new user defined processes to the back-end, make sure to call <code><a href='user_processes.html'>user_processes</a></code> again
+to fetch the latest status.</p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
@@ -136,7 +151,7 @@ is updated the <code>UserProcessCollection</code> needs to be recreated with "fr
     
 
 <dl>
-   <dt>con</dt><dd><p>optional an active and authenticated Connection (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+   <dt>con</dt><dd><p>optional - an active and authenticated Connection (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></dd>
 
 </dl>

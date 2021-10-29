@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Connect to a openeEO service — connect" />
-<meta property="og:description" content="Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
-specific versions, then you should provide the versions parameter." />
+<meta property="og:description" content="Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
+specific versions you should provide the version parameter." />
 
 
 
@@ -88,9 +88,26 @@ specific versions, then you should provide the versions parameter." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,13 +122,13 @@ specific versions, then you should provide the versions parameter." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Connect to a openeEO service</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user.R'><code>R/user.R</code></a></small>
     <div class="hidden name"><code>connect.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Connects to openEO service. If the backend provides a well-known endpoint that allows for redirecting to
-specific versions, then you should provide the versions parameter.</p>
+    <p>Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
+specific versions you should provide the version parameter.</p>
     </div>
 
     <pre class="usage"><span class='fu'>connect</span><span class='op'>(</span>
@@ -165,14 +182,14 @@ specific versions, then you should provide the versions parameter.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>You can explore several already available openEO web services by using the openEO hub (<a href='https://hub.openeo.org/'>https://hub.openeo.org/</a>). There you 
-have an overview about their status, connection details like the URL and supported features. You can always explore the
-service for free, meaning you have access to publicly available metadata of data collections as well as the offered
-processing functions. For any computations and the creation of webservices you need to register the openEO partner of
-your choice. Then you will get further information on credentials and the login procedure.</p>
-<p>Especially the <code>login_type</code> and the <code>authType</code> suggested by the client development guidelines are confusing. Here the login_type deals
-just with considered login. Meaning 'basic' allows you to use username and password directly in the call, whereas 'oidc' will
-open up a browser window, where you enter you credentials. The authentication against all protected endpoints will later
-use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL anyways.</p>
+have an overview about their status and connection details like the URL and supported features. You can explore the
+service for free through the access to publicly available metadata of data collections as well as the offered
+processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
+your choice. There you will get further information on credentials and the login procedure.</p>
+<p>Especially the <code>login_type</code> and the <code>authType</code> suggested by the client development guidelines are confusing. Here the login_type deals 
+with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
+use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.</p>
 <p>The parameter <code>version</code> is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).</p>
 <p>When calling this function the <code><a href='OpenEOClient.html'>OpenEOClient</a></code> is also stored in a variable in the package

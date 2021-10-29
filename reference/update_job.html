@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Modifies a job with given parameter — update_job" />
-<meta property="og:description" content="The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
-that shall be replaced or removed. Shows a message of result or failure." />
+<meta property="og:description" content="The function modifies a stores a job with a given parameter. The dot parameter contains all the values
+that will be replaced or removed. The return shows a message of result or failure." />
 
 
 
@@ -88,9 +88,26 @@ that shall be replaced or removed. Shows a message of result or failure." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,13 +122,13 @@ that shall be replaced or removed. Shows a message of result or failure." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Modifies a job with given parameter</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/jobs.R'><code>R/jobs.R</code></a></small>
     <div class="hidden name"><code>update_job.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function will mofidy a stored job with the given parameter. The dot parameter will contain all the values
-that shall be replaced or removed. Shows a message of result or failure.</p>
+    <p>The function modifies a stores a job with a given parameter. The dot parameter contains all the values
+that will be replaced or removed. The return shows a message of result or failure.</p>
     </div>
 
     <pre class="usage"><span class='fu'>update_job</span><span class='op'>(</span>
@@ -155,7 +172,7 @@ will return the results or a self defined <code><a href='Process.html'>Process</
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>
@@ -168,8 +185,8 @@ is used.</p></td>
 
     <p>The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
 keys. 
-'process_graph' will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
-'format' will change the desired output format.
+The 'process_graph' option will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
+The 'format' option will change the desired output format.
 All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
 e.g. if you just want to update the output format. 
 To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.</p>

@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Capabilities overview — capabilities" />
-<meta property="og:description" content="The function queries the openEO service to which was connected for general information about the service." />
+<meta property="og:description" content="The function queries the connected openEO service for general information about the service." />
 
 
 
@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,12 +121,12 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Capabilities overview</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>capabilities.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function queries the openEO service to which was connected for general information about the service.</p>
+    <p>The function queries the connected openEO service for general information about the service.</p>
     </div>
 
     <pre class="usage"><span class='fu'>capabilities</span><span class='op'>(</span>con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>

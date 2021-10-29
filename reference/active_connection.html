@@ -40,12 +40,12 @@
 
 
 <meta property="og:title" content="Active Connection — active_connection" />
-<meta property="og:description" content="The function gets or sets the currently active connection to an openEO service. Usually the
-active connection is set when calling the connect function. Only the last 
-connection is set to active.
+<meta property="og:description" content="The function gets or sets the currently active connection to an openEO service. Usually, the
+active connection is set when calling the connect function. Just the last 
+connection is set as active.
 An application for the active connection is the optional connection within all the functions
 that interact with the openEO service and require a connection. If the connection is omitted 
-in those function this function will be called in order to try to fetch a connection. If you 
+in the function, this function is called in order to try to fetch a connection. If you 
 want to operate on multiple services at once, you should use an explicit connection." />
 
 
@@ -93,9 +93,26 @@ want to operate on multiple services at once, you should use an explicit connect
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -110,17 +127,17 @@ want to operate on multiple services at once, you should use an explicit connect
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Active Connection</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user.R'><code>R/user.R</code></a></small>
     <div class="hidden name"><code>active_connection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function gets or sets the currently active connection to an openEO service. Usually the
-active connection is set when calling the <code><a href='connect.html'>connect</a></code> function. Only the last 
-connection is set to active.
+    <p>The function gets or sets the currently active connection to an openEO service. Usually, the
+active connection is set when calling the <code><a href='connect.html'>connect</a></code> function. Just the last 
+connection is set as active.
 An application for the active connection is the optional connection within all the functions
 that interact with the openEO service and require a connection. If the connection is omitted 
-in those function this function will be called in order to try to fetch a connection. If you 
+in the function, this function is called in order to try to fetch a connection. If you 
 want to operate on multiple services at once, you should use an explicit connection.</p>
     </div>
 
@@ -143,6 +160,20 @@ connection is returned</p></td>
 
     <div class='dont-index'><p><code><a href='connect.html'>connect</a></code></p></div>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>con1</span> <span class='op'>=</span> <span class='fu'><a href='connect.html'>connect</a></span><span class='op'>(</span><span class='st'>"https://first.openeo-backend.com"</span><span class='op'>)</span>
+<span class='va'>con2</span> <span class='op'>=</span> <span class='fu'><a href='connect.html'>connect</a></span><span class='op'>(</span><span class='st'>"https://second.openeo-backend.com"</span><span class='op'>)</span>
+
+<span class='fu'>active_connection</span><span class='op'>(</span><span class='op'>)</span> <span class='co'># this will be con2, the last connected backend</span>
+
+<span class='fu'>active_connection</span><span class='op'>(</span>con <span class='op'>=</span> <span class='va'>con1</span><span class='op'>)</span> <span class='co'># sets the first connection as active, so it does not have to </span>
+<span class='co'># be passed to all functions</span>
+
+<span class='fu'>active_connection</span><span class='op'>(</span><span class='op'>)</span> <span class='co'># this will now return the previous set connection con1</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

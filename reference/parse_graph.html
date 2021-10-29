@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Parses a JSON openeo graph into a R graph — parse_graph • openeo</title>
+<title>Converts a JSON openEO graph into an R graph — parse_graph • openeo</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Parses a JSON openeo graph into a R graph — parse_graph" />
-<meta property="og:description" content="The function reads and parses the given json text and creates based on the information of the
-text a Graph object." />
+<meta property="og:title" content="Converts a JSON openEO graph into an R graph — parse_graph" />
+<meta property="og:description" content="The function reads and parses a json text and creates a Graph object." />
 
 
 
@@ -88,9 +87,26 @@ text a Graph object." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,14 +120,13 @@ text a Graph object." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Parses a JSON openeo graph into a R graph</h1>
-    
+    <h1>Converts a JSON openEO graph into an R graph</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/process_graph_building.R'><code>R/process_graph_building.R</code></a></small>
     <div class="hidden name"><code>parse_graph.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function reads and parses the given json text and creates based on the information of the
-text a Graph object.</p>
+    <p>The function reads and parses a json text and creates a Graph object.</p>
     </div>
 
     <pre class="usage"><span class='fu'>parse_graph</span><span class='op'>(</span><span class='va'>json</span>, parameters <span class='op'>=</span> <span class='cn'>NULL</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -129,7 +144,7 @@ text a Graph object.</p>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>a connected openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>a connected openEO client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>

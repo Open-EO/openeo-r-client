@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="OIDC Authentication — OIDCAuth" />
-<meta property="og:description" content="A class that handles the authentication via Open ID Connect. The httr package is used to handle OIDCs underlying
-OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+<meta property="og:description" content="A class that handles the authentication via Open ID Connect (OIDC). The httr package is used to handle OIDCs underlying
+OAuth2.0 mechanism. In order to align authentication between the two supported authentication methods this class inherits and implements
 all fields and functions from IAuth." />
 
 
@@ -89,9 +89,26 @@ all fields and functions from IAuth." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,13 +123,13 @@ all fields and functions from IAuth." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>OIDC Authentication</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/authentication.R'><code>R/authentication.R</code></a></small>
     <div class="hidden name"><code>OIDCAuth.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A class that handles the authentication via Open ID Connect. The <code>httr</code> package is used to handle OIDCs underlying
-OAuth2.0 mechanism. To align authentication between the two supported authentication methods this class inherits and implements
+    <p>A class that handles the authentication via <a href='https://openid.net/connect/'>Open ID Connect (OIDC)</a>. The <code>httr</code> package is used to handle OIDCs underlying
+OAuth2.0 mechanism. In order to align authentication between the two supported authentication methods this class inherits and implements
 all fields and functions from <code><a href='IAuth.html'>IAuth</a></code>.</p>
     </div>
 
@@ -120,16 +137,19 @@ all fields and functions from <code><a href='IAuth.html'>IAuth</a></code>.</p>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The OIDC login interacts with the OIDC provider via the <code>Authorization Code Grant</code>. During the login process an internet browser window 
-will be opened and you will be asked to enter your credentials. The website belongs to the OIDC provider of the
-chosen openeo back-end. Meanwhile the client will start a server demon in the background that listens for the callback from
-the OIDC provider. For this to work the user needs to get in contact with the openEO service provider and ask them for a 
-configuration file that will contain information about the 'client_id' and 'secret'. The redirect URL requested from the 
-provider is 'http://localhost:1410/' (<code><a href='https://httr.r-lib.org/reference/oauth_listener.html'>oauth_listener</a></code>).</p>
-<p>The <code>access_token</code> will be returned when queried. If the lease time has run out the client will refresh the access_token
-automatically.</p>
-<p>Since the OIDC workflow is mainly based on OAuth2.0 we use httr to deal with this authentication by creating an 
-<code><a href='https://httr.r-lib.org/reference/oauth_app.html'>oauth_app</a></code></p>
+    <p>The OIDC login interacts with the OIDC provider via the <code>Authorization Code Flow</code>. The OIDC provider can be the 
+back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google, 
+etc, by pointing to the respective endpoints during the service discovery of the back-end.</p>
+<p>During the login process an internet browser window will be opened and you will be asked to enter your credentials.
+The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in 
+the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with 
+the openEO service provider and ask them for a configuration file that will contain information about the <code>client_id</code> and 
+<code>secret</code>. The redirect URL requested from the provider is <code>http://localhost:1410/</code> (<code><a href='https://httr.r-lib.org/reference/oauth_listener.html'>oauth_listener</a></code>).</p>
+<p>The <code>access_token</code> will be returned when queried. As the <code>access_token</code> is only valid for a certain time period,
+it needs to be refreshed once the lease time has run out. This refreshing will be hidden from the user and will be taken 
+care of automatically.</p>
+<p>Since the OIDC workflow is mainly based on <a href='https://oauth.net/2/'>OAuth2.0</a> we use httr to deal with this authentication by creating an 
+<code><a href='https://httr.r-lib.org/reference/oauth_app.html'>oauth_app</a></code>.</p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
@@ -146,13 +166,22 @@ automatically.</p>
     
 
 <dl>
-  <dt><code>provider</code></dt><dd><p>the name of an OIDC provider registered at the back-end or a provider object as returned by <code><a href='list_oidc_providers.html'>list_oidc_providers()</a></code></p></dd>
-  <dt><code>config</code></dt><dd><p>either a file to JSON containing information about 'client_id' and 
-  'secret' or a named list. For experienced user and developer you can also add 'scopes' to 
+  <dt><code>provider</code></dt><dd><p>the name of an OIDC provider registered on the back-end or a provider object as returned by <code><a href='list_oidc_providers.html'>list_oidc_providers()</a></code></p></dd>
+  <dt><code>config</code></dt><dd><p>either a JSON file containing information about 'client_id' and 
+  'secret' or a named list. Experienced user and developer can also add 'scopes' to 
   overwrite the default settings of the OIDC provider</p></dd>
 
 </dl>
 
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'>
+<dl>
+<dt>openEO definition on Open ID connect</dt><dd><p><a href='https://openeo.org/documentation/1.0/authentication.html#openid-connect'>https://openeo.org/documentation/1.0/authentication.html#openid-connect</a></p></dd>
+<dt>Open ID Connect (OIDC)</dt><dd><p><a href='https://openid.net/connect/'>https://openid.net/connect/</a></p></dd>
+
+</dl>
+</div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

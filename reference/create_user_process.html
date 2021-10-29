@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Stores a graph as user defined process at the back-end — create_user_process • openeo</title>
+<title>Stores a graph as user defined process on the back-end — create_user_process • openeo</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Stores a graph as user defined process at the back-end — create_user_process" />
-<meta property="og:description" content="Uploads the process graph information to the back-end and stores it for reuse as a user defined process." />
+<meta property="og:title" content="Stores a graph as user defined process on the back-end — create_user_process" />
+<meta property="og:description" content="Uploads the process graph information to the back-end and stores it. This can be used as a user defined process." />
 
 
 
@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -103,13 +120,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Stores a graph as user defined process at the back-end</h1>
-    
+    <h1>Stores a graph as user defined process on the back-end</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user_defined_processes.R'><code>R/user_defined_processes.R</code></a></small>
     <div class="hidden name"><code>create_user_process.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Uploads the process graph information to the back-end and stores it for reuse as a user defined process.</p>
+    <p>Uploads the process graph information to the back-end and stores it. This can be used as a user defined process.</p>
     </div>
 
     <pre class="usage"><span class='fu'>create_user_process</span><span class='op'>(</span>
@@ -147,7 +164,7 @@
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authorized openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authorized openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>
@@ -161,8 +178,8 @@ is used.</p></td>
     <p>a list assembling a process graph description or the graph id if send</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The parameter <code>submit</code> will be deprecated in the future. Please use <code>as(obj, "Process")</code> in the 
-future. In general you might use this when copying a JSON representation of your process graph to
+    <p>The parameter <code>submit</code> will be deprecated in the future. Please use <code>as(obj, "Process")</code>.
+This function is useful when copying a JSON representation of your process graph to
 another software. In that case use <code>udp = as(obj, "Process")</code> and simply print or call 
 object <code>udp</code> on the console.</p>
 

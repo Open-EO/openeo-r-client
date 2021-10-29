@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Validates a user process — validate_process • openeo</title>
+<title>Validate a user process — validate_process • openeo</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Validates a user process — validate_process" />
-<meta property="og:description" content="Sends the process graph as a user process to the openEO service and validates it against the predefined and user-defined 
+<meta property="og:title" content="Validate a user process — validate_process" />
+<meta property="og:description" content="Sends the process graph as a user process to the openEO service and validates it with the predefined and user-defined 
 processes of the service." />
 
 
@@ -88,9 +88,26 @@ processes of the service." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,13 +121,13 @@ processes of the service." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Validates a user process</h1>
-    
+    <h1>Validate a user process</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user_defined_processes.R'><code>R/user_defined_processes.R</code></a></small>
     <div class="hidden name"><code>validate_process.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Sends the process graph as a user process to the openEO service and validates it against the predefined and user-defined 
+    <p>Sends the process graph as a user process to the openEO service and validates it with the predefined and user-defined 
 processes of the service.</p>
     </div>
 
@@ -121,11 +138,11 @@ processes of the service.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>graph</th>
-      <td><p>the process graph that will be sent to the service and is going to be validated</p></td>
+      <td><p>the process graph that will be sent to the service to be validated</p></td>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authorized openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authorized openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>

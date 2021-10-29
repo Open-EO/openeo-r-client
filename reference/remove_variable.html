@@ -40,9 +40,9 @@
 
 
 <meta property="og:title" content="Removes a variable from the Graph — remove_variable" />
-<meta property="og:description" content="The function removes a selected variable from the graph. It only removes it from the list of defined 
-variables that are obtainable with variables. Those that are already placed in the graph 
-won't be deleted in the graph, only in the defined variables list." />
+<meta property="og:description" content="The function that removes a selected variable from the graph. It is removed from the list of defined 
+variables that are obtainable with variables. The variables already placed in the graph 
+won't be deleted, only in the defined variables list." />
 
 
 
@@ -89,9 +89,26 @@ won't be deleted in the graph, only in the defined variables list." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,14 +123,14 @@ won't be deleted in the graph, only in the defined variables list." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Removes a variable from the Graph</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/process_graph_building.R'><code>R/process_graph_building.R</code></a></small>
     <div class="hidden name"><code>remove_variable.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function removes a selected variable from the graph. It only removes it from the list of defined 
-variables that are obtainable with <code><a href='variables.html'>variables</a></code>. Those that are already placed in the graph 
-won't be deleted in the graph, only in the defined variables list.</p>
+    <p>The function that removes a selected variable from the graph. It is removed from the list of defined 
+variables that are obtainable with <code><a href='variables.html'>variables</a></code>. The variables already placed in the graph 
+won't be deleted, only in the defined variables list.</p>
     </div>
 
     <pre class="usage"><span class='fu'>remove_variable</span><span class='op'>(</span><span class='va'>graph</span>, <span class='va'>variable</span><span class='op'>)</span></pre>

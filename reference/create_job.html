@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Creates a job on the back-end from a Graph object — create_job • openeo</title>
+<title>Creates a new job on the back-end — create_job • openeo</title>
 
 
 <!-- jquery -->
@@ -39,12 +39,10 @@
 
 
 
-<meta property="og:title" content="Creates a job on the back-end from a Graph object — create_job" />
-<meta property="og:description" content="This function shall be called after the user defined a process graph for the back-end to create a job on the
-back-end. Therefore the user sends the process graph and the optional output specifications like
-format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
-description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
-back-end provider." />
+<meta property="og:title" content="Creates a new job on the back-end — create_job" />
+<meta property="og:description" content="In preparation to execute the users analysis workflow (user defined process) asynchronously, they need to register a job that
+will be scheduled when the required resources are available. To do so the user provides the process graph with optional descriptive meta
+data and the desired execution plan or the maximum amount of credits spent." />
 
 
 
@@ -91,9 +89,26 @@ back-end provider." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -107,17 +122,15 @@ back-end provider." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Creates a job on the back-end from a Graph object</h1>
-    
+    <h1>Creates a new job on the back-end</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/jobs.R'><code>R/jobs.R</code></a></small>
     <div class="hidden name"><code>create_job.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function shall be called after the user defined a process graph for the back-end to create a job on the
-back-end. Therefore the user sends the process graph and the optional output specifications like
-format and additional creation parameter by '...'. To add some meta data about the job, the user might use title or 
-description. By providing a execution plan and a maximum usable budget the user can change the execution behavior of the
-back-end provider.</p>
+    <p>In preparation to execute the users analysis workflow (user defined process) asynchronously, they need to register a job that
+will be scheduled when the required resources are available. To do so the user provides the process graph with optional descriptive meta
+data and the desired execution plan or the maximum amount of credits spent.</p>
     </div>
 
     <pre class="usage"><span class='fu'>create_job</span><span class='op'>(</span>
@@ -140,11 +153,11 @@ will return the results</p></td>
     </tr>
     <tr>
       <th>title</th>
-      <td><p>Optional title of a job to be found</p></td>
+      <td><p>Optional title of a job</p></td>
     </tr>
     <tr>
       <th>description</th>
-      <td><p>Optional a more detailed information about a job</p></td>
+      <td><p>Optional detailed information about a job</p></td>
     </tr>
     <tr>
       <th>plan</th>
@@ -156,12 +169,12 @@ will return the results</p></td>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>additional parameters passed to toJSON (like 'digits')</p></td>
+      <td><p>additional parameters passed to jsonlitetoJSON (like 'digits')</p></td>
     </tr>
     </table>
 

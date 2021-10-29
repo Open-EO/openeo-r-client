@@ -86,9 +86,26 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -110,6 +127,14 @@
 <div id="101---unreleased" class="section level2">
 <h2 class="hasAnchor">
 <a href="#101---unreleased" class="anchor"></a>[1.0.1] - unreleased</h2>
+<div id="added" class="section level3">
+<h3 class="hasAnchor">
+<a href="#added" class="anchor"></a>Added</h3>
+<ul>
+<li>added a vignette for getting started <a href="https://github.com/Open-EO/openeo-r-client/issues/81">#81</a>
+</li>
+</ul>
+</div>
 <div id="changes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#changes" class="anchor"></a>Changes</h3>
@@ -122,6 +147,11 @@
 </li>
 <li>changes related to UDP visualization: prior the process graph was visualized as JSON, which caused trouble, when exchanging JSON code between different clients. Now you can use <code>as(x,"Process")</code> to get a valid process from the result node <a href="https://github.com/Open-EO/openeo-r-client/issues/54">#54</a>
 </li>
+<li>changed the printing output of User defined processes and services to not show the pure process graph anymore, use as(x,“Process”) in that case</li>
+<li>documentation changes to discourage the use of <code>as(x,"Graph")</code> <a href="https://github.com/Open-EO/openeo-r-client/issues/68">#68</a>
+</li>
+<li>allowed to modify service and UDP by passing a modified process object</li>
+<li>fixed na checks when updating a process graph in an UDP, which threw irritating warnings</li>
 </ul>
 </div>
 <div id="fixes" class="section level3">
@@ -142,6 +172,17 @@
 </li>
 <li>fixed process parsing of processes with completely nullable arrays <a href="https://github.com/Open-EO/openeo-r-client/issues/79">#79</a>
 </li>
+<li>fixed a problem with NULL values set as value for AnyOf, the traversion of the graph did not work properly, because of a NULL-pointer issue</li>
+<li>fixed a parsing problem, where the “optional” field was not correctly interpreted in every case</li>
+<li>fixed stale URLs in documentation <a href="https://github.com/Open-EO/openeo-r-client/issues/84">#84</a>
+</li>
+</ul>
+</div>
+<div id="removed" class="section level3">
+<h3 class="hasAnchor">
+<a href="#removed" class="anchor"></a>Removed</h3>
+<ul>
+<li>deleted some out-dated example scripts</li>
 </ul>
 </div>
 </div>
@@ -150,9 +191,9 @@
 <a href="#100---2020-09-30" class="anchor"></a>[1.0.0] - 2020-09-30</h2>
 <p>In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here.</p>
 <p>Note: similarly named functions that work on different objects are abrreviated by a <code><a href="https://rdrr.io/r/base/Arithmetic.html">*</a></code>, e.g. <code>describe_*()</code> for <code><a href="reference/describe_job.html">describe_job()</a></code>, <code><a href="reference/describe_service.html">describe_service()</a></code>, …</p>
-<div id="added" class="section level3">
+<div id="added-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#added" class="anchor"></a>Added</h3>
+<a href="#added-1" class="anchor"></a>Added</h3>
 <ul>
 <li>added a serialization of object <code>Parameter</code> into a descriptive form</li>
 <li>added a function to parse and coerce an R function into a <code>Graph</code> (e.g. <code>as(x,"Graph")</code>, where x is a R function returning a <code>ProcessNode</code>)</li>
@@ -291,9 +332,9 @@
 <li>Kernel argument does not inherit from Array and allows matrix, array and data.frame as kernel value</li>
 </ul>
 </div>
-<div id="removed" class="section level3">
+<div id="removed-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#removed" class="anchor"></a>Removed</h3>
+<a href="#removed-1" class="anchor"></a>Removed</h3>
 <ul>
 <li>removed funtion <code>follow_job()</code> (replaced by <code><a href="reference/log_job.html">log_job()</a></code>)</li>
 <li>removed the field <code>connection</code> which linked to the used openEO client from the process graph object</li>
@@ -328,9 +369,9 @@
 <li>String parameter can now handle file paths and calls (in context with <code>run_udf</code> openEO process) [#48]</li>
 </ul>
 </div>
-<div id="added-1" class="section level3">
+<div id="added-2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#added-1" class="anchor"></a>Added</h3>
+<a href="#added-2" class="anchor"></a>Added</h3>
 <ul>
 <li>URI parameter</li>
 </ul>
@@ -346,9 +387,9 @@
 <li>fixed #46 were the process link of arguments was not set correctly</li>
 </ul>
 </div>
-<div id="removed-1" class="section level3">
+<div id="removed-2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#removed-1" class="anchor"></a>Removed</h3>
+<a href="#removed-2" class="anchor"></a>Removed</h3>
 <ul>
 <li>package dependency <code>commonmark</code>
 </li>
@@ -358,9 +399,9 @@
 <div id="060---2020-02-27-usability-update" class="section level2">
 <h2 class="hasAnchor">
 <a href="#060---2020-02-27-usability-update" class="anchor"></a>[0.6.0] - 2020-02-27 Usability update</h2>
-<div id="added-2" class="section level3">
+<div id="added-3" class="section level3">
 <h3 class="hasAnchor">
-<a href="#added-2" class="anchor"></a>Added</h3>
+<a href="#added-3" class="anchor"></a>Added</h3>
 <ul>
 <li>added a collection visualization in a HTML viewer based on “openEO JS commons”</li>
 <li>bridging towards the “openEO JS commons” by reusing the process viewer, a new function <code>process_viewer</code> spawns now a viewer in RStudio and renders a beautiful website containing the process information</li>
@@ -392,9 +433,9 @@
 <li>fixed bad ordering of bounding box parameter</li>
 </ul>
 </div>
-<div id="removed-2" class="section level3">
+<div id="removed-3" class="section level3">
 <h3 class="hasAnchor">
-<a href="#removed-2" class="anchor"></a>Removed</h3>
+<a href="#removed-3" class="anchor"></a>Removed</h3>
 <ul>
 <li>removed the <code>markdownViewer</code> function in favour of <code>process_viewer</code> and <code>collection_viewer</code>
 </li>
@@ -405,9 +446,9 @@
 <div id="050---2019-12-03" class="section level2">
 <h2 class="hasAnchor">
 <a href="#050---2019-12-03" class="anchor"></a>[0.5.0] - 2019-12-03</h2>
-<div id="added-3" class="section level3">
+<div id="added-4" class="section level3">
 <h3 class="hasAnchor">
-<a href="#added-3" class="anchor"></a>Added</h3>
+<a href="#added-4" class="anchor"></a>Added</h3>
 <ul>
 <li>example process graph building for minimum EVI with EURAC, EODC and VITO</li>
 <li>added a Google OIDC authentication option</li>

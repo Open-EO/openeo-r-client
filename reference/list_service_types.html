@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the offered webservice types of the back-end — list_service_types • openeo</title>
+<title>Returns the webservice types of the back-end — list_service_types • openeo</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,10 @@
 
 
 
-<meta property="og:title" content="Returns the offered webservice types of the back-end — list_service_types" />
-<meta property="og:description" content="The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
-ServiceType, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
-out of the user defined process (process graph)." />
+<meta property="og:title" content="Returns the webservice types of the back-end — list_service_types" />
+<meta property="og:description" content="The function queries the back-end for the supported webservice types usable by the client and returns a named list of
+ServiceType indexed by the service type ID. ServiceTypes can be used when creating a supported web service
+from the user defined process (process graph)." />
 
 
 
@@ -89,9 +89,26 @@ out of the user defined process (process graph)." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,15 +122,15 @@ out of the user defined process (process graph)." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the offered webservice types of the back-end</h1>
-    
+    <h1>Returns the webservice types of the back-end</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>list_service_types.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function queries the back-end for the supported webservice types that can be used on the client and returns a named list of
-<code>ServiceType</code>, which are indexed by the service type ID. ServiceTypes can later be used when creating a supported web service
-out of the user defined process (process graph).</p>
+    <p>The function queries the back-end for the supported webservice types usable by the client and returns a named list of
+<code>ServiceType</code> indexed by the service type ID. ServiceTypes can be used when creating a supported web service
+from the user defined process (process graph).</p>
     </div>
 
     <pre class="usage"><span class='fu'>list_service_types</span><span class='op'>(</span>con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -123,7 +140,7 @@ out of the user defined process (process graph).</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>a connected openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>a connected openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>

@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,7 +121,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Prepares and publishes a service on the back-end</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/services.R'><code>R/services.R</code></a></small>
     <div class="hidden name"><code>create_service.Rd</code></div>
     </div>
 
@@ -130,7 +147,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>type</th>
-      <td><p>character the ogc web service type name to be created or an object of type ServiceType, which can be obtained by list_service_types()</p></td>
+      <td><p>character - the OGC web service type name to be created or an object of type ServiceType obtainable through list_service_types()</p></td>
     </tr>
     <tr>
       <th>graph</th>
@@ -139,7 +156,7 @@ will return the results</p></td>
     </tr>
     <tr>
       <th>title</th>
-      <td><p>character (optional) - a title for the service intended for visualization purposes in clients for humans to read</p></td>
+      <td><p>character (optional) - a title for the service intended for visualization purposes in clients</p></td>
     </tr>
     <tr>
       <th>description</th>
@@ -159,11 +176,11 @@ will return the results</p></td>
     </tr>
     <tr>
       <th>budget</th>
-      <td><p>numeric the amount of credits that can be spent on this service</p></td>
+      <td><p>numeric - the amount of credits that can be spent on this service</p></td>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo clien object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO clien object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>

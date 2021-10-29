@@ -89,9 +89,26 @@ into Argument objects." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,7 +123,7 @@ into Argument objects." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Process object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/process_graph_building.R'><code>R/process_graph_building.R</code></a></small>
     <div class="hidden name"><code>Process.Rd</code></div>
     </div>
 
@@ -126,7 +143,7 @@ into <code><a href='Argument.html'>Argument</a></code> objects.</p>
     
 
 <dl>
-<dt><code>parameters</code></dt><dd><p>a named list of Argument objects</p></dd>
+<dt><code>parameters</code></dt><dd><p>- a named list of Argument objects</p></dd>
 
 <dt><code>isUserDefined</code></dt><dd><p>logical - depending if the process is offered by the openEO service or if it was user defined</p></dd>
 
@@ -138,7 +155,7 @@ into <code><a href='Argument.html'>Argument</a></code> objects.</p>
 <dl>
    <dt>$new(id,parameters,description=character(), summary = character(), parameter_order=character(),returns)</dt><dd><p></p></dd>
    <dt>$getId()</dt><dd><p>returns the id of a process which was defined on the back-end</p></dd>
-   <dt>$getParameters()</dt><dd><p>returns a named list of Arguments</p></dd>
+   <dt>$getParameters()</dt><dd><p>returns a named list of arguments</p></dd>
    <dt>$getReturns()</dt><dd><p>returns the schema for the return type as list</p></dd>
    <dt>$getFormals()</dt><dd><p>returns the function formals for this process - usually a name vector of NAs where the name 
    corresponds to the parameter name</p></dd>

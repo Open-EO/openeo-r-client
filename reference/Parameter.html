@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Parameter class — Parameter" />
-<meta property="og:description" content="This class defines parameters of Process. They store information about the type, format and
-the pattern. Those classes are designed to not carry any value, because if the would it would be a 
+<meta property="og:description" content="This class defines parameters of Process. They store information about the type, format and 
+pattern. A parameter class is designed to not carry any value, as opposed to an 
 Argument." />
 
 
@@ -89,9 +89,26 @@ Argument." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,13 +123,13 @@ Argument." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Parameter class</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/argument_types.R'><code>R/argument_types.R</code></a></small>
     <div class="hidden name"><code>Parameter.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This class defines parameters of <code><a href='Process.html'>Process</a></code>. They store information about the type, format and
-the pattern. Those classes are designed to not carry any value, because if the would it would be a 
+    <p>This class defines parameters of <code><a href='Process.html'>Process</a></code>. They store information about the type, format and 
+pattern. A parameter class is designed to not carry any value, as opposed to an 
 <code><a href='Argument.html'>Argument</a></code>.</p>
     </div>
 
@@ -124,28 +141,29 @@ the pattern. Those classes are designed to not carry any value, because if the w
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The parameters are parsed from the specific description and format of the JSON
-objects returned for the parameters in processes. Find a list of openEO specific formats here: <a href='https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats'>https://open-eo.github.io/openeo-api/processes/#openeo-specific-formats</a></p>
+objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
+<a href='https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json'>https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json</a></p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
 
 <dl>
- <dt><code>$new(name, description,required=FALSE)</code></dt><dd><p></p></dd>
+ <dt><code>$new(name, description, required=FALSE)</code></dt><dd><p></p></dd>
  <dt><code>$getName</code></dt><dd><p>returns the name of a parameter as string</p></dd>
  <dt><code>$setName(name)</code></dt><dd><p>sets the name of a parameter</p></dd>
  <dt><code>$getDescription()</code></dt><dd><p>returns the description of a parameter</p></dd>
  <dt><code>$setDescription(description)</code></dt><dd><p>sets the description of a parameter</p></dd>
  <dt><code>$getPattern()</code></dt><dd><p>returns a string with the pattern of a parameter description</p></dd>
  <dt><code>$setPattern(pattern)</code></dt><dd><p>sets the pattern (string) for a parameter</p></dd>
- <dt><code>$getDefault()</code></dt><dd><p>returns the parameters default value</p></dd>
+ <dt><code>$getDefault()</code></dt><dd><p>returns the parameter's default value</p></dd>
  <dt><code>$setDefault(default)</code></dt><dd><p>sets the default value of a parameter</p></dd>
  <dt><code>$matchesSchema(schema)</code></dt><dd><p>returns TRUE if the given schema - a list of the parsed openEO 
- API schema object - matches this parameters schema, which is used for finding the corresponding parameter</p></dd>
+ API schema object - matches the parameter's schema, which is used for finding the corresponding parameter</p></dd>
  <dt><code>$getSchema()</code></dt><dd><p>returns the schema definition</p></dd>
  <dt><code>$asParameterInfo()</code></dt><dd><p>returns a list representation of this parameter for being sent in a JSON to the openEO service</p></dd>
  <dt><code>$isNullable()</code></dt><dd><p>returns TRUE if the parameter is allowed to be nullable, FALSE otherwise</p></dd>
- <dt><code>$isRequired()</code></dt><dd><p>return whether a parameter is mandatory or not</p></dd>
- <dt><code>$isAny()</code></dt><dd><p>return TRUE if this parameter describes a choice of parameters</p></dd>
+ <dt><code>$isRequired()</code></dt><dd><p>returns whether a parameter is mandatory or not</p></dd>
+ <dt><code>$isAny()</code></dt><dd><p>returns TRUE if this parameter describes a choice of parameters</p></dd>
 
 </dl>
 
@@ -156,9 +174,9 @@ objects returned for the parameters in processes. Find a list of openEO specific
 <dl>
   <dt><code>name</code></dt><dd><p>character - The name of a parameter</p></dd>
   <dt><code>description</code></dt><dd><p>character - The description of a parameter</p></dd>
-  <dt><code>required</code></dt><dd><p>logical - whether or not</p></dd>
-  <dt><code>pattern</code></dt><dd><p>the regexp as a string how to formulate the value</p></dd>
-  <dt><code>default</code></dt><dd><p>the regexp as a string how to formulate the value</p></dd>   
+  <dt><code>required</code></dt><dd><p>logical - whether it is required or not</p></dd>
+  <dt><code>pattern</code></dt><dd><p>the regexp as a string indicating how to formulate the value</p></dd>
+  <dt><code>default</code></dt><dd><p>the regexp as a string indicating how to formulate the value</p></dd>   
   <dt><code>schema</code></dt><dd><p>the parsed schema object of a process parameter as a list</p></dd>
 
 </dl>

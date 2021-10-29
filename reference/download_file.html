@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Downloads a file from the users workspace — download_file • openeo</title>
+<title>Download a file from the user workspace — download_file • openeo</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Downloads a file from the users workspace — download_file" />
-<meta property="og:description" content="Sends a request to an openeo back-end to access the users files and downloads them to a given location" />
+<meta property="og:title" content="Download a file from the user workspace — download_file" />
+<meta property="og:description" content="Sends a request to an openEO back-end to access the users files and downloads them to a given location." />
 
 
 
@@ -87,9 +87,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -103,13 +120,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Downloads a file from the users workspace</h1>
-    
+    <h1>Download a file from the user workspace</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user.R'><code>R/user.R</code></a></small>
     <div class="hidden name"><code>download_file.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Sends a request to an openeo back-end to access the users files and downloads them to a given location</p>
+    <p>Sends a request to an openEO back-end to access the users files and downloads them to a given location.</p>
     </div>
 
     <pre class="usage"><span class='fu'>download_file</span><span class='op'>(</span><span class='va'>src</span>, dst <span class='op'>=</span> <span class='cn'>NULL</span>, con <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -119,7 +136,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>src</th>
-      <td><p>the relative filepath of the source file on the openeo back-end</p></td>
+      <td><p>the relative filepath of the source file on the openEO back-end</p></td>
     </tr>
     <tr>
       <th>dst</th>

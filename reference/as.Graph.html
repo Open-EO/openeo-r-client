@@ -40,9 +40,8 @@
 
 
 <meta property="og:title" content="Coercion into Graph — as.Graph" />
-<meta property="og:description" content="Currently there are several ways to create a Graph object. One of them is by coercion. You can coerce
-from ProcessNode, a function that returns a ProcessNode or from a userdefined process (ProcessInfo), as obtained by
-function describe_process_graph." />
+<meta property="og:description" content="Creates a Graph object from a ProcessNode, function or ProcessInfo (Exchange object for 
+predefined and stored user-defined processes)." />
 
 
 
@@ -89,9 +88,26 @@ function describe_process_graph." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,14 +122,13 @@ function describe_process_graph." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Coercion into Graph</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/coerce-functions.R'><code>R/coerce-functions.R</code></a></small>
     <div class="hidden name"><code>as.Graph.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Currently there are several ways to create a <code>Graph</code> object. One of them is by coercion. You can coerce
-from <code>ProcessNode</code>, a function that returns a ProcessNode or from a userdefined process (<code>ProcessInfo</code>), as obtained by
-function <code>describe_process_graph</code>.</p>
+    <p>Creates a <code>Graph</code> object from a <code><a href='ProcessNode.html'>ProcessNode</a></code>, <code>function</code> or <code>ProcessInfo</code> (Exchange object for 
+predefined and stored user-defined processes).</p>
     </div>
 
     <pre class="usage"><span class='fu'>as.Graph.ProcessNode</span><span class='op'>(</span><span class='va'>from</span><span class='op'>)</span>
@@ -133,7 +148,12 @@ function <code>describe_process_graph</code>.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>Graph</code></p>
+    <p><code><a href='Graph.html'>Graph</a></code></p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Those pure <code>Graph</code> objects shall only be used internally. If you want to use this 
+information to directly interact with the back-end via JSON please use 
+<code><a href='as.Process.html'>as.Process</a></code>. This function might be removed from the package function export in the future.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -40,10 +40,10 @@
 
 
 <meta property="og:title" content="Graph object — Graph" />
-<meta property="og:description" content="This class represents an openeo process graph. It consists of ProcessNodes and optional ProcessGraphParameter. The 
-creation of a Graph is not required in most cases, because this will otherwise be done automatically in those function that have
-to send a Graph representation to the openEO service. In those cases you can pass on a function that results a ProcessNode or a 
-result node itself." />
+<meta property="og:description" content="This class represents an openEO process graph - which is generally denoted as field process_graph 
+in the exchange objects of the API. The graph consists of ProcessNodes and optional 
+ProcessGraphParameter (former variables). The explicit creation of a Graph is usually not 
+required and discouraged, because this will be handled automatically." />
 
 
 
@@ -90,9 +90,26 @@ result node itself." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -107,27 +124,29 @@ result node itself." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Graph object</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/process_graph_building.R'><code>R/process_graph_building.R</code></a></small>
     <div class="hidden name"><code>Graph.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This class represents an openeo process graph. It consists of <code><a href='ProcessNode.html'>ProcessNode</a></code>s and optional <code><a href='ProcessGraphParameter.html'>ProcessGraphParameter</a></code>. The 
-creation of a Graph is not required in most cases, because this will otherwise be done automatically in those function that have
-to send a Graph representation to the openEO service. In those cases you can pass on a function that results a ProcessNode or a 
-result node itself.</p>
+    <p>This class represents an openEO process graph - which is generally denoted as field <code>process_graph</code> 
+in the exchange objects of the API. The graph consists of <code><a href='ProcessNode.html'>ProcessNode</a></code>s and optional 
+<code><a href='ProcessGraphParameter.html'>ProcessGraphParameter</a></code> (former variables). The explicit creation of a Graph is usually not 
+required and discouraged, because this will be handled automatically.</p>
     </div>
 
 
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Object of <code>R6Class</code> with methods for building an openeo process graph</p>
+    <p>Object of <code>R6Class</code> with methods for building an openEO process graph</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>However, you might want to perform an explicit cast with <code>as(x,"Graph")</code> in order to obtain a Graph object. 'x' can be the afore
-mentioned function or ProcessNode, and also a ProcessGraph object that can be obtained by <code><a href='describe_user_process.html'>describe_user_process</a></code>, which
-parses the stored Graph representation into an openEO Graph object (<code><a href='parse_graph.html'>parse_graph</a></code>).</p>
+    <p>In terms of the openEO API the process graph is the technical description of a process. To create a
+user-defined process it requires a process graph and additional meta data. The process graph is not
+accepted at any openEO endpoint directly. Therefore, it has to be wrapped in a <code><a href='Process.html'>Process</a></code> 
+object. Use <code><a href='as.Process.html'>as.Process</a></code> in those cases. It is similarly handled in other functions of 
+this package.</p>
     <h2 class="hasAnchor" id="fields"><a class="anchor" href="#fields"></a>Fields</h2>
 
     
@@ -146,12 +165,12 @@ parses the stored Graph representation into an openEO Graph object (<code><a hre
    <dt>$serialize()</dt><dd><p>creates a list representation of the graph by recursively calling <code>$serialize</code></p></dd> 
    <dt>$validate()</dt><dd><p>runs through the nodes and checks the validity of its argument values</p></dd>
    <dt>$getNode(node_id)</dt><dd><p>searches and returns a node from within the graph referenced by its node id</p></dd>
-   <dt>$addNode(node)</dt><dd><p></p></dd>
+   <dt>$addNode(node)</dt><dd><p>adds a <code><a href='ProcessNode.html'>ProcessNode</a></code> to the graph</p></dd>
    <dt>$removeNode(node_id)</dt><dd><p>removes a process node from the graph</p></dd>
    <dt>$getFinalNode()</dt><dd><p>gets the result process node of a process graph</p></dd>
    <dt>$setFinalNode(node)</dt><dd><p>sets the result process node by node id or a ProcessNode</p></dd>
    <dt>$getVariables()</dt><dd><p>creates a named list of the defined variables of a process graph</p></dd>
-   <dt>$setVariables(list_of_vars)</dt><dd><p>sets the process graph parameter (variables) of graph</p></dd>
+   <dt>$setVariables(list_of_vars)</dt><dd><p>sets the <code><a href='ProcessGraphParameter.html'>ProcessGraphParameter</a></code> ( former variables) of graph</p></dd>
 
 </dl>
 
@@ -160,8 +179,8 @@ parses the stored Graph representation into an openEO Graph object (<code><a hre
     
 
 <dl>
-   <dt>con</dt><dd><p>openeo connection (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code> is used.</p></dd>
-   <dt>final_node</dt><dd><p>optional the final node (end node) that was used to create a graph</p></dd>
+   <dt>con</dt><dd><p>openeo connection (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code> is used</p></dd>
+   <dt>final_node</dt><dd><p>optional, the final node (end node) that was used to create a graph</p></dd>
    <dt>node_id</dt><dd><p>the id of a process node</p></dd>
    <dt>node</dt><dd><p>process node or  its node id</p></dd>
    <dt>parameter</dt><dd><p>the name of a parameter in a process</p></dd>
@@ -174,25 +193,6 @@ parses the stored Graph representation into an openEO Graph object (<code><a hre
 </dl>
 
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>con</span> <span class='op'>=</span> <span class='fu'><a href='connect.html'>connect</a></span><span class='op'>(</span>host<span class='op'>=</span><span class='st'>"http://some.url.org/openeo"</span><span class='op'>)</span>
-<span class='va'>p</span> <span class='op'>=</span> <span class='fu'><a href='processes.html'>processes</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>...</span>
-<span class='va'>result</span> <span class='op'>=</span> <span class='va'>p</span><span class='op'>$</span><span class='fu'>save_result</span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>prior_step</span>, format <span class='op'>=</span> <span class='st'>"PNG"</span><span class='op'>)</span>
-<span class='va'>graph</span> <span class='op'>=</span> <span class='fu'>as</span><span class='op'>(</span><span class='va'>result</span>, <span class='st'>"Graph"</span><span class='op'>)</span>
-
-<span class='co'># alternative with a function (R primitve operator are translated into openEO processes)</span>
-<span class='va'>resulting_ndvi_function</span> <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='op'>{</span>
- <span class='va'>B4</span> <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span>
- <span class='va'>B8</span> <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span>
-
- <span class='kw'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>B8</span><span class='op'>-</span><span class='va'>B4</span><span class='op'>)</span><span class='op'>/</span><span class='op'>(</span><span class='va'>B8</span><span class='op'>+</span><span class='va'>B4</span><span class='op'>)</span><span class='op'>)</span>
-<span class='op'>}</span> 
-
-<span class='va'>graph</span> <span class='op'>=</span> <span class='fu'>as</span><span class='op'>(</span><span class='va'>resulting_ndvi_function</span>, <span class='st'>"Graph"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

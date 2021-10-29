@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Unary function wrappers — unary_ops" />
-<meta property="og:description" content="The functions here are used in combination with ProcessGraphParameter and ProcessNode in order to make
-it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+<meta property="og:description" content="The functions here are used in combination with ProcessGraphParameter and ProcessNode and facilitate
+writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
 processes counterparts." />
 
 
@@ -89,9 +89,26 @@ processes counterparts." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -106,13 +123,13 @@ processes counterparts." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Unary function wrappers</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/ops.R'><code>R/ops.R</code></a></small>
     <div class="hidden name"><code>unary_ops.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The functions here are used in combination with <code>ProcessGraphParameter</code> and <code>ProcessNode</code> in order to make
-it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+    <p>The functions here are used in combination with <code>ProcessGraphParameter</code> and <code>ProcessNode</code> and facilitate
+writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
 processes counterparts.</p>
     </div>
 
@@ -290,12 +307,11 @@ quantile(x, ...)</pre>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p><code>ProcessGraphParameter</code>, <code>ProcessNode</code> or a list or vector, which internal data is passed into 
-the function</p></td>
+      <td><p><code>ProcessGraphParameter</code>, <code>ProcessNode</code> or a list or vector. Passes internal data to the function</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>further arguments to pass on, see the documentation of those primitive functions of R for further information</p></td>
+      <td><p>further arguments to pass on, see the documentation of primitive functions of R for further information</p></td>
     </tr>
     <tr>
       <th>digits</th>
@@ -311,7 +327,7 @@ the function</p></td>
     </tr>
     <tr>
       <th>drop</th>
-      <td><p>for completenes listed here but not used in openEO processes</p></td>
+      <td><p>listed for completeness but not used in openEO processes.</p></td>
     </tr>
     </table>
 

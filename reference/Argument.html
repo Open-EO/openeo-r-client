@@ -40,9 +40,9 @@
 
 
 <meta property="og:title" content="Argument class — Argument" />
-<meta property="og:description" content="This class inherits all fields and functions from Parameter and augments this class for 
-managing a value. This includes getter/setter, validation and serilization. Since this is the parent class
-for the type specific argument classes the inheriting classes implement their own version of the private
+<meta property="og:description" content="This class inherits all fields and functions from Parameter adds the functionality to
+manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
+for the type specific argument classes, the inheriting classes implement their own version of the private
 functions $typeCheck() and $typeSerialization()." />
 
 
@@ -90,9 +90,26 @@ functions $typeCheck() and $typeSerialization()." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -107,14 +124,14 @@ functions $typeCheck() and $typeSerialization()." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Argument class</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/argument_types.R'><code>R/argument_types.R</code></a></small>
     <div class="hidden name"><code>Argument.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This class inherits all fields and functions from <code><a href='Parameter.html'>Parameter</a></code> and augments this class for 
-managing a value. This includes getter/setter, validation and serilization. Since this is the parent class
-for the type specific argument classes the inheriting classes implement their own version of the private
+    <p>This class inherits all fields and functions from <code><a href='Parameter.html'>Parameter</a></code> adds the functionality to
+manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
+for the type specific argument classes, the inheriting classes implement their own version of the private
 functions <code>$typeCheck()</code> and <code>$typeSerialization()</code>.</p>
     </div>
 
@@ -122,18 +139,18 @@ functions <code>$typeCheck()</code> and <code>$typeSerialization()</code>.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Object of <code>R6Class</code> which represents an argument.</p>
+    <p>Object of <code>R6Class</code> representing an argument.</p>
     <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
 
     
 
 <dl>
-  <dt><code>$setValue(value)</code></dt><dd><p>Assigns a value for this argument</p></dd>
+  <dt><code>$setValue(value)</code></dt><dd><p>Assigns a value to this argument</p></dd>
   <dt><code>$getValue()</code></dt><dd><p>Returns the value of this argument</p></dd>
   <dt><code>$serialize()</code></dt><dd><p>returns a list representation of a openEO argument</p></dd>
   <dt><code>$validate()</code></dt><dd><p>return TRUE if the parameter is validated positively by the type check</p></dd>
   <dt><code>$isEmpty()</code></dt><dd><p>returns TRUE if the value is set</p></dd>
-  <dt><code>$getProcess()</code></dt><dd><p>returns the process to which this parameter belongs to</p></dd>
+  <dt><code>$getProcess()</code></dt><dd><p>returns the process this parameter belongs ro</p></dd>
   <dt><code>$setProcess(p)</code></dt><dd><p>sets the owning process for this parameter</p></dd>
 
 </dl>

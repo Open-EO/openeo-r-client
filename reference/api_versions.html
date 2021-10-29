@@ -88,9 +88,26 @@ is called on the given host URL and the JSON result is coerced into a tibble." /
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -105,12 +122,12 @@ is called on the given host URL and the JSON result is coerced into a tibble." /
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Returns the suppported OpenEO API versions</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>api_versions.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The function queries the back-end for its supported versions. The endpoint <a href='https://open-eo.github.io/openeo-api/apireference/#tag/Capabilities/paths/~1.well-known~1openeo/get'>/.well-known/openeo</a> 
+    <p>The function queries the back-end for its supported versions. The endpoint <a href='https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect'>/.well-known/openeo</a> 
 is called on the given host URL and the JSON result is coerced into a tibble.</p>
     </div>
 
@@ -121,7 +138,7 @@ is called on the given host URL and the JSON result is coerced into a tibble.</p
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>url</th>
-      <td><p>the url as String pointing to the base host of the back-end</p></td>
+      <td><p>the url as string pointing to the base host of the back-end</p></td>
     </tr>
     </table>
 

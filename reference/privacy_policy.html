@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Visualizes the privacy policy — privacy_policy • openeo</title>
+<title>Visualize the privacy policy — privacy_policy • openeo</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Visualizes the privacy policy — privacy_policy" />
-<meta property="og:description" content="If the service provides information in their capabilities about their privacy policy, the function opens a new RStudio 
+<meta property="og:title" content="Visualize the privacy policy — privacy_policy" />
+<meta property="og:description" content="If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
 viewer panel and visualizes the HTML content of the link." />
 
 
@@ -88,9 +88,26 @@ viewer panel and visualizes the HTML content of the link." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -104,13 +121,13 @@ viewer panel and visualizes the HTML content of the link." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Visualizes the privacy policy</h1>
-    
+    <h1>Visualize the privacy policy</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>privacy_policy.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>If the service provides information in their capabilities about their privacy policy, the function opens a new RStudio 
+    <p>If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
 viewer panel and visualizes the HTML content of the link.</p>
     </div>
 
@@ -121,7 +138,7 @@ viewer panel and visualizes the HTML content of the link.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>con</th>
-      <td><p>a connected openeo client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>a connected openEO client object (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     </table>

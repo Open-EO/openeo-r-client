@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Executes a job directly and returns the data immediately — compute_result • openeo</title>
+<title>Executes a job and returns the data immediately — compute_result • openeo</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,11 @@
 
 
 
-<meta property="og:title" content="Executes a job directly and returns the data immediately — compute_result" />
+<meta property="og:title" content="Executes a job and returns the data immediately — compute_result" />
 <meta property="og:description" content="Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
-the server remains open. The functions and enpoints main purpose is the debugging of code, where results can be immediately
-checked. Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
-So make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
+the server remains open. This function allows to debug the code and check the results immediately. 
+Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
 e.g. not supporting UDFs at this endpoint." />
 
 
@@ -91,9 +91,26 @@ e.g. not supporting UDFs at this endpoint." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -107,16 +124,16 @@ e.g. not supporting UDFs at this endpoint." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Executes a job directly and returns the data immediately</h1>
-    
+    <h1>Executes a job and returns the data immediately</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/jobs.R'><code>R/jobs.R</code></a></small>
     <div class="hidden name"><code>compute_result.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
-the server remains open. The functions and enpoints main purpose is the debugging of code, where results can be immediately
-checked. Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
-So make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
+the server remains open. This function allows to debug the code and check the results immediately. 
+Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
 e.g. not supporting UDFs at this endpoint.</p>
     </div>
 
@@ -134,16 +151,16 @@ e.g. not supporting UDFs at this endpoint.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>graph</th>
-      <td><p>A <code><a href='Graph.html'>Graph</a></code>, a function returning a <code><a href='ProcessNode.html'>ProcessNode</a></code> as an endpoint or the <code><a href='ProcessNode.html'>ProcessNode</a></code> 
+      <td><p>a <code><a href='Graph.html'>Graph</a></code>, a function returning a <code><a href='ProcessNode.html'>ProcessNode</a></code> as an endpoint or the <code><a href='ProcessNode.html'>ProcessNode</a></code> 
 will return the results</p></td>
     </tr>
     <tr>
       <th>output_file</th>
-      <td><p>Where to store the retrieved data under</p></td>
+      <td><p>storage location for the returned data</p></td>
     </tr>
     <tr>
       <th>budget</th>
-      <td><p>numeric, how much to spend at maximum on testing</p></td>
+      <td><p>numeric, maximum spendable amount for testing</p></td>
     </tr>
     <tr>
       <th>plan</th>
@@ -151,7 +168,7 @@ will return the results</p></td>
     </tr>
     <tr>
       <th>con</th>
-      <td><p>connected and authenticated openeo client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
+      <td><p>connected and authenticated openEO client (optional) otherwise <code><a href='active_connection.html'>active_connection</a></code>
 is used.</p></td>
     </tr>
     <tr>
@@ -162,7 +179,7 @@ is used.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a connection to file if output was provided, the raw data if not</p>
+    <p>A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -40,11 +40,11 @@
 
 
 <meta property="og:title" content="Test a UDF operation — send_udf" />
-<meta property="og:description" content="This function is a testing function for UDF requests against a UDF service. If an 
-openEO UDF service is available (external via an URL or a local setup) and if you can obtain 
-sample data that fit the context of your UDF use case, you can use this function to send the 
-code and the data to the UDF service. Depending on the state of the service (error or success)
-you can debug your code." />
+<meta property="og:description" content="This function is still under development and depends heavily on test data in a specific format and whether or not the back-end provider
+exposes their UDF service endpoint or if you have setup a local UDF service (see notes). The openEO UDF API v0.1.0 had foreseen to ship
+data and code in a single message and to be interpretable by a computing service a specific format was designed. Usually this whole operation
+is neatly hidden within the back-end, but if you want to test and debug the code, you need to create such data first. Some examples are available
+at https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data." />
 
 
 
@@ -91,9 +91,26 @@ you can debug your code." />
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/getting_started.html">Getting Started</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/Open-EO/openeo-r-client/">
+    <span class="fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
       
     </div><!--/.nav-collapse -->
@@ -108,16 +125,16 @@ you can debug your code." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Test a UDF operation</h1>
-    
+    <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/udf.R'><code>R/udf.R</code></a></small>
     <div class="hidden name"><code>send_udf.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is a testing function for UDF requests against a UDF service. If an 
-openEO UDF service is available (external via an URL or a local setup) and if you can obtain 
-sample data that fit the context of your UDF use case, you can use this function to send the 
-code and the data to the UDF service. Depending on the state of the service (error or success)
-you can debug your code.</p>
+    <p>This function is still under development and depends heavily on test data in a specific format and whether or not the back-end provider
+exposes their UDF service endpoint or if you have setup a local UDF service (see notes). The openEO UDF API v0.1.0 had foreseen to ship
+data and code in a single message and to be interpretable by a computing service a specific format was designed. Usually this whole operation
+is neatly hidden within the back-end, but if you want to test and debug the code, you need to create such data first. Some examples are available
+at <a href='https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data'>https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data</a>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>send_udf</span><span class='op'>(</span>
@@ -151,7 +168,7 @@ you can debug your code.</p>
     </tr>
     <tr>
       <th>port</th>
-      <td><p>optional port of the UDF service host</p></td>
+      <td><p>(optional) port of the UDF service host</p></td>
     </tr>
     <tr>
       <th>language</th>
@@ -159,24 +176,24 @@ you can debug your code.</p>
     </tr>
     <tr>
       <th>debug</th>
-      <td><p>(optional) logical. Switch on / off debugging information for time taken</p></td>
+      <td><p>(optional) logical - Switch on / off debugging information</p></td>
     </tr>
     <tr>
       <th>user_context</th>
-      <td><p>list. Context parameter that are shipped from the user into the udf_service</p></td>
+      <td><p>list - Context parameter that are shipped from the user into the udf_service</p></td>
     </tr>
     <tr>
       <th>server_context</th>
-      <td><p>list. Context usually sent from the back-end to trigger certain settings.</p></td>
+      <td><p>list - Context usually sent from the back-end to trigger certain settings</p></td>
     </tr>
     <tr>
       <th>download_info</th>
-      <td><p>(optional) logical. Whether or not to print the time taken separately for 
+      <td><p>(optional) logical - Whether or not to print the time taken separately for 
 the download</p></td>
     </tr>
     <tr>
       <th>legacy</th>
-      <td><p>logical. Whether or not the legacy endpoint shall be used (default: FALSE)</p></td>
+      <td><p>logical - Whether or not the legacy endpoint is used (default: FALSE)</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -189,7 +206,7 @@ the download</p></td>
     <p>the textual JSON representation of the result</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>If you use a local R UDF service you might want to debug using the 'browser()' function.</p>
+    <p>Hint: If you use a local R UDF service you might want to debug using the 'browser()' function.</p>
     <h2 class="hasAnchor" id="note"><a class="anchor" href="#note"></a>Note</h2>
 
     <p>The debug options are only available for the R-UDF service. The R UDF-API version has to be of version 0.1.0 (not the old alpha 
