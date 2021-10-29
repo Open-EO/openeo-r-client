@@ -1,5 +1,5 @@
 
-<img align="right" src="./wiki/logo_project.png" width="25%">
+<img align="right" src="./wiki/logo_project.png" onerror="this.src='https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/wiki/logo_project.png';" width="25%">
 
 # openEO client in R
 
@@ -21,7 +21,7 @@ If you want use a different version, then use for the parameter `ref` either "ma
 
 Since the openEO project is under heavy development regarding the openEO API that connects clients and back-ends, all R client versions < 1.0.0 versions will only be compatible with a certain API version.
 
-| openeo R client version | openeo API version |
+| openeo R client version | openEO API version |
 | --- | --- |
 | v0.0.1 | v0.0.1 |
 | 0.1.0 | v0.0.1 |
