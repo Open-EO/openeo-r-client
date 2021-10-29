@@ -24,6 +24,7 @@ want to operate on multiple services at once, you should use an explicit connect
 }
 \examples{
 \dontrun{
+# Note: all URLs and credentials are arbitrary
 con1 = connect("https://first.openeo-backend.com")
 con2 = connect("https://second.openeo-backend.com")
 
