@@ -1,6 +1,7 @@
 # Changelog
 
-## [1.0.1] - unreleased
+## [1.1.0] - 2021-11
+Bugfixes and preparation for CRAN release, openEO API version 1.0.x
 
 ### Added
 - added a vignette for getting started [#81](https://github.com/Open-EO/openeo-r-client/issues/81)
