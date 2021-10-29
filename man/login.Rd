@@ -38,8 +38,10 @@ explore the functionalities and want to compute something, then you need to log 
 \examples{
 \dontrun{
 # simple connection without login to maybe explore the capabilities of a back-end first
-con = connect(host='http://example.openeo.org',version='1.0.0-rc.2')
+# the URL won't work and is just to demonstrate how to write the code
+con = connect(host='http://example.openeo.org',version='1.0.0')
 
+# credentials are dummy values
 login(user='user',password='password',login_type='basic', con=con)
 
 # or alternatively the oidc login
