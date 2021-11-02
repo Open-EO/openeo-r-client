@@ -4,8 +4,9 @@ openeo: Client Interface for openEO Servers
 [![R-CMD-check](https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions)
 <!-- badges: end -->
 
-<img align="right" src="./wiki/logo_project.png" onerror="this.src='https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/wiki/logo_project.png';" width="25%">
+<img align="right" src="./wiki/logo_project.png" onerror="this.src='https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/wiki/logo_project.png';" width="25%"/>
 <hr>
+
 # openEO
 
 The core [concept of "openEO"](https://openeo.org/about.html) is related to Big Data processing strategies. Earth Observation data (EO data) is becoming more and more available by different space missions, like Landsat and Sentinel, and the data produced is too large to be processed locally anymore. "openEO" defines an unified API for back-end and client software and also number of common processes for manipulating spatio-temporal data cubes. The basic idea is to divide computation (back-end server) and workflow definition (client software).
