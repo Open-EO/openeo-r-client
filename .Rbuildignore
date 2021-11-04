@@ -10,3 +10,5 @@
 ^LICENSE$
 ^\.github$
 ^cran-comments\.md$
+^Meta$
+^doc$

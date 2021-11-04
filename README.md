@@ -2,10 +2,10 @@ openeo: Client Interface for openEO Servers
 ====
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/openeo)](https://CRAN.R-project.org/package=openeo)
 <!-- badges: end -->
 
-<img align="right" src="./wiki/logo_project.png" onerror="this.src='https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/wiki/logo_project.png';" width="25%"/>
-<hr>
+<img src='man/figures/logo.png' align="right" height="116" />
 
 # openEO Background
 
