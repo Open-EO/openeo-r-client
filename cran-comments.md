@@ -1,21 +1,17 @@
-# Submission 1.1.0 
+# Submission openeo 1.1.0 
+
+## Test environments
+* GitHub Actions (OS: ubuntu-latest, R: oldrel, release, devel)
+* GitHub Actions (OS: windows-latest, R: release)
+* Github Actions (OS: macOS-latest, R: release)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs. 
+0 errors | 0 warnings | 1 note
 
-There was 1 NOTE:
-
-* checking CRAN incoming feasibility ... NOTE
-  Maintainer: 'Florian Lahn <florian.lahn@eftas.com>'
-
-  New submission
+* This is a new release.
 
 ### Comments
 This is my first submission to CRAN
 
 ## Downstream dependencies
 First Submission. There are currently no downstream dependencies for this package.
-
-## Test environments
-Setup with Github actions
-_TODO_
