@@ -89,17 +89,17 @@
 
 <img align="right" src="./wiki/logo_project.png" onerror="this.src='https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/wiki/logo_project.png';" width="25%"><hr>
 </div>
-<div id="openeo" class="section level1">
+<div id="openeo-background" class="section level1">
 <h1 class="hasAnchor">
-<a href="#openeo" class="anchor"></a>openEO</h1>
-<p>The core <a href="https://openeo.org/about.html">concept of “openEO”</a> is related to Big Data processing strategies. Earth Observation data (EO data) is becoming more and more available by different space missions, like Landsat and Sentinel, and the data produced is too large to be processed locally anymore. “openEO” defines an unified API for back-end and client software and also number of common processes for manipulating spatio-temporal data cubes. The basic idea is to divide computation (back-end server) and workflow definition (client software). As back-ends there are some still around, which were developed in the main <a href="https://openeo.org/">openEO</a> project and improved by new once by the ESA project <a href="https://openeo.cloud/">openEO Platform</a>. Those back-ends offer access to their data collections and processing platform. And the various client software (R, Python, JavaScript, QGIS) help creating processing workflows in a programming environment that is familiar to the user.</p>
+<a href="#openeo-background" class="anchor"></a>openEO Background</h1>
+<p>The amount of available Earth Observation data (EO data) is steadily increasing due to different space missions such as Landsat and Sentinel. Resulting data products are often too large to be processed locally and therefore require new processing tools and functionalities. The <a href="https://openeo.org/about.html">core concept of “openEO”</a> is related to big data processing strategies. OpenEO defines a unified API for back-end and client software as well as a number of common processes for manipulating spatio-temporal data cubes. The basic idea is to distinguish between computation (back-end server) and workflow definition (client software). While some back-ends were developed in the main <a href="https://openeo.org/">openEO</a> project, others were currently improved or developed within the ESA project <a href="https://openeo.cloud/">openEO Platform</a>. Those back-ends offer access to their data collections and processing platform while the client software (e.g., R, Python, JavaScript, QGIS) help creating processing workflows in a programming environment familiar to the user.</p>
 <div id="openeo-client-in-r" class="section level2">
 <h2 class="hasAnchor">
 <a href="#openeo-client-in-r" class="anchor"></a>openEO client in R</h2>
 <p>This R package contains functions and classes that allow interactions with openEO back-end server. The main goals of this package are:</p>
 <ul>
-<li>enable R user to explore openEO back-ends in terms of data and operations</li>
-<li>aid R user to create processing workflows on Earth Observation data that can be executed on openEO back-ends</li>
+<li>enable an R-user to explore openEO back-ends for distributed data and implemented operations.</li>
+<li>aid an R-user to create processing workflows on EO data executable on openEO back-ends.</li>
 <li>retrieve results for further analysis in R</li>
 </ul>
 </div>
@@ -114,12 +114,12 @@
 }
 install_github(repo="Open-EO/openeo-r-client",dependencies=TRUE)
 library(openeo)</code></pre>
-<p>Otherwise, once it is accepted by CRAN you can install the latest stable version by:</p>
-<pre><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("openeo")
+<p>Otherwise, once accepted by CRAN, you can install the latest stable version by:</p>
+<pre><code>install.packages("openeo")
 library(openeo)
-</a></code></pre>
-<p>If you want use a different version, then use for the parameter <code>ref</code> either “master”, “develop” or another version specified under <a href="https://github.com/Open-EO/openeo-r-client/releases">releases</a>.</p>
-<p>Currently the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. But this is not recommended, because there are probably no back-ends available anymore that support this old version. The old versions are simply stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.</p>
+</code></pre>
+<p>If you want use a different package version we recommend to use the parameter <code>ref</code>. Define this parameter as “master”, “develop” or another version specified in <a href="https://github.com/Open-EO/openeo-r-client/releases">releases</a>.</p>
+<p>Currently, the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won’t support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.</p>
 <table class="table">
 <thead><tr class="header">
 <th>openeo R client version</th>
@@ -155,23 +155,27 @@ library(openeo)
 </tbody>
 </table>
 </div>
-<div id="prerequirements" class="section level1">
+<div id="requirements" class="section level1">
 <h1 class="hasAnchor">
-<a href="#prerequirements" class="anchor"></a>Prerequirements</h1>
-<p>The ‘openeo’ package won’t process anything at the local machine. It will always interact with a designated back-end. Only at the back-end the data is stored and the computations are performed. Therefore please make sure you are registered with any of the available openEO back-ends, in order to obtain credentials and the access URLs (see: <a href="https://hub.openeo.org/">openEO Hub</a> for getting an overview about available back-ends).</p>
+<a href="#requirements" class="anchor"></a>Requirements</h1>
+<p>The ‘openeo’ package won’t process anything on the local machine. It will always interact with a designated back-end. Data storage and computations are performed directly at the back-end. Therefore, please make sure that you are registered with any of the available openEO back-ends in order to obtain credentials and the access URLs (see: <a href="https://hub.openeo.org/">openEO Hub</a> for getting an overview about available back-ends).</p>
 </div>
 <div id="getting-started" class="section level1">
 <h1 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h1>
-<p>After installing and loading the package, you need to connect to the openEO back-end you want to use. The object that is returned by the <code>connect</code> function is essential for the interaction with this particular back-end. Users can then explore the data and processes and start creating a processing workflows, free of charge. To start processing data or publishing web services, however, the user needs to be registered and authenticated with the openEO back-end provider. The provider offers different execution plans, e.g. free-of-charge or other pricing concepts, from which the user can chose.</p>
-<p>Example back-end provider:</p>
+<p>After installing and loading the package, you need to connect to the openEO back-end you want to use. The object returned by the <code>connect</code> function is essential for the interaction with this particular back-end. Afterwards, users can explore the data and processes and start creating a processing workflows, free of charge. To start processing data or publishing web services, however, the user needs to be registered and authenticated with the openEO back-end provider. The provider offers different execution plans the user can choose. These may include free-of-charge plans or other pricing concepts.</p>
+<p>Examplary back-end providers are:</p>
 <ul>
 <li><a href="https://earthengine.openeo.org" class="uri">https://earthengine.openeo.org</a></li>
 <li><a href="https://openeo.vito.be" class="uri">https://openeo.vito.be</a></li>
 <li><a href="https://openeo.cloud" class="uri">https://openeo.cloud</a></li>
 </ul>
-<p>The Google Earth Engine (GEE) interface for openEO is not actively maintained, but for testing and PR there are credentials stated under the demo section at the <a href="https://github.com/Open-EO/openeo-earthengine-driver">openEO GEE Github repository</a>. Please bear in mind, that the access is free, but Google might revoke the rights if the processing load is too high. So use it only for playing around with the different openEO clients and not for productive purposes. “openeo.cloud” is the link to ESAs <a href="https://openeo.cloud/">“openEO Platform” project</a>, for which you have to be <a href="https://docs.openeo.cloud/authentication/#join-openeo-platform">signed up via EGI and openEO platform</a>.</p>
-<p>In the following there is a code sample, how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file.</p>
+<p>The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the <a href="https://github.com/Open-EO/openeo-earthengine-driver">openEO GEE Github repository</a>. Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. “openeo.cloud” is the link to ESAs <a href="https://openeo.cloud/">“openEO Platform” project</a>, for which you have to be <a href="https://docs.openeo.cloud/authentication/#join-openeo-platform">signed up via EGI and openEO platform</a>.</p>
+</div>
+<div id="examples" class="section level1">
+<h1 class="hasAnchor">
+<a href="#examples" class="anchor"></a>Examples</h1>
+<p>The following code sample shows how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file.</p>
 <pre><code>library(openeo)
 connect(host="https://earthengine.openeo.org")
 
@@ -217,8 +221,8 @@ apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,.
 })
 
 result = p$save_result(data=apply_linear_transform,format="PNG")</code></pre>
-<p>At this point you would need to log in (at latest) with your personal credentials for further computations.</p>
-<pre><code><a href="reference/login.html">login(user="",password="")
+<p>At this point (latest here) you need to log in with your personal credentials for further computations.</p>
+<pre><code>login(user="",password="")
 job_id = create_job(graph=result, title="Example graph", description="This graph is just a general example",format="png")
 
 start_job(job_id)
@@ -226,23 +230,19 @@ start_job(job_id)
 result_obj = list_results(job_id)
 
 download_results(job = job_id, folder = ".")
-</a></code></pre>
-<p>To get an overview which functions the packages offers and to access the function documentation you can either navigate in RStudio into the “Packages” tab and select the “openeo” package and click on the function you are interested in. Or you can use the following command line operations:</p>
+</code></pre>
+<p>To get an overview of the functions offered by the packages and to access the function documentation you can navigate to the “Packages” tab in RStudio, select the “openeo” package and click on the function you are interested in. Another option is to use the following command line operations:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span>help<span class="op">=</span><span class="st">"openeo"</span><span class="op">)</span>
 
 <span class="co"># ?&lt;function_name&gt;, e.g.</span>
 <span class="op">?</span><span class="va">connect</span></code></pre></div>
-</div>
-<div id="additional-examples" class="section level1">
-<h1 class="hasAnchor">
-<a href="#additional-examples" class="anchor"></a>Additional Examples</h1>
-<p>If you are interested, you can have a look at some example scripts that were used during the Proof-of-Concept under <a href="https://github.com/Open-EO/openeo-r-client/tree/master/examples">examples</a> to get a feeling, how to use the package. Some of the scripts are outdated and will be replaced in the future.</p>
+<p>If you are interested in more information, you can have a look at some <a href="https://github.com/Open-EO/openeo-r-client/tree/master/examples">example scripts</a> that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.</p>
 </div>
 <div id="further-information" class="section level1">
 <h1 class="hasAnchor">
 <a href="#further-information" class="anchor"></a>Further Information</h1>
-<p>The <a href="https://github.com/Open-EO/openeo-r-client/wiki">Wiki</a> contains also additional information on process graph building and other topics.</p>
+<p>The <a href="https://github.com/Open-EO/openeo-r-client/wiki">Wiki</a> contains additional information on process graph building and other topics.</p>
 </div>
 <div id="funding" class="section level1">
 <h1 class="hasAnchor">
@@ -283,6 +283,7 @@ download_results(job = job_id, folder = ".")
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>Florian Lahn <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
 
