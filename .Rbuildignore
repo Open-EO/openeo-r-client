@@ -8,5 +8,5 @@
 ^docs$
 ^\.travis\.yml$
 ^LICENSE$
-^cran-comments.md$
 ^\.github$
+^cran-comments\.md$
