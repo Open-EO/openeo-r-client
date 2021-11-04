@@ -320,7 +320,7 @@ Process = R6Class(
       return(private$process_graph)
     },
     setProcessGraph = function(process_graph) {
-      if (length(process_graph) > 0 && suppressWarnings(!is.na(process_graph))) {
+      if (length(process_graph) > 0) {
         if (any(c("ProcessNode","function") %in% class(process_graph))) {
           private$process_graph = as(process_graph,"Graph")
         } else if ("Graph" %in% class(process_graph)) {
@@ -339,9 +339,7 @@ Process = R6Class(
           private$returns = private$process_graph$getFinalNode()$getReturns()
         }
         
-      } 
-      
-      
+      }
       
       return(invisible(self))
     },
