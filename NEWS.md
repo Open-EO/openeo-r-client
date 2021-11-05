@@ -1,5 +1,5 @@
 # version 1.1.0
-Bugfixes and preparation for CRAN release, openEO API version 1.0.x
+Bugfixes and preparation for CRAN release, openEO API version 1.1.0
 
 ## Added
 * added a vignette for getting started [#81](https://github.com/Open-EO/openeo-r-client/issues/81)
@@ -12,7 +12,8 @@ Bugfixes and preparation for CRAN release, openEO API version 1.0.x
 * changed the printing output of User defined processes and services to not show the pure process graph anymore, use as(x,"Process") in that case
 * documentation changes to discourage the use of `as(x,"Graph")` [#68](https://github.com/Open-EO/openeo-r-client/issues/68)
 * allowed to modify service and UDP by passing a modified process object
-* fixed na checks when updating a process graph in an UDP, which threw irritating warnings
+* fixed NA checks when updating a process graph in an UDP, which threw irritating warnings
+* modified documentation (Readme, function documentation)
 
 ## Fixes
 * modified a descriptive text for "production-readiness" of back-ends
@@ -29,6 +30,7 @@ Bugfixes and preparation for CRAN release, openEO API version 1.0.x
 
 ## Removed
 * deleted some out-dated example scripts
+* removed links to Github Wiki, because this will be discontinued soon and moved to package vignettes
 
 # version 1.0.0
 
@@ -169,6 +171,7 @@ Note: similarly named functions that work on different objects are abrreviated b
 ## Removed
 * removed the `markdownViewer` function in favour of `process_viewer` and `collection_viewer`
 * removed the function `band_arithmetics`, because callbacks can now be functions
+
 
 # version 0.5.0
 
