@@ -140,11 +140,8 @@ library(help="openeo")
 ?connect
 ```
 
-
 If you are interested in more information, you can have a look at some [example scripts](https://github.com/Open-EO/openeo-r-client/tree/master/examples) that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.
 
-# Further Information
-The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains additional information on process graph building and other topics.
 
 # Funding
 The authors acknowledge the financial support for the development of this package during the H2020 project "openEO" (Oct 2017 to Sept 2020) by the European Union, funded by call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project "R4openEO" (Sept 2021 to Sept 2022). 
