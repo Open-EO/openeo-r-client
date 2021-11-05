@@ -6,7 +6,7 @@ Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
         person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
     )
-Description: Access data and processing functionalities of 'openEO' back-ends that are conformant to the 'openEO' API in R.
+Description: Access data and processing functionalities of 'openEO' compliant back-ends in R.
 Depends:
     R (>= 3.3)
 Suggests:
