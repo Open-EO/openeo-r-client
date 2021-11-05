@@ -1752,8 +1752,7 @@ VectorCube = R6Class(
 #' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
 #' added data. Additional information can be found in the openEO API documention:
 #' \itemize{
-#'   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
-#'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+#'   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 #' }
 #' 
 #' @section Methods:
