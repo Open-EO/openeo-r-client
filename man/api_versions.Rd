@@ -2,17 +2,17 @@
 % Please edit documentation in R/server_metadata.R
 \name{api_versions}
 \alias{api_versions}
-\title{Returns the suppported OpenEO API versions}
+\title{Returns the supported openEO API versions}
 \usage{
 api_versions(url)
 }
 \arguments{
-\item{url}{the url as string pointing to the base host of the back-end}
+\item{url}{the URL as string pointing to the base host of the back-end}
 }
 \value{
-a data.frame or a tibble containing all supported API versions of the back-end
+a \code{data.frame} or a \code{tibble} containing all supported API versions of the back-end
 }
 \description{
 The function queries the back-end for its supported versions. The endpoint \href{https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect}{/.well-known/openeo} 
-is called on the given host URL and the JSON result is coerced into a tibble.
+is called on the given host URL and the JSON result is coerced into a \code{tibble}.
 }

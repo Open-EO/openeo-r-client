@@ -22,7 +22,7 @@ login(
 
 \item{provider}{provider object as obtained by 'list_oidc_providers()'}
 
-\item{config}{named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)}
+\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)}
 
 \item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
 is used.}
@@ -32,8 +32,8 @@ a connected and authenticated back-end connection
 }
 \description{
 Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step
-is usually performed during the 'connect' step. If you only connected to a back-end in order to 
-explore the functionalities and want to compute something, then you need to log in afterwards.
+is usually performed during the 'connect' step. If you are only connected to a back-end in order to 
+explore the capabilities and want to compute something, then you need to log in afterwards.
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{logout}
 \alias{logout}
-\title{Logout}
+\title{Log out}
 \usage{
 logout(con = NULL)
 }

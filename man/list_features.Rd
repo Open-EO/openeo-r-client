@@ -11,7 +11,7 @@ list_features(con = NULL)
 is used.}
 }
 \value{
-data.frame or tibble (if available)
+\code{data.frame} or \code{tibble} (if available)
 }
 \description{
 The client queries the version resolved back-end for its endpoint capabilities and returns it as

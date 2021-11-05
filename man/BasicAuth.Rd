@@ -11,7 +11,7 @@ This class handles the authentication to an openEO back-end that supports "basic
 of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
 The authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
 is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token are obtained and 
-used as "bearer token" for the password restricted webservices.
+used as "bearer token" for the password restricted  web services.
 }
 \details{
 The class inherits all fields and function from \code{\link{IAuth}}

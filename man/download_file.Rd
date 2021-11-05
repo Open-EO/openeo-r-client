@@ -7,7 +7,7 @@
 download_file(src, dst = NULL, con = NULL)
 }
 \arguments{
-\item{src}{the relative filepath of the source file on the openEO back-end}
+\item{src}{the relative file path of the source file on the openEO back-end}
 
 \item{dst}{the destination file path on the local file system}
 

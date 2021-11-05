@@ -28,7 +28,7 @@ create_user_process(
 \item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \value{
 a list assembling a process graph description or the graph id if send

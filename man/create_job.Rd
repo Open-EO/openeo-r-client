@@ -29,7 +29,7 @@ will return the results}
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to \link{jsonlite}{toJSON} (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \value{
 the id of the job

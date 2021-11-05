@@ -4,7 +4,7 @@
 \alias{UdfRuntimeArgument}
 \title{UdfRuntimeArgument class}
 \value{
-Object of \code{\link{R6Class}} representing the udf runtime in a process argument.
+Object of \code{\link{R6Class}} representing the UDF runtime in a process argument.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.

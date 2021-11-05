@@ -12,7 +12,7 @@ validate_process(graph, con = NULL, ...)
 \item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \description{
 Sends the process graph as a user process to the openEO service and validates it with the predefined and user-defined 

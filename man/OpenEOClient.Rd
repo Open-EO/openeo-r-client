@@ -2,9 +2,9 @@
 % Please edit documentation in R/client.R
 \name{OpenEOClient}
 \alias{OpenEOClient}
-\title{OpenEO client class}
+\title{openEO client class}
 \description{
-An R6Class that interacts with an openEO-conform back-end.
+An R6Class that interacts with an openEO compliant back-end.
 }
 \section{Fields}{
 
@@ -28,7 +28,7 @@ An R6Class that interacts with an openEO-conform back-end.
   \item{\code{$getHost()}}{returns the host URL}
   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
   \item{\code{$connect(url,version)}}{connects to a specific version of a back-end}
-  \item{\code{$api_version()}}{returns the openEO API version this client is complient to}
+  \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
   \item{\code{$login(login_type = NULL,user=NULL,password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
   \item{\code{$getAuthClient()}}{returns the authentication client}

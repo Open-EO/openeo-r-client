@@ -11,7 +11,7 @@ download_results(job, folder, con = NULL)
 
 \item{folder}{a character string that is the target path on the local computer}
 
-\item{con}{a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected and authenticated openEO connection (optional) otherwise \code{\link{active_connection}}
 is used.}
 }
 \value{

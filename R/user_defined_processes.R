@@ -102,7 +102,7 @@ delete_user_process = function(id, con=NULL) {
 #' @param summary the summary for the user process (optional)
 #' @param description the description for the user process (optional)
 #' @param submit whether to create a new user process at the openEO service or to create it for local use (default set to submit = TRUE)
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @return a list assembling a process graph description or the graph id if send
 #' @export
@@ -173,10 +173,10 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
 #' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param id process graph id
-#' @param graph a process graph definition created by combining 'process()', 'collection()' or using a ProcessGraphBuilder
+#' @param graph a process graph definition created by combining 'process()', 'collection()' or using a \code{ProcessGraphBuilder}
 #' @param summary summary of the process graph (optional)
 #' @param description description of the process graph (optional)
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' @export
 update_user_process = function(id, graph = NULL, summary = NULL, description = NULL, con=NULL, ...) {
   tryCatch({
@@ -229,7 +229,7 @@ update_user_process = function(id, graph = NULL, summary = NULL, description = N
 #' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param graph the process graph that will be sent to the service to be validated
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @export
 validate_process = function(graph, con=NULL, ...) {

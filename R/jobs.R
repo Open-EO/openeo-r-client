@@ -54,7 +54,7 @@ list_jobs = function(con=NULL) {
 #' @param plan character, selection of a service plan
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @return A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data
 #' 
@@ -127,7 +127,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to \link{jsonlite}{toJSON} (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @return the id of the job
 #' @export
@@ -233,7 +233,7 @@ start_job = function(job, log=FALSE, con=NULL) {
 #' @param budget replaces or sets the credits that can be spent at maximum
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @export
 update_job = function(id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
@@ -319,7 +319,7 @@ list_results = function(job, con=NULL) {
 #' 
 #' @param job job object or the job_id for which the results are fetched
 #' @param folder a character string that is the target path on the local computer
-#' @param con a connected and authenticated OpenEO connection (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected and authenticated openEO connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
 #' @return a list of the target file paths

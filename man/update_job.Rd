@@ -32,7 +32,7 @@ will return the results or a self defined \code{\link{Process}}}
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \description{
 The function modifies a stores a job with a given parameter. The dot parameter contains all the values

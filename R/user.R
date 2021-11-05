@@ -7,7 +7,7 @@
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return a data.frame or tibble with file names and storage sizes
+#' @return a \code{data.frame} or \code{tibble} with file names and storage sizes
 #' 
 #' @export
 list_files = function(con=NULL) {
@@ -84,7 +84,7 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
 #' 
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param src the relative filepath of the source file on the openEO back-end
+#' @param src the relative file path of the source file on the openEO back-end
 #' @param dst the destination file path on the local file system
 #' 
 #' @return The file path of the stored file on your machine
@@ -118,7 +118,7 @@ download_file = function(src, dst = NULL, con=NULL) {
 #'
 #' Sends a request to an openEO back-end in order to remove a specific file from the users workspaces.
 #' 
-#' @param src the relative filepath of the source file on the openEO back-end that shall be deleted
+#' @param src the relative file path of the source file on the openEO back-end that shall be deleted
 #' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
@@ -162,7 +162,7 @@ describe_account = function(con=NULL) {
 }
 
 # authentication ----
-#' Connect to a openeEO service
+#' Connect to a openEO service
 #'
 #' Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
 #' specific versions you should provide the version parameter.
@@ -171,13 +171,13 @@ describe_account = function(con=NULL) {
 #' You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
 #' have an overview about their status and connection details like the URL and supported features. You can explore the
 #' service for free through the access to publicly available metadata of data collections as well as the offered
-#' processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
-#' your choice. There you will get further information on credentials and the login procedure.
+#' processing functions. For any computation and the creation of web services, you need to register the openEO partner of
+#' your choice. There you will get further information on credentials and the log in procedure.
 #' 
 #' Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
-#' with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+#' with considered log in. 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
 #' open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
-#' use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.
+#' use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.
 #' 
 #' The parameter \code{version} is not required. If the service offers a well-known document of the
 #' service the client will choose an appropriate version (default the most recent production ready version).
@@ -189,7 +189,7 @@ describe_account = function(con=NULL) {
 #' @param version the openEO API version number as string (optional), see also \code{\link{api_versions}}
 #' @param user the user name (optional)
 #' @param password the password (optional)
-#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
+#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.
 #' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
 #' @param provider provider object as obtained by 'list_oidc_providers()'
 #' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)
@@ -203,7 +203,7 @@ describe_account = function(con=NULL) {
 #' # connect to a host of the latest version and without authentication
 #' con = connect(host='http://example.openeo.org')
 #' 
-#' # connect to a host by direct url and basic login
+#' # connect to a host by direct URL and basic log in
 #' con = connect(host='http://example.openeo.org/v1.0',
 #'               user='user',
 #'              password='password',
@@ -224,7 +224,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
     con = con$connect(url = host, version = version,exchange_token=exchange_token)
     
     if (length(con) == 0) {
-        message("Invalid openEO host stated. Please use an URL pointing to a valid openEO webservice implementation.")
+        message("Invalid openEO host stated. Please use an URL pointing to a valid openEO web service implementation.")
         return(invisible(NULL))
     }
     
@@ -248,8 +248,8 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' Log in on a specific back-end
 #' 
 #' Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step
-#' is usually performed during the 'connect' step. If you only connected to a back-end in order to 
-#' explore the functionalities and want to compute something, then you need to log in afterwards.
+#' is usually performed during the 'connect' step. If you are only connected to a back-end in order to 
+#' explore the capabilities and want to compute something, then you need to log in afterwards.
 #' 
 #' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -257,7 +257,7 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' @param password the password
 #' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
 #' @param provider provider object as obtained by 'list_oidc_providers()'
-#' @param config named list containing 'client_id' and 'sercret' or a path to the configuration file (type JSON)
+#' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)
 #' @return a connected and authenticated back-end connection
 #' 
 #' @examples 
@@ -281,7 +281,7 @@ login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL,
     }, error = .capturedErrorToMessage)
 }
 
-#' Logout
+#' Log out
 #' 
 #' Logs out or closes the active connection to an openEO service.
 #' 

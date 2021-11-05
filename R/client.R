@@ -2,9 +2,9 @@
 #'@include authentication.R
 NULL
 
-#' OpenEO client class
+#' openEO client class
 #'
-#' An R6Class that interacts with an openEO-conform back-end.
+#' An R6Class that interacts with an openEO compliant back-end.
 #' 
 #' @name OpenEOClient
 #' 
@@ -23,7 +23,7 @@ NULL
 #'   \item{\code{$getHost()}}{returns the host URL}
 #'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 #'   \item{\code{$connect(url,version)}}{connects to a specific version of a back-end}
-#'   \item{\code{$api_version()}}{returns the openEO API version this client is complient to}
+#'   \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
 #'   \item{\code{$login(login_type = NULL,user=NULL,password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
 #'   \item{\code{$getAuthClient()}}{returns the authentication client}
@@ -645,9 +645,8 @@ OpenEOClient <- R6Class(
       }
       
 
-      # create json and prepare to send graph as post body
+      # create JSON and prepare to send graph as post body
       if (is.character(data)) {
-        # data = fromJSON(data,simplifyDataFrame = FALSE)
         if (encodeType == "json") {
           encodeType = "raw"
           header = append(header, add_headers(`Content-Type` = "application/json"))
@@ -666,7 +665,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        stop("Cannot interpret data - not a list that can be transformed into json")
+        stop("Cannot interpret data - not a list that can be transformed into JSON")
       }
 
       response=PUT(
