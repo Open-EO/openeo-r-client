@@ -137,7 +137,7 @@
     <div id="version-110" class="section level1">
 <h1 class="page-header" data-toc-text="1.1.0">
 <a href="#version-110" class="anchor"></a>version 1.1.0</h1>
-<p>Bugfixes and preparation for CRAN release, openEO API version 1.1.0</p>
+<p>Bugfixes and preparation for CRAN release, ‘openEO API’ version 1.1.0</p>
 <div id="added" class="section level2">
 <h2 class="hasAnchor">
 <a href="#added" class="anchor"></a>Added</h2>
@@ -178,13 +178,13 @@
 </li>
 <li>fixed an issue when querying the versions of a back-end <a href="https://github.com/Open-EO/openeo-r-client/issues/72"><a href='https://github.com/Open-EO/openeo-r-client/issues/72'>#72</a></a>
 </li>
-<li>Updated to latest version of Vue Components and Processes DocGen (which importantly fixes the collection viewer) <a href="https://github.com/Open-EO/openeo-r-client/issues/75"><a href='https://github.com/Open-EO/openeo-r-client/issues/75'>#75</a></a>
+<li>Updated to latest version of Vue Components and Processes ‘DocGen’ (which importantly fixes the collection viewer) <a href="https://github.com/Open-EO/openeo-r-client/issues/75"><a href='https://github.com/Open-EO/openeo-r-client/issues/75'>#75</a></a>
 </li>
 <li>fixed missing enum validation <a href="https://github.com/Open-EO/openeo-r-client/issues/65"><a href='https://github.com/Open-EO/openeo-r-client/issues/65'>#65</a></a>
 </li>
 <li>fixed process parsing of processes with completely nullable arrays <a href="https://github.com/Open-EO/openeo-r-client/issues/79"><a href='https://github.com/Open-EO/openeo-r-client/issues/79'>#79</a></a>
 </li>
-<li>fixed a problem with NULL values set as value for AnyOf, the traversion of the graph did not work properly, because of a NULL-pointer issue</li>
+<li>fixed a problem with NULL values set as value for AnyOf, the traversing of the graph did not work properly, because of a NULL-pointer issue</li>
 <li>fixed a parsing problem, where the “optional” field was not correctly interpreted in every case</li>
 <li>fixed stale URLs in documentation <a href="https://github.com/Open-EO/openeo-r-client/issues/84"><a href='https://github.com/Open-EO/openeo-r-client/issues/84'>#84</a></a>
 </li>
@@ -203,7 +203,7 @@
 <h1 class="page-header" data-toc-text="1.0.0">
 <a href="#version-100" class="anchor"></a>version 1.0.0</h1>
 <p>In general this release will cover the changes between API versions 0.4.2 and 1.0.0 without backward compatibility. Changes in the data models due to the new API are not listed here.</p>
-<p>Note: similarly named functions that work on different objects are abrreviated by a <code>*</code>, e.g. <code>describe_*()</code> for <code><a href="../reference/describe_job.html">describe_job()</a></code>, <code><a href="../reference/describe_service.html">describe_service()</a></code>, …</p>
+<p>Note: similarly named functions that work on different objects are abbreviated by a <code>*</code>, e.g. <code>describe_*()</code> for <code><a href="../reference/describe_job.html">describe_job()</a></code>, <code><a href="../reference/describe_service.html">describe_service()</a></code>, …</p>
 <div id="added-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#added-1" class="anchor"></a>Added</h2>
@@ -211,9 +211,9 @@
 <li>added a serialization of object <code>Parameter</code> into a descriptive form</li>
 <li>added a function to parse and coerce an R function into a <code>Graph</code> (e.g. <code>as(x,"Graph")</code>, where x is a R function returning a <code>ProcessNode</code>)</li>
 <li>new functions <code><a href="../reference/privacy_policy.html">privacy_policy()</a></code> and <code><a href="../reference/terms_of_service.html">terms_of_service()</a></code> to view the privacy policy and the terms of service</li>
-<li>function <code><a href="../reference/conformance.html">conformance()</a></code> operated on the new corresponding api endpoint</li>
+<li>function <code><a href="../reference/conformance.html">conformance()</a></code> operated on the new corresponding API endpoint</li>
 <li>added class <code>ProcessCollection</code> in order to divide the Graph object and the graph building. It is created upon connection and obtainable via <code><a href="../reference/processes.html">processes()</a></code>.</li>
-<li>added a function <code><a href="../reference/logs.html">logs()</a></code>, <code><a href="../reference/log_job.html">log_job()</a></code> and <code><a href="../reference/log_service.html">log_service()</a></code> to request the back-end logs of a job or a service. The logging blocks the console and requests every second an update of the log at the back-end. Also when queing a job via <code><a href="../reference/start_job.html">start_job()</a></code> an immediate logging can be triggered.</li>
+<li>added a function <code><a href="../reference/logs.html">logs()</a></code>, <code><a href="../reference/log_job.html">log_job()</a></code> and <code><a href="../reference/log_service.html">log_service()</a></code> to request the back-end logs of a job or a service. The logging blocks the console and requests every second an update of the log at the back-end. Also when queuing a job via <code><a href="../reference/start_job.html">start_job()</a></code> an immediate logging can be triggered.</li>
 <li>added S3 class labels, coerce and print functions for some exchange object:
 <ul>
 <li>
@@ -259,7 +259,7 @@
 <li>added a builder for user-defined processes (<code>UserProcessCollection</code> and <code><a href="../reference/user_processes.html">user_processes()</a></code>) like <code>ProcessCollection</code> for predefined processes, which offers a users stored process graph as a usable function that creates a <code>ProcessNode</code>
 </li>
 <li>added function <code>status</code> for the connection, jobs and services to immediate get the status information. It also always queries the back-end for an update on call</li>
-<li>added … parameter to the request, PUT and POST function to controll the JSON serialization in toJSON (e.g. especially when stating the number of digits to use during this serialization)</li>
+<li>added … parameter to the request, PUT and POST function to control the JSON serialization in <code>toJSON</code> (e.g. especially when stating the number of digits to use during this serialization)</li>
 <li>also enabled the … parameter for functions where a process (graph) is sent to the back-end</li>
 </ul>
 </div>
@@ -269,7 +269,7 @@
 <ul>
 <li>improved reading of files [<a href='https://github.com/Open-EO/openeo-r-client/issues/50'>#50</a>]</li>
 <li>switching the connection in RStudio connection panel now correctly updates the panel</li>
-<li>fixed a problem with trailing slashes when setting the host url in the connection or reading it from the wellknown document</li>
+<li>fixed a problem with trailing slashes when setting the host URL in the connection or reading it from the well-known document</li>
 <li>fixed a problem with environments (mostly R6 classes) in the validate function of some arguments</li>
 </ul>
 </div>
@@ -279,9 +279,9 @@
 <ul>
 <li>added more setter functions to <code>Parameter</code> parent class in order to manipulate parameter representations later, when defining Parameters in user defined processes</li>
 <li>
-<code>ProcessGraph</code> as a parameter requires a function wrapping - meaning you should not pass an openeo process like <code>p$min</code> directly, because with the elaborated <code>ProcessGraphParameter</code> we cannot do a reliable automatic variable matching, e.g. often the ProcessGraphParameter “context” is misinterpreted</li>
+<code>ProcessGraph</code> as a parameter requires a function wrapping - meaning you should not pass an openEO process like <code>p$min</code> directly, because with the elaborated <code>ProcessGraphParameter</code> we cannot do a reliable automatic variable matching, e.g. often the <code>ProcessGraphParameter</code> “context” is misinterpreted</li>
 <li>updated and externalized the scripts in the <code>*_viewer()</code> functions to visualize collection and processes following the new api definition</li>
-<li>anyOf was dropped as a top-level parameter definition schema in the API. The parameter <code>anyOf</code> is still be used in the client.</li>
+<li>‘anyOf’ was dropped as a top-level parameter definition schema in the API. The parameter <code>anyOf</code> is still be used in the client.</li>
 <li>classes were renamed:
 <ul>
 <li>
@@ -297,7 +297,7 @@
 <li>harmonized various function behavior:
 <ul>
 <li>
-<code>update_*</code> and <code>create_*</code> functions return their respective object (e.g. <code>update_job</code> –&gt; <code>Job</code>) instead of their ID (previous behaviour)</li>
+<code>update_*</code> and <code>create_*</code> functions return their respective object (e.g. <code>update_job</code> –&gt; <code>Job</code>) instead of their ID (previous behavior)</li>
 <li>
 <code>list_*</code> functions return a named list of those particular exchange objects (e.g. <code>list_jobs</code> –&gt; named list of <code>Job</code>)</li>
 <li>parameters, where before only the ID of particular object was passed on, were changed to allow the overview or detailed object description also</li>
@@ -349,7 +349,7 @@
 <h2 class="hasAnchor">
 <a href="#removed-1" class="anchor"></a>Removed</h2>
 <ul>
-<li>removed funtion <code>follow_job()</code> (replaced by <code><a href="../reference/log_job.html">log_job()</a></code>)</li>
+<li>removed function <code>follow_job()</code> (replaced by <code><a href="../reference/log_job.html">log_job()</a></code>)</li>
 <li>removed the field <code>connection</code> which linked to the used openEO client from the process graph object</li>
 <li>removed function <code>process_graph_builder()</code>
 </li>
@@ -433,7 +433,7 @@
 <li>connection is not required to be passed into the functions that directly interact with the openEO service, <code>active_connection</code> now gets and sets the latest connected service into a package variable</li>
 <li>the mathematical constants <code>pi</code> and <code>e</code> (in R <code>pi</code> and <code>exp(1)</code>) are parsed from the data and translated into the corresponding openEO processes in order to avoid errors due to rounded values</li>
 <li>overloaded mathematical operators for <code>ProcessNode</code> and <code>callback-value</code> classes</li>
-<li>allowed functions as “callbacks” for reducer function, e.g. in reduce or apply (not only for band arithmetics)</li>
+<li>allowed functions as “callbacks” for reducer function, e.g. in reduce or apply (not only for band arithmetic)</li>
 <li>processes can now be created from any graph in callbacks provided as functions</li>
 <li>slight change for indirect parameter order in processes (backward compatible)</li>
 </ul>
@@ -450,9 +450,9 @@
 <h2 class="hasAnchor">
 <a href="#removed-3" class="anchor"></a>Removed</h2>
 <ul>
-<li>removed the <code>markdownViewer</code> function in favour of <code>process_viewer</code> and <code>collection_viewer</code>
+<li>removed the <code>markdownViewer</code> function in favor of <code>process_viewer</code> and <code>collection_viewer</code>
 </li>
-<li>removed the function <code>band_arithmetics</code>, because callbacks can now be functions</li>
+<li>removed the function <code>band_arithmetic</code>, because callbacks can now be functions</li>
 </ul>
 </div>
 </div>
@@ -465,8 +465,8 @@
 <ul>
 <li>example process graph building for minimum EVI with EURAC, EODC and VITO</li>
 <li>added a Google OIDC authentication option</li>
-<li>band_arithmetics function that parses a mathematical function into a process graph if the back-end supports some of the core processes</li>
-<li>example script shown in the open geo hub summer school</li>
+<li>band_arithmetic function that parses a mathematical function into a process graph if the back-end supports some of the core processes</li>
+<li>example script shown in the open Geo Hub Summer School</li>
 <li>notebooks for comparing the NDVI calculation on EURAC back-end and GEE</li>
 </ul>
 </div>
@@ -485,7 +485,7 @@ GET /collections/{collection_id}
 GET /processes
 POST /validation</code></pre>
 <ul>
-<li>modified gee-evi-example now that the GEE driver supports all relevant openeo processes, it now creates the graph with apply, linear_scale and saves it as PNG; added also an example for the band_arithmetics use case</li>
+<li>modified <code>gee-evi-example</code> now that the GEE driver supports all relevant openEO processes, it now creates the graph with apply, linear_scale and saves it as PNG; added also an example for the band_arithmetic use case</li>
 <li>client public function <code>client_version</code> was renamed into <code>api_version</code> and returns the openEO API version which the client uses</li>
 <li>graphs are initialized with a connection instead of the parsed processes list</li>
 <li>connection is now available via a private field in the Graph object</li>
@@ -498,8 +498,8 @@ POST /validation</code></pre>
 <ul>
 <li>fixed callback function which not replaced the AnyOf parameter with the newly created Graph</li>
 <li>
-<code>create_job</code> now refers to the HTTP response header “OpenEO-Identifier” rather than parsing the “Location” header</li>
-<li>fixed a problem in <code>band_arithmetics</code> where the parameter in array_element were falsely assigned</li>
+<code>create_job</code> now refers to the HTTP response header “openEO-Identifier” rather than parsing the “Location” header</li>
+<li>fixed a problem in <code>band_arithmetic</code> where the parameter in array_element were falsely assigned</li>
 <li>fixed callback function to recognize nested callback arguments in anyOf (<a href='https://github.com/Open-EO/openeo-r-client/issues/35'>#35</a>)</li>
 <li>fixed the attempt to parse the response body when evaluating HTTP 202</li>
 <li>typo in the README</li>
@@ -513,7 +513,7 @@ POST /validation</code></pre>
 <h2 class="hasAnchor">
 <a href="#changed-4" class="anchor"></a>Changed</h2>
 <ul>
-<li>modified the Use case 1 RClient -&gt; EURAC example (mostly working) based on API version 0.4.2</li>
+<li>modified the Use case 1 R client -&gt; EURAC example (mostly working) based on API version 0.4.2</li>
 <li>return a list of file paths on <code>download_results</code>
 </li>
 </ul>

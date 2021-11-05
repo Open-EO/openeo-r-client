@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the suppported OpenEO API versions — api_versions • openeo</title>
+<title>Returns the supported openEO API versions — api_versions • openeo</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Returns the suppported OpenEO API versions — api_versions" />
+<meta property="og:title" content="Returns the supported openEO API versions — api_versions" />
 <meta property="og:description" content="The function queries the back-end for its supported versions. The endpoint /.well-known/openeo 
 is called on the given host URL and the JSON result is coerced into a tibble." />
 <meta property="og:image" content="/logo.png" />
@@ -132,14 +132,14 @@ is called on the given host URL and the JSON result is coerced into a tibble." /
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the suppported OpenEO API versions</h1>
+    <h1>Returns the supported openEO API versions</h1>
     <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/server_metadata.R'><code>R/server_metadata.R</code></a></small>
     <div class="hidden name"><code>api_versions.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>The function queries the back-end for its supported versions. The endpoint <a href='https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect'>/.well-known/openeo</a> 
-is called on the given host URL and the JSON result is coerced into a tibble.</p>
+is called on the given host URL and the JSON result is coerced into a <code>tibble</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>api_versions</span><span class='op'>(</span><span class='va'>url</span><span class='op'>)</span></pre>
@@ -149,13 +149,13 @@ is called on the given host URL and the JSON result is coerced into a tibble.</p
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>url</th>
-      <td><p>the url as string pointing to the base host of the back-end</p></td>
+      <td><p>the URL as string pointing to the base host of the back-end</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a data.frame or a tibble containing all supported API versions of the back-end</p>
+    <p>a <code>data.frame</code> or a <code>tibble</code> containing all supported API versions of the back-end</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

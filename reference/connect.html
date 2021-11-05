@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Connect to a openeEO service — connect • openeo</title>
+<title>Connect to a openEO service — connect • openeo</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Connect to a openeEO service — connect" />
+<meta property="og:title" content="Connect to a openEO service — connect" />
 <meta property="og:description" content="Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
 specific versions you should provide the version parameter." />
 <meta property="og:image" content="/logo.png" />
@@ -132,7 +132,7 @@ specific versions you should provide the version parameter." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Connect to a openeEO service</h1>
+    <h1>Connect to a openEO service</h1>
     <small class="dont-index">Source: <a href='https://github.com/Open-EO/openeo-r-client/blob/master/R/user.R'><code>R/user.R</code></a></small>
     <div class="hidden name"><code>connect.Rd</code></div>
     </div>
@@ -174,7 +174,7 @@ specific versions you should provide the version parameter.</p>
     </tr>
     <tr>
       <th>login_type</th>
-      <td><p>either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.</p></td>
+      <td><p>either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.</p></td>
     </tr>
     <tr>
       <th>exchange_token</th>
@@ -195,12 +195,12 @@ specific versions you should provide the version parameter.</p>
     <p>You can explore several already available openEO web services by using the openEO hub (<a href='https://hub.openeo.org/'>https://hub.openeo.org/</a>). There you 
 have an overview about their status and connection details like the URL and supported features. You can explore the
 service for free through the access to publicly available metadata of data collections as well as the offered
-processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
-your choice. There you will get further information on credentials and the login procedure.</p>
+processing functions. For any computation and the creation of web services, you need to register the openEO partner of
+your choice. There you will get further information on credentials and the log in procedure.</p>
 <p>Especially the <code>login_type</code> and the <code>authType</code> suggested by the client development guidelines are confusing. Here the login_type deals 
-with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+with considered log in. 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
 open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
-use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.</p>
+use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.</p>
 <p>The parameter <code>version</code> is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).</p>
 <p>When calling this function the <code><a href='OpenEOClient.html'>OpenEOClient</a></code> is also stored in a variable in the package
@@ -218,7 +218,7 @@ which marks the latest service that was connected to.</p>
 <span class='r-in'><span class='co'># connect to a host of the latest version and without authentication</span></span>
 <span class='r-in'><span class='va'>con</span> <span class='op'>=</span> <span class='fu'>connect</span><span class='op'>(</span>host<span class='op'>=</span><span class='st'>'http://example.openeo.org'</span><span class='op'>)</span></span>
 <span class='r-in'></span>
-<span class='r-in'><span class='co'># connect to a host by direct url and basic login</span></span>
+<span class='r-in'><span class='co'># connect to a host by direct URL and basic log in</span></span>
 <span class='r-in'><span class='va'>con</span> <span class='op'>=</span> <span class='fu'>connect</span><span class='op'>(</span>host<span class='op'>=</span><span class='st'>'http://example.openeo.org/v1.0'</span>,</span>
 <span class='r-in'>              user<span class='op'>=</span><span class='st'>'user'</span>,</span>
 <span class='r-in'>             password<span class='op'>=</span><span class='st'>'password'</span>,</span>
