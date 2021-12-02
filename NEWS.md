@@ -1,11 +1,13 @@
 # version 1.1.1
 
 ## Added
-* Test case for boolean argument validation
+* Started test case for `OpenEOClient`
+* Test case for `Boolean` argument validation
 
 ## Fixes
-* fixed a validation problem of the Boolean argument when a ProcessNode was passed as a value
-* fixed a problem with the overloaded R operators for `|`, `&` and `xor` where an old signature of the corresponding openeo process was used
+* fixed an issue where the host URL was not recognized and treated missing [#100](https://github.com/Open-EO/openeo-r-client/issues/100)
+* fixed a validation problem of the Boolean argument when a `ProcessNode` was passed as a value
+* fixed a problem with the overloaded R operators for `|`, `&` and `xor` where an old signature of the corresponding openEO process was used
 
 # version 1.1.0
 Bugfixes and preparation for CRAN release, 'openEO API' version 1.1.0

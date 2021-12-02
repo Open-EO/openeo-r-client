@@ -138,12 +138,14 @@ OpenEOClient <- R6Class(
     
     connect = function(url,version,exchange_token="access_token") {
       tryCatch({
-        if (missing(url)) {
+        if (missing(url) && length(self$getHost()) == 0) {
           message("Note: Host-URL is missing")
           return(invisible(self))
         }
-          
-        private$setHost(url)
+        
+        if (!missing(url)) {
+          private$setHost(url)
+        }
         response = NULL
         tryCatch({
           response = api_versions(url = self$getHost())
