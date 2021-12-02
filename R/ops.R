@@ -493,12 +493,7 @@ NULL
 
 
 .and = function(e1,e2) {
-  graph = .getProcessCollection(e1,e2)
-  
-  # v0.5 -> and only has two arguments
-  FUN = "and"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
-  graph[[FUN]](expressions=c(e1,e2)) 
+  .genericBinaryFunction(e1 = e1,e2=e2,"and")
 }
 #' @rdname binary_ops
 #' @export
@@ -509,12 +504,7 @@ NULL
 
 
 .or = function(e1, e2) {
-  graph = .getProcessCollection(e1,e2)
-  
-  # v0.5 -> or only has two arguments, now it takes an array
-  FUN = "or"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
-  graph[[FUN]](expressions=c(e1,e2)) 
+  .genericBinaryFunction(e1 = e1,e2=e2,"or")
 }
 #' @rdname binary_ops
 #' @export
@@ -525,11 +515,7 @@ NULL
 
 
 .xor = function(x,y) {
-  graph = .getProcessCollection(x,y)
-  
-  FUN = "xor"
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
-  graph[[FUN]](expressions=c(x,y)) 
+  .genericBinaryFunction(e1 = x,e2=y,"xor")
 }
 #' @rdname binary_ops
 #' @export

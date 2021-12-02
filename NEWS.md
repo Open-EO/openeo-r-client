@@ -1,3 +1,12 @@
+# version 1.1.1
+
+## Added
+* Test case for boolean argument validation
+
+## Fixes
+* fixed a validation problem of the Boolean argument when a ProcessNode was passed as a value
+* fixed a problem with the overloaded R operators for `|`, `&` and `xor` where an old signature of the corresponding openeo process was used
+
 # version 1.1.0
 Bugfixes and preparation for CRAN release, 'openEO API' version 1.1.0
 

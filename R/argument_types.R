@@ -1320,6 +1320,14 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      
+      if (length(private$value) > 0 && "ProcessNode" %in% class(private$value)) {
+        if (! "boolean" %in% class(private$value$getReturns())) {
+          stop("No logical return from ProcessNode.")
+        }
+        return(invisible(NULL))
+      }
+      
       if (!is.na(private$value) && !is.logical(private$value)) {
         suppressWarnings({
           coerced = as.logical(private$value)
