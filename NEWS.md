@@ -1,6 +1,7 @@
 # version 1.1.1
 
 ## Added
+* in addition to integer it is now allowed to state text as input for argument `EPSGCode` like *EPSG:4326* [#99](https://github.com/Open-EO/openeo-r-client/issues/99) and wrote a test case for that
 * Started test case for `OpenEOClient`
 * Test case for `Boolean` argument validation
 

@@ -7,7 +7,7 @@
 Object of \code{\link{R6Class}} representing an EPSG code as Integer
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent an EPSG Code as a single integer value.
+Inheriting from \code{\link{Argument}} in order to represent an EPSG Code. Allowed values are single integer values like \code{4326} or a text containing 'EPSG:' like \code{EPSG:4326}.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

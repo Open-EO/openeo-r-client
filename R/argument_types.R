@@ -296,11 +296,14 @@ Argument = R6Class(
           
           invisible(NULL)
         }, error = function(e) {
-          node_id = self$getProcess()$getNodeId()
-          if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
-          
-          message = paste0(node_id,"Parameter '",private$name,"': ",e$message)
-          
+          if (length(self$getProcess()) >0 ) {
+            node_id = self$getProcess()$getNodeId()
+            if (!is.null(node_id)) node_id = paste0("[",node_id,"] ")
+            
+            message = paste0(node_id,"Parameter '",private$name,"': ",e$message)
+          } else {
+            message = e$message
+          }
           return(message)
         }
       )
@@ -440,7 +443,7 @@ Integer = R6Class(
 # EPSG-Code ====
 #' EPSGCode class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent an EPSG Code as a single integer value.
+#' Inheriting from \code{\link{Argument}} in order to represent an EPSG Code. Allowed values are single integer values like \code{4326} or a text containing 'EPSG:' like \code{EPSG:4326}.
 #' 
 #' @name EPSGCode
 #' 
@@ -476,7 +479,13 @@ EPSGCode = R6Class(
         
         if (is.null(coerced) || 
             is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
+            length(coerced) == 0) {
+          if (is.character(private$value) && grepl(tolower(private$value),pattern = "^epsg:")) {
+            coerced = as.integer(gsub(x = private$value,replacement = "",pattern = "[^0-9]"))
+          } else {
+            stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
+          }
+        }
         # correct value if you can
         private$value = coerced
         
