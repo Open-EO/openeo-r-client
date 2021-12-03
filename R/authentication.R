@@ -231,7 +231,7 @@ OIDCAuth <- R6Class(
         if (private$isExpired(private$auth$credentials$access_token)) {
           if (!is.null(private$auth$credentials$refresh_token)) {
             private$auth$refresh()
-            private$token_expiry_time = Sys.time() + private$auth$credentials$expiry
+            private$token_expiry_time = Sys.time() + private$auth$credentials$expires_in
           } else {
             stop("Cannot provide access_token. You have to log in.")
             return(invisible(NULL))
