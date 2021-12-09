@@ -471,7 +471,7 @@ OpenEOClient <- R6Class(
     loginOIDC = function(provider=NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
-            private$auth_client = OIDCAuth$new(provider=provider,
+            private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
                                                config = config)
             
             private$auth_client$login()
