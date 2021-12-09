@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: Client Interface for 'openEO' Servers
-Version: 1.1.1
+Version: 1.2.0
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
         person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
@@ -20,6 +20,7 @@ Suggests:
 Imports:
     jsonlite,
     httr,
+    httr2,
     methods,
     R6,
     lubridate,
