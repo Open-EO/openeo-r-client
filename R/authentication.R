@@ -399,6 +399,7 @@ BasicAuth <- R6Class(
 )
 
 # OIDCDeviceCodeFlowPkce ----
+#' @import httr2
 #' @export
 OIDCDeviceCodeFlowPkce <- R6Class(
   "OIDCDeviceCodeFlowPkce",

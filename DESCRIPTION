@@ -46,6 +46,7 @@ Collate:
     'collection-functions.R'
     'collections.R'
     'debugging.R'
+    'httr2_device_code.R'
     'jobs.R'
     'ops.R'
     'predefined_processes.R'
