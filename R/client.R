@@ -471,8 +471,38 @@ OpenEOClient <- R6Class(
     loginOIDC = function(provider=NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
-            private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
-                                               config = config)
+            # old implementation
+            # probably fetch resolve the potential string into a provider here
+            provider = .get_oidc_provider(provider)
+            # get default client
+            if ("default_client" %in% names(provider)) {
+              default_client = provider[["default_client"]]
+              # id, redirect_urls, grant_types
+            }
+            # check maybe for others or user has to specify, which I don't like
+            
+            if (length(default_client) > 0) {
+              grants = default_client$grant_types
+              
+              # get grants
+              # preferred device code + pkce
+              # second auth_code + pkce
+              # third auth_code with secret
+              
+              if ( "urn:ietf:params:oauth:grant-type:device_code+pkce" %in% grants) {
+                private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider,
+                                                               config = config)
+              } else if ("authorization_code+pkce" %in% grants) {
+                private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider,
+                                                           config = config)
+              } else if ("authorization_code" %in% grants) {
+                private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
+                                                           config = config)
+              } else {
+                message("None of device_code+pkce, authorization_code+pkce or authorization_code are offered the authentication provider.")
+                return(invisible(NULL))
+              }
+            }
             
             private$auth_client$login()
             cat("Login successful.\n")

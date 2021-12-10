@@ -93,220 +93,6 @@ IAuth <- R6Class(
 NULL
 
 
-OIDCAuthCodeFlow <- R6Class(
-  "OIDCAuthCodeFlow",
-  inherit = IAuth,
-  # public ====
-  public = list(
-    # attributes ####
-
-    # functions ####
-    initialize = function(provider, config = NULL) {
-      # comfort function select provider by name if one is provided
-      if (is.character(provider)) {
-        oidc_providers = list_oidc_providers()
-        if (provider %in% names(oidc_providers)) {
-          provider = oidc_providers[[provider]]
-        } else {
-          stop(paste0("The selected provider '",provider,"' is not supported. Check with list_oidc_providers() the available providers."))
-        }
-      }
-      
-      private$setIssuer(provider$issuer)
-      
-      private$id = provider$id
-      private$title = provider$title
-      private$description = provider$description
-      
-      # user knows best, allow custom scopes...
-      if (length(config$scopes) > 0 && is.character(config$scopes)) {
-        private$scopes = config$scopes
-      } else if (length(provider$scopes) == 0) {
-        private$scopes = list("openid")
-      } else {
-        private$scopes = provider$scopes
-      }
-      
-      private$getEndpoints()
-      
-      # important for authorization_code flow
-      if (is.null(config) || !is.list(config)) {
-        stop("Please provide any configuration details about the client_id and the secret. Either as list object or specify a valid file path.")
-      }
-      
-      if (is.character(config)) {
-        if (file.exists(config)) {
-          config = jsonlite::read_json(config)
-        } else {
-          stop("Please provide any configuration details about the client_id and the secret. If you add the credentials as file please provide a valid file path.")
-        }
-      } 
-      
-      if (!(is.list(config) && all(c("client_id","secret") %in% names(config)))) {
-        stop("'client_id' and 'secret' are not present in the configuration.")
-      }
-      
-      private$client_id = config$client_id
-      private$secret = config$secret
-      
-      if (!is.null(config$grant_type)) {
-        private$grant_type = config$grant_type
-      }
-      
-      return(self)
-    },
-
-    login = function() {
-      openeo_endpoints <- structure(list(
-        authorize = private$endpoints$authorization_endpoint,
-        access = private$endpoints$token_endpoint
-      ), class = "oauth_endpoint")
-
-      app <- httr::oauth_app(
-        appname = "openeo_login",
-        key = private$client_id,
-        secret = private$secret
-      )
-      
-      user_params = list()
-      if (is.null(private$grant_type)) user_params = append(list(grant_type=private$grant_type))
-
-      if (length(user_params)) user_params = NULL
-      
-      suppressWarnings(
-        private$auth <- httr::oauth2.0_token(
-          endpoint = openeo_endpoints,
-          app = app,
-          cache = FALSE,
-          scope = unlist(private$scopes),
-          user_params = user_params
-        )
-      )
-      private$token_expiry_time = Sys.time() + private$auth$credentials$expires_in
-      
-      invisible(self)
-    },
-
-    logout = function() {
-      if (is.null(private$auth)) {
-        message("Not logged in.")
-        return(NULL)
-      }
-      
-      if (length(private$endpoints$end_session_endpoint) == 1) {
-        url = url_parse(private$endpoints$end_session_endpoint)
-        response <- GET(url, query = list(id_token_hint = private$auth$credentials$id_token))
-        if (response$status < 400) {
-          message("Successfully logged out.")
-          private$auth <- NULL
-          invisible(TRUE)
-        } else {
-          return(content(response))
-        }
-      } else {
-        private$auth <- NULL
-        invisible(TRUE)
-      }
-      
-    },
-    # fetches the oidc user data
-    getUserData = function() {
-      url = url_parse(private$endpoints$userinfo_endpoint)
-      response <- GET(url, add_headers(Authorization = paste("Bearer", private$auth$credentials$access_token)))
-
-      if (response$status < 400) {
-        return(content(response, as = "parsed", type = "application/json"))
-      } else {
-        return(response)
-      }
-    },
-
-    getAuth = function() {
-      return(private$auth)
-    }
-  ),
-  # active ====
-  active = list(
-    access_token = function() {
-      if (!is.null(private$auth)) {
-        if (private$isExpired(private$auth$credentials$access_token)) {
-          if (!is.null(private$auth$credentials$refresh_token)) {
-            private$auth$refresh()
-            private$token_expiry_time = Sys.time() + private$auth$credentials$expires_in
-          } else {
-            stop("Cannot refresh access_token. Reason: no refresh token provided by the authentication service. You have to log in again.")
-            return(invisible(NULL))
-          }
-        }
-        return(paste("oidc",private$id,private$auth$credentials$access_token,sep="/"))
-      } else {
-        stop("Please login first, in order to obtain an access token")
-        return(invisible(NULL))
-      }
-    },
-    id_token = function() {
-      if (!is.null(private$auth)) {
-        private$auth$credentials$id_token
-      } else {
-        stop("Please login before accessing the identity token")
-        return(invisible(NULL))
-      }
-    }
-  ),
-  # private ====
-  private = list(
-    # attributes ####
-    id = NA,
-    title = NA,
-    description = NA,
-    scopes = list(),
-    issuer = NA, # the url of the endpoint in (issuer)
-    client_id = NULL,
-    secret = NULL,
-    endpoints = list(),
-    grant_type = "authorization_code",
-    token_expiry_time = NULL,
-    
-    auth = NULL, # httr oauth2.0 token object
-
-    # functions ####
-    isValid = function() {
-      # use the endpoint
-    },
-
-    isExpired = function(token) {
-      return(private$token_expiry_time <= Sys.time())
-    },
-
-    decodeToken = function(access_token, token_part) {
-      tokens <- unlist(strsplit(access_token, "\\."))
-      fromJSON(rawToChar(base64decode(tokens[token_part])))
-    },
-
-    getEndpoints = function() {
-      endpoint <- ".well-known/openid-configuration"
-      url <- paste(private$issuer, endpoint, sep = "")
-
-      response <- GET(url)
-      if (response$status < 400) {
-        private$endpoints <- content(response, as = "parsed", type = "application/json")
-      } else {
-        message("Cannot access openid configuration endpoint.")
-      }
-
-      invisible(self)
-    },
-
-    setIssuer = function(issuer) {
-      if (!endsWith(issuer, "/")) {
-        issuer <- paste(issuer, "/", sep = "")
-      }
-      
-      private$issuer = issuer
-      invisible(self)
-    }
-  )
-)
 
 # [Basic Authentication] ----
 #' Basic Authentication class
@@ -398,11 +184,10 @@ BasicAuth <- R6Class(
   )
 )
 
-# [OIDCDeviceCodeFlowPkce] ----
+# [AbstractOIDCAuthentication] ----
 #' @import httr2
-#' @export
-OIDCDeviceCodeFlowPkce <- R6Class(
-  "OIDCDeviceCodeFlowPkce",
+AbstractOIDCAuthentication <- R6Class(
+  "AbstractOIDCAuthentication",
   inherit = IAuth,
   # public ====
   public = list(
@@ -411,20 +196,25 @@ OIDCDeviceCodeFlowPkce <- R6Class(
     # functions ####
     initialize = function(provider, config = list()) {
       # comfort function select provider by name if one is provided
-      if (is.character(provider)) {
-        oidc_providers = list_oidc_providers()
-        if (provider %in% names(oidc_providers)) {
-          provider = oidc_providers[[provider]]
-        } else {
-          stop(paste0("The selected provider '",provider,"' is not supported. Check with list_oidc_providers() the available providers."))
-        }
-      }
+      provider = .get_oidc_provider(provider)
       
       private$setIssuer(provider$issuer)
       
       private$id = provider$id
       private$title = provider$title
       private$description = provider$description
+      
+      if (is.character(config)) {
+        if (file.exists(config)) {
+          config = jsonlite::read_json(config)
+        } else {
+          stop("Please provide any configuration details about the client_id and the secret. If you add the credentials as file please provide a valid file path.")
+        }
+      } 
+      
+      if (length(config) > 0 && !is.list(config)) {
+        stop("Please provide any configuration details about the client_id and the secret. Either as list object or specify a valid file path.")
+      }
       
       # user knows best, allow custom scopes...
       if (length(config$scopes) > 0 && is.character(config$scopes)) {
@@ -443,13 +233,13 @@ OIDCDeviceCodeFlowPkce <- R6Class(
       private$getEndpoints()
       
       if ("default_client" %in% names(provider)) {
-        default_provider = provider[["default_client"]]
+        default_client = provider[["default_client"]]
         # id, redirect_urls, grant_types
-        config$client_id = default_provider[["id"]]
-        if (!any(c("urn:ietf:params:oauth:grant-type:device_code+pkce","urn:ietf:params:oauth:grant-type:device_code") %in% default_provider$grant_types)) {
-          stop("Device code flow with pkce is not supported by the authentication provider")
-        }
+        config$client_id = default_client[["id"]]
+        private$isGrantTypeSupported(default_client$grant_types)
       }
+      
+      
       
       if (!(is.list(config) && all(c("client_id") %in% names(config)))) {
         stop("'client_id' is not present in the configuration.")
@@ -457,23 +247,32 @@ OIDCDeviceCodeFlowPkce <- R6Class(
       
       private$client_id = config$client_id
       
+      if (private$grant_type == "authorization_code") {
+        # in this case we need a client_id and secrect, which is basically the old OIDC Auth Code implementation
+        if (!all(c("client_id","secret") %in% names(config))) {
+          stop("'client_id' and 'secret' are not present in the configuration.")
+        }
+        
+        private$oauth_client = oauth_client(
+          id = private$client_id,
+          token_url = private$endpoints$token_endpoint,
+          name = "openeo-r-oidc-auth",
+          secret = config$secret
+        )
+      } else {
+      
+        private$oauth_client = oauth_client(
+          id = private$client_id,
+          token_url = private$endpoints$token_endpoint,
+          name = "openeo-r-oidc-auth"
+        )
+      }
+      
       return(self)
     },
     
     login = function() {
-      
-      client <- oauth_client(
-        id = private$client_id,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-      
-      private$auth = oauth_flow_device(client = client,
-                                       auth_url = private$endpoints$device_authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "),pkce = TRUE)
-      
-      
-      invisible(self)
+      # the initial login / getting access_token must be implemented by inheriting classes
     },
     
     logout = function() {
@@ -515,7 +314,7 @@ OIDCDeviceCodeFlowPkce <- R6Class(
       if (response$status_code < 400) {
         return(resp_body_json(response))
       } else {
-        message("Cannot retrieve user data from authentication provider")
+        message("User endpoint not supported at the authentication provider")
         invisible(NULL)
       }
     },
@@ -530,12 +329,7 @@ OIDCDeviceCodeFlowPkce <- R6Class(
       if (!is.null(private$auth)) {
         if (private$isExpired(private$auth)) {
           if (!is.null(private$auth$refresh_token)) {
-            client <- oauth_client(
-              id = private$client_id,
-              token_url = private$endpoints$token_endpoint,
-              name = "openeo-r-oidc-auth"
-            )
-            private$auth = oauth_flow_refresh(client=client,refresh_token = private$auth$refresh_token)
+            private$auth = oauth_flow_refresh(client=private$oauth_client,refresh_token = private$auth$refresh_token)
           } else {
             stop("Cannot refresh access_token. Reason: no refresh token provided by the authentication service. You have to log in again.")
             return(invisible(NULL))
@@ -567,9 +361,18 @@ OIDCDeviceCodeFlowPkce <- R6Class(
     client_id = NULL,
     secret = NULL,
     endpoints = list(),
-    grant_type = "urn:ietf:params:oauth:grant-type:device_code+pkce", # not used internally by httr2, but maybe useful in openeo
+    grant_type = "", # not used internally by httr2, but maybe useful in openeo
+    oauth_client = NULL,
     
     auth = NULL, # httr oauth2.0 token object
+    
+    isGrantTypeSupported = function(grant_types) {
+      # to be implemented in inheriting class
+      if (!any(c("authorization_code+pkce","authorization_code") %in% grant_types)) {
+        stop("Authorization code flow with pkce is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    },
     
     # functions ####
     isValid = function() {
@@ -610,74 +413,58 @@ OIDCDeviceCodeFlowPkce <- R6Class(
   )
 )
 
-# [OIDCAuthCodeFlowPKCE] ----
+
+# [OIDCDeviceCodeFlowPkce] ----
 #' @export
-OIDCAuthCodeFlowPKCE <- R6Class(
-  "OIDCAuthCodeFlowPKCE",
-  inherit = IAuth,
+OIDCDeviceCodeFlowPkce <- R6Class(
+  "OIDCDeviceCodeFlowPkce",
+  inherit = AbstractOIDCAuthentication,
   # public ====
   public = list(
-    # attributes ####
-    
     # functions ####
-    initialize = function(provider, config = list()) {
-      # comfort function select provider by name if one is provided
-      if (is.character(provider)) {
-        oidc_providers = list_oidc_providers()
-        if (provider %in% names(oidc_providers)) {
-          provider = oidc_providers[[provider]]
-        } else {
-          stop(paste0("The selected provider '",provider,"' is not supported. Check with list_oidc_providers() the available providers."))
-        }
-      }
-      
-      private$setIssuer(provider$issuer)
-      
-      private$id = provider$id
-      private$title = provider$title
-      private$description = provider$description
-      
-      # user knows best, allow custom scopes...
-      if (length(config$scopes) > 0 && is.character(config$scopes)) {
-        private$scopes = config$scopes
-      } else if (length(provider$scopes) == 0) {
-        private$scopes = list("openid")
-      } else {
-        private$scopes = provider$scopes
-        
-        #TODO remove later
-        if (!"offline_access" %in% private$scopes) {
-          private$scopes = c(private$scopes, "offline_access")
-        }
-      }
-      
-      private$getEndpoints()
-      
-      if ("default_client" %in% names(provider)) {
-        default_provider = provider[["default_client"]]
-        # id, redirect_urls, grant_types
-        config$client_id = default_provider[["id"]]
-        if (!any(c("authorization_code+pkce","authorization_code") %in% default_provider$grant_types)) {
-          stop("Authorization code flow with pkce is not supported by the authentication provider")
-        }
-      }
-      
-      if (!(is.list(config) && all(c("client_id") %in% names(config)))) {
-        stop("'client_id' is not present in the configuration.")
-      }
-      
-      private$client_id = config$client_id
-      
-      return(self)
-    },
-    
     login = function() {
+      
       client <- oauth_client(
         id = private$client_id,
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
       
+      private$auth = oauth_flow_device(client = client,
+                                       auth_url = private$endpoints$device_authorization_endpoint,
+                                       scope=paste0(private$scopes,collapse=" "),pkce = TRUE)
+      
+      
+      invisible(self)
+    }
+  ),
+  # private ====
+  private = list(
+    # attributes ####
+    grant_type = "urn:ietf:params:oauth:grant-type:device_code+pkce", # not used internally by httr2, but maybe useful in openeo
+    
+    # functions ####
+    isGrantTypeSupported = function(grant_types) {
+      # to be implemented in inheriting class
+      if (!any(c("urn:ietf:params:oauth:grant-type:device_code+pkce","urn:ietf:params:oauth:grant-type:device_code") %in% grant_types)) {
+        stop("Device code flow with pkce is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    }
+  )
+)
+
+# [OIDCAuthCodeFlowPKCE] ----
+#' @export
+OIDCAuthCodeFlowPKCE <- R6Class(
+  "OIDCAuthCodeFlowPKCE",
+  inherit = AbstractOIDCAuthentication,
+  # public ====
+  public = list(
+    # attributes ####
+    # functions ####
+    login = function() {
+
       private$auth = oauth_flow_auth_code(client = client,
                                        auth_url = private$endpoints$authorization_endpoint,
                                        scope=paste0(private$scopes,collapse=" "),
@@ -687,138 +474,68 @@ OIDCAuthCodeFlowPKCE <- R6Class(
       
       
       invisible(self)
-    },
-    
-    logout = function() {
-      if (is.null(private$auth)) {
-        message("Not logged in.")
-        return(NULL)
-      }
-      
-      if (length(private$endpoints$end_session_endpoint) == 1) {
-        url = url_parse(private$endpoints$end_session_endpoint)
-        response = req_perform(req_url_query(
-          req=request(url),
-          id_token_hint = private$auth$id_token))
-        
-        if (response$status_code < 400) {
-          message("Successfully logged out.")
-          private$auth <- NULL
-          invisible(TRUE)
-        } else {
-          return(content(response))
-        }
-      } else {
-        private$auth <- NULL
-        invisible(TRUE)
-      }
-      
-    },
-    # fetches the oidc user data
-    getUserData = function() {
-      url = url_parse(private$endpoints$userinfo_endpoint)
-      response <- req_perform(
-        req_auth_bearer_token(
-          req=req_headers(
-            request(url),
-            Accept="application/json"),
-          private$auth$access_token))
-      
-      
-      if (response$status_code < 400) {
-        return(resp_body_json(response))
-      } else {
-        message("Cannot retrieve user data from authentication provider")
-        invisible(NULL)
-      }
-    },
-    
-    getAuth = function() {
-      return(private$auth)
-    }
-  ),
-  # active ====
-  active = list(
-    access_token = function() {
-      if (!is.null(private$auth)) {
-        if (private$isExpired(private$auth)) {
-          if (!is.null(private$auth$refresh_token)) {
-            client <- oauth_client(
-              id = private$client_id,
-              token_url = private$endpoints$token_endpoint,
-              name = "openeo-r-oidc-auth"
-            )
-            private$auth = oauth_flow_refresh(client=client,refresh_token = private$auth$refresh_token)
-          } else {
-            stop("Cannot refresh access_token. Reason: no refresh token provided by the authentication service. You have to log in again.")
-            return(invisible(NULL))
-          }
-        }
-        return(paste("oidc",private$id,private$auth$access_token,sep="/"))
-      } else {
-        stop("Please login first, in order to obtain an access token")
-        return(invisible(NULL))
-      }
-    },
-    id_token = function() {
-      if (!is.null(private$auth)) {
-        private$auth$id_token
-      } else {
-        stop("Please login before accessing the identity token")
-        return(invisible(NULL))
-      }
     }
   ),
   # private ====
   private = list(
     # attributes ####
-    id = NA,
-    title = NA,
-    description = NA,
-    scopes = list(),
-    issuer = NA, # the url of the endpoint in (issuer)
-    client_id = NULL,
-    secret = NULL,
-    endpoints = list(),
     grant_type = "authorization_code+pkce", # not used internally by httr2, but maybe useful in openeo
-    
-    auth = NULL, # httr oauth2.0 token object
-    
-    # functions ####
-    isValid = function() {
-      # use the endpoint
-    },
-    
-    isExpired = function(token) {
-      return(token$expires_at <= Sys.time())
-    },
-    
-    decodeToken = function(access_token, token_part) {
-      tokens <- unlist(strsplit(access_token, "\\."))
-      fromJSON(rawToChar(base64decode(tokens[token_part])))
-    },
-    
-    getEndpoints = function() {
-      endpoint <- ".well-known/openid-configuration"
-      url <- paste(private$issuer, endpoint, sep = "")
-      
-      response <- req_perform(request(url))
-      if (response$status_code < 400) {
-        private$endpoints <- resp_body_json(response)
-      } else {
-        message("Cannot access openid configuration endpoint.")
+
+    isGrantTypeSupported = function(grant_types) {
+      # to be implemented in inheriting class
+      if (!any(c("authorization_code+pkce","authorization_code") %in% grant_types)) {
+        stop("Authorization code flow with pkce is not supported by the authentication provider")
       }
-      
-      invisible(self)
-    },
-    
-    setIssuer = function(issuer) {
-      if (!endsWith(issuer, "/")) {
-        issuer <- paste(issuer, "/", sep = "")
-      }
-      
-      private$issuer = issuer
-      invisible(self)
+      invisible(TRUE)
     }
   )
 )
+
+
+# [OIDCAuthCodeFlow] ----
+OIDCAuthCodeFlow <- R6Class(
+  "OIDCAuthCodeFlow",
+  inherit = AbstractOIDCAuthentication,
+  # public ====
+  public = list(
+    # attributes ####
+    
+    # functions ####
+    login = function() {
+      cat("fyi this is authentication code without PKCE.\n")
+      private$auth = oauth_flow_auth_code(client = client,
+                                          auth_url = private$endpoints$authorization_endpoint,
+                                          scope=paste0(private$scopes,collapse=" "),
+                                          pkce = FALSE,
+                                          port=1410
+      )
+    }
+  ),
+  # private ====
+  private = list(
+    grant_type = "authorization_code",
+
+    
+    # functions ####
+    isGrantTypeSupported = function(grant_types) {
+      # to be implemented in inheriting class
+      if (!any(c("authorization_code") %in% grant_types)) {
+        stop("Authorization code flow with pkce is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    }
+  )
+)
+
+.get_oidc_provider = function(provider) {
+  if (is.character(provider)) {
+    oidc_providers = list_oidc_providers()
+    if (provider %in% names(oidc_providers)) {
+      return(oidc_providers[[provider]])
+    } else {
+      stop(paste0("The selected provider '",provider,"' is not supported. Check with list_oidc_providers() the available providers."))
+    }
+  }
+  
+  return(provider)
+}
