@@ -138,11 +138,21 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
   
   options(digits.secs=3)
   start = Sys.time()
-  res = httr::POST(url = url,
-                   config=add_headers(Date=start),
-                   content_type_json(),
-                   body=toJSON(payload,auto_unbox = T),
-                   encode="raw")
+  
+  req = request(url)
+  req = req_method(req,"POST")
+  
+  req = req_headers(req, Date=start, `Content-Type`="application/json")
+  
+  req = req_body_json(payload,auto_unbox = TRUE)
+  
+  res = req_perform(req)
+  
+  # res = httr::POST(url = url,
+  #                  config=add_headers(Date=start),
+  #                  content_type_json(),
+  #                  body=toJSON(payload,auto_unbox = T),
+  #                  encode="raw")
   
   end = Sys.time()
   if (debug) {
@@ -154,10 +164,12 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
     print(end-as_datetime(res$date,tz=Sys.timezone()))
   }
   
+  val = resp_body_json(res)
+  
   if (res$status_code >= 400) {
-    return(content(res,as = "parsed",type="application/json", ...))
+    return(val)
   } else {
-    return(content(res,as = "parsed",type="application/json",...))
+    return(val)
   }
   
 }

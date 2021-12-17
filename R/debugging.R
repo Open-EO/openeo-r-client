@@ -28,7 +28,7 @@ print.response = function(x) {
     
     cat("\n*** Response ***", paste("Status:", x$status_code), "Headers:", sep = "\n")
     
-    headers = as.data.frame(cbind(headers(x)))
+    headers = as.data.frame(cbind(resp_headers(x)))
     names(headers) = NULL
     
     print(headers)
@@ -41,7 +41,7 @@ print.response = function(x) {
         }
         
         if ("content-type" %in% rownames(headers) && unlist(headers["content-type", ]) == "application/json") {
-            print(toJSON(content(x), auto_unbox = TRUE, pretty = TRUE))
+            print(toJSON(resp_body_json(x), auto_unbox = TRUE, pretty = TRUE))
         } else {
             print("Other formats not yet implemented.")
         }

@@ -551,23 +551,39 @@ OpenEOClient <- R6Class(
       
     },
 
-    GET = function(endpoint,authorized=FALSE,query = list(), ...) {
+    GET = function(endpoint,authorized=FALSE,query = list(),parsed=TRUE, ...) {
       url = paste(private$host,endpoint, sep ="/")
-
+      req = request(url)
+      req = req_method(req, method="GET")
+      
+      args = list(...)
+      
       if (authorized && !is.null(private$auth_client)) {
-        response = GET(url=url, config=private$addAuthorization(),query=query)
-      } else {
-        response = GET(url=url,query=query)
-      }
+        
+        header_list = private$addAuthorization()
+        header_list[[".req"]] = req
+        req = do.call(req_headers,header_list)
+        
+        # response = GET(url=url, config=private$addAuthorization(),query=query)
+      } 
   
+      query$req = req
+      req = do.call(req_url_query,args = query)
+      response = req_perform(req)
+      
       if (is.debugging()) {
         print(response)
       }
 
       if (response$status_code < 400) {
         if (response$status_code != 202) {
-          info = content(response, ...)
-          return(info)
+          # info = content(response, ...)
+          if (isTRUE(parsed)) {
+            return(resp_body_json(response, ...))
+          } else {
+            return(response)
+          }
+          
         } else {
           return(NULL)
         }
@@ -577,21 +593,30 @@ OpenEOClient <- R6Class(
         private$errorHandling(response,url)
       }
     },
-    DELETE = function(endpoint,authorized=FALSE,...) {
+    DELETE = function(endpoint,authorized=FALSE,query = list(),...) {
       url = paste(private$host,endpoint,sep="/")
       
-      header = list()
+      req = request(url)
+      req = req_method(req, method="DELETE")
+      
+      header = list(`.req` = req)
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
+        req = do.call(req_headers,header)
       }
+
+      query$req = req
+      req = do.call(req_url_query,args = query)
+      response = req_perform(req)
       
-      response = DELETE(url=url, config = header, ...)
+      # response = DELETE(url=url, config = header, ...)
       
       if (is.debugging()) {
         print(response)
       }
       
-      message = content(response)
+      # message = content(response)
+      # message = resp_body_json(response)
       
       if (response$status_code < 400) {
         if (response$status_code == 204) {
@@ -603,48 +628,74 @@ OpenEOClient <- R6Class(
       
       
     },
-    POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
+    POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
       url = paste(private$host,endpoint,sep="/")
+      
+      req = request(url)
+      req = req_method(req, method="POST")
+      
       if (!is.list(query)) {
         stop("Query parameters are no list of key-value-pairs")
       }
       
-      header = list()
-      
+      header = list(`.req` = req)
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
       
-      if (is.character(data)) {
-        # data = fromJSON(data,simplifyDataFrame = FALSE)
-        if (encodeType == "json") {
-          encodeType = "raw"
-          header = append(header, add_headers(`Content-Type` = "application/json"))
-        }
-      } else if (is.list(data)) {
-        
-        if (encodeType == "json") {
-          encodeType = "raw"
-          header = append(header, add_headers(`Content-Type` = "application/json"))
-          
-          
-          data = do.call(toJSON, args = list(x = data,
-                                             auto_unbox = TRUE,
-                                             ...))
-            
+      # if (length(data) > 0) {
+      #   if (! raw) {
+      #     if (is.character(data)) {
+      #       # data = fromJSON(data,simplifyDataFrame = FALSE)
+      #       if (encodeType == "json") {
+      #         encodeType = "raw"
+      #         header = append(header, list(`Content-Type` = "application/json"))
+      #       }
+      #     } else if (is.list(data)) {
+      #       
+      #       if (encodeType == "json") {
+      #         encodeType = "raw"
+      #         header = append(header, list(`Content-Type` = "application/json"))
+      #         
+      #         
+      #         # data = do.call(toJSON, args = list(x = data,
+      #         #                                    auto_unbox = TRUE,
+      #         #                                    ...))
+      #           
+      #       }
+      #       
+      #     } else {
+      #       stop("Cannot interpret data - not a list that can be transformed into json")
+      #     }
+      #   } else {
+      #     header = append(header, list(`Content-Type` = "application/octet-stream"))
+      #   }
+      # }
+      
+      req = do.call(req_headers,header)
+      query$req = req
+      req = do.call(req_url_query,args = query)
+      # response = req_perform(req)
+      if (isTRUE(raw)) {
+        if (file.exists(data)) {
+          if (length(data) > 0) req = req_body_file(req,data, type = "application/octet-stream")
+        } else {
+          stop("Cannot find file for upload")
         }
         
       } else {
-        stop("Cannot interpret data - not a list that can be transformed into json")
+        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
-      response=POST(
-        url= url,
-        config = header,
-        query = query,
-        body = data,
-        encode = encodeType
-      )
+      
+      response = req_perform(req)      
+      # response=POST(
+      #   url= url,
+      #   config = header,
+      #   query = query,
+      #   body = data,
+      #   encode = encodeType
+      # )
       
       if (is.debugging()) {
         print(response)
@@ -655,7 +706,11 @@ OpenEOClient <- R6Class(
           if (raw) {
             return(response)
           } else {
-            okMessage = content(response,"parsed","application/json")
+            # okMessage = content(response,"parsed","application/json")
+            if (isFALSE(parsed)) {
+              return(response)
+            }
+            okMessage = resp_body_json(response)
             
             return(okMessage)
           }
@@ -667,46 +722,68 @@ OpenEOClient <- R6Class(
         private$errorHandling(response,url)
       }
     },
-    PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,...) {
+    PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
       # TODO remove raw as parameter?
       url = paste(private$host,endpoint,sep="/")
       
-      header = list()
+      req = request(url)
+      req = req_method(req, method="PUT")
+      
+      header = list(`.req` = req)
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
       
 
       # create JSON and prepare to send graph as post body
-      if (is.character(data)) {
-        if (encodeType == "json") {
-          encodeType = "raw"
-          header = append(header, add_headers(`Content-Type` = "application/json"))
-        }
-      } else if (is.list(data)) {
-        
-        if (encodeType == "json") {
-          encodeType = "raw"
-          header = append(header, add_headers(`Content-Type` = "application/json"))
-          
-          
-          data = do.call(toJSON, args = list(x = data,
-                                             auto_unbox = TRUE,
-                                             ...))
-          
+      # if (is.character(data)) {
+      #   if (encodeType == "json") {
+      #     encodeType = "raw"
+      #     header = append(header, add_headers(`Content-Type` = "application/json"))
+      #   }
+      # } else if (is.list(data)) {
+      #   
+      #   if (encodeType == "json") {
+      #     encodeType = "raw"
+      #     header = append(header, add_headers(`Content-Type` = "application/json"))
+      #     
+      #     
+      #     # data = do.call(toJSON, args = list(x = data,
+      #     #                                    auto_unbox = TRUE,
+      #     #                                    ...))
+      #     
+      #   }
+      #   
+      # } else {
+      #   stop("Cannot interpret data - not a list that can be transformed into JSON")
+      # }
+      req = do.call(req_headers,header)
+      query$req = req
+      req = do.call(req_url_query,args = query)
+      # response = req_perform(req)
+      if (isTRUE(raw)) {
+        if (file.exists(data)) {
+          if (length(data) > 0) req = req_body_file(req,data, type = "application/octet-stream")
+        } else {
+          stop("Cannot find file for upload")
         }
         
       } else {
-        stop("Cannot interpret data - not a list that can be transformed into JSON")
+        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
+      
+      
+      
+      
+      response = req_perform(req)  
 
-      response=PUT(
-        url= url,
-        config = header,
-        query = query,
-        body = data,
-        encode = encodeType
-      )
+      # response=PUT(
+      #   url= url,
+      #   config = header,
+      #   query = query,
+      #   body = data,
+      #   encode = encodeType
+      # )
       
       if (is.debugging()) {
         print(response)
@@ -717,31 +794,43 @@ OpenEOClient <- R6Class(
           return(TRUE)
         }
         
-        okMessage = content(response,"parsed","application/json")
+        # okMessage = content(response,"parsed","application/json")
+        if (isFALSE(parsed)) {
+          return(response)
+        }
+        okMessage = resp_body_json(response)
         return(okMessage)
       } else {
         private$errorHandling(response,url)
       }
     },
-    PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, ...) {
+    PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, parsed=TRUE, ...) {
       url = paste(private$host,endpoint,sep="/")
+      req = request(url)
+      req = req_method(req, method="PATCH")
       
-      header = list()
+      header = list(`.req` = req)
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
+        req = do.call(req_headers,header)
       }
+      
+      
       
       params = list(url=url, 
                     config = header)
       
       if (!is.null(data)) {
-        params = append(params, list(body = data))
+        # params = append(params, list(body = data))
+        req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
-      if (!is.null(encodeType)) {
-        params = append(params, list(encode = encodeType))
-      }
-      response = do.call("PATCH", args = params)
+      # if (!is.null(encodeType)) {
+      #   params = append(params, list(encode = encodeType))
+      # }
+      # response = do.call("PATCH", args = params)
+      
+      response = req_perform(req)
       
       if (is.debugging()) {
         print(response)
@@ -752,7 +841,11 @@ OpenEOClient <- R6Class(
           return(TRUE)
         }
         
-        okMessage = content(response,"parsed","application/json")
+        # okMessage = content(response,"parsed","application/json")
+        if (isFALSE(parsed)) {
+          return(response)
+        }
+        okMessage = resp_body_json(response)
         return(okMessage)
       } else {
         private$errorHandling(response,url)
@@ -767,7 +860,7 @@ OpenEOClient <- R6Class(
 
       if (private$general_auth_type == "bearer") {
         if (!is.null(private$auth_client)) {
-          header = append(header,add_headers(
+          header = append(header,list(
             Authorization=paste("Bearer",private$auth_client[[private$exchange_token]], sep =" ")
           ))
         } else {
@@ -775,14 +868,18 @@ OpenEOClient <- R6Class(
         }
         
       } else { # if all the endpoints require a basic encoded authorization header
-        header = append(header,authenticate(private$user,private$password,type = private$general_auth_type))
+        # header = append(header,authenticate(private$user,private$password,type = private$general_auth_type))
+        header = append(header,list(
+          Authorization=paste("Basic",private$auth_client[[private$exchange_token]], sep =" ")
+        ))
       }
 
       return(header)
     },
     errorHandling = function(response,url) {
       if (class(response) == "response") {
-        errorMessage = content(response)
+        # errorMessage = content(response)
+        errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {
           stop(paste("SERVER-ERROR:", errorMessage[["message"]]))
         } else {

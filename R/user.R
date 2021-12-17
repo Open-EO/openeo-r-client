@@ -70,7 +70,9 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
         }
         
         tag = "user_file_upload"
-        m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
+        
+        # m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
+        m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = content, raw=TRUE)
         message("Upload of user data was successful.")
         return(m)
     }, error = .capturedErrorToMessage)
@@ -104,7 +106,7 @@ download_file = function(src, dst = NULL, con=NULL) {
         con = .assure_connection(con)
         
         file_connection = file(dst, open = "wb")
-        writeBin(object = con$request(tag = tag, parameters = list(src), authorized = TRUE, as = "raw"), con = file_connection)
+        writeBin(object = resp_body_raw(con$request(tag = tag, parameters = list(src), authorized = TRUE, parsed=FALSE)), con = file_connection)
         
         message("Successfully downloaded the requested file.")
         

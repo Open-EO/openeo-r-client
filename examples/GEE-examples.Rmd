@@ -313,7 +313,7 @@ pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-gee = connect(host = gee_host_url, version="1.0.0",user = user,password = pwd)
+gee = connect(host = gee_host_url, version="1.0.1",user = user,password = pwd)
 ```
 
 Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.

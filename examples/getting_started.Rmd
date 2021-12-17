@@ -105,7 +105,7 @@ Those functions will open the viewer panel in RStudio which will render the spec
 There are again 2 ways of login, either directly via `connect` by passing additional information about the login type and potentially the login credentials or by calling `login()` manually.
 
 ```{r}
-gee = connect(host = gee_host_url,version = "1.0.0", user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url,version = "1.0.1", user = user,password = pwd,login_type = "basic")
 ```
 
 If you want to explore the service before signing in you can always first connect and login later manually. `login()` offers the same login parameter as `connect()`
@@ -263,6 +263,7 @@ list_files()
 The `download_file()` function works inverse to the upload and lets you retrieve the uploaded data.
 
 ```{r}
+file = tempfile(fileext = ".json")
 dl_file = download_file(src="aoi/polygons.json", dst = file)
 ```
 

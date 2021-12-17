@@ -135,21 +135,21 @@ BasicAuth <- R6Class(
       private$password <- password
     },
     login = function() {
-      res <- GET(
-        url = private$endpoint,
-        config = authenticate(
-          user = private$user,
-          password = private$password,
-          type = "basic"
-        )
-      )
+      req = req_auth_basic(
+        req=req_method(
+          request(private$endpoint),
+          method = "GET"),
+        username = private$user,
+        password = private$password)
+      
+      res = req_perform(req)
 
       if (is.debugging()) {
         print(res)
       }
 
       if (res$status_code == 200) {
-        cont <- content(res, type = "application/json")
+        cont = resp_body_json(res)
 
         private$.access_token <- cont$access_token
 
@@ -292,7 +292,7 @@ AbstractOIDCAuthentication <- R6Class(
           private$auth <- NULL
           invisible(TRUE)
         } else {
-          return(content(response))
+          return(resp_body_json(response))
         }
       } else {
         private$auth <- NULL
