@@ -1216,6 +1216,18 @@ BoundingBox = R6Class(
       private$required = required
       private$schema$type = "object"
       private$schema$subtype = "bounding-box"
+    },
+    setValue = function(value) {
+      # the value will be a posixct where we just return the time component
+      if (is.list(value)) {
+        if ("crs" %in% names(value)) {
+          crs_value = value[["crs"]]
+          if (is.character(crs_value) && grepl(tolower(crs_value),pattern = "^epsg:")) {
+            value[["crs"]] = as.integer(gsub(x = crs_value,replacement = "",pattern = "[^0-9]"))
+          }
+        }
+      }
+      private$value= value
     }
   ),
   private = list(
