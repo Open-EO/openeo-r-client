@@ -4,33 +4,16 @@
 \alias{connect}
 \title{Connect to a openEO service}
 \usage{
-connect(
-  host,
-  version = NULL,
-  user = NULL,
-  password = NULL,
-  login_type = NULL,
-  exchange_token = "access_token",
-  provider = NULL,
-  config = NULL
-)
+connect(host, version = NULL, exchange_token = "access_token", ...)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server service host}
 
 \item{version}{the openEO API version number as string (optional), see also \code{\link{api_versions}}}
 
-\item{user}{the user name (optional)}
-
-\item{password}{the password (optional)}
-
-\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.}
-
 \item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
 
-\item{provider}{provider object as obtained by 'list_oidc_providers()'}
-
-\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)}
+\item{...}{parameters that are passed on to \code{\link{login}}}
 }
 \description{
 Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
@@ -72,6 +55,10 @@ con = connect(host='http://example.openeo.org/v1.0',
 # connect to a host with open id connect authentication
 con = connect(host='http://example.openeo.org',
               login_type='oidc')
+
+# connect and login with a named and valid oidc provider
+con = connect(host='http://example.openeo.org',
+              provider='your_named_provider')
 }
 
 }

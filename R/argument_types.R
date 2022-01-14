@@ -1425,6 +1425,8 @@ Date = R6Class(
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a date with time component.
+#' 
+#' @import lubridate
 NULL
 
 DateTime = R6Class(

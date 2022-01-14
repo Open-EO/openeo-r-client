@@ -189,12 +189,8 @@ describe_account = function(con=NULL) {
 #' 
 #' @param host URL pointing to the openEO server service host
 #' @param version the openEO API version number as string (optional), see also \code{\link{api_versions}}
-#' @param user the user name (optional)
-#' @param password the password (optional)
-#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.
 #' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
-#' @param provider provider object as obtained by 'list_oidc_providers()'
-#' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)
+#' @param ... parameters that are passed on to \code{\link{login}}
 #'
 #' @examples 
 #' \dontrun{
@@ -214,14 +210,16 @@ describe_account = function(con=NULL) {
 #' # connect to a host with open id connect authentication
 #' con = connect(host='http://example.openeo.org',
 #'               login_type='oidc')
+#'
+#' # connect and login with a named and valid oidc provider
+#' con = connect(host='http://example.openeo.org',
+#'               provider='your_named_provider')
 #' }
 #'
 #' @seealso \code{\link{active_connection}}
 #' @export
-connect = function(host, version = NULL, user = NULL, password = NULL, login_type = NULL, exchange_token="access_token", provider=NULL, config = NULL) {
+connect = function(host, version = NULL, exchange_token="access_token", ...) {
     con = OpenEOClient$new()
-    
-    if (!is.null(user) && !is.null(password) && is.null(login_type)) login_type = "basic"
     
     con = con$connect(url = host, version = version,exchange_token=exchange_token)
     
@@ -230,19 +228,10 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
         return(invisible(NULL))
     }
     
-    if (length(login_type) > 0) {
-        if (login_type == "basic") {
-            if (!is.null(user) && !is.null(password)) {
-                con = con$login(user = user, password = password, login_type = login_type)
-            }
-        } else if (login_type == "oidc") {
-            con = con$login(login_type = login_type, provider=provider, config = config)
-        } else {
-            message("Incomplete credentials. Either username or password is missing")
-            return(invisible(NULL))
-        }
+    args = list(...)
+    if(length(args) > 0) {
+      do.call(login,args)
     }
-    
     
     return(invisible(con))
 }
@@ -253,13 +242,42 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' is usually performed during the 'connect' step. If you are only connected to a back-end in order to 
 #' explore the capabilities and want to compute something, then you need to log in afterwards.
 #' 
+#' @details 
+#' Based on the general login type (\link{BasicAuth} or \link{OIDCAuth}) there need to be different configurations. The basic
+#' authentication (if supported) is the simplest login mechanism for which user need to enter their credentials directly as
+#' \code{user} and \code{password}. The login_type can be neglected if those two parameters are set.
+#' 
+#' For the Open ID connect authentication the user needs to select one of the accepted OIDC providers of 
+#' \code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices. The login type can be
+#' neglected if a valid provider was selected. For further configuration, you can pass a named list of values as \code{config} or
+#' a file path to a JSON file.
+#' 
+#' There are many different authentication mechanisms for OIDC and OAuth2.0, which OIDC is based on. The 'openeo' package supports
+#' currently the authorization_code, authorization_code+pkce and device_code+pkce (see \link{OIDCAuth}). For authorization_code
+#' you need to state the \code{client_id} and \code{secret}. In general the most comfortable available login mechanism is chosen
+#' automatically (1. device_code+pkce, 2. authorization_code+pkce, 3. authorization_code). For example, with the device_code 
+#' flow you normally don't even need to specify any additional configuration. 
+#' 
+#' If you really want to choose the authorization flow mechanism manually, you can add \code{grant_type} in the configuration
+#' list. You can then use the following values:
+#' 
+#' \itemize{
+#'   \item authorization_code
+#'   \item authorization_code+pkce
+#'   \item urn:ietf:params:oauth:grant-type:device_code+pkce
+#' }
+#' 
 #' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param user the user name
 #' @param password the password
-#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.
-#' @param provider provider object as obtained by 'list_oidc_providers()'
-#' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)
+#' @param login_type either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. 
+#' If the parameter is NULL the authentication method is chosen by the stated other parameters (provider -> oidc, 
+#' user/password -> basic)
+#' @param provider provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
+#' and \code{provider_type="oidc"} then the first available provider is chosen from the list.
+#' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL and 
+#' \code{provider_type="oidc"} the configuration parameters are taken from the default authentication client of the OIDC provider.
 #' @return a connected and authenticated back-end connection
 #' 
 #' @examples 
@@ -271,8 +289,15 @@ connect = function(host, version = NULL, user = NULL, password = NULL, login_typ
 #' # credentials are dummy values
 #' login(user='user',password='password',login_type='basic', con=con)
 #' 
+#' # also valid basic authentication
+#' login(user='user',password='password')
+#' 
 #' # or alternatively the oidc login
 #' login(login_type='oidc', provider=provider, config=config)
+#' 
+#' # with device_code+pkce enabled at the oidc provider you can even use this
+#' login(provider="your_named_provider")
+#' 
 #' }
 #' @export
 login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL, config=NULL, con=NULL) {

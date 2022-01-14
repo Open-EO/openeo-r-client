@@ -64,7 +64,7 @@ Exemplary back-end providers are:
 * https://openeo.vito.be
 * https://openeo.cloud
 
-The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the [openEO GEE Github repository](https://github.com/Open-EO/openeo-earthengine-driver). Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. "openeo.cloud" is the link to ESAs ["openEO Platform" project](https://openeo.cloud/), for which you have to be [signed up via EGI and openEO platform](https://docs.openeo.cloud/authentication/#join-openeo-platform).
+The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the [openEO GEE Github repository](https://github.com/Open-EO/openeo-earthengine-driver). Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. "openeo.cloud" is the link to ESAs ["openEO Platform" project](https://openeo.cloud/), for which you have to be [signed up via EGI and openEO platform](https://openeo.cloud/#plans).
 
 # Examples
 The following code sample shows how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file. 

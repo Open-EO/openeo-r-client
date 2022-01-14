@@ -1,3 +1,18 @@
+# version 1.2.0
+
+## Added
+* implemented an abstract OIDC authentication
+* implemented OIDC authentications for the following grant types:
+  - authorization_code
+  - authorization_code+pkce
+  - urn:ietf:params:oauth:grant-type:device_code+pkce
+* temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made
+
+## Changed
+* replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
+* `connect` no longer carries the login parameters separately, but uses `...` to pass on those information
+* adapted the setting of required parameters on login, e.g. `login_type='basic'|'oidc'` will be deduced based on additional parameters
+
 # version 1.1.1
 
 ## Added

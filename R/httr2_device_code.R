@@ -1,9 +1,10 @@
 # until we make an official pull request for httr2 (https://github.com/r-lib/httr2) we use this code to extent the device code flow for pkce
 
+#' @import rlang
 oauth_flow_device_request = function (client, auth_url, scope, auth_params) {
   req <- request(auth_url)
   req <- req_body_form(req, rlang::list2(scope = scope, !!!auth_params))
-  req <- httr2:::oauth_client_req_auth(req, client)
+  req <- httr2::oauth_client_req_auth(req, client)
   req <- req_headers(req, Accept = "application/json")
   oauth_flow_fetch(req)
 }
@@ -22,7 +23,7 @@ oauth_flow_fetch = function (req) {
       200) {
     return(body)
   } else if (rlang::has_name(body, "error")) {
-    oauth_flow_abort(body$error, body$error_description, 
+    httr2:::oauth_flow_abort(body$error, body$error_description, 
                      body$error_uri)
   }
   else { 
@@ -31,6 +32,7 @@ oauth_flow_fetch = function (req) {
   }
 }
 
+#' @importFrom glue glue
 oauth_flow_device = function (client, auth_url, pkce=FALSE, scope = NULL, auth_params = list(), 
                               token_params = list()) {
   httr2:::oauth_flow_check("device", client, interactive = TRUE)

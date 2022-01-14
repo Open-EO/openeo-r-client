@@ -24,7 +24,7 @@ NULL
 #'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 #'   \item{\code{$connect(url,version)}}{connects to a specific version of a back-end}
 #'   \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
-#'   \item{\code{$login(login_type = NULL,user=NULL,password=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
+#'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
 #'   \item{\code{$getAuthClient()}}{returns the authentication client}
 #'   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
@@ -52,7 +52,7 @@ NULL
 NULL
 
 #' @importFrom R6 R6Class
-#' @import httr
+#' @import httr2
 #' @import jsonlite
 #' @export
 OpenEOClient <- R6Class(
@@ -312,9 +312,14 @@ OpenEOClient <- R6Class(
         login_type = "basic"
       }
       
-      if (!is.null(provider) && !is.null(config) && is.null(login_type)) {
+      if (!is.null(provider) && is.null(login_type)) {
         login_type = "oidc"
       } 
+      
+      if (is.null(provider) && !is.null(login_type) && login_type=="oidc") {
+        providers = list_oidc_providers()
+        provider = providers[[1]]
+      }
       
       self$stopIfNotConnected()
       if (is.null(login_type)) {
@@ -474,35 +479,53 @@ OpenEOClient <- R6Class(
             # old implementation
             # probably fetch resolve the potential string into a provider here
             provider = .get_oidc_provider(provider)
-            # get default client
-            if ("default_client" %in% names(provider)) {
-              default_client = provider[["default_client"]]
-              # id, redirect_urls, grant_types
-            }
-            # check maybe for others or user has to specify, which I don't like
             
-            if (length(default_client) > 0) {
-              grants = default_client$grant_types
+            if (length(config) > 0 && !is.list(config)) stop("parameter 'config' is not a named list")
+            
+            if (length(config) > 0 && all(c("client_id","secret") %in% names(config))) {
+              private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
+                                                         config = config,force=TRUE)
+            } else if (length(config) > 0 && "grant_type" %in% names(config)) {
+              grants = config[["grant_type"]]
+            } else if (length(config) == 0 || !"grant_type" %in% names(config)) { 
+              # get default client
+              if ("default_client" %in% names(provider)) {
+                default_client = provider[["default_client"]]
+                # id, redirect_urls, grant_types
+              }
+              # check maybe for others or user has to specify, which I don't like
               
-              # get grants
-              # preferred device code + pkce
-              # second auth_code + pkce
-              # third auth_code with secret
-              
-              if ( "urn:ietf:params:oauth:grant-type:device_code+pkce" %in% grants) {
-                private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider,
-                                                               config = config)
-              } else if ("authorization_code+pkce" %in% grants) {
-                private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider,
-                                                           config = config)
-              } else if ("authorization_code" %in% grants) {
-                private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
-                                                           config = config)
-              } else {
-                message("None of device_code+pkce, authorization_code+pkce or authorization_code are offered the authentication provider.")
-                return(invisible(NULL))
+              if (length(default_client) > 0) {
+                grants = default_client$grant_types
+                
+                # get grants
+                # preferred device code + pkce
+                # second auth_code + pkce
+                # third auth_code with secret
+                
+                if (!any(c("urn:ietf:params:oauth:grant-type:device_code+pkce",
+                           "authorization_code+pkce", 
+                           "authorization_code") %in% grants)) {
+                  stop("None of device_code+pkce, authorization_code+pkce or authorization_code are offered the authentication provider.")
+                }
+                
+                
               }
             }
+              
+            if ( "urn:ietf:params:oauth:grant-type:device_code+pkce" %in% grants) {
+              private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider,
+                                                               config = config)
+            } else if ("authorization_code+pkce" %in% grants) {
+              private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider,
+                                                             config = config)
+            } else if ("authorization_code" %in% grants) {
+              private$auth_client = OIDCAuthCodeFlow$new(provider=provider,
+                                                         config = config)
+            } else {
+              stop("Unsupported grant_type(s):",paste0(grants,collapse=", "))
+            }
+              
             
             private$auth_client$login()
             cat("Login successful.\n")
