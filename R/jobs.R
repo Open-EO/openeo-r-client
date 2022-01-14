@@ -95,19 +95,20 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
         }
         
         tag = "execute_sync"
-        res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE, ...)
+        # res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE, ...)
+        res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
         if (!is.null(output_file)) {
             tryCatch({
                 message("Task result was sucessfully stored.")
-                writeBin(content(res, "raw"), output_file)
+                writeBin(resp_body_raw(res), output_file)
             }, error = function(err) {
                 stop(err)
             })
             
             return(output_file)
         } else {
-            return(content(res, "raw"))
+            return(resp_body_raw(res))
         }
     }, error = .capturedErrorToMessage)
 }
@@ -161,11 +162,12 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
         # endpoint,authorized=FALSE,data,encodeType = 'json',query = list(),...
         tag = "jobs_define"
         
-        response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE, ...)
+        # response = con$request(tag = tag, authorized = TRUE, data = job, raw = TRUE, ...)
+        response = con$request(tag = tag, authorized = TRUE, data = job, parsed=FALSE, ...)
         
         message("Job was sucessfully registered on the back-end.")
         
-        job_id = headers(response)$`openeo-identifier`
+        job_id = resp_headers(response)$`openeo-identifier`
         
         job = describe_job(job = job_id, con=con)
         

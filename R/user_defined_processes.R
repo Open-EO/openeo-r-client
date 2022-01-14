@@ -149,10 +149,12 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
     if (isTRUE(submit)) {
       tag = "graph_create_replace"
       
+      # response = con$request(tag = tag, parameters = list(
+      #   process_graph_id = id
+      # ), authorized = TRUE, data = process_graph_description, raw = TRUE, ...)
       response = con$request(tag = tag, parameters = list(
-        process_graph_id = id
-      ), authorized = TRUE, data = process_graph_description, raw = TRUE, ...)
-      
+          process_graph_id = id
+        ),authorized = TRUE, data = process_graph_description, encodeType = "json", parsed=FALSE,...)
       message("Process was sucessfully stored on the back-end.")
       return(id) 
     } else {

@@ -23,5 +23,5 @@ An interface that states the intended behavior for the authentication.
 }
 
 \seealso{
-\code{\link{BasicAuth}} or \code{\link{OIDCAuth}}
+\code{\link{BasicAuth}}, \code{\link{OIDCAuth}}
 }

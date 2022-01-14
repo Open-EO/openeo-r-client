@@ -14,9 +14,12 @@ api_versions = function(url) {
             url = substr(url, 1, nchar(url) - 1)
         endpoint = "/.well-known/openeo"
         
-        info = GET(url = paste0(url, endpoint),config=content_type_json())
+        info = request(paste0(url, endpoint))
+        info = req_headers(info,`Content-Type` = "application/json")
+        info = req_perform(info)
+        
         if (info$status == 200) {
-            vlist = content(info)
+            vlist = resp_body_json(info)
             
             if (is.raw(vlist)) {
                 vlist=jsonlite::fromJSON(rawToChar(vlist),simplifyDataFrame = FALSE)
@@ -189,7 +192,14 @@ terms_of_service = function(con = NULL) {
             .no_information_by_backend("terms of service")
             return(invisible(NULL))
         } else {
-            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            req = request(sel$href)
+            req = req_headers(req,`Content-Type`="text/html")
+            res = req_perform(req)
+
+            htmlViewer(as.character(resp_body_html(res)))
+            
+            cat(sel$href,"\n")
+            
             return(invisible(sel))
         }
         
@@ -224,7 +234,13 @@ privacy_policy = function(con = NULL) {
             .no_information_by_backend("privacy policy")
             return(invisible(NULL))
         } else {
-            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            req = request(sel$href)
+            req = req_headers(req,`Content-Type`="text/html")
+            res = req_perform(req)
+            
+            htmlViewer(as.character(resp_body_html(res)))
+            
+            cat(sel$href,"\n")
             return(invisible(sel))
         }
         

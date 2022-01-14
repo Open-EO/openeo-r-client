@@ -2,5 +2,13 @@
 *.Rproj
 .Rproj.user
 .httr-oauth
+/examples/*.html
+/vignettes/*.html
+/vignettes/*.R
+.github/*.html
+.project
 
 .RData
+inst/doc
+/doc/
+/Meta/

@@ -246,6 +246,12 @@ as.Process.Service = function(from) {
     Process$new(id=NULL,process_graph=from$process)
 }
 
+#' @name as.Process
+#' @export
+as.Process.function = function(from) {
+    Process$new(id=NULL,process_graph=from)
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
@@ -254,5 +260,6 @@ suppressWarnings({
     setAs(from="Graph",to="Process",as.Process.Graph)
     setAs(from="ProcessNode",to="Process",as.Process.ProcessNode)
     setAs(from="Service",to="Process",as.Process.Service)
+    setAs(from="function",to="Process",as.Process.function)
 })
 

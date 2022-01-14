@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: Client Interface for 'openEO' Servers
-Version: 1.1.1
+Version: 1.2.0
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
         person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
@@ -19,11 +19,13 @@ Suggests:
     rmarkdown
 Imports:
     jsonlite,
-    httr,
+    httr2,
     methods,
     R6,
     lubridate,
-    base64enc
+    base64enc,
+    rlang,
+    glue
 Encoding: UTF-8
 LazyData: false
 BugReports: https://github.com/Open-EO/openeo-r-client/issues
@@ -45,6 +47,7 @@ Collate:
     'collection-functions.R'
     'collections.R'
     'debugging.R'
+    'httr2_device_code.R'
     'jobs.R'
     'ops.R'
     'predefined_processes.R'
