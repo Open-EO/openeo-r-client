@@ -22,7 +22,7 @@ NULL
 #'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
 #'   \item{\code{$getHost()}}{returns the host URL}
 #'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
-#'   \item{\code{$connect(url,version)}}{connects to a specific version of a back-end}
+#'   \item{\code{$connect(url=NULL,version=NULL)}}{connects to a specific version of a back-end}
 #'   \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
 #'   \item{\code{$login(login_type = NULL,user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link{IAuth}} object based on the login_type}
 #'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
@@ -136,14 +136,14 @@ OpenEOClient <- R6Class(
       }
     },
     
-    connect = function(url,version,exchange_token="access_token") {
+    connect = function(url=NULL,version=NULL,exchange_token="access_token") {
       tryCatch({
-        if (missing(url) && length(self$getHost()) == 0) {
+        if (is.null(url) && length(self$getHost()) == 0) {
           message("Note: Host-URL is missing")
           return(invisible(self))
         }
         
-        if (!missing(url)) {
+        if (!is.null(url)) {
           private$setHost(url)
         }
         response = NULL
@@ -154,7 +154,7 @@ OpenEOClient <- R6Class(
         if (length(response) == 0) return(invisible(NULL))
         
         private$exchange_token = exchange_token
-        if (!missing(version) && !is.null(version)) {
+        if (!is.null(version)) {
           # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
           hostInfo = private$backendVersions()$versions
           
