@@ -26,8 +26,8 @@ service for free through the access to publicly available metadata of data colle
 processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 your choice. There you will get further information on credentials and the log in procedure.
 
-Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
-with considered log in. 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
+Especially the \code{authType} suggested by the client development guidelines are confusing.
+'Basic' authentication allows you to use user name and password directly in the call, whereas 'oidc' will
 open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
 use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.
 
@@ -49,12 +49,10 @@ con = connect(host='http://example.openeo.org')
 # connect to a host by direct URL and basic log in
 con = connect(host='http://example.openeo.org/v1.0',
               user='user',
-             password='password',
-             login_type='basic')
+             password='password')
 
 # connect to a host with open id connect authentication
-con = connect(host='http://example.openeo.org',
-              login_type='oidc')
+con = connect(host='http://example.openeo.org')
 
 # connect and login with a named and valid oidc provider
 con = connect(host='http://example.openeo.org',

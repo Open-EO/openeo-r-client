@@ -255,15 +255,6 @@ AbstractOIDCAuthentication <- R6Class(
       
       private$getEndpoints()
       
-      if ("default_client" %in% names(provider)) {
-        default_client = provider[["default_client"]]
-        # id, redirect_urls, grant_types
-        config$client_id = default_client[["id"]]
-        private$isGrantTypeSupported(default_client$grant_types)
-      }
-      
-      
-      
       if (!(is.list(config) && all(c("client_id") %in% names(config)))) {
         stop("'client_id' is not present in the configuration.")
       }

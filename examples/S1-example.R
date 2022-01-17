@@ -5,7 +5,7 @@ user = "group7"
 pwd = "test123"
 
 # connect  to the back-end and login either via explicit call of login, or use your credentials in the connect function
-gee = connect(host = "https://earthengine.openeo.org",version = "1.0.0", user = user,password = pwd,login_type = "basic")
+gee = connect(host = "https://earthengine.openeo.org",version = "1.0.0", user = user,password = pwd)
 
 # get the process collection to use the predefined processes of the back-end
 p = processes()
