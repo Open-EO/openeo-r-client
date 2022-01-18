@@ -207,7 +207,7 @@ OpenEOClient <- R6Class(
         if (!is.null(observer)) {
           observer$connectionOpened(type="OpenEO Service",
                                     displayName= self$getTitle(), 
-                                    host=url, 
+                                    host=self$getHost(), 
                                     listObjectTypes = function() {
                                       list(
                                         resource = list(
@@ -220,14 +220,14 @@ OpenEOClient <- R6Class(
                                       )
                                       
                                     },
-                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",url,"\")"),
+                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",self$getHost(),"\")"),
                                     disconnect = function() {
                                       logout()
                                       .remove_connection(con = self)
                                       observer <- getOption("connectionObserver")
                                       
                                       if (!is.null(observer))
-                                        observer$connectionClosed("OpenEO Service", url)
+                                        observer$connectionClosed("OpenEO Service", self$getHost())
                                     },
                                     listObjects = function() {
                                       active_connection(con = self)
