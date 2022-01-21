@@ -458,18 +458,48 @@ OpenEOClient <- R6Class(
       
       private$host = host
     },
-    loginOIDC = function(provider=NULL, config = NULL) {
+    loginOIDC = function(provider = NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
             # old implementation
             # probably fetch resolve the potential string into a provider here
             provider = .get_oidc_provider(provider)
             
-            if (length(config) > 0 && !is.list(config)) stop("parameter 'config' is not a named list")
+            auth_pkce <- "authorization_code+pkce"
+            device_pkce <- "urn:ietf:params:oauth:grant-type:device_code+pkce"
             
-            if (length(config) > 0 && (all(c("client_id","secret") %in% names(config)) || config$grant_type == 'authorization_code')) {
-              private$auth_client = OIDCAuthCodeFlow$new(provider=provider, config = config, force=TRUE)
-            } else if (length(config) == 0 && "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0) {
+            has_default_clients <- "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
+            client_id_given <- "client_id" %in% names(config)
+            
+            if (length(config) > 0)  {
+              if (!is.list(config))  {
+                stop("parameter 'config' is not a named list")
+              }
+              
+              full_credentials <- all(c("client_id","secret") %in% names(config))
+              is_auth_code <- length(config$grant_type) > 0 && config$grant_type == 'authorization_code'
+              
+              if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
+                private$auth_client = OIDCAuthCodeFlow$new(provider = provider, config = config, force=TRUE)
+              }
+              else if (is_auth_code) {
+                stop("For grant type 'authorization_code' a client_id and secret must be provided")
+              }
+              else if (client_id_given && has_default_clients) {
+                default_clients = provider[["default_clients"]]
+                # If a client_id is given, check whether we can use device code + pkce.
+                # Otherwise, fall back to auth code + pkce (for backward compatibility)
+                supported <- which(sapply(default_clients, function(p) config$client_id == p$id))
+                if (length(supported) > 0 && device_pkce %in% default_clients[[supported[[1]]]]$grant_types) {
+                  config$grant_type <- device_pkce
+                }
+                else {
+                  config$grant_type <- auth_pkce
+                }
+              }
+            }
+            
+            if (has_default_clients && !client_id_given) {
               default_clients = provider[["default_clients"]]
 
               get_client <- function(clients, grant, config) {
@@ -484,29 +514,32 @@ OpenEOClient <- R6Class(
                 }
               }
               
-              if ("grant_type" %in% config) {
+              # check whether user has chosen a grant type
+              if ("grant_type" %in% names(config)) {
                 config <- get_client(default_clients, config$grant_type, config)
               }
               else {
                 # preferred device code + pkce
-                # second auth_code + pkce
-                config <- get_client(default_clients, "urn:ietf:params:oauth:grant-type:device_code+pkce", config)
-                if (is_null(config$client_id)) {
-                  config <- get_client(default_clients, "authorization_code+pkce", config)
+                config <- get_client(default_clients, device_pkce, config)
+                # second choice auth_code + pkce
+                if (is.null(config$client_id)) {
+                  config <- get_client(default_clients, auth_pkce, config)
                 }
               }
               
-              if (is_null(config$client_id)) {
-                stop("Please provide a client ID, or both a client ID and client secret for the Authorization Code + PKCE grant.")
+              if (is.null(config$client_id)) {
+                stop("Please provide a client id or a valid combination of client_id and grant_type.")
               }
             }
               
-            if ( "urn:ietf:params:oauth:grant-type:device_code+pkce" == config$grant_type) {
+            if (device_pkce == config$grant_type) {
               private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
-            } else if ("authorization_code+pkce" == config$grant_type) {
+            } else if (is.null(config$grant_type) || auth_pkce == config$grant_type) {
               private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
-            } else {
-              stop("The grant_type selected is missing or not supported")
+            }
+            
+            if (is.null(private$auth_client)) {
+              stop("The grant_type selected is not supported")
             }
 
             private$auth_client$login()
