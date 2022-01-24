@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>openEO Processes</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@openeo/processes-docgen@1/dist/DocGen.umd.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@openeo/processes-docgen@1/dist/DocGen.css">
+	<style>html, body { height: 100%; margin: 0; font-family: sans-serif; }</style>
+</head>
+
+<body>
+	<div id="app"></div>
+	<script>
+		new Vue({
+			el: "#app",
+			render: h => h(DocGen, { 
+				props: {props}
+			})
+		});
+	</script>
+	<noscript>Sorry, the documentation generator requires JavaScript to be enabled!</noscript>
+</body>
+
+</html>

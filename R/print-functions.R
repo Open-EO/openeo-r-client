@@ -371,9 +371,18 @@ print.JobCostsEstimation = function(x, ...) {
 
 #' @export
 print.CollectionList = function(x, ...) {
-    df = as.data.frame(x, extract = c("id", "title", "description","deprecated"))
-    if (isNamespaceLoaded("tibble")) 
-        print(tibble::as_tibble(df)[, c("id", "title", "description","deprecated")]) else print(df)
+    if (is_html_context()) {
+        print_html("collections", x)
+    } else {
+        cols = c("id", "title", "description","deprecated")
+        df = as.data.frame(x, extract = cols)
+        if (isNamespaceLoaded("tibble")) {
+            print(tibble::as_tibble(df)[, cols]) 
+        } 
+        else {
+            print(df)
+        }
+    }
 }
 
 #' @export
@@ -402,32 +411,36 @@ print.Json_Graph = function(x, ...) {
 
 #' @export
 print.OpenEOCapabilities = function(x, ...) {
-    capabilities = x
-    
-    title = capabilities$title
-    backend_version = capabilities$backend_version
-    description = capabilities$description
-    
-    version = capabilities$api_version
-    stac_version = capabilities$stac_version
-    stac_id = capabilities$id
-    endpoints = capabilities$endpoints
-    billing = capabilities$billing  #not used right now
-    
-    cat(paste0("Back-end:\t\t", title), 
-        paste0("Back-end version: \t", backend_version), 
-        paste0("Description:\t\t", description), 
-        paste0("API-version:\t\t", version),
-        paste0("STAC"),
-        if(length(stac_id) > 0 || is.na(stac_id)) paste0("   ID:\t\t\t",stac_id) else "   ID:\t\t\t---",
-        paste0("   Version:\t\t",stac_version), sep = "\n")
+    if (is_html_context()) {
+        print_html("capabilities", x)
+    } else {
+        capabilities = x
         
-    
-    server_offering = .listObjectsToDataFrame(endpoints)
-    
-    if (isNamespaceLoaded("tibble")) 
-        server_offering = tibble::as_tibble(server_offering)
-    print(server_offering)
+        title = capabilities$title
+        backend_version = capabilities$backend_version
+        description = capabilities$description
+        
+        version = capabilities$api_version
+        stac_version = capabilities$stac_version
+        stac_id = capabilities$id
+        endpoints = capabilities$endpoints
+        billing = capabilities$billing  #not used right now
+        
+        cat(paste0("Back-end:\t\t", title), 
+            paste0("Back-end version: \t", backend_version), 
+            paste0("Description:\t\t", description), 
+            paste0("API-version:\t\t", version),
+            paste0("STAC"),
+            if(length(stac_id) > 0 || is.na(stac_id)) paste0("   ID:\t\t\t",stac_id) else "   ID:\t\t\t---",
+            paste0("   Version:\t\t",stac_version), sep = "\n")
+            
+        
+        server_offering = .listObjectsToDataFrame(endpoints)
+        
+        if (isNamespaceLoaded("tibble")) 
+            server_offering = tibble::as_tibble(server_offering)
+        print(server_offering)
+    }
 }
 
 #' @export
