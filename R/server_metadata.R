@@ -103,6 +103,7 @@ list_file_formats = function(con=NULL) {
             input_formats = names(formats$input)
             modified_input_formats = lapply(input_formats, function(format_name) {
                 f = formats$input[[format_name]]
+                f$type = "input"
                 f$name = format_name
                 class(f) = "FileFormat"
                 return(f)
@@ -114,6 +115,7 @@ list_file_formats = function(con=NULL) {
             output_formats = names(formats$output)
             modified_output_formats = lapply(output_formats, function(format_name) {
                 f = formats$output[[format_name]]
+                f$type = "output"
                 f$name = format_name
                 class(f) = "FileFormat"
                 return(f)
@@ -145,7 +147,6 @@ list_service_types = function(con=NULL) {
         tag = "ogc_services"
         
         services = con$request(tag = tag, authorized = con$isLoggedIn())
-        class(services) = "ServiceTypeList"
         
         services_type_names = names(services)
         
@@ -158,10 +159,11 @@ list_service_types = function(con=NULL) {
         })
         
         names(services) = services_type_names
+        class(services) = "ServiceTypeList"
         return(services)
     }, error = .capturedErrorToMessage)
     
-    return(con$list_service_types())
+    return(services)
 }
 
 #' Visualize the terms of service

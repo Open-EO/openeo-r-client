@@ -243,15 +243,18 @@ print_html = function(component, data, props = list()) {
   html = get_component_html(component, data, props);
   if (is_jupyter()) {
     IRdisplay::display_html(html)
+    return(invisible(data))
   }
   else if (is_rstudio_nb()) {
     print(htmltools::HTML(html))
+    return(invisible(data))
   }
   else if (is_rmd()) {
-    knitr::knit_print(htmltools::HTML(html)) # ToDo: doesn't work
+    knitr::knit_print(htmltools::HTML(html))
+    return(data)
   }
   else {
-    print.default(data)
+    print.default(data) # todo: does this make sense?
   }
 }
 

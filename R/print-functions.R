@@ -34,6 +34,10 @@ print.User = function(x, ...) {
 #' 
 #' @export
 print.ProcessInfo <- function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("process", x, props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+
     title = paste("Process:\t", x$id, sep = "")
     summary = paste("Summary:\t", x$summary, sep = "")
     description = paste("Description:\t", x$description, sep = "")
@@ -81,12 +85,17 @@ print.ProcessInfo <- function(x, ...) {
 
 #' @export
 print.FileFormat = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("file-format", x, props = list(id = x$name, type = x$type)))
+    }
+
     if (length(x$title) == 0) {
         cat("Format: \t\t\t",x$name,"\n",sep="")
     } else {
         cat("Format: \t\t\t",x$title,"\n",sep="")   
     }
-    cat("Format ID: \t\t\t",x$name,"\n",sep="")
+    cat("ID: \t\t\t",x$name,"\n",sep="")
+    cat("Type: \t\t\t",x$type,"\n",sep="")
     
     if (length(x$description) > 0) {
         cat("\n",x$description,"\n\n")
@@ -108,6 +117,10 @@ print.FileFormat = function(x, ...) {
 
 #' @export
 print.ServiceType = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service-type", x, props = list(id = x$name))) # todo handle type prop
+    }
+
     # name is set in list_service_types not in specification
     if (length(x$title) > 0) {
         cat("Service: \t\t",x$title,"\n",sep="")
@@ -142,6 +155,10 @@ print.ServiceType = function(x, ...) {
 
 #' @export
 print.Collection = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("collection", x))
+    }
+
     id = paste(x$id)
     if (is.null(x$title)) 
         x$title = "---"
@@ -215,6 +232,11 @@ print.Collection = function(x, ...) {
 
 #' @export
 print.JobList = function(x, ...) {
+    if (is_jupyter()) {
+        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+        return(print_html("data-table", x$jobs, props = list(columns = "jobs")))
+    }
+
     showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
     x = unname(x)
     # list to tibble
@@ -249,6 +271,10 @@ print.JobList = function(x, ...) {
 
 #' @export
 print.Job = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("job", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+    }
+
     id = paste("Job ID:\t\t", x$id, "\n", sep = "")
     if (is.null(x$title)) 
         x$title = "---"
@@ -288,6 +314,11 @@ print.Job = function(x, ...) {
 
 #' @export
 print.ServiceList = function(x, ...) {
+    if (is_jupyter()) {
+        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+        return(print_html("data-table", x$services, props = list(columns = "services")))
+    }
+
     if (length(x) > 0) {
         df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
         row.names(df) = NULL
@@ -306,6 +337,9 @@ print.ServiceList = function(x, ...) {
 
 #' @export
 print.Service = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+    }
     
     id = paste("ID:\t\t", x$id, "\n", sep = "")
     
@@ -358,6 +392,10 @@ print.Service = function(x, ...) {
 
 #' @export
 print.JobCostsEstimation = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("job-estimate", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+    }
+
     header = "Job costs estimation\n"
     line = "====================\n"
     costs = paste("Costs: \t\t\t\t", x$costs, "\n", sep = "")
@@ -372,16 +410,16 @@ print.JobCostsEstimation = function(x, ...) {
 #' @export
 print.CollectionList = function(x, ...) {
     if (is_html_context()) {
-        print_html("collections", x)
-    } else {
-        cols = c("id", "title", "description","deprecated")
-        df = as.data.frame(x, extract = cols)
-        if (isNamespaceLoaded("tibble")) {
-            print(tibble::as_tibble(df)[, cols]) 
-        } 
-        else {
-            print(df)
-        }
+        return(print_html("collections", x))
+    }
+
+    cols = c("id", "title", "description","deprecated")
+    df = as.data.frame(x, extract = cols)
+    if (isNamespaceLoaded("tibble")) {
+        print(tibble::as_tibble(df)[, cols]) 
+    } 
+    else {
+        print(df)
     }
 }
 
@@ -401,6 +439,10 @@ print.ProcessNode = function(x, ...) {
 
 #' @export
 print.Process = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("process", x$serialize(), props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+
     print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
 }
 
@@ -412,39 +454,43 @@ print.Json_Graph = function(x, ...) {
 #' @export
 print.OpenEOCapabilities = function(x, ...) {
     if (is_html_context()) {
-        print_html("capabilities", x)
-    } else {
-        capabilities = x
-        
-        title = capabilities$title
-        backend_version = capabilities$backend_version
-        description = capabilities$description
-        
-        version = capabilities$api_version
-        stac_version = capabilities$stac_version
-        stac_id = capabilities$id
-        endpoints = capabilities$endpoints
-        billing = capabilities$billing  #not used right now
-        
-        cat(paste0("Back-end:\t\t", title), 
-            paste0("Back-end version: \t", backend_version), 
-            paste0("Description:\t\t", description), 
-            paste0("API-version:\t\t", version),
-            paste0("STAC"),
-            if(length(stac_id) > 0 || is.na(stac_id)) paste0("   ID:\t\t\t",stac_id) else "   ID:\t\t\t---",
-            paste0("   Version:\t\t",stac_version), sep = "\n")
-            
-        
-        server_offering = .listObjectsToDataFrame(endpoints)
-        
-        if (isNamespaceLoaded("tibble")) 
-            server_offering = tibble::as_tibble(server_offering)
-        print(server_offering)
+        return(print_html("capabilities", x))
     }
+
+    capabilities = x
+    
+    title = capabilities$title
+    backend_version = capabilities$backend_version
+    description = capabilities$description
+    
+    version = capabilities$api_version
+    stac_version = capabilities$stac_version
+    stac_id = capabilities$id
+    endpoints = capabilities$endpoints
+    billing = capabilities$billing  #not used right now
+    
+    cat(paste0("Back-end:\t\t", title), 
+        paste0("Back-end version: \t", backend_version), 
+        paste0("Description:\t\t", description), 
+        paste0("API-version:\t\t", version),
+        paste0("STAC"),
+        if(length(stac_id) > 0 || is.na(stac_id)) paste0("   ID:\t\t\t",stac_id) else "   ID:\t\t\t---",
+        paste0("   Version:\t\t",stac_version), sep = "\n")
+        
+    
+    server_offering = .listObjectsToDataFrame(endpoints)
+    
+    if (isNamespaceLoaded("tibble")) 
+        server_offering = tibble::as_tibble(server_offering)
+    print(server_offering)
 }
 
 #' @export
 print.ResultList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("batch-job-results", x))
+    }
+
     cat("Results for job: ",x$id,"\n")
     if (length(x$properties$expires) > 0) {
         cat("Links expire on: ",x$properties$expires,"\n")
@@ -496,7 +542,56 @@ print.CubeDimension = function(x,...) {
 
 #' @export
 print.Log = function(x,...) {
+    if (is_html_context()) {
+        return(print_html("logs", x$logs))
+    }
+    
     void = sapply(x$logs,function(log_entry) {
         cat(paste0("[",toupper(log_entry$level),"] ",log_entry$message,"\n"))
     })
+}
+
+#' @export
+print.ProcessList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("processes", x, props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+ 
+    print.default(x)
+}
+
+#' @export
+print.ServiceTypeList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service-types", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.FileFormatList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("file-formats", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.UdfRuntimeList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("udf-runtimes", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.UdfRuntime = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("udf-runtime", x, props = list(id = x$id)))
+    }
+    
+    print.default(x)
 }

@@ -85,8 +85,6 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
     tryCatch({
         con = .assure_connection(con)
         
-        
-        
         if (length(obj) == 0 && length(job_id) == 0 && length(service_id) == 0) {
             message("No service or job stated to be logged.")
             return(invisible(NULL))
@@ -115,7 +113,9 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
         }
         
         last_message_id = log$logs[[length(log$logs)]]$id
-        print(log)
+        if (!is_html_context()) {
+            print(log)
+        }
         
         start = Sys.time()
         while(difftime(Sys.time(),start,units="secs") <= timeout) {
@@ -128,11 +128,18 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
             }
             Sys.sleep(1)
         }
-        message("Log ended or had a timeout.")
+        if (!is_html_context()) {
+            message("Log ended or had a timeout.")
+        }
     }, error = function(e){
         message(e$message)
     }, finally={
-        return(invisible(NULL))
+        if (is_html_context()) {
+            return(print_html("logs", x$logs))
+        }
+        else {
+            return(invisible())
+        }
     })
     
     
