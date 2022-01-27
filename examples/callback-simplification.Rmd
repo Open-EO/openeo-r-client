@@ -104,7 +104,7 @@ Mapping:
 ## EVI calculation / Band arithmetics:
 
 ```{r, eval=FALSE}
-con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+con = connect(host = host,version=version,user=user,password=pwd)
 graph = process_graph_builder(con = con)
 ```
 
@@ -150,7 +150,7 @@ spectral_reduce = graph$reduce(data = data, dimension = "bands",reducer = functi
 
 ### Version >= 1.0.0:
 ```{r, eval = FALSE}
-con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+con = connect(host = host,version=version,user=user,password=pwd)
 p = processes()
 
 spectral_reduce = p$reduce_dimension(data = data, dimension = "bands", reducer = function(data,context) {
@@ -170,7 +170,7 @@ spectral_reduce = p$reduce_dimension(data = data, dimension = "bands", reducer =
 Either of the following variations can be used:
 
 ```{r, eval=FALSE}
-con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+con = connect(host = host,version=version,user=user,password=pwd)
 graph = process_graph_builder(con = con)
 ```
 
@@ -194,7 +194,7 @@ temporal_reduce = graph$reduce(data=spectral_reduce,dimension = "temporal", redu
 Starting with version 1.0.0 all reducer / aggregation functions are passed as function with specific parameters. Using the process constructor from the `ProcessCollection` or R's aggregation functions are no longer supported due to continuous mismatches between the provided process parameter of the `ProcessArgument` and the process parameter definition of the reducer / aggregation function (often times there are `context` parameter which causes problems with the unary operators). The other problem is that R's aggregation functions also follow another definition schema, so that it cannot reliably mapped, when passed on directly.
 
 ```{r, eval=FALSE}
-con = connect(host = host,version=version,user=user,password=pwd,login_type = "basic")
+con = connect(host = host,version=version,user=user,password=pwd)
 p = processes()
 ```
 

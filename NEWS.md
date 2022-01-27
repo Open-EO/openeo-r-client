@@ -11,7 +11,10 @@
 ## Changed
 * replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
 * `connect` no longer carries the login parameters separately, but uses `...` to pass on those information
-* adapted the setting of required parameters on login, e.g. `login_type='basic'|'oidc'` will be deduced based on additional parameters
+
+## Removed
+
+* login parameter `login_type` removed. type will be deduced based on the other parameters.
 
 # version 1.1.1
 
