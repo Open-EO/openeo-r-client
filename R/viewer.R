@@ -243,7 +243,7 @@ is_rstudio_nb = function() {
 
 # Is this in a RMarkdown / knitr context?
 is_rmd = function() {
-  return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
+  return (FALSE) # return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
 }
 
 # Is this in a HTML context (any onf the above)?
