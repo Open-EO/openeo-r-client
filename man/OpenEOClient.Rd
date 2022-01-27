@@ -51,8 +51,8 @@ An R6Class that interacts with an openEO compliant back-end.
   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
   \item{\code{url}}{url of an openEO back-end either directly versioned or with the separate version statement}
   \item{\code{version}}{the openEO API version to be used, or a list of available API versions if set to NULL}
-  \item{\code{user}}{the user name for Basic Auth}
-  \item{\code{password}}{the user password for Basic Auth}
+  \item{\code{user}}{the user name}
+  \item{\code{password}}{the user password}
   \item{\code{value}}{an authentication object}
 }
 }

@@ -554,7 +554,7 @@ OIDCAuthCodeFlow <- R6Class(
 )
 
 .get_oidc_provider = function(provider) {
-  if (is.character(provider)) {
+  if (length(provider) > 0 && is.character(provider)) {
     oidc_providers = list_oidc_providers()
     if (provider %in% names(oidc_providers)) {
       return(oidc_providers[[provider]])
@@ -564,4 +564,16 @@ OIDCAuthCodeFlow <- R6Class(
   }
   
   return(provider)
+}
+
+.get_client = function(clients, grant, config) {
+  supported = which(sapply(clients, function(p) grant %in% p$grant_types))
+  if (length(supported) > 0) {
+    config$client_id = clients[[supported[[1]]]]$id
+    config$grant_type = grant
+    return(config)
+  }
+  else {
+    return (NULL)
+  }
 }

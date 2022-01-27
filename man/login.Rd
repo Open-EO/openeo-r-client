@@ -4,22 +4,18 @@
 \alias{login}
 \title{Log in on a specific back-end}
 \usage{
-login(
-  user = NULL,
-  password = NULL,
-  provider = NULL,
-  config = NULL,
-  con = NULL
-)
+login(user = NULL, password = NULL, provider = NULL, config = NULL, con = NULL)
 }
 \arguments{
-\item{user}{the user name - for Basic Auth only}
+\item{user}{the user name}
 
-\item{password}{the password - for Basic Auth only}
+\item{password}{the password}
 
-\item{provider}{provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL then the first available provider is chosen from the list.}
+\item{provider}{provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
+and \code{provider_type="oidc"} then the first available provider is chosen from the list.}
 
-\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL the configuration parameters are taken from the default authentication client of the OIDC provider.}
+\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL and 
+\code{provider_type="oidc"} the configuration parameters are taken from the default authentication client of the OIDC provider.}
 
 \item{con}{connected back-end connection (optional) otherwise \code{\link{active_connection}}
 is used.}
@@ -35,10 +31,10 @@ explore the capabilities and want to compute something, then you need to log in 
 \details{
 Based on the general login type (\link{BasicAuth} or \link{OIDCAuth}) there need to be different configurations. The basic
 authentication (if supported) is the simplest login mechanism for which user need to enter their credentials directly as
-\code{user} and \code{password}. The login_type can be neglected if those two parameters are set.
+\code{user} and \code{password}.
 
 For the Open ID connect authentication the user needs to select one of the accepted OIDC providers of 
-\code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices. 
+\code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices.
 For further configuration, you can pass a named list of values as \code{config} or
 a file path to a JSON file.
 
@@ -63,13 +59,16 @@ list. You can then use the following values:
 # the URL won't work and is just to demonstrate how to write the code
 con = connect(host='http://example.openeo.org',version='1.0.0')
 
-# also valid basic authentication
+# some back-ends support logging in throug OIDC without any parameters
+login()
+
+# basic authentication, credentials are dummy values
 login(user='user',password='password')
 
-# or alternatively the oidc login
+# or alternatively the OIDC login
 login(provider=provider, config=config)
 
-# with device_code+pkce enabled at the oidc provider you can even use this
+# with device_code+pkce enabled at the OIDC provider you can even use this
 login(provider="your_named_provider")
 
 }

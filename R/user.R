@@ -176,10 +176,10 @@ describe_account = function(con=NULL) {
 #' processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 #' your choice. There you will get further information on credentials and the log in procedure.
 #' 
-#' Especially the \code{authType} suggested by the client development guidelines are confusing.
-#' 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
-#' open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
-#' use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.
+#' The \code{...} parameter allows you to pass on arguments directly for \code{\link{login}}. If they are omitted the 
+#' client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards. 
+#' Based on the provided login parameters user / password or OIDC provider the appropriate login procedure for basic authentication
+#' or OIDC authentication will be chosen.
 #' 
 #' The parameter \code{version} is not required. If the service offers a well-known document of the
 #' service the client will choose an appropriate version (default the most recent production ready version).
@@ -269,7 +269,6 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
 #' is used.
 #' @param user the user name
 #' @param password the password
-#' @param login_type Deprecated. Not used anymore.
 #' @param provider provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
 #' and \code{provider_type="oidc"} then the first available provider is chosen from the list.
 #' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL and 
@@ -296,7 +295,7 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
 #' 
 #' }
 #' @export
-login = function(user = NULL, password = NULL, login_type = NULL, provider=NULL, config=NULL, con=NULL) {
+login = function(user = NULL, password = NULL, provider=NULL, config=NULL, con=NULL) {
     tryCatch({
         con = .assure_connection(con)
         
