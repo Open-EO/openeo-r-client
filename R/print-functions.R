@@ -232,13 +232,14 @@ print.Collection = function(x, ...) {
 
 #' @export
 print.JobList = function(x, ...) {
-    if (is_jupyter()) {
-        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
-        return(print_html("data-table", x$jobs, props = list(columns = "jobs")))
-    }
-
     showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
     x = unname(x)
+    
+    if (is_jupyter()|| !isNamespaceLoaded("tibble")) {
+        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+        return(print_html("data-table", x, props = list(columns = "jobs")))
+    }
+
     # list to tibble
     if (length(x) > 0) {
         df = as.data.frame(x)
@@ -272,7 +273,7 @@ print.JobList = function(x, ...) {
 #' @export
 print.Job = function(x, ...) {
     if (is_html_context()) {
-        return(print_html("job", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+        return(print_html("job", x, props = list(currency = x$currency)))
     }
 
     id = paste("Job ID:\t\t", x$id, "\n", sep = "")
@@ -314,9 +315,9 @@ print.Job = function(x, ...) {
 
 #' @export
 print.ServiceList = function(x, ...) {
-    if (is_jupyter()) {
+    if (is_jupyter() || !isNamespaceLoaded("tibble")) {
         # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
-        return(print_html("data-table", x$services, props = list(columns = "services")))
+        return(print_html("data-table", unname(x), props = list(columns = "services")))
     }
 
     if (length(x) > 0) {
@@ -338,7 +339,7 @@ print.ServiceList = function(x, ...) {
 #' @export
 print.Service = function(x, ...) {
     if (is_html_context()) {
-        return(print_html("service", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+        return(print_html("service", x, props = list(currency = x$currency)))
     }
     
     id = paste("ID:\t\t", x$id, "\n", sep = "")
@@ -393,7 +394,7 @@ print.Service = function(x, ...) {
 #' @export
 print.JobCostsEstimation = function(x, ...) {
     if (is_html_context()) {
-        return(print_html("job-estimate", x)) #, props = list(currency = ...) # ToDo: We need to retrieve the currency somehow
+        return(print_html("job-estimate", x, props = list(currency = x$currency)))
     }
 
     header = "Job costs estimation\n"

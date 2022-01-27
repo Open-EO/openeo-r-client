@@ -126,16 +126,21 @@ add_basemap_from_env = function(props) {
 #' Viewer panel for provided openEO processes
 #' 
 #' Opens up a viewer panel in RStudio and renders one or more processes of the connected 
-#' openEO service in HTML. The components of openeo-js-commons / openEO webeditor are reused.
+#' openEO service in HTML. The components of openeo-vue-components are reused.
 #' 
-#' @param x a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
+#' @param x (optional) a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
 #' \code{\link{Process}} or a character containing the process id.
+#' If NULL is provided (default), the list of processes is shown.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
 #' @export
-process_viewer = function(x, con = NULL) {
+process_viewer = function(x = NULL, con = NULL) {
   tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
+    
+    if (is.null(x)) {
+      x = list_processes(con=con)
+    }
     
     if (is.function(x)) {
       x = do.call(x, args = list())
@@ -159,9 +164,9 @@ process_viewer = function(x, con = NULL) {
     }
     
     if (!"ProcessInfo" %in% class(x)) {
-        x = unname(x)
+      x = unname(x)
     } else {
-        x = list(x)
+      x = list(x)
     }
     
     props = list(
@@ -179,41 +184,49 @@ process_viewer = function(x, con = NULL) {
 #' View openEO collections
 #' 
 #' The function opens a viewer panel in RStudio which renders the collection information
-#' in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
+#' in an HTML. It reuses common components from the openeo-vue-components.
 #' 
-#' @param x character with the name of a collection or the \code{Collection} obtained
+#' @param x (optional) character with the name of a collection or the \code{Collection} obtained
 #' with \code{\link{describe_collection}}.
+#' If NULL is provided (default), the list of all collections is shown.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
 #' @export
-collection_viewer = function(x, con = NULL) {
+collection_viewer = function(x = NULL, con = NULL) {
   tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
+    component = "collection"
     if (is.character(x)) {
       x = describe_collection(con=con,collection=x)
+    }
+    else if (is.null(x)) {
+      x = list_collections(con=con)
+      component = "collections"
     }
     
     if (is.null(x)) {
       return(invisible(NULL))
     }
     
-    if (!"Collection" %in% class(x)) {
+    if (component == "collections") {
+      x = unname(x)
+    }
+    else if (!"Collection" %in% class(x)) {
       if (length(x$`cube:dimensions`) > 0) {
         x = unname(x)
       } else {
         x = unname(describe_collection(collection = x))
       }
         
-    } else {
-      if (length(x$`cube:dimensions`) == 0) {
-        x = describe_collection(collection = x)
-      }
+    } else if (length(x$`cube:dimensions`) == 0) {
+      x = describe_collection(collection = x)
     }
     
-    props = add_basemap_from_env(props = list(data = x))
+    props = if (component == "collections") list(collections = x) else list(data = x)
+    props = add_basemap_from_env(props = props)
 
-    html = read_template(file = "viewer", props = props, component = "collection")
+    html = read_template(file = "viewer", props = props, component = component)
     html_viewer(html)
   }, error = .capturedErrorToMessage)
 }
@@ -235,12 +248,12 @@ is_rmd = function() {
 
 # Is this in a HTML context (any onf the above)?
 is_html_context = function() {
-  return (is_jupyter() || is_rstudio_nb() || is_rmd());
+  return (is_jupyter() || is_rstudio_nb() || is_rmd())
 }
 
 # Print a HTML component for the given data in several contexts (notebooks, markdown, ...)
 print_html = function(component, data, props = list()) {
-  html = get_component_html(component, data, props);
+  html = get_component_html(component, data, props)
   if (is_jupyter()) {
     IRdisplay::display_html(html)
     return(invisible(data))

@@ -411,6 +411,8 @@ describe_job = function(job,con=NULL) {
         
         info = con$request(tag = tag, parameters = list(job_id), authorized = TRUE, type = "application/json", auto_unbox = TRUE)
         
+        info$currency = con$getCapabilities()$billing$currency
+        
         class(info) = "Job"
         class(info$process) = "ProcessInfo"
         class(info$process$process_graph) = "Json_Graph"
@@ -476,6 +478,7 @@ estimate_job = function(job, con=NULL) {
         tag = "jobs_cost_estimation"
         
         success = con$request(tag = tag, parameters = list(job_id), authorized = TRUE)
+        success$currency = con$getCapabilities()$billing$currency
         class(success) = "JobCostsEstimation"
         return(success)
     }, error = .capturedErrorToMessage)

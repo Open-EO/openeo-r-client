@@ -25,6 +25,7 @@ list_user_processes = function(con=NULL) {
     })
     
     names(listOfUserDefinedProcesses) = sapply(listOfUserDefinedProcesses, function(p) p$id)
+    class(listOfUserDefinedProcesses) = "ProcessList"
     
     return(listOfUserDefinedProcesses)
     
