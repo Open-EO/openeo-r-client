@@ -4,23 +4,12 @@
 \alias{login}
 \title{Log in on a specific back-end}
 \usage{
-login(
-  user = NULL,
-  password = NULL,
-  login_type = NULL,
-  provider = NULL,
-  config = NULL,
-  con = NULL
-)
+login(user = NULL, password = NULL, provider = NULL, config = NULL, con = NULL)
 }
 \arguments{
 \item{user}{the user name}
 
 \item{password}{the password}
-
-\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. 
-If the parameter is NULL the authentication method is chosen by the stated other parameters (provider -> oidc, 
-user/password -> basic)}
 
 \item{provider}{provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
 and \code{provider_type="oidc"} then the first available provider is chosen from the list.}
@@ -42,11 +31,11 @@ explore the capabilities and want to compute something, then you need to log in 
 \details{
 Based on the general login type (\link{BasicAuth} or \link{OIDCAuth}) there need to be different configurations. The basic
 authentication (if supported) is the simplest login mechanism for which user need to enter their credentials directly as
-\code{user} and \code{password}. The login_type can be neglected if those two parameters are set.
+\code{user} and \code{password}.
 
 For the Open ID connect authentication the user needs to select one of the accepted OIDC providers of 
-\code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices. The login type can be
-neglected if a valid provider was selected. For further configuration, you can pass a named list of values as \code{config} or
+\code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices.
+For further configuration, you can pass a named list of values as \code{config} or
 a file path to a JSON file.
 
 There are many different authentication mechanisms for OIDC and OAuth2.0, which OIDC is based on. The 'openeo' package supports
@@ -70,16 +59,16 @@ list. You can then use the following values:
 # the URL won't work and is just to demonstrate how to write the code
 con = connect(host='http://example.openeo.org',version='1.0.0')
 
-# credentials are dummy values
-login(user='user',password='password',login_type='basic', con=con)
+# some back-ends support logging in throug OIDC without any parameters
+login()
 
-# also valid basic authentication
+# basic authentication, credentials are dummy values
 login(user='user',password='password')
 
-# or alternatively the oidc login
-login(login_type='oidc', provider=provider, config=config)
+# or alternatively the OIDC login
+login(provider=provider, config=config)
 
-# with device_code+pkce enabled at the oidc provider you can even use this
+# with device_code+pkce enabled at the OIDC provider you can even use this
 login(provider="your_named_provider")
 
 }

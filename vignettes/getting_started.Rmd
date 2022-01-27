@@ -151,7 +151,7 @@ service_types
 user = ""
 pwd = ""
 
-login(user = user,password = pwd,login_type = "basic")
+login(user = user,password = pwd)
 ```
 
 Note: You might explore more data collections and processes once you are registered and logged in. Without logging in you can just see the free data sets that do not conflict with any terms of use.

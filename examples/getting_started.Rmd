@@ -105,13 +105,13 @@ Those functions will open the viewer panel in RStudio which will render the spec
 There are again 2 ways of login, either directly via `connect` by passing additional information about the login type and potentially the login credentials or by calling `login()` manually.
 
 ```{r}
-gee = connect(host = gee_host_url,version = "1.0.1", user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url,version = "1.0.1", user = user,password = pwd)
 ```
 
 If you want to explore the service before signing in you can always first connect and login later manually. `login()` offers the same login parameter as `connect()`
 
 ```{r, eval=FALSE}
-login(user = user, password = pwd, login_type = "basic")
+login(user = user, password = pwd)
 ```
 
 ### OIDC
@@ -136,7 +136,7 @@ str(provider$google)
 Since we are already connected, we can now login, using the particular oidc provider and the afore mentioned client credentials. The latter can either be stated as a named list or you can state the path to a JSON file, containing the same information.
 
 ```{r, eval = FALSE}
-login(login_type = "oidc", provider = provider$google, config = list(client_id=..., secret=...))
+login(provider = provider$google, config = list(client_id=..., secret=...))
 ```
 
 You will notice that your standard internet browser will open a new website, where you have to enter your credentials. The website will be hosted by your identity provider (here at Google). Your client - the `openeo` package - will be notified by the identity provider and pass on a access code which will be used internally.

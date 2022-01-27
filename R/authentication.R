@@ -255,15 +255,6 @@ AbstractOIDCAuthentication <- R6Class(
       
       private$getEndpoints()
       
-      if ("default_client" %in% names(provider)) {
-        default_client = provider[["default_client"]]
-        # id, redirect_urls, grant_types
-        config$client_id = default_client[["id"]]
-        private$isGrantTypeSupported(default_client$grant_types)
-      }
-      
-      
-      
       if (!(is.list(config) && all(c("client_id") %in% names(config)))) {
         stop("'client_id' is not present in the configuration.")
       }
@@ -563,7 +554,7 @@ OIDCAuthCodeFlow <- R6Class(
 )
 
 .get_oidc_provider = function(provider) {
-  if (is.character(provider)) {
+  if (length(provider) > 0 && is.character(provider)) {
     oidc_providers = list_oidc_providers()
     if (provider %in% names(oidc_providers)) {
       return(oidc_providers[[provider]])
@@ -573,4 +564,16 @@ OIDCAuthCodeFlow <- R6Class(
   }
   
   return(provider)
+}
+
+.get_client = function(clients, grant, config) {
+  supported = which(sapply(clients, function(p) grant %in% p$grant_types))
+  if (length(supported) > 0) {
+    config$client_id = clients[[supported[[1]]]]$id
+    config$grant_type = grant
+    return(config)
+  }
+  else {
+    return (NULL)
+  }
 }
