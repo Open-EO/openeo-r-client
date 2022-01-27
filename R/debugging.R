@@ -72,6 +72,9 @@ print.request = function(x) {
 #' Prints contents of the log file of a Job or Service to the console. Requests the log every second. If the log response always empty 
 #' for a given timeout, the logging stops.
 #' 
+#' In Jupyter, RMarkdown and knitr HTML environments the timeout parameter does not apply and this function only returns the
+#' logs that are available at the time of the request. To refresh the logs, you have to re-execute the function again.
+#' 
 #' @param obj Service or Job object
 #' @param job_id character the jobs ID
 #' @param service_id character - the services ID
@@ -105,6 +108,9 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
         }
         
         log = log_fun(obj, con=con)
+        if (is_html_context()) {
+            return(print_html("logs", log$logs))
+        }
         
         # maybe the log has not initialized yet, then wait a second
         while (length(log$logs) == 0) {
@@ -113,9 +119,7 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
         }
         
         last_message_id = log$logs[[length(log$logs)]]$id
-        if (!is_html_context()) {
-            print(log)
-        }
+        print(log)
         
         start = Sys.time()
         while(difftime(Sys.time(),start,units="secs") <= timeout) {
@@ -128,18 +132,11 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
             }
             Sys.sleep(1)
         }
-        if (!is_html_context()) {
-            message("Log ended or had a timeout.")
-        }
+        message("Log ended or had a timeout.")
     }, error = function(e){
         message(e$message)
     }, finally={
-        if (is_html_context()) {
-            return(print_html("logs", x$logs))
-        }
-        else {
-            return(invisible())
-        }
+        return(invisible())
     })
     
     
