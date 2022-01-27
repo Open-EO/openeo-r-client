@@ -3,14 +3,16 @@ if (!window.customElements || !window.customElements.get('openeo-{component}')) 
 	var el = document.createElement('script');
 	el.src = "https://cdn.jsdelivr.net/npm/@openeo/vue-components@2/assets/openeo.min.js";
 	document.head.appendChild(el);
-
-	var font = document.createElement('font');
-	font.as = "font";
-	font.type = "font/woff2";
-	font.crossOrigin = true;
-	font.href = "https://use.fontawesome.com/releases/v5.13.0/webfonts/fa-solid-900.woff2"
-	document.head.appendChild(font);
 }}
+
+var css = `@font-face { font-family: 'Font Awesome 5 Free'; font-style: normal; font-weight: 900; font-display: block; src: url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/webfonts/fa-solid-900.woff2) format("woff2") }`;
+if(!document.getElementById('openeo-vue-components-fa')){
+  style = document.createElement('style');
+  style.id = 'openeo-vue-components-fa';
+  style.type = 'text/css';
+  style.innerText = css;
+  document.head.appendChild(style);
+}
 </script>
 <openeo-{component} style="font-family: sans-serif">
 	<script type="application/json">{props}</script>
