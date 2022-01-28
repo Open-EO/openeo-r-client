@@ -260,6 +260,7 @@ describe_service = function(service, con=NULL) {
         
         tag = "services_details"
         service = con$request(tag = tag, parameters = list(id), authorized = TRUE)
+        service$currency = con$getCapabilities()$billing$currency
         class(service) = "Service"
         return(service)
     }, error = .capturedErrorToMessage)
