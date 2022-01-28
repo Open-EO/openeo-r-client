@@ -235,7 +235,7 @@ print.JobList = function(x, ...) {
     showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
     x = unname(x)
     
-    if (is_jupyter()|| !isNamespaceLoaded("tibble")) {
+    if (is_jupyter()) {
         # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
         return(print_html("data-table", x, props = list(columns = "jobs")))
     }
@@ -315,7 +315,7 @@ print.Job = function(x, ...) {
 
 #' @export
 print.ServiceList = function(x, ...) {
-    if (is_jupyter() || !isNamespaceLoaded("tibble")) {
+    if (is_jupyter()) {
         # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
         return(print_html("data-table", unname(x), props = list(columns = "services")))
     }

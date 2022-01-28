@@ -173,14 +173,19 @@ process_viewer = function(x = NULL, con = NULL) {
       x = list(x)
     }
     
-    props = list(
-      document = x,
-      apiVersion = con$api_version(),
-      showTableOfContents = is.list(x) && length(x) > 1,
-      provideDownload = FALSE
-    )
+    if (is.list(x) && length(x) != 1) {
+      props = list(
+        document = x,
+        apiVersion = con$api_version(),
+        provideDownload = FALSE
+      )
+      html = read_template("process_docgen", props)
+    }
+    else {
+      props = list(process = x[[1]], 'show-graph' = TRUE, 'provide-download' = FALSE)
+      html = read_template(file = "viewer", props = props, component = "process")
+    }
     
-    html = read_template("process_docgen", props)
     html_viewer(html)
   }, error = .capturedErrorToMessage)
 }
