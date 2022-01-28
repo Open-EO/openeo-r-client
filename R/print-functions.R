@@ -435,6 +435,8 @@ print.ProcessNode = function(x, ...) {
     
     if (is.null(node_validation)) {
         print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    } else {
+      message(node_validation)
     }
 }
 

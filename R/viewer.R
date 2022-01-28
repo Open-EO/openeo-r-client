@@ -155,12 +155,16 @@ process_viewer = function(x = NULL, con = NULL) {
     }
     
     if ("Process" %in% class(x)) {
-      pid = x$getId()
-      if (!pid %in% names(con$processes)) {
-        warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
-        return(invisible(NULL))
+      if (x$isUserDefined) {
+        x = list(x$serialize())
+      } else {
+        pid = x$getId()
+        if (!pid %in% names(con$processes)) {
+          warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
+          return(invisible(NULL))
+        }
+        x = describe_process(con = con, process = pid)
       }
-      x = describe_process(con = con, process = pid)
     }
     
     if (!"ProcessInfo" %in% class(x)) {

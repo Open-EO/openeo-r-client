@@ -17,5 +17,5 @@ denoted by NA. Exactly two objects form the temporal interval.
 \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-\code{\link{UdfRuntimeVersionArgument}}
+\code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 }
