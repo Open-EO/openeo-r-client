@@ -100,6 +100,18 @@ read_template = function(file, props, component = NULL) {
       html = gsub(x = html, pattern = "{component}", replacement = component, fixed = TRUE)
     }
     
+    env = ""
+    if (is_rmd()) {
+      env = "rmd" 
+    }
+    else if (is_jupyter()) {
+      env ="jupyter"
+    }
+    else if (is_rstudio_nb()) {
+      env ="rstudio_nb"
+    }
+    html = gsub(x = html, pattern = "{env}", replacement = env, fixed = TRUE)
+    
     return (html)
 }
 
@@ -252,7 +264,7 @@ is_rstudio_nb = function() {
 
 # Is this in a RMarkdown / knitr context?
 is_rmd = function() {
-  return (FALSE) # return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
+  return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
 }
 
 # Is this in a HTML context (any onf the above)?
@@ -272,8 +284,7 @@ print_html = function(component, data, props = list()) {
     return(invisible(data))
   }
   else if (is_rmd()) {
-    knitr::knit_print(htmltools::HTML(html))
-    return(data)
+    return(knitr::knit_print(htmltools::HTML(html), inline = TRUE, options = list(results = "asis")))
   }
   else {
     print.default(data) # todo: does this make sense?
