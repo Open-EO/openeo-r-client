@@ -1,6 +1,7 @@
 # version 1.2.0
 
 ## Added
+* implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
 * implemented an abstract OIDC authentication
 * implemented OIDC authentications for the following grant types:
   - authorization_code
@@ -13,7 +14,6 @@
 * `connect` no longer carries the login parameters separately, but uses `...` to pass on those information
 
 ## Removed
-
 * login parameter `login_type` removed. type will be deduced based on the other parameters.
 
 # version 1.1.1

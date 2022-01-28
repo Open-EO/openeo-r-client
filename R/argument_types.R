@@ -400,7 +400,7 @@ Argument = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing an Integer
 NULL
@@ -453,7 +453,7 @@ Integer = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing an EPSG code as Integer
 NULL
@@ -512,7 +512,7 @@ EPSGCode = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a number
 NULL
@@ -585,7 +585,7 @@ Number = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a string.
 NULL
@@ -715,7 +715,7 @@ URI = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing an output format of a back-end.
 NULL
@@ -777,7 +777,7 @@ OutputFormat = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a CollectionId.
 NULL
@@ -850,7 +850,7 @@ CollectionId = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing the id of a job.
 NULL
@@ -905,7 +905,7 @@ JobId = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing the UDF runtime in a process argument.
 NULL
@@ -957,7 +957,7 @@ UdfRuntimeArgument = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} is an argument that expects a UDF runtime version or character as value.
 NULL
@@ -1009,7 +1009,7 @@ UdfRuntimeVersionArgument = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} is an argument that expects an UDF code or a file path.
 NULL
@@ -1091,7 +1091,7 @@ UdfCodeArgument = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing the id of a process graph.
 NULL
@@ -1147,7 +1147,7 @@ ProcessGraphId = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a projection definition based on PROJ.
 NULL
@@ -1201,7 +1201,7 @@ ProjDefinition = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a bounding box / extent.
 NULL
@@ -1323,7 +1323,7 @@ BoundingBox = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a boolean / logical.
 NULL
@@ -1382,7 +1382,7 @@ Boolean = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a date.
 NULL
@@ -1434,7 +1434,7 @@ Date = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a date with time component.
 #' 
@@ -1488,7 +1488,7 @@ DateTime = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing the time of a day.
 NULL
@@ -1555,7 +1555,7 @@ Time = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing an object in GeoJson.
 NULL
@@ -1644,7 +1644,7 @@ GeoJson = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing output format options.
 NULL
@@ -1691,7 +1691,7 @@ OutputFormatOptions = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a raster cube.
 NULL
@@ -1740,7 +1740,7 @@ RasterCube = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a vector cube.
 NULL
@@ -1805,7 +1805,7 @@ VectorCube = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a ProcessGraph.
 NULL
@@ -1924,7 +1924,7 @@ ProcessGraphArgument = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a ProcessGraph value.
 NULL
@@ -2009,7 +2009,7 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a single valued array.
 NULL
@@ -2240,7 +2240,7 @@ Array = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a Kernel.
 NULL
@@ -2305,7 +2305,7 @@ Kernel = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a temporal interval.
 NULL
@@ -2348,7 +2348,7 @@ TemporalInterval = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a list of temporal intervals.
 NULL
@@ -2369,6 +2369,119 @@ TemporalIntervals = R6Class(
       private$schema$type = "array"
       private$schema$subtype = "temporal-intervals"
       private$schema$items = items
+    }
+  )
+)
+
+# MetadataFilter ====
+#' MetadataFilter
+#' 
+#' Inheriting from \code{\link{ProcessGraphArgument}} in order to represent a list of functions that is internally 
+#' interpreted into \code{\link{Process}} objects.
+#' 
+#' @examples 
+#' \dontrun{
+#' # define filter statement
+#' filter = list(
+#'    "eo:cloud_cover" = function(x) x >= 0 & x < 50, 
+#'    "platform" = function(x) x == "Sentinel-2A"
+#' )
+#' 
+#' # setting the arguments is done via the process graph building with of 'processes()'
+#' }
+#' 
+#' @name MetadataFilter
+#' 
+#' @seealso \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
+#' \code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
+#' \code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
+#' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
+#' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
+#' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
+#' 
+#' @return Object of \code{\link{R6Class}} representing a list of \code{\link{Process}} in order to filter for collections.
+NULL
+
+MetadataFilter <- R6Class(
+  "metadata-filter",
+  inherit=ProcessGraphArgument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$subtype = "metadata-filter"
+    },
+    setValue = function(value) {
+      if (length(value) == 0 || is.na(value)) {
+        private$value = value
+      } else if (is.list(value)) {
+        
+        node_names = names(value) # TODO add something if missing or stop
+        # set parameter that is stored in this class...
+        v = lapply(value,function(FUN, private) {
+          
+           if (is.function(FUN)) {
+            process_collection = private$process$getGraph()
+            
+            # probably switch temporarily the graph of the parent process
+            # then all newly created process nodes go into the new graph
+            private$process$setGraph(process_collection)
+            
+            process_graph_parameter = private$parameters
+            
+            # find suitable ProcessGraph parameter (mostly array or binary) -> check for length of formals
+            # the issue can no longer been resolved automatically
+            if (length(formals(FUN)) != length(process_graph_parameter)) stop("Function parameter do not match ProcessGraph parameter(s)")
+            
+            names(process_graph_parameter) = names(formals(FUN))
+            
+            lapply(process_graph_parameter, function(cb){cb$setProcess(private$process)})
+            
+            # make call
+            final_node = do.call(FUN,args = process_graph_parameter)
+            
+            # assign new graph as value
+            as(final_node,"Process")
+           } else {
+             stop("Value for the metadata filter needs to be a list of functions.")
+          }
+          
+          
+          
+        },private=private)
+        
+        names(v) = node_names
+        
+        private$value = v
+      } else {
+        stop("Value for the metadata filter needs to be a list of functions.")
+      }
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      if (!self$isEmpty()) {
+        length_0 = length(private$value) == 0
+        # named list of functions
+        is_named = length(names(private$value)) > 0
+        is_list = is.list(private$value)
+        all_graphs = all(sapply(private$value,function(o)"Process" %in% class(o)))
+        
+        if (!length_0 && !is_named && !is_list && !all_graphs) {
+          stop("value could not be parsed into a named list of Process")
+        }
+      }
+      
+      return(invisible(NULL))
+    },
+    typeSerialization = function() {
+      nn = names(private$value)
+      ll = lapply(private$value,function(o)o$serialize())
+      names(ll) = nn
+      return(ll)
     }
   )
 )
@@ -2395,7 +2508,7 @@ TemporalIntervals = R6Class(
 #' \code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
 #' \code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-#' \code{\link{UdfRuntimeVersionArgument}}
+#' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing an argument choice object.
 NULL
@@ -2603,7 +2716,8 @@ findParameterGenerator = function(schema) {
                                URI,
                                UdfRuntimeArgument,
                                UdfRuntimeVersionArgument,
-                               UdfCodeArgument)
+                               UdfCodeArgument,
+                               MetadataFilter)
   
   # resolve the any parameter (no specification)
   if (length(schema$type) == 0 && length(schema$subtype) == 0) {
@@ -2662,7 +2776,6 @@ processFromJson=function(json) {
 }
 
 parameterFromJson = function(param_def) {
-  
   if (length(param_def$schema) == 0) {
     # an empty schema means ANY value is allowed
     arg = Argument$new()
@@ -2725,6 +2838,12 @@ parameterFromJson = function(param_def) {
     if (length(schema$enum) != 0) {
       param$setEnum(schema$enum)
     }
+    if ("metadata-filter" %in% class(param)) {
+      if ("additionalProperties" %in% names(schema)) {
+        schema = append(schema,schema[["additionalProperties"]])
+        schema[["additionalProperties"]] = NULL
+      }
+    } 
     
     if ("ProcessGraphArgument" %in% class(param)) {
       # iterate over all ProcessGraph parameters and create ProcessGraphParameters, but name = property name (what the process exports to ProcessGraph)
