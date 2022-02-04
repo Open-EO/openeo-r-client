@@ -490,7 +490,7 @@ print.OpenEOCapabilities = function(x, ...) {
 
 #' @export
 print.ResultList = function(x, ...) {
-    if (is_html_context()) {
+    if (is_html_context() && "type" %in% names(x)) {
         return(print_html("batch-job-results", x))
     }
 
