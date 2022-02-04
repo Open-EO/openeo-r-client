@@ -263,11 +263,17 @@ print.JobList = function(x, ...) {
         invisible(df)
     }
     
-    if (isNamespaceLoaded("tibble")) {
+    if (isNamespaceLoaded("tibble") && !is_rmd()) {
         df = tibble::as_tibble(df)
+        print(df)
+    } else if (.is_package_installed("kableExtra")) {
+      # print()
+      print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df))))
+    } else {
+      print(df)
     }
     
-    print(df)
+    
 }
 
 #' @export
@@ -324,10 +330,17 @@ print.ServiceList = function(x, ...) {
         df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
         row.names(df) = NULL
         
-        if (isNamespaceLoaded("tibble"))
+        if (isNamespaceLoaded("tibble") && !is_rmd()) {
             df = tibble::as_tibble(df)
+            print(df) 
+        } else if (.is_package_installed("kableExtra")) {
+          # print()
+          print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df))))
+        } else {
+          print(df)
+        }
         
-        print(df) 
+        
     } else {
         message("No secondary services published.")
     }
@@ -418,9 +431,11 @@ print.CollectionList = function(x, ...) {
     df = as.data.frame(x, extract = cols)
     if (isNamespaceLoaded("tibble")) {
         print(tibble::as_tibble(df)[, cols]) 
-    } 
-    else {
-        print(df)
+    } else if (.is_package_installed("kableExtra")) {
+      # print()
+      print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df[, cols]))))
+    } else {
+      print(df[, cols])
     }
 }
 
@@ -490,25 +505,35 @@ print.OpenEOCapabilities = function(x, ...) {
 
 #' @export
 print.ResultList = function(x, ...) {
-    if (is_html_context() && "type" %in% names(x)) {
+    if (is_html_context()) {
+        unclass(x$assets)
         return(print_html("batch-job-results", x))
     }
 
-    cat("Results for job: ",x$id,"\n")
-    if (length(x$properties$expires) > 0) {
-        cat("Links expire on: ",x$properties$expires,"\n")
+    if (!is_html_context()) {
+      cat("Results for job: ",x$id,"\n")
+      if (length(x$properties$expires) > 0) {
+          cat("Links expire on: ",x$properties$expires,"\n")
+      }
+      cat("\n")
     }
     
     # assets overview
     if (length(x$assets) > 0) {
-        cat("\n")
+        
         assets = as.data.frame(x$assets)
         
-        if (isNamespaceLoaded("tibble")) {
+        if (isNamespaceLoaded("tibble") && !is_rmd()) {
             assets = tibble::as_tibble(assets)
+            print(assets)
+        } else if (.is_package_installed("kableExtra")) {
+          # print()
+          print_html(data = assets,props=list(html=kableExtra::kable_styling(kableExtra::kable(assets))))
+        } else {
+          print(assets)
         }
         
-        print(assets)
+        
     } else {
         cat("\n")
         cat("No assests found.\n")

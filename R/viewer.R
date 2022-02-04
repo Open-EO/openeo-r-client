@@ -274,7 +274,9 @@ is_html_context = function() {
 
 # Print a HTML component for the given data in several contexts (notebooks, markdown, ...)
 print_html = function(component, data, props = list()) {
-  html = get_component_html(component, data, props)
+  if (missing(component) && "html" %in% names(props)) html = props[["html"]]
+  else html = get_component_html(component, data, props)
+  
   if (is_jupyter()) {
     IRdisplay::display_html(html)
     return(invisible(data))
@@ -295,7 +297,7 @@ print_html = function(component, data, props = list()) {
 get_component_html = function(component, data = NULL, props = list()) {
   # Special handling for batch job results, show either item or collection depending on the data
   if (component == "batch-job-result") {
-    if ("type" %in% data && data[["type"]] == "Feature") {
+    if ("type" %in% names(data) && data[["type"]] == "Feature") {
       component = "item"
     } else {
       component = "collection"
