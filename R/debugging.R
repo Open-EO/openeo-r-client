@@ -121,11 +121,8 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = NULL) 
             timeout = 60
           }
         }
-        
         log = log_fun(obj, con=con)
-        if (is_html_context()) {
-            return(print_html("logs", log$logs))
-        }
+        # no need to abort here and print other than print(log), log is still of class "Log"
         
         # maybe the log has not initialized yet, then wait a second
         while (length(log$logs) == 0) {
@@ -149,11 +146,11 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = NULL) 
               Sys.sleep(1)
           }
           message("Log ended or had a timeout.")
+        } else {
+          print(log)
         }
     }, error = function(e){
         message(e$message)
-    }, finally={
-        return(invisible())
     })
     
     
