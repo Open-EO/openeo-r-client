@@ -167,6 +167,12 @@ as.data.frame.AssetList = function(x, ...) {
     return(table)
 }
 
+#' @export
+as.data.frame.UserFileList = function(x, ...) {
+  table = .listObjectsToDataFrame(x)
+  return(table)
+}
+
 #' Coercion into Graph
 #' 
 #' Creates a \code{Graph} object from a \code{\link{ProcessNode}}, \code{function} or \code{ProcessInfo} (Exchange object for 

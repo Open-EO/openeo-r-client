@@ -277,6 +277,30 @@ print.JobList = function(x, ...) {
 }
 
 #' @export
+print.UserFileList = function(x, ...) {
+  x = as.data.frame(x)
+  
+  if (is_jupyter()) {
+    # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+    return(print_html("data-table", x, props = list(columns = "files")))
+  }
+  
+  if (nrow(x) == 0 || ncol(x) == 0) {
+    message("No files stored in the workspace.")
+    invisible(x)
+  }
+  
+  if (isNamespaceLoaded("tibble") && !is_rmd()) {
+    x = tibble::as_tibble(x)
+    print(x)
+  } else if (.is_package_installed("kableExtra")) {
+    print_html(data = x,props=list(html=kableExtra::kable_styling(kableExtra::kable(x))))
+  } else {
+    print(x)
+  }
+}
+
+#' @export
 print.Job = function(x, ...) {
     if (is_html_context()) {
         return(print_html("job", x, props = list(currency = x$currency)))
