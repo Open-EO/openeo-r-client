@@ -507,7 +507,7 @@ print.OpenEOCapabilities = function(x, ...) {
 print.ResultList = function(x, ...) {
     if (is_html_context()) {
         unclass(x$assets)
-        return(print_html("batch-job-results", x))
+        return(print_html("batch-job-result", x))
     }
 
     if (!is_html_context()) {
