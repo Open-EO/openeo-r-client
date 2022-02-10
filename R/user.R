@@ -18,17 +18,8 @@ list_files = function(con=NULL) {
         
         files = con$request(tag = tag, authorized = TRUE, type = "application/json")
         files = files$files
-        if (is.null(files) || length(files) == 0) {
-            message("The user workspace at this host is empty.")
-            return(invisible(files))
-        }
         
-        files = .listObjectsToDataFrame(files)
-        
-        if (isNamespaceLoaded("tibble")) {
-            files = tibble::as_tibble(files)
-        }
-        
+        class(files) = "UserFileList"
         
         return(files)
     }, error = .capturedErrorToMessage)

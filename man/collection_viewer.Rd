@@ -4,15 +4,16 @@
 \alias{collection_viewer}
 \title{View openEO collections}
 \usage{
-collection_viewer(x, con = NULL)
+collection_viewer(x = NULL, con = NULL)
 }
 \arguments{
-\item{x}{character with the name of a collection or the \code{Collection} obtained
-with \code{\link{describe_collection}}.}
+\item{x}{(optional) character with the name of a collection or the \code{Collection} obtained
+with \code{\link{describe_collection}}.
+If NULL is provided (default), the list of all collections is shown.}
 
 \item{con}{a specific connection (optional), last connected service if omitted.}
 }
 \description{
 The function opens a viewer panel in RStudio which renders the collection information
-in an HTML. It reuses common components from the openEO webeditor / openeo-js-commons.
+in an HTML. It reuses common components from the openeo-vue-components.
 }

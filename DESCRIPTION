@@ -16,7 +16,9 @@ Suggests:
     sf,
     geojsonsf,
     pkgdown,
-    rmarkdown
+    rmarkdown,
+    kableExtra,
+    DT
 Imports:
     jsonlite,
     httr2,

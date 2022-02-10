@@ -18,7 +18,8 @@ oauth_flow_fetch = function (req) {
     body <- NULL
   }
   
-  # the function is also used in during the device code flow which requires to parse the intermediate device_code from the JSON body
+  # the function is also used in during the device code flow which requires to parse the 
+  # intermediate device_code from the JSON body
   if ((rlang::has_name(body, "access_token") ||  rlang::has_name(body, "device_code")) && resp_status(resp) == 
       200) {
     return(body)

@@ -69,23 +69,31 @@ print.request = function(x) {
 
 #' Access logs of a Service or Job
 #' 
-#' Prints contents of the log file of a Job or Service to the console. Requests the log every second. If the log response always empty 
-#' for a given timeout, the logging stops.
+#' Prints contents of the log file of a Job or Service to the console. Requests the log every second if the service is enabled or the batch job is
+#' active. If the log response always empty for a given timeout, the logging stops. Also if the job or service is not active at the moment timeout
+#' is ignored and the log is just printed once. To call the different logs \code{\link{log_job}} or \code{\link{log_service}} are used internally.
+#' 
+#' In Jupyter, RMarkdown and knitr HTML environments the timeout parameter does not apply and this function only returns the
+#' logs that are available at the time of the request. To refresh the logs, you have to re-execute the function again.
 #' 
 #' @param obj Service or Job object
 #' @param job_id character the jobs ID
 #' @param service_id character - the services ID
 #' @param con a connected openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param timeout integer the timeout for the logging after no update in seconds, default is 10
+#' @param timeout integer the timeout for the logging of active jobs or services after no update in seconds, if omitted it is determined internally (running / queued / enabled -> 60s)
+#' 
+#' @seealso \code{\link{log_job}} or \code{\link{log_service}}
 #' 
 #' @export
-logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
+logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = NULL) {
     
     tryCatch({
         con = .assure_connection(con)
         
-        
+        if (length(timeout) > 0 && !is.numeric(timeout)) {
+          stop("parameter 'timeout' is set, but is not numerical")
+        }
         
         if (length(obj) == 0 && length(job_id) == 0 && length(service_id) == 0) {
             message("No service or job stated to be logged.")
@@ -96,17 +104,25 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
             log_fun = log_job
             
             if (length(obj) == 0 && length(job_id) > 0) {
-                obj = job_id
+                obj = describe_job(job_id)
             }
         } else if ((length(obj) > 0 && "Service" %in% class(obj)) || length(service_id) > 0) {
             log_fun = log_service
             
             if (length(obj) == 0 && length(service_id) > 0) {
-                obj = service_id
+                obj = describe_service(service_id)
             }
         }
         
+        status = status(obj)
+        is_active = status %in% c("running","queued","enabled") # enabled for services then we might also observe
+        if (length(timeout) == 0) {
+          if (is_active) {
+            timeout = 60
+          }
+        }
         log = log_fun(obj, con=con)
+        # no need to abort here and print other than print(log), log is still of class "Log"
         
         # maybe the log has not initialized yet, then wait a second
         while (length(log$logs) == 0) {
@@ -114,25 +130,27 @@ logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = 10) {
             log = log_fun(obj, con=con)
         }
         
-        last_message_id = log$logs[[length(log$logs)]]$id
-        print(log)
-        
-        start = Sys.time()
-        while(difftime(Sys.time(),start,units="secs") <= timeout) {
-            log = log_fun(obj,offset = last_message_id, con=con)
-            if (length(log$logs) > 0) {
-                start = Sys.time()
-                last_message_id = log$logs[[length(log$logs)]]$id
-                
-                print(log)
-            }
-            Sys.sleep(1)
+        if (is_active) {
+          last_message_id = log$logs[[length(log$logs)]]$id
+          print(log)
+          
+          start = Sys.time()
+          while(difftime(Sys.time(),start,units="secs") <= timeout) {
+              log = log_fun(obj,offset = last_message_id, con=con)
+              if (length(log$logs) > 0) {
+                  start = Sys.time()
+                  last_message_id = log$logs[[length(log$logs)]]$id
+                  
+                  print(log)
+              }
+              Sys.sleep(1)
+          }
+          message("Log ended or had a timeout.")
+        } else {
+          print(log)
         }
-        message("Log ended or had a timeout.")
     }, error = function(e){
         message(e$message)
-    }, finally={
-        return(invisible(NULL))
     })
     
     

@@ -24,6 +24,7 @@ list_processes = function(con=NULL) {
             })
             
             names(con$processes) = sapply(con$processes, function(p) p$id)
+            class(con$processes) = "ProcessList"
         }
         
         return(con$processes)

@@ -1,6 +1,7 @@
 # version 1.2.0
 
 ## Added
+* rendering of classes as HTML widgets using the openEO Vue components, which can be used in Jupyter Notebook, Rmarkdown, RStudio and knitr
 * implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
 * implemented an abstract OIDC authentication
 * implemented OIDC authentications for the following grant types:
@@ -9,9 +10,14 @@
   - urn:ietf:params:oauth:grant-type:device_code+pkce
 * temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made
 
+## Fixes
+* `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
+
 ## Changed
+* `timeout` parameter in `logs()` is now optional. If omitted 60s timeout is used for active batch processes and enabled services [#109](https://github.com/Open-EO/openeo-r-client/issues/109)
 * replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
 * `connect` no longer carries the login parameters separately, but uses `...` to pass on those information
+* added 'kableExtra' as suggest to render the tables prettier in knitr
 
 ## Removed
 * login parameter `login_type` removed. type will be deduced based on the other parameters.
