@@ -594,6 +594,9 @@ OpenEOClient <- R6Class(
   
       query$req = req
       req = do.call(req_url_query,args = query)
+      
+      req = req_error(req,body=private$errorHandling)
+      
       response = req_perform(req)
       
       if (is.debugging()) {
@@ -615,7 +618,7 @@ OpenEOClient <- R6Class(
         
 
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     DELETE = function(endpoint,authorized=FALSE,query = list(),...) {
@@ -632,6 +635,9 @@ OpenEOClient <- R6Class(
 
       query$req = req
       req = do.call(req_url_query,args = query)
+      
+      req = req_error(req,body=private$errorHandling)
+      
       response = req_perform(req)
       
       # response = DELETE(url=url, config = header, ...)
@@ -648,14 +654,13 @@ OpenEOClient <- R6Class(
           return(TRUE)
         }
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
       
       
     },
     POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
       url = paste(private$host,endpoint,sep="/")
-      
       req = request(url)
       req = req_method(req, method="POST")
       
@@ -667,7 +672,6 @@ OpenEOClient <- R6Class(
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
-      
       # if (length(data) > 0) {
       #   if (! raw) {
       #     if (is.character(data)) {
@@ -712,6 +716,7 @@ OpenEOClient <- R6Class(
         if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
+      req = req_error(req,body=private$errorHandling)
       
       response = req_perform(req)      
       # response=POST(
@@ -744,7 +749,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
@@ -797,8 +802,7 @@ OpenEOClient <- R6Class(
         if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
-      
-      
+      req = req_error(req,body=private$errorHandling)
       
       response = req_perform(req)  
 
@@ -826,7 +830,7 @@ OpenEOClient <- R6Class(
         okMessage = resp_body_json(response)
         return(okMessage)
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, parsed=TRUE, ...) {
@@ -854,7 +858,7 @@ OpenEOClient <- R6Class(
       #   params = append(params, list(encode = encodeType))
       # }
       # response = do.call("PATCH", args = params)
-      
+      req = req_error(req,body=private$errorHandling)
       response = req_perform(req)
       
       if (is.debugging()) {
@@ -873,7 +877,7 @@ OpenEOClient <- R6Class(
         okMessage = resp_body_json(response)
         return(okMessage)
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
 
@@ -901,19 +905,19 @@ OpenEOClient <- R6Class(
 
       return(header)
     },
-    errorHandling = function(response,url) {
-      if (class(response) == "response") {
+    errorHandling = function(response) {
+      if (class(response) == "httr2_response" || class(response) == "response") {
         # errorMessage = content(response)
         errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {
-          stop(paste("SERVER-ERROR:", errorMessage[["message"]]))
+          paste("SERVER-ERROR:", errorMessage[["message"]])
         } else {
           # if there is an uncaptured error from the server then just return it as is
-          stop(paste("SERVER-ERROR:", errorMessage))
+          paste("SERVER-ERROR:", errorMessage)
         }
       } else {
         # never happens? it is something else than response object
-        stop(response)
+        response
       }
     }
   )
