@@ -1,9 +1,10 @@
 #' @include jobs.R
 
 #' @export
-get_sample = function(graph, replace_aoi = TRUE,execution="sync",con=NULL) {
+get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,con=NULL, ...) {
   tryCatch({
     con = openeo:::.assure_connection(con)
+    dots = list(...)
     
     if (isTRUE(replace_aoi)) {
       # extract spatial_extent of load_collection, create a variable from it, 
@@ -58,10 +59,19 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",con=NULL) {
     
     if (!is.null(execution) && execution == "async") {
       # create job
+      arg_names = names(formals(create_job))
+      arg_names = arg_names[-which("..." == names(arg_names))]
+      job_meta = dots[which(arg_names %in% names(dots))]
+      job = do.call(create_job, c(list(graph=graph),job_meta))
       # queue job
+      
+      if (isTRUE(immediate)) {
+        start_job(job,con=con)
+      }
       # download results
     } else {
       # compute_results
+      return(compute_result(graph = graph, ...))
     }
     return(graph)
   })
