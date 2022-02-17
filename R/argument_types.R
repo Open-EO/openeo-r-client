@@ -1972,7 +1972,16 @@ ProcessGraphParameter = R6Class(
       if (self$isEmpty()) {
         return(list(from_parameter=private$name))
       } else {
-        return(self$getValue())
+        
+        if ("Argument" %in% class(private$value)) {
+          value_serialization = self$getValue()$serialize()
+        } else if ("FileFormat" %in% class(private$value)) {
+          value_serialization = private$value$name
+        } else {
+          value_serialization = self$getValue()
+        }
+        
+        return(value_serialization)
       }
     }
   )
