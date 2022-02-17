@@ -100,8 +100,8 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
         
         if (!is.null(output_file)) {
             tryCatch({
-                message("Task result was sucessfully stored.")
-                writeBin(resp_body_raw(res), output_file)
+              writeBin(resp_body_raw(res), output_file)
+              message("Task result was sucessfully stored into a local file.")
             }, error = function(err) {
                 stop(err)
             })
@@ -184,7 +184,7 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return the job_id of the defined job
+#' @return the job object of the now started job
 #' @export 
 start_job = function(job, log=FALSE, con=NULL) {
     tryCatch({
@@ -209,7 +209,7 @@ start_job = function(job, log=FALSE, con=NULL) {
             logs(job_id=job_id,con=con)
         }
         
-        invisible(success)
+        invisible(describe_job(job,con = con))
     }, error = .capturedErrorToMessage)
 }
 
