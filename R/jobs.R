@@ -319,24 +319,41 @@ list_results = function(job, con=NULL) {
 #' The function will fetch the results of a asynchronous job and will download all files stated in the links. The parameter
 #' 'folder' is the target location on the local computer.
 #' 
-#' @param job job object or the job_id for which the results are fetched
+#' @param job job object or the job_id for which the results are fetched. Also the return value of 
+#' \code{\link{list_results}} or its 'assets' field is also accepted.
 #' @param folder a character string that is the target path on the local computer
 #' @param con a connected and authenticated openEO connection (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return a list of the target file paths
+#' @return a list of the target file paths or NULL if 'job' was incorrect
 #' 
 #' @importFrom utils download.file
 #' @export
 download_results = function(job, folder, con=NULL) {
     con = .assure_connection(con)
     
+    if (length(job) != 1) {
+      message("Parameter 'job' is not set.")
+      return(invisible(NULL))
+    }
+    
     if (!dir.exists(folder)) 
         dir.create(folder, recursive = TRUE)
-    results = list_results(con=con, job=job)
     
-    target_files = lapply(names(results$assets), function(file_name) {
-        link = results$assets[[file_name]]
+    if ("Job" %in% class(job) || is.character(job)) {
+      results = list_results(con=con, job=job)
+      assets = results$assets
+    } else if ("AssetList" %in% class(job)) {
+      assets = job
+    } else if ("ResultList" %in% class(job)) {
+      assets = job$assets
+    } else {
+      message("Parameter 'job' was not interpretable.")
+      return(invisible(NULL))
+    }
+    
+    target_files = lapply(names(assets), function(file_name) {
+        link = assets[[file_name]]
         
         href = link$href
         type = link$type
@@ -346,7 +363,11 @@ download_results = function(job, folder, con=NULL) {
         
         file_path = paste0(folder, file_name)
         
-        download.file(href, file_path, mode = "wb")
+        req = request(href)
+        req = req_method(req, method="GET")
+        response = req_perform(req)
+        
+        writeBin(resp_body_raw(response), file_path)
         
         return(file_path)
     })

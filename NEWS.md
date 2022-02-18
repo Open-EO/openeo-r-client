@@ -14,6 +14,7 @@
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
 
 ## Changed
+* `download_results()` uses httr2 functions instead of `download.file()` [#108](https://github.com/Open-EO/openeo-r-client/issues/108), also parameter `job` is allowed to be a ResultList or AssetList
 * `timeout` parameter in `logs()` is now optional. If omitted 60s timeout is used for active batch processes and enabled services [#109](https://github.com/Open-EO/openeo-r-client/issues/109)
 * replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
 * `connect` no longer carries the login parameters separately, but uses `...` to pass on those information

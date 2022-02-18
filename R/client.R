@@ -672,34 +672,6 @@ OpenEOClient <- R6Class(
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
-      # if (length(data) > 0) {
-      #   if (! raw) {
-      #     if (is.character(data)) {
-      #       # data = fromJSON(data,simplifyDataFrame = FALSE)
-      #       if (encodeType == "json") {
-      #         encodeType = "raw"
-      #         header = append(header, list(`Content-Type` = "application/json"))
-      #       }
-      #     } else if (is.list(data)) {
-      #       
-      #       if (encodeType == "json") {
-      #         encodeType = "raw"
-      #         header = append(header, list(`Content-Type` = "application/json"))
-      #         
-      #         
-      #         # data = do.call(toJSON, args = list(x = data,
-      #         #                                    auto_unbox = TRUE,
-      #         #                                    ...))
-      #           
-      #       }
-      #       
-      #     } else {
-      #       stop("Cannot interpret data - not a list that can be transformed into json")
-      #     }
-      #   } else {
-      #     header = append(header, list(`Content-Type` = "application/octet-stream"))
-      #   }
-      # }
       
       req = do.call(req_headers,header)
       query$req = req
@@ -719,14 +691,7 @@ OpenEOClient <- R6Class(
       req = req_error(req,body=private$errorHandling)
       
       response = req_perform(req)      
-      # response=POST(
-      #   url= url,
-      #   config = header,
-      #   query = query,
-      #   body = data,
-      #   encode = encodeType
-      # )
-      
+
       if (is.debugging()) {
         print(response)
       }
