@@ -597,6 +597,10 @@ OpenEOClient <- R6Class(
       
       req = req_error(req,body=private$errorHandling)
       
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)
       
       if (is.debugging()) {
@@ -637,6 +641,10 @@ OpenEOClient <- R6Class(
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
       
       response = req_perform(req)
       
@@ -690,6 +698,10 @@ OpenEOClient <- R6Class(
       
       req = req_error(req,body=private$errorHandling)
       
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)      
 
       if (is.debugging()) {
@@ -729,29 +741,6 @@ OpenEOClient <- R6Class(
         header = private$addAuthorization(header)
       }
       
-
-      # create JSON and prepare to send graph as post body
-      # if (is.character(data)) {
-      #   if (encodeType == "json") {
-      #     encodeType = "raw"
-      #     header = append(header, add_headers(`Content-Type` = "application/json"))
-      #   }
-      # } else if (is.list(data)) {
-      #   
-      #   if (encodeType == "json") {
-      #     encodeType = "raw"
-      #     header = append(header, add_headers(`Content-Type` = "application/json"))
-      #     
-      #     
-      #     # data = do.call(toJSON, args = list(x = data,
-      #     #                                    auto_unbox = TRUE,
-      #     #                                    ...))
-      #     
-      #   }
-      #   
-      # } else {
-      #   stop("Cannot interpret data - not a list that can be transformed into JSON")
-      # }
       req = do.call(req_headers,header)
       query$req = req
       req = do.call(req_url_query,args = query)
@@ -769,15 +758,11 @@ OpenEOClient <- R6Class(
       
       req = req_error(req,body=private$errorHandling)
       
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)  
-
-      # response=PUT(
-      #   url= url,
-      #   config = header,
-      #   query = query,
-      #   body = data,
-      #   encode = encodeType
-      # )
       
       if (is.debugging()) {
         print(response)
@@ -809,21 +794,19 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
       
-      
-      
       params = list(url=url, 
                     config = header)
       
       if (!is.null(data)) {
-        # params = append(params, list(body = data))
         req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
-      # if (!is.null(encodeType)) {
-      #   params = append(params, list(encode = encodeType))
-      # }
-      # response = do.call("PATCH", args = params)
       req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)
       
       if (is.debugging()) {
