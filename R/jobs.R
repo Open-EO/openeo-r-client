@@ -52,15 +52,17 @@ list_jobs = function(con=NULL) {
 #' @param output_file storage location for the returned data
 #' @param budget numeric, maximum spendable amount for testing
 #' @param plan character, selection of a service plan
+#' @param as_stars logical to indicate if the data shall be interpreted as a stars object
+#' @param format character or \code{FileFormat} specifying the File format for the output
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
-#' @return A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data
+#' @return a local path to the downloaded file or a \code{stars} object if \code{as_stars=TRUE}
 #' 
 #' @importFrom methods as
 #' @export
-compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con=NULL, ...) {
+compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_stars=FALSE, format = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -95,21 +97,42 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, con
         }
         
         tag = "execute_sync"
-        # res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", raw = TRUE, ...)
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
-        if (!is.null(output_file)) {
-            tryCatch({
-              writeBin(resp_body_raw(res), output_file)
-              message("Task result was sucessfully stored into a local file.")
-            }, error = function(err) {
-                stop(err)
-            })
-            
-            return(output_file)
+        if (length(format) > 0 && length(output_file) == 0) {
+          if (is.character(format)) {
+            driver = format
+          } else if ("FileFormat" %in% class(format)) {
+            driver = format$name
+          } else {
+            message("Cannot derive a file extension. Using none which might affect data interpretation.")
+            driver = ""
+          }
+          
+          suffix = switch(driver, netCDF=".nc",GTiff=".tif",JSON=".json",default="")
+          output_file = tempfile(fileext = suffix)
         } else {
-            return(resp_body_raw(res))
+          # TODO now we need to look into the process graph and search for save_result
         }
+        
+        tryCatch({
+          writeBin(resp_body_raw(res), output_file)
+        }, error = function(err) {
+          stop(err)
+        })
+        
+        if (isTRUE(as_stars) && isNamespaceLoaded("stars")) {
+          obj=stars::read_stars(output_file,proxy=FALSE,quiet=TRUE)
+          
+          tryCatch({
+            return(obj)
+          }, finally={
+            unlink(output_file)
+          })
+        } else {
+          return(output_file)
+        }
+        
     }, error = .capturedErrorToMessage)
 }
 

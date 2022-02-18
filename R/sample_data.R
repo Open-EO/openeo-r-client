@@ -1,9 +1,29 @@
 #' @include jobs.R
+NULL
 
+#' Get sample data
+#' 
+#' In order to inspect data locally a very small spatial extent will be processed, downloaded and made available in R. 
+#' 
+#' @details 
+#' In order to get a better understanding about the processing mechanisms and the data structures used in the openEO backend, it helps
+#' to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial extents of the derived 
+#' process graph with a new spatial extent which is calculated by the first spatial extent of the mandatory openEO process 'load_collection'.
+#' We take the center of the extent and add 0.0003 degrees to it. Currently just spatial bounding boxes with the default CRS EPSG:4326 are
+#' replaced.
+#'
+#' @param graph a ProcessGraph, a Process or the final node in a process for which the sample shall be calculated
+#' @param replace_aoi a logical flag to indicate whether or not the original spatial extent shall be substituted with a different one, default TRUE
+#' @param execution \code{sync} or \code{async} which indicates the processing chain, a not "async" value results in a synchronous processing
+#' @param immediate flag to be considered if the retrieval shall be immediately queued on the back-end
+#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' is used.
+#' @param ... additional parameters that are passed to \code{\link{compute_result}} or \code{\link{create_job}}
+#' 
 #' @export
 get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,con=NULL, ...) {
   tryCatch({
-    con = openeo:::.assure_connection(con)
+    con = .assure_connection(con)
     dots = list(...)
     
     if (isTRUE(replace_aoi)) {
@@ -44,7 +64,8 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
           center = c(lon=mean(v[["west"]],v[["east"]]),
                      lat=mean(v[["south"]],v[["north"]]))
           dlon = 0.0003 #between 30 and 40m
-          dlat = (1-abs(center["lat"])/90) * dlon
+          dlat = 0.0003
+          
           sample_extent = list(west = center["lon"]-dlon/2, 
                                east = center["lon"]+dlon/2, 
                                south=center["lat"]-dlat/2, 
@@ -56,22 +77,26 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
       }
     }
     
-    
     if (!is.null(execution) && execution == "async") {
       # create job
       arg_names = names(formals(create_job))
       arg_names = arg_names[-which("..." == names(arg_names))]
       job_meta = dots[which(arg_names %in% names(dots))]
       job = do.call(create_job, c(list(graph=graph),job_meta))
-      # queue job
       
+      # queue job
       if (isTRUE(immediate)) {
-        start_job(job,con=con)
+        job = start_job(job,con=con)
       }
-      # download results
+      return(job)
+      # download results on your own
     } else {
       # compute_results
-      return(compute_result(graph = graph, ...))
+      arg_names = names(formals(compute_result))
+      compute_config = dots[which(names(dots) %in% arg_names)]
+      res = do.call(compute_result, c(list(graph=graph,con=con),compute_config))
+      
+      return(res)
     }
     return(graph)
   })

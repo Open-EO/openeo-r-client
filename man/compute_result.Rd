@@ -9,6 +9,8 @@ compute_result(
   output_file = NULL,
   budget = NULL,
   plan = NULL,
+  as_stars = FALSE,
+  format = NULL,
   con = NULL,
   ...
 )
@@ -23,13 +25,17 @@ will return the results}
 
 \item{plan}{character, selection of a service plan}
 
+\item{as_stars}{logical to indicate if the data shall be interpreted as a stars object}
+
+\item{format}{character or \code{FileFormat} specifying the File format for the output}
+
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \value{
-A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data
+a local path to the downloaded file or a \code{stars} object if \code{as_stars=TRUE}
 }
 \description{
 Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
