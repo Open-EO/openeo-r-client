@@ -25,13 +25,33 @@
 #' @return JSON string of the process graph as a character string 
 #' 
 #' @export
-graphToJSON = function(graph) {
-    # task is a Graph object
-    
+graphToJSON = function(graph) {    
     if ("Graph" %in% class(graph)) {
-        return(toJSON(graph$serialize(), auto_unbox = T, pretty = T, force = TRUE))
+        return(toJSON(graph$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE))
     } else {
         stop("Parameter is no Graph object.")
+        invisible(NULL)
+    }
+    
+}
+
+
+
+#' Wrapper for toJSON
+#' 
+#' This function is intended to have a preconfigured toJSON function
+#' to allow a user to visualize the process in JSON (like it will
+#' be sent to the back-end)
+#' 
+#' @param process a list / nested list representing the process
+#' @return JSON string of the process as a character string 
+#' 
+#' @export
+processToJSON = function(process) {    
+    if ("Process" %in% class(process)) {
+        return(toJSON(process$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE))
+    } else {
+        stop("Parameter is no Process object.")
         invisible(NULL)
     }
     

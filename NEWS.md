@@ -9,6 +9,7 @@
   - authorization_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code+pkce
 * temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made
+* `processToJSON` to easily convert a process to JSON
 
 ## Fixes
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
