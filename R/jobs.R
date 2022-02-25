@@ -96,6 +96,8 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
             job$plan = plan
         }
         
+        is_tempfile = ifelse(length(output_file) == 0,TRUE,FALSE)
+        
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
@@ -116,18 +118,22 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         }
         
         tryCatch({
+          if (!dir.exists(dirname(output_file))) {
+            dir.create(dirname(output_file), recursive = TRUE)
+          }
           writeBin(resp_body_raw(res), output_file)
         }, error = function(err) {
           stop(err)
         })
         
-        if (isTRUE(as_stars) && isNamespaceLoaded("stars")) {
+        if (isTRUE(as_stars) && .is_package_installed("stars")) {
+          
           obj=stars::read_stars(output_file,proxy=FALSE,quiet=TRUE)
           
           tryCatch({
             return(obj)
           }, finally={
-            unlink(output_file)
+            if (is_tempfile) unlink(output_file)
           })
         } else {
           return(output_file)
