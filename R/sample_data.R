@@ -46,7 +46,11 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
         !is.null(id) && id == "load_collection"
       }))
       
-      load_collections = ns[subset]
+      
+      load_collections = .find_process_by_name(graph,"load_collection")
+      
+      if (length(load_collections) == 0) stop("Cannot find 'load_collection' in the process definition.")
+      
       var = create_variable("extent")
       extents = lapply(load_collections,function(x) {
         ext = x$parameters$spatial_extent$getValue()
@@ -94,6 +98,10 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
       # compute_results
       arg_names = names(formals(compute_result))
       compute_config = dots[which(names(dots) %in% arg_names)]
+      
+      if ("options" %in% names(dots)) { # currently this is the only additonal parameter for save_result
+        compute_config$options = dots$options 
+      }
       res = do.call(compute_result, c(list(graph=graph,con=con),compute_config))
       
       return(res)

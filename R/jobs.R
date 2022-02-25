@@ -45,7 +45,9 @@ list_jobs = function(con=NULL) {
 #' the server remains open. This function allows to debug the code and check the results immediately. 
 #' Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
 #' Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
-#' e.g. not supporting UDFs at this endpoint.
+#' e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for 
+#' 'save_result' will be replaced. If the 'stars' package is installed and parameter \code{as_stars} is set to TRUE, then the downloaded
+#' data is opened and interpreted into a stars object.
 #'
 #' @param graph a \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
 #' will return the results
@@ -53,10 +55,12 @@ list_jobs = function(con=NULL) {
 #' @param budget numeric, maximum spendable amount for testing
 #' @param plan character, selection of a service plan
 #' @param as_stars logical to indicate if the data shall be interpreted as a stars object
-#' @param format character or \code{FileFormat} specifying the File format for the output
+#' @param format character or \code{FileFormat} specifying the File format for the output, if 'save_result' is not
+#' set in the process then it will be added otherwise the value stated here will replace the original value
 #' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
+#' be passed to the openEO process 'save_result'
 #' 
 #' @return a local path to the downloaded file or a \code{stars} object if \code{as_stars=TRUE}
 #' 
@@ -84,6 +88,39 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         process = Process$new(id=NA,description = NA,
                               summary = NA,process_graph=graph)
         
+        # if format is set check if save_result is set, if not do that with the format stated, if it is 
+        # check if the formats match else replace
+        # more or less replace save_result of the graph with the customization stated in this function
+        if (length(format) > 0) {
+          save_node = .find_process_by_name(process,"save_result")
+          p = processes()
+          
+          dots = list(...)
+          
+          call_args = list(format = format)
+          
+          arg_names = names(formals(p$save_result))
+          save_result_dots = dots[which(arg_names %in% names(dots))]
+          
+          call_args = append(call_args, save_result_dots)
+          
+          if (length(save_node) == 0) {
+            
+            # not existent
+            call_args$data = process$getProcessGraph()$getFinalNode()
+            
+            # check for potentially multiple end nodes
+            
+          } else {
+            # check only first (or look for the final node)
+            saved_graph = save_node[[1]]
+            call_args$data = saved_graph$parameters$data
+          }
+          
+          saved_graph = do.call(p$save_result,call_args)
+          process = as(saved_graph,"Process")
+        }
+        
         job = list(
             process = process$serialize()
         )
@@ -101,6 +138,8 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
+        
+        
         if (length(format) > 0 && length(output_file) == 0) {
           if (is.character(format)) {
             driver = format
@@ -113,8 +152,6 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           
           suffix = switch(driver, netCDF=".nc",GTiff=".tif",JSON=".json",default="")
           output_file = tempfile(fileext = suffix)
-        } else {
-          # TODO now we need to look into the process graph and search for save_result
         }
         
         tryCatch({
