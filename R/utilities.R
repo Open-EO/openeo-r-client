@@ -130,3 +130,21 @@ status = function(x, ...) {
     }
     return(l)
 }
+
+.find_process_by_name = function(graph, process_id) {
+  
+  if ("Graph" != class(graph)[1]) {
+    graph = parse_graph(graph$serialize())
+  }
+  
+  ns=graph$getNodes()
+  subset = which(sapply(ns, function(x) {
+    id = x$getId()
+    !is.null(id) && id == process_id
+  }))
+  if (length(subset) == 0) {
+    return(list())
+  } else {
+    return(ns[subset])
+  }
+}

@@ -49,16 +49,15 @@ oauth_flow_device = function (client, auth_url, pkce = FALSE, scope = NULL, auth
                                        auth_params)
   
   # verification_uri_complete is optional, it would ship the user code in the uri https://datatracker.ietf.org/doc/html/rfc8628 ch. 3.2
-  if (rlang::is_interactive() && rlang::has_name(request, "verification_uri_complete")) {
-    rlang::inform(glue::glue("Use code {request$user_code}"))
-    utils::browseURL(request$verification_uri_complete)
-  } else if (rlang::is_interactive() && rlang::has_name(request, "verification_uri")) {
-    rlang::inform(glue::glue("Use code {request$user_code}"))
-    utils::browseURL(request$verification_uri)
+  url <- request$verification_uri_complete %||% request$verification_uri %||% request$verification_url
+  
+  if (is_interactive()) {
+    inform(glue("Use code {request$user_code}"))
+    utils::browseURL(url)
   } else {
-    url <- request$verification_uri %||% request$verification_url
-    inform(glue::glue("Visit <{url}> and enter code {request$user_code}"))
+    inform(glue("Visit <{url}> and enter code {request$user_code}"))
   }
+  
   token <- httr2:::oauth_flow_device_poll(client, request, token_params)
   if (is.null(token)) {
     rlang::abort("Expired without user confirmation; please try again.")

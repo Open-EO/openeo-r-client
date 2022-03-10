@@ -1,6 +1,7 @@
 # version 1.2.0
 
 ## Added
+* implemented a method for sample data retrieval (`get_sample()`), which will modify a process graph by replacing the original spatial extent of the request with a smaller subset of 0.0003 degrees extent [#94](https://github.com/Open-EO/openeo-r-client/issues/94)
 * rendering of classes as HTML widgets using the openEO Vue components, which can be used in Jupyter Notebook, Rmarkdown, RStudio and knitr
 * implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
 * implemented an abstract OIDC authentication
@@ -14,6 +15,9 @@
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
 
 ## Changed
+* `compute_result()` will set or override existing `save_result` node entries when parameter `format` is provided [#62](https://github.com/Open-EO/openeo-r-client/issues/62)
+* `compute_result()` will return a `stars` object if the parameter `as_stars` is set TRUE [#39](https://github.com/Open-EO/openeo-r-client/issues/39)
+* `download_results()` uses httr2 functions instead of `download.file()` [#108](https://github.com/Open-EO/openeo-r-client/issues/108), also parameter `job` is allowed to be a ResultList or AssetList
 * `timeout` parameter in `logs()` is now optional. If omitted 60s timeout is used for active batch processes and enabled services [#109](https://github.com/Open-EO/openeo-r-client/issues/109)
 * replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
 * `connect` no longer carries the login parameters separately, but uses `...` to pass on those information

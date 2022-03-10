@@ -14,6 +14,7 @@ Suggests:
     testthat,
     knitr,
     sf,
+    stars,
     geojsonsf,
     pkgdown,
     rmarkdown,
@@ -54,6 +55,7 @@ Collate:
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'
+    'sample_data.R'
     'server_metadata.R'
     'udf.R'
     'user.R'
