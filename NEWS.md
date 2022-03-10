@@ -1,6 +1,7 @@
 # version 1.2.0
 
 ## Added
+* implemented a method for sample data retrieval (`get_sample()`), which will modify a process graph by replacing the original spatial extent of the request with a smaller subset of 0.0003 degrees extent [#94](https://github.com/Open-EO/openeo-r-client/issues/94)
 * rendering of classes as HTML widgets using the openEO Vue components, which can be used in Jupyter Notebook, Rmarkdown, RStudio and knitr
 * implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
 * implemented an abstract OIDC authentication

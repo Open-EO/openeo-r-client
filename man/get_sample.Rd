@@ -31,9 +31,13 @@ is used.}
 In order to inspect data locally a very small spatial extent will be processed, downloaded and made available in R.
 }
 \details{
-In order to get a better understanding about the processing mechanisms and the data structures used in the openEO backend, it helps
-to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial extents of the derived 
-process graph with a new spatial extent which is calculated by the first spatial extent of the mandatory openEO process 'load_collection'.
-We take the center of the extent and add 0.0003 degrees to it. Currently just spatial bounding boxes with the default CRS EPSG:4326 are
-replaced.
+In order to get a better understanding about the processing mechanisms and the data structures used in the openEO backend, 
+it helps to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial 
+extents of the derived process graph with a new spatial extent which is calculated by the first spatial extent of the 
+mandatory openEO process 'load_collection'. We take the center of the extent and add 0.0003 degrees to it. In case the
+coordinate reference system is not in WGS84, then the bounding box will be transformed into geodetic WGS84 beforehand, if
+the package 'sf' is present.
+
+If the spatial extent was explicitly set to a small custom extent, then you can disable the replacement of the area of 
+interest with \code{replace_aoi = FALSE}.
 }

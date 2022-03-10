@@ -72,6 +72,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         
         output = list()
         
+        #TODO what if graph is already a Process?
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
         

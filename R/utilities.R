@@ -132,8 +132,10 @@ status = function(x, ...) {
 }
 
 .find_process_by_name = function(graph, process_id) {
-  graph = parse_graph(graph$serialize())
   
+  if ("Graph" != class(graph)[1]) {
+    graph = parse_graph(graph$serialize())
+  }
   
   ns=graph$getNodes()
   subset = which(sapply(ns, function(x) {
