@@ -1,0 +1,94 @@
+---
+title: "Sample Data Retrieval"
+author: "Florian Lahn"
+date: "2022-03-11"
+output: html_document
+---
+
+During this examples, we will use openEO Platform as implementation. Also openEO as a project is under continuous development and the assumptions made, had to consider the current state of the implementations. In the following chapters, we will give some examples, how to obtain sample data for developing and debugging your openEO workflows. The example code is printed, but the results for many code blocks will not be shown, because of there are steps that require either user interactions or contain personal data.
+
+```{r setup,echo=FALSE, eval=FALSE}
+library(openeo)
+```
+
+# Introduction
+
+For dealing with remote processing trust is a very important aspect. For once you must trust the provider that the data is correctly pre-processed, meaning the data collection is correct and valid. Then the provided operators need to work correctly. Also you must trust that the optimization / parallelization strategy works correctly. If your openEO workflow throws an error, then you need means to inspect the data to rule out errors in the initial analysis assumptions. At last you definitely need some support, when you use or develop user-defined functions (UDF), if the back-end supports them.
+
+As for now, openEO Platform supports the user on this matter in the form that data can be processed until a specific processing step and the result can be downloaded. 
+
+In order to minimize the effort for an R user to obtain a small data chunk as sample data for local inspection, the function `get_sample()` was designed. As openEO normally operates on spatio-temporal data cubes, the `get_sample()` function aims to reduce the amount of data by subsetting the initial data spatially. Furthermore by using this function you already download the sample data and retrieve it optionally as a `stars` object. The latter will require the package `stars` to be installed in your R environment.
+
+# Sampling
+
+At first, we need an enabled account at openEO platform, then we establish a connection to the back-end and start the login procedure. In the process you will be asked for your authentication provider and potentially your login credentials (e.g. Authentication with Github, where you will be redirected to the Github page). During the process you will be very likely asked for a device code, which can be found in the console and you need to authorize the connection of 'openeo' for this session.
+
+```{r, eval=FALSE}
+con = connect("https://openeo.cloud")
+login()
+```
+
+```{r, eval=FALSE}
+p = processes()
+coll = list_collections()
+
+data = p$load_collection(id = coll$SENTINEL2_L2A,
+                         bands=c("B04","B08"),
+                         spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15),
+                         temporal_extent = list("2021-03-01","2021-07-15"))
+
+ndvi = p$reduce_dimension(data=data, dimension = "bands",reducer = function(x, context) {
+  b04 = x[1]
+  b08 = x[2]
+  (b08-b04)/(b08+b04)
+})
+```
+
+
+```{r, eval=FALSE}
+f = list_file_formats()
+```
+
+
+```{r, eval=FALSE}
+obj = get_sample(ndvi, as_stars=TRUE, output_file="test.nc",format = f$output$netCDF)
+```
+
+The `get_sample()` function can be applied directly on an intermediate processing step, without the need of explicitly defining a `save_result` process. Internally either `compute_result` (synchronous call) or `create_job` (asynchronous call) is used, depending on the parameter `execution='async'|'sync'`. For `compute_result` several configurations can be passed to the function using the `...` parameter. In that function the automatic addition of `save_result` is handled. If no specific format was specified, then 'netCDF' will be chosen as a default, if the back-end support that format.
+
+In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed). 
+
+```{r, eval=FALSE}
+obj
+```
+
+Hint: Newer versions of 'stars' already interpret the temporal dimension into POSIX dates.
+
+```{r, eval=FALSE}
+library(lubridate)
+library(stars)
+library(ggplot2)
+
+dates = as_date(st_get_dimension_values(obj,"t"))
+obj = st_set_dimensions(obj,which="t",values = dates)
+```
+
+
+```{r, eval=FALSE}
+ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
+```
+
+```{r, eval=FALSE}
+library(sf)
+st_bbox(st_transform(st_as_sfc(st_bbox(obj)), 4326))
+```
+Result (2022-03-11): 
+     xmin      ymin      xmax      ymax 
+ 6.749701 51.827189  6.787967 51.850893 
+
+The original bounding box was `spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15)`. The bounding box of the obtained sample data is smaller than the original one. It should be even smaller, `get_sample()` takes the center point of the bounding box and fetches data in a 0.0003° radius, which is approximately 30 meter in all directions. If the bounding box coordinate reference is not in WGS84 (default EPSG:4326) the package `sf` is required to handle the coordinate transformations.
+As mentioned in the beginning the current realization of the back-end provider has realized a serialization of a minimum tile sizes of 256x256 pixel.
+
+# Why `stars`
+
+The `stars` package was chosen to represent multidimensional spatio-temporal data in this context, because that was the exact developers intention. Also `stars` offer several coercion functions to convert the data into formats of other packages for a more specialized purpose like `terra` for raster operations. Another reason is the planned use of `stars` in the UDF module for R. With this in mind the user can obtain a `stars` object and develop an R-UDF locally, which can potentially run on the back-end.
