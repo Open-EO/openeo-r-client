@@ -6,7 +6,7 @@ NULL
 #' In order to inspect data locally a very small spatial extent will be processed, downloaded and made available in R. 
 #' 
 #' @details 
-#' In order to get a better understanding about the processing mechanisms and the data structures used in the openEO backend, 
+#' In order to get a better understanding about the processing mechanisms and the data structures used in the openEO back-end, 
 #' it helps to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial 
 #' extents of the derived process graph with a new spatial extent which is calculated by the first spatial extent of the 
 #' mandatory openEO process 'load_collection'. We take the center of the extent and add 0.0003 degrees to it. In case the
@@ -40,14 +40,7 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
       # we need a copy of the whole process otherwise the original graph gets overwritten due to the environments in R6
       graph = parse_graph(graph$serialize())
 
-
-      # ns=graph$getNodes()
-      # subset = which(sapply(ns, function(x) {
-      #   id = x$getId()
-      #   !is.null(id) && id == "load_collection"
-      # }))
-      
-      load_collections = .find_process_by_name(graph,"load_collection")
+      load_collections = .find_process_by_name(graph,"load_collection") # TODO also use filter_spatial or filter_polygon
       if (length(load_collections) == 0) stop("Cannot find 'load_collection' in the process definition.")
       
       var = create_variable("extent")
@@ -57,29 +50,28 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
         return(ext)
       })
       
-      # theoretically the boundingboxes should be the same for each entry, even if multiple collections are used they should cover the
+      # theoretically the bounding boxes should be the same for each entry, even if multiple collections are used they should cover the
       # same spatial extent, one objection would be reference areas of some sort...
       e = extents[[1]]
       if ("bounding-box" %in% class(e)) {
         v = e$getValue()
         
         if ("crs" %in% names(v) && v[["crs"]] != 4326) {
-          #TODO not sure what to do exactly without depending on proper geometry packages like sf
           # check if sf is installed, if not, its not supported
           if (!.is_package_installed("sf")) {
             warning("Cannot automatically replace area of interest in a non EPSG:4326 without package 'sf' being installed. Please install the package or specify the AOI and run again with replace_aoi=FALSE")
             return(invisible(NULL))
           }
           
-          center = c(lon=mean(v[["west"]],v[["east"]]),
-                     lat=mean(v[["south"]],v[["north"]]))
+          center = c(lon=mean(c(v[["west"]],v[["east"]])),
+                     lat=mean(c(v[["south"]],v[["north"]])))
           
           center = sf::st_transform(sf::st_sfc(sf::st_point(center),crs=sf::st_crs(v[["crs"]])), sf::st_crs(4326))
           center = as.numeric(center[[1]])
           names(center) = c("lon","lat")
         } else {
-          center = c(lon=mean(v[["west"]],v[["east"]]),
-                     lat=mean(v[["south"]],v[["north"]]))
+          center = c(lon=mean(c(v[["west"]],v[["east"]])),
+                     lat=mean(c(v[["south"]],v[["north"]])))
         }
         
         dlon = 0.0003 #between 30 and 40m
@@ -90,8 +82,10 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
                              south=center[["lat"]]-dlat/2, 
                              north = center[["lat"]]+dlat/2)
         var$setValue(sample_extent)
+      } else {
+        #TODO geojson
       }
-    }
+    } 
     
     if (!is.null(execution) && execution == "async") {
       # create job
@@ -111,7 +105,7 @@ get_sample = function(graph, replace_aoi = TRUE,execution="sync",immediate=TRUE,
       arg_names = names(formals(compute_result))
       compute_config = dots[which(names(dots) %in% arg_names)]
       
-      if ("options" %in% names(dots)) { # currently this is the only additonal parameter for save_result
+      if ("options" %in% names(dots)) { # currently this is the only additional parameter for save_result
         compute_config$options = dots$options 
       }
       res = do.call(compute_result, c(list(graph=graph,con=con),compute_config))
