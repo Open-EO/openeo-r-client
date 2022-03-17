@@ -19,7 +19,7 @@ As for now, openEO Platform supports the user on this matter in the form that da
 
 In order to minimize the effort for an R user to obtain a small data chunk as sample data for local inspection, the function `get_sample()` was designed. As openEO normally operates on spatio-temporal data cubes, the `get_sample()` function aims to reduce the amount of data by subsetting the initial data spatially. Furthermore by using this function you already download the sample data and retrieve it optionally as a `stars` object. The latter will require the package `stars` to be installed in your R environment.
 
-# Sampling
+# Sampling - Part 1
 
 At first, we need an enabled account at openEO platform, then we establish a connection to the back-end and start the login procedure. In the process you will be asked for your authentication provider and potentially your login credentials (e.g. Authentication with Github, where you will be redirected to the Github page). During the process you will be very likely asked for a device code, which can be found in the console and you need to authorize the connection of 'openeo' for this session.
 
@@ -32,9 +32,11 @@ login()
 p = processes()
 coll = list_collections()
 
+bounding_box = list(west=6.75,south=51.85,east=7.25,north=52.15)
+
 data = p$load_collection(id = coll$SENTINEL2_L2A,
                          bands=c("B04","B08"),
-                         spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15),
+                         spatial_extent = bounding_box,
                          temporal_extent = list("2021-03-01","2021-07-15"))
 
 ndvi = p$reduce_dimension(data=data, dimension = "bands",reducer = function(x, context) {
@@ -45,24 +47,50 @@ ndvi = p$reduce_dimension(data=data, dimension = "bands",reducer = function(x, c
 ```
 
 
-```{r, eval=FALSE}
-f = list_file_formats()
+# Excursion: Sample Data Retrieval without `get_sample()` function
+
+Without the sampling function you need to define the workflow completely and you have to manually create a small subset and exchange the bounding boxes accordingly. Also before the changes to `compute_result` you would have to manually set the `save_result` node. A workflow would have looked like the following:
+
+```{r}
+res = p$save_result(ndvi, format = f$output$netCDF)
+```
+
+```{r}
+as(res,"Process")
 ```
 
 
-```{r, eval=FALSE}
-obj = get_sample(ndvi, as_stars=TRUE, output_file="test.nc",format = f$output$netCDF)
+Calculate a new bounding box
+
+```{r}
+center = list(lon=mean(c(bounding_box$west, bounding_box$east)), lat=mean(c(bounding_box$south, bounding_box$north)))
+diff = 0.0003
+new_bbox = list(west=center$lon-diff,south=center$lat-diff,east=center$lon+diff,north=center$lat+diff)
 ```
 
-The `get_sample()` function can be applied directly on an intermediate processing step, without the need of explicitly defining a `save_result` process. Internally either `compute_result` (synchronous call) or `create_job` (asynchronous call) is used, depending on the parameter `execution='async'|'sync'`. For `compute_result` several configurations can be passed to the function using the `...` parameter. In that function the automatic addition of `save_result` is handled. If no specific format was specified, then 'netCDF' will be chosen as a default, if the back-end support that format.
+Replace the old bounding box with the new one.
 
-In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed). 
-
-```{r, eval=FALSE}
-obj
+```{r}
+data$parameters$spatial_extent = new_bbox
 ```
 
-Hint: Newer versions of 'stars' already interpret the temporal dimension into POSIX dates.
+```{r}
+data
+```
+Compute the results and store them in a file on your local disk.
+
+```{r}
+file = compute_result(res,output_file = "test_20220317.nc")
+```
+
+Check the data by opening the file with `stars`.
+
+```{r}
+library(stars)
+obj = read_stars("test_20220317.nc",driver = detect.driver("test_20220317.nc"))
+```
+
+In either case it can happen that the data needs to be corrected.
 
 ```{r, eval=FALSE}
 library(lubridate)
@@ -78,13 +106,93 @@ obj = st_set_dimensions(obj,which="t",values = dates)
 ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
 ```
 
-```{r, eval=FALSE}
-library(sf)
-st_bbox(st_transform(st_as_sfc(st_bbox(obj)), 4326))
+```{r}
+data$parameters$spatial_extent = bounding_box
+data
 ```
-Result (2022-03-11): 
-     xmin      ymin      xmax      ymax 
- 6.749701 51.827189  6.787967 51.850893 
+
+Running sample data retrieval this way is still valid and reasonable, when more complex spatial features are used for spatial sub setting.
+
+```{r}
+library(mapview)
+library(sf)
+
+old = as.numeric(bounding_box)
+names(old) = c("xmin","ymin","xmax","ymax")
+new = as.numeric(new_bbox)
+names(new) = c("xmin","ymin","xmax","ymax")
+
+old = st_as_sfc(st_bbox(old,crs=4326))
+new = st_as_sfc(st_bbox(new,crs=4326))
+
+mapview(list(old,new))
+```
+
+
+# Sampling - Part 2
+
+The two driving functions for sample retrieval are `get_sample()` in combination with `compute_result()`
+
+```{r}
+?get_sample
+```
+
+```{r}
+?compute_result
+```
+
+For convenience and auto-completion options in RStudio, we can store the formats as `f`. A plain text format identifier like `format="netCDF"` would do the same in the end.
+
+```{r, eval=FALSE}
+f = list_file_formats()
+```
+
+```{r, eval=FALSE}
+obj = get_sample(ndvi, as_stars=TRUE, output_file="test.nc",format = f$output$netCDF)
+```
+
+The `get_sample()` function can be applied directly on an intermediate processing step, without the need of explicitly defining a `save_result` process. Internally either `compute_result` (synchronous call) or `create_job` (asynchronous call) is used, depending on the parameter `execution='async'|'sync'`. For `compute_result` several configurations can be passed to the function using the `...` parameter. In that function the automatic addition of `save_result` is handled. If no specific format was specified, then 'netCDF' will be chosen as a default, if the back-end support that format.
+
+In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed). 
+
+```{r, eval=FALSE}
+obj
+```
+
+And as `obj` is already a `stars` object, we now completely work on local sample data. You can now test and check the sample data and potentially develop UDFs.
+
+Hint: Newer versions of 'stars' already interpret the temporal dimension into POSIX dates and the next code block can be skipped.
+
+```{r, eval=FALSE}
+library(lubridate)
+library(stars)
+library(ggplot2)
+
+dates = as_date(st_get_dimension_values(obj,"t"))
+obj = st_set_dimensions(obj,which="t",values = dates)
+```
+
+
+```{r, eval=FALSE}
+ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
+```
+
+Now, lets compare the bounding boxes of the original request with the one of the obtained data.
+
+```{r}
+library(mapview)
+library(sf)
+
+old = as.numeric(bounding_box)
+names(old) = c("xmin","ymin","xmax","ymax")
+old = st_as_sfc(st_bbox(old,crs=4326))
+
+# obj_bbox = st_transform(st_as_sfc(st_bbox(obj)), 4326)
+obj_bbox = st_as_sfc(st_bbox(obj))
+
+
+mapview(list(old,obj_bbox))
+```
 
 The original bounding box was `spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15)`. The bounding box of the obtained sample data is smaller than the original one. It should be even smaller, `get_sample()` takes the center point of the bounding box and fetches data in a 0.0003° radius, which is approximately 30 meter in all directions. If the bounding box coordinate reference is not in WGS84 (default EPSG:4326) the package `sf` is required to handle the coordinate transformations.
 As mentioned in the beginning the current realization of the back-end provider has realized a serialization of a minimum tile sizes of 256x256 pixel.
