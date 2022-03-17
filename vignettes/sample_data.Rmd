@@ -15,9 +15,9 @@ library(openeo)
 
 For dealing with remote processing trust is a very important aspect. For once you must trust the provider that the data is correctly pre-processed, meaning the data collection is correct and valid. Then the provided operators need to work correctly. Also you must trust that the optimization / parallelization strategy works correctly. If your openEO workflow throws an error, then you need means to inspect the data to rule out errors in the initial analysis assumptions. At last you definitely need some support, when you use or develop user-defined functions (UDF), if the back-end supports them.
 
-As for now, openEO Platform supports the user on this matter in the form that data can be processed until a specific processing step and the result can be downloaded. 
+As for now, openEO Platform supports the user on this matter in the form that data can be processed until a specific processing step and the result can be downloaded.
 
-In order to minimize the effort for an R user to obtain a small data chunk as sample data for local inspection, the function `get_sample()` was designed. As openEO normally operates on spatio-temporal data cubes, the `get_sample()` function aims to reduce the amount of data by subsetting the initial data spatially. Furthermore by using this function you already download the sample data and retrieve it optionally as a `stars` object. The latter will require the package `stars` to be installed in your R environment.
+In order to minimize the effort for an R user to obtain a small data chunk as sample data for local inspection, the function `get_sample()` was designed. As openEO normally operates on spatio-temporal data cubes, the `get_sample()` function aims to reduce the amount of data by sub setting the initial data spatially. Furthermore by using this function you already download the sample data and retrieve it optionally as a `stars` object. The latter will require the package `stars` to be installed in your R environment.
 
 # Sampling - Part 1
 
@@ -27,6 +27,8 @@ At first, we need an enabled account at openEO platform, then we establish a con
 con = connect("https://openeo.cloud")
 login()
 ```
+
+As an example use case we will calculate the NDVI for a certain amount of time steps. To make comparison easier at the end, the original bounding box is stored separately.
 
 ```{r, eval=FALSE}
 p = processes()
@@ -46,7 +48,6 @@ ndvi = p$reduce_dimension(data=data, dimension = "bands",reducer = function(x, c
 })
 ```
 
-
 # Excursion: Sample Data Retrieval without `get_sample()` function
 
 Without the sampling function you need to define the workflow completely and you have to manually create a small subset and exchange the bounding boxes accordingly. Also before the changes to `compute_result` you would have to manually set the `save_result` node. A workflow would have looked like the following:
@@ -59,8 +60,7 @@ res = p$save_result(ndvi, format = f$output$netCDF)
 as(res,"Process")
 ```
 
-
-Calculate a new bounding box
+Calculate a new bounding box.
 
 ```{r}
 center = list(lon=mean(c(bounding_box$west, bounding_box$east)), lat=mean(c(bounding_box$south, bounding_box$north)))
@@ -77,6 +77,7 @@ data$parameters$spatial_extent = new_bbox
 ```{r}
 data
 ```
+
 Compute the results and store them in a file on your local disk.
 
 ```{r}
@@ -100,7 +101,6 @@ library(ggplot2)
 dates = as_date(st_get_dimension_values(obj,"t"))
 obj = st_set_dimensions(obj,which="t",values = dates)
 ```
-
 
 ```{r, eval=FALSE}
 ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
@@ -128,7 +128,6 @@ new = st_as_sfc(st_bbox(new,crs=4326))
 mapview(list(old,new))
 ```
 
-
 # Sampling - Part 2
 
 The two driving functions for sample retrieval are `get_sample()` in combination with `compute_result()`
@@ -153,7 +152,7 @@ obj = get_sample(ndvi, as_stars=TRUE, output_file="test.nc",format = f$output$ne
 
 The `get_sample()` function can be applied directly on an intermediate processing step, without the need of explicitly defining a `save_result` process. Internally either `compute_result` (synchronous call) or `create_job` (asynchronous call) is used, depending on the parameter `execution='async'|'sync'`. For `compute_result` several configurations can be passed to the function using the `...` parameter. In that function the automatic addition of `save_result` is handled. If no specific format was specified, then 'netCDF' will be chosen as a default, if the back-end support that format.
 
-In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed). 
+In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed).
 
 ```{r, eval=FALSE}
 obj
@@ -171,7 +170,6 @@ library(ggplot2)
 dates = as_date(st_get_dimension_values(obj,"t"))
 obj = st_set_dimensions(obj,which="t",values = dates)
 ```
-
 
 ```{r, eval=FALSE}
 ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
@@ -194,8 +192,7 @@ obj_bbox = st_as_sfc(st_bbox(obj))
 mapview(list(old,obj_bbox))
 ```
 
-The original bounding box was `spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15)`. The bounding box of the obtained sample data is smaller than the original one. It should be even smaller, `get_sample()` takes the center point of the bounding box and fetches data in a 0.0003° radius, which is approximately 30 meter in all directions. If the bounding box coordinate reference is not in WGS84 (default EPSG:4326) the package `sf` is required to handle the coordinate transformations.
-As mentioned in the beginning the current realization of the back-end provider has realized a serialization of a minimum tile sizes of 256x256 pixel.
+The original bounding box was `spatial_extent = list(west=6.75,south=51.85,east=7.25,north=52.15)`. The bounding box of the obtained sample data is smaller than the original one. It should be even smaller, `get_sample()` takes the center point of the bounding box and fetches data in a 0.0003° radius, which is approximately 30 meter in all directions. If the bounding box coordinate reference is not in WGS84 (default EPSG:4326) the package `sf` is required to handle the coordinate transformations. As mentioned in the beginning the current realization of the back-end provider has realized a serialization of a minimum tile sizes of 256x256 pixel.
 
 # Why `stars`
 

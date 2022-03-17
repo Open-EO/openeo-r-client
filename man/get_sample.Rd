@@ -31,7 +31,7 @@ is used.}
 In order to inspect data locally a very small spatial extent will be processed, downloaded and made available in R.
 }
 \details{
-In order to get a better understanding about the processing mechanisms and the data structures used in the openEO backend, 
+In order to get a better understanding about the processing mechanisms and the data structures used in the openEO back-end, 
 it helps to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial 
 extents of the derived process graph with a new spatial extent which is calculated by the first spatial extent of the 
 mandatory openEO process 'load_collection'. We take the center of the extent and add 0.0003 degrees to it. In case the

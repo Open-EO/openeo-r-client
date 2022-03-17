@@ -2454,9 +2454,11 @@ MetadataFilter <- R6Class(
             
             # assign new graph as value
             as(final_node,"Process")
+           } else if ("Graph" %in% class(FUN)) {
+              as(FUN,"Process")
            } else {
              stop("Value for the metadata filter needs to be a list of functions.")
-          }
+           }
           
           
           
