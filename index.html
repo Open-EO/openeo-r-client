@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,23 +40,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -62,6 +58,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="articles/getting_started.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="articles/sample_data.html">Sample Data Retrieval</a>
     </li>
   </ul>
 </li>
@@ -71,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Open-EO/openeo-r-client/">
+  <a href="https://github.com/Open-EO/openeo-r-client/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -89,43 +88,37 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<div id="openeo-client-interface-for-openeo-servers" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#openeo-client-interface-for-openeo-servers" class="anchor"></a>openeo: Client Interface for openEO Servers</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="openeo-client-interface-for-openeo-servers">openeo: Client Interface for openEO Servers<a class="anchor" aria-label="anchor" href="#openeo-client-interface-for-openeo-servers"></a>
+</h1></div>
 <!-- badges: start -->
 
 <p><img src="reference/figures/logo.png" align="right" height="116"></p>
 </div>
-<div id="openeo-background" class="section level1">
-<h1 class="hasAnchor">
-<a href="#openeo-background" class="anchor"></a>openEO Background</h1>
-<p>The amount of available Earth Observation data (EO data) is steadily increasing due to different space missions such as Landsat and Sentinel. Resulting data products are often too large to be processed locally and therefore require new processing tools and functionalities. The <a href="https://openeo.org/about.html">core concept of “openEO”</a> is related to big data processing strategies. “openEO”" defines a unified API for back-end and client software as well as a number of common processes for manipulating spatio-temporal data cubes. The basic idea is to distinguish between computation (back-end server) and workflow definition (client software). While some back-ends were developed in the main <a href="https://openeo.org/">openEO</a> project, others were currently improved or developed within the ESA project <a href="https://openeo.cloud/">openEO Platform</a>. Those back-ends offer access to their data collections and processing platform while the client software (e.g., R, Python, JavaScript, QGIS) help creating processing workflows in a programming environment familiar to the user.</p>
-<div id="openeo-client-in-r" class="section level2">
-<h2 class="hasAnchor">
-<a href="#openeo-client-in-r" class="anchor"></a>openEO client in R</h2>
-<p>This R package contains functions and classes that allow interactions with openEO back-end server. The main goals of this package are:</p>
-<ul>
-<li>enable an R-user to explore openEO back-ends for distributed data and implemented operations.</li>
-<li>aid an R-user to create processing workflows on EO data executable on openEO back-ends.</li>
-<li>retrieve results for further analysis in R</li>
-</ul>
+<div class="section level1">
+<h1 id="openeo-background">openEO Background<a class="anchor" aria-label="anchor" href="#openeo-background"></a>
+</h1>
+<p>The amount of available Earth Observation data (EO data) is steadily increasing due to different space missions such as Landsat and Sentinel. Resulting data products are often too large to be processed locally and therefore require new processing tools and functionalities. The <a href="https://openeo.org/about.html" class="external-link">core concept of “openEO”</a> is related to big data processing strategies. “openEO”" defines a unified API for back-end and client software as well as a number of common processes for manipulating spatio-temporal data cubes. The basic idea is to distinguish between computation (back-end server) and workflow definition (client software). While some back-ends were developed in the main <a href="https://openeo.org/" class="external-link">openEO</a> project, others were currently improved or developed within the ESA project <a href="https://openeo.cloud/" class="external-link">openEO Platform</a>. Those back-ends offer access to their data collections and processing platform while the client software (e.g., R, Python, JavaScript, QGIS) help creating processing workflows in a programming environment familiar to the user.</p>
+<div class="section level2">
+<h2 id="openeo-client-in-r">openEO client in R<a class="anchor" aria-label="anchor" href="#openeo-client-in-r"></a>
+</h2>
+<p>This R package contains functions and classes that allow interactions with openEO back-end server. The main goals of this package are: * enable an R-user to explore openEO back-ends for distributed data and implemented operations. * aid an R-user to create processing workflows on EO data executable on openEO back-ends. * retrieve results for further analysis in R</p>
 </div>
 </div>
-<div id="installation" class="section level1">
-<h1 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h1>
+<div class="section level1">
+<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h1>
 <p>The most recent code is located on Github. To install it, you can use the following code:</p>
-<pre><code>if (!require(devtools)) {
-  install.packages("devtools",dependencies=TRUE)
-  library(devtools)
-}
-install_github(repo="Open-EO/openeo-r-client",dependencies=TRUE)
-library(openeo)</code></pre>
+<pre><code><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span>,dependencies<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">install_github</span><span class="op">(</span>repo<span class="op">=</span><span class="st">"Open-EO/openeo-r-client"</span>,dependencies<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></code></pre>
 <p>Otherwise, once accepted by CRAN, you can install the latest stable version by:</p>
-<pre><code>install.packages("openeo")
-library(openeo)
-</code></pre>
-<p>If you want use a different package version we recommend to use the parameter <code>ref</code>. Define this parameter as “master”, “develop” or another version specified in <a href="https://github.com/Open-EO/openeo-r-client/releases">releases</a>.</p>
+<pre><code><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"openeo"</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></code></pre>
+<p>If you want use a different package version we recommend to use the parameter <code>ref</code>. Define this parameter as “master”, “develop” or another version specified in <a href="https://github.com/Open-EO/openeo-r-client/releases" class="external-link">releases</a>.</p>
 <p>Currently, the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won’t support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.</p>
 <table class="table">
 <thead><tr class="header">
@@ -136,52 +129,47 @@ library(openeo)
 <tbody>
 <tr class="odd">
 <td>not yet</td>
-<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html">v1.1.x</a></td>
+<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">v1.1.x</a></td>
 <td>stable</td>
 </tr>
 <tr class="even">
 <td>v1.0.x</td>
-<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html">v1.0.x</a></td>
+<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">v1.0.x</a></td>
 <td>stable</td>
 </tr>
 <tr class="odd">
 <td>v0.6.x</td>
-<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html">v0.4.2</a></td>
+<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html" class="external-link">v0.4.2</a></td>
 <td>deprecated</td>
 </tr>
 <tr class="even">
 <td>v0.5.x</td>
-<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html">v0.4.2</a></td>
+<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html" class="external-link">v0.4.2</a></td>
 <td>deprecated</td>
 </tr>
 <tr class="odd">
 <td>v0.4.x</td>
-<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html">v0.4.2</a></td>
+<td><a href="https://openeo.org/documentation/0.4/developers/api/reference.html" class="external-link">v0.4.2</a></td>
 <td>deprecated</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="requirements" class="section level1">
-<h1 class="hasAnchor">
-<a href="#requirements" class="anchor"></a>Requirements</h1>
-<p>The ‘openeo’ package won’t process anything on the local machine. It will always interact with a designated back-end. Data storage and computations are performed directly at the back-end. Therefore, please make sure that you are registered with any of the available openEO back-ends in order to obtain credentials and the access URLs (see: <a href="https://hub.openeo.org/">openEO Hub</a> for getting an overview about available back-ends).</p>
+<div class="section level1">
+<h1 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
+</h1>
+<p>The ‘openeo’ package won’t process anything on the local machine. It will always interact with a designated back-end. Data storage and computations are performed directly at the back-end. Therefore, please make sure that you are registered with any of the available openEO back-ends in order to obtain credentials and the access URLs (see: <a href="https://hub.openeo.org/" class="external-link">openEO Hub</a> for getting an overview about available back-ends).</p>
 </div>
-<div id="getting-started" class="section level1">
-<h1 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h1>
+<div class="section level1">
+<h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h1>
 <p>After installing and loading the package, you need to connect to the openEO back-end you want to use. The object returned by the <code>connect</code> function is essential for the interaction with this particular back-end. Afterwards, users can explore the data and processes and start creating a processing workflows, free of charge. To start processing data or publishing web services, however, the user needs to be registered and authenticated with the openEO back-end provider. The provider offers different execution plans the user can choose. These may include free-of-charge plans or other pricing concepts.</p>
-<p>Exemplary back-end providers are:</p>
-<ul>
-<li><a href="https://earthengine.openeo.org" class="uri">https://earthengine.openeo.org</a></li>
-<li><a href="https://openeo.vito.be" class="uri">https://openeo.vito.be</a></li>
-<li><a href="https://openeo.cloud" class="uri">https://openeo.cloud</a></li>
-</ul>
-<p>The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the <a href="https://github.com/Open-EO/openeo-earthengine-driver">openEO GEE Github repository</a>. Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. “openeo.cloud” is the link to ESAs <a href="https://openeo.cloud/">“openEO Platform” project</a>, for which you have to be <a href="https://docs.openeo.cloud/authentication/#join-openeo-platform">signed up via EGI and openEO platform</a>.</p>
+<p>Exemplary back-end providers are: * <a href="https://earthengine.openeo.org" class="external-link uri">https://earthengine.openeo.org</a> * <a href="https://openeo.vito.be" class="external-link uri">https://openeo.vito.be</a> * <a href="https://openeo.cloud" class="external-link uri">https://openeo.cloud</a></p>
+<p>The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the <a href="https://github.com/Open-EO/openeo-earthengine-driver" class="external-link">openEO GEE Github repository</a>. Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. “openeo.cloud” is the link to ESAs <a href="https://openeo.cloud/" class="external-link">“openEO Platform” project</a>, for which you have to be <a href="https://openeo.cloud/#plans" class="external-link">signed up via EGI and openEO platform</a>.</p>
 </div>
-<div id="examples" class="section level1">
-<h1 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h1>
+<div class="section level1">
+<h1 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h1>
 <p>The following code sample shows how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file.</p>
 <pre><code>library(openeo)
 connect(host="https://earthengine.openeo.org")
@@ -229,37 +217,36 @@ apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,.
 
 result = p$save_result(data=apply_linear_transform,format="PNG")</code></pre>
 <p>At this point (latest here) you need to log in with your personal credentials for further computations.</p>
-<pre><code>login(user="",password="")
-job_id = create_job(graph=result, title="Example graph", description="This graph is just a general example",format="png")
+<pre><code><span class="fu"><a href="reference/login.html">login</a></span><span class="op">(</span>user<span class="op">=</span><span class="st">""</span>,password<span class="op">=</span><span class="st">""</span><span class="op">)</span>
+<span class="va">job_id</span> <span class="op">=</span> <span class="fu"><a href="reference/create_job.html">create_job</a></span><span class="op">(</span>graph<span class="op">=</span><span class="va">result</span>, title<span class="op">=</span><span class="st">"Example graph"</span>, description<span class="op">=</span><span class="st">"This graph is just a general example"</span>,format<span class="op">=</span><span class="st">"png"</span><span class="op">)</span>
 
-start_job(job_id)
+<span class="fu"><a href="reference/start_job.html">start_job</a></span><span class="op">(</span><span class="va">job_id</span><span class="op">)</span>
 
-result_obj = list_results(job_id)
+<span class="va">result_obj</span> <span class="op">=</span> <span class="fu"><a href="reference/list_results.html">list_results</a></span><span class="op">(</span><span class="va">job_id</span><span class="op">)</span>
 
-download_results(job = job_id, folder = ".")
-</code></pre>
+<span class="fu"><a href="reference/download_results.html">download_results</a></span><span class="op">(</span>job <span class="op">=</span> <span class="va">job_id</span>, folder <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></code></pre>
 <p>To get an overview of the functions offered by the packages and to access the function documentation you can navigate to the “Packages” tab in RStudio, select the “openeo” package and click on the function you are interested in. Another option is to use the following command line operations:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span>help<span class="op">=</span><span class="st">"openeo"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span>help<span class="op">=</span><span class="st">"openeo"</span><span class="op">)</span>
 
 <span class="co"># ?&lt;function_name&gt;, e.g.</span>
 <span class="op">?</span><span class="va">connect</span></code></pre></div>
-<p>If you are interested in more information, you can have a look at some <a href="https://github.com/Open-EO/openeo-r-client/tree/master/examples">example scripts</a> that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.</p>
+<p>If you are interested in more information, you can have a look at some <a href="https://github.com/Open-EO/openeo-r-client/tree/master/examples" class="external-link">example scripts</a> that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.</p>
 </div>
-<div id="funding" class="section level1">
-<h1 class="hasAnchor">
-<a href="#funding" class="anchor"></a>Funding</h1>
+<div class="section level1">
+<h1 id="funding">Funding<a class="anchor" aria-label="anchor" href="#funding"></a>
+</h1>
 <p>The authors acknowledge the financial support for the development of this package during the H2020 project “openEO” (Oct 2017 to Sept 2020) by the European Union, funded by call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project “R4openEO” (Sept 2021 to Sept 2022).</p>
 <p>Furthermore, openEO was improved and operationalized by ESA funding in the project “openEO Platform” (Sept 2020 to Sept 2022).</p>
 </div>
-<div id="links" class="section level1">
-<h1 class="hasAnchor">
-<a href="#links" class="anchor"></a>Links</h1>
+<div class="section level1">
+<h1 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
+</h1>
 <ul>
-<li><a href="https://openeo.org/">openEO.org</a></li>
-<li><a href="https://openeo.org/documentation/1.0/developers/api/reference.html">openEO core API</a></li>
-<li><a href="https://hub.openeo.org/">openEO hub</a></li>
-<li><a href="https://open-eo.github.io/openeo-r-client/">openEO R Client package API</a></li>
+<li><a href="https://openeo.org/" class="external-link">openEO.org</a></li>
+<li><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">openEO core API</a></li>
+<li><a href="https://hub.openeo.org/" class="external-link">openEO hub</a></li>
+<li><a href="https://open-eo.github.io/openeo-r-client/" class="external-link">openEO R Client package API</a></li>
 </ul>
 </div>
 
@@ -267,45 +254,57 @@ download_results(job = job_id, folder = ".")
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/Open-EO/openeo-r-client/">https://​github.com/​Open-EO/​openeo-r-client/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/Open-EO/openeo-r-client/issues">https://​github.com/​Open-EO/​openeo-r-client/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=openeo" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/Open-EO/openeo-r-client/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/Open-EO/openeo-r-client/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>Apache License (&gt;= 2)</li>
 </ul>
 </div>
-<div class="developers">
-<h2>Developers</h2>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li>Florian Lahn <br><small class="roles"> Author, maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html#citation">Citing openeo</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Open-EO/openeo-r-client/actions"><img src="https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://CRAN.R-project.org/package=openeo"><img src="https://www.r-pkg.org/badges/version/openeo" alt="CRAN status"></a></li>
+<li>Florian Lahn <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/Open-EO/openeo-r-client/actions" class="external-link"><img src="https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://CRAN.R-project.org/package=openeo" class="external-link"><img src="https://www.r-pkg.org/badges/version/openeo" alt="CRAN status"></a></li>
+</ul>
 </div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Florian Lahn.</p>
+  <p></p>
+<p>Developed by Florian Lahn.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
@@ -313,6 +312,8 @@ download_results(job = job_id, folder = ".")
 
   
 
+
+  
 
   </body>
 </html>
