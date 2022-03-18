@@ -1573,9 +1573,16 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
-      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
+      }
+      
+      if (is.list(value)) {
+        tryCatch({
+          tmpfile = tempfile()
+          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE)
+          value = sf::read_sf(tmpfile, driver="geojson")
+        }, finally = unlink(tmpfile)) 
       }
       
       if (isNamespaceLoaded("sf")) {
@@ -1583,18 +1590,15 @@ GeoJson = R6Class(
           value = sf::st_sfc(value)
         }
         
-        if ("sfc_POLYGON" %in% class(value)) {
-          value = sf::st_sf(value)
-          sf::st_crs(value) = 4326
+        if (any(c("sf","sfc") %in% class(value))) {
+          value = sf::st_transform(vale,4326)
         } 
-        
-        if ("sf" %in% class(value)) {
-          # since geojson only supports WGS84 we need to make sure that it is that crs
-          value = sf::st_transform(value, st_crs(4326))
-        }
       }
       
       private$value = value
+    },
+    getValue = function() {
+      return(private$value)
     }
   ),
   private = list(
@@ -1606,8 +1610,10 @@ GeoJson = R6Class(
       
       if ("sf" %in% class(private$value)) {
         return(NULL)
+      } else if ("sfc" %in% class(private$value)) {
+        return(NULL)
       } else {
-        stop("Class ",class(private$value)[[1]], " not supported in GeoJson argument")
+        stop("Class ",paste(class(private$value)), " not supported in GeoJson argument")
       }
         
       
@@ -1615,7 +1621,7 @@ GeoJson = R6Class(
     typeSerialization = function() {
       if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
         return(private$value)
-      } else if ("sf" %in% class(private$value)){
+      } else if (any(c("sf","sfc") %in% class(private$value))) {
         if (!.is_package_installed("geojsonsf")) {
           stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
         } else {

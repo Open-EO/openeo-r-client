@@ -7,6 +7,7 @@
 get_sample(
   graph,
   replace_aoi = TRUE,
+  spatial_extent = NULL,
   execution = "sync",
   immediate = TRUE,
   con = NULL,
@@ -17,6 +18,8 @@ get_sample(
 \item{graph}{a ProcessGraph, a Process or the final node in a process for which the sample shall be calculated}
 
 \item{replace_aoi}{a logical flag to indicate whether or not the original spatial extent shall be substituted with a different one, default TRUE}
+
+\item{spatial_extent}{a bounding box or a spatial feature from which to derive a bounding box}
 
 \item{execution}{\code{sync} or \code{async} which indicates the processing chain, a not "async" value results in a synchronous processing}
 
