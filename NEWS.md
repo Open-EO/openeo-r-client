@@ -2,6 +2,7 @@
 
 ## Added
 * implemented a method for sample data retrieval (`get_sample()`), which will modify a process graph by replacing the original spatial extent of the request with a smaller subset of 0.0003 degrees extent [#94](https://github.com/Open-EO/openeo-r-client/issues/94)
+* added a vignette explaining sample data retrieval
 * rendering of classes as HTML widgets using the openEO Vue components, which can be used in Jupyter Notebook, Rmarkdown, RStudio and knitr
 * implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
 * implemented an abstract OIDC authentication
@@ -9,7 +10,7 @@
   - authorization_code
   - authorization_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code+pkce
-* temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made
+* temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made available on CRAN
 
 ## Fixes
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
