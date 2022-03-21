@@ -2,7 +2,7 @@
 % Please edit documentation in R/user.R
 \name{connect}
 \alias{connect}
-\title{Connect to a openeEO service}
+\title{Connect to a openEO service}
 \usage{
 connect(
   host,
@@ -24,7 +24,7 @@ connect(
 
 \item{password}{the password (optional)}
 
-\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the login mechanism that shall be used. NULL disables authentication.}
+\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.}
 
 \item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
 
@@ -40,13 +40,13 @@ specific versions you should provide the version parameter.
 You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
 have an overview about their status and connection details like the URL and supported features. You can explore the
 service for free through the access to publicly available metadata of data collections as well as the offered
-processing functions. For any computation and the creation of webservices, you need to register the openEO partner of
-your choice. There you will get further information on credentials and the login procedure.
+processing functions. For any computation and the creation of web services, you need to register the openEO partner of
+your choice. There you will get further information on credentials and the log in procedure.
 
 Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
-with considered login. 'Basic' allows you to use username and password directly in the call, whereas 'oidc' will
+with considered log in. 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
 open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
-use the bearer token that the client has obtained after the login, unless the authentication was dropped with NULL.
+use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.
 
 The parameter \code{version} is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).
@@ -63,7 +63,7 @@ which marks the latest service that was connected to.
 # connect to a host of the latest version and without authentication
 con = connect(host='http://example.openeo.org')
 
-# connect to a host by direct url and basic login
+# connect to a host by direct URL and basic log in
 con = connect(host='http://example.openeo.org/v1.0',
               user='user',
              password='password',

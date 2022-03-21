@@ -35,12 +35,12 @@
 #' }
 #' @section Arguments:
 #' \describe{
-#'    \item{con}{openeo connection (optional) otherwise \code{\link{active_connection}} is used}
+#'    \item{con}{openEO connection (optional) otherwise \code{\link{active_connection}} is used}
 #'    \item{final_node}{optional, the final node (end node) that was used to create a graph}
 #'    \item{node_id}{the id of a process node}
 #'    \item{node}{process node or  its node id}
 #'    \item{parameter}{the name of a parameter in a process}
-#'    \item{value}{the value to be set for a parameter of a paricular process}
+#'    \item{value}{the value to be set for a parameter of a particular process}
 #'    \item{id or variable_id}{the variable id}
 #'    \item{description}{a description field for a variable}
 #'    \item{type}{the type of variable, default 'string'}

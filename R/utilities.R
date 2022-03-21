@@ -25,7 +25,6 @@
 #' @return JSON string of the process graph as a character string 
 #' 
 #' @export
-# dont't expose it later
 graphToJSON = function(graph) {
     # task is a Graph object
     

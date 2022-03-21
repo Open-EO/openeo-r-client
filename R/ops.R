@@ -389,7 +389,7 @@ NULL
 #' the function or a numeric value
 #' @param e2 same as e1
 #' @param x the first expression in the xor statement
-#' @param y the seconde expression in the xor statement
+#' @param y the second expression in the xor statement
 #' 
 #' @return a \code{ProcessNode}
 #' 

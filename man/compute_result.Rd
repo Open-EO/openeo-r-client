@@ -26,7 +26,7 @@ will return the results}
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \value{
 A connection to a file if the parameter 'output_file' was provided otherwise the raw binary data

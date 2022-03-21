@@ -3,13 +3,13 @@
 #' Lists the current users services
 #' 
 #' Queries the back-end to retrieve a list of services that the current user owns. Services are 
-#' webservices like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
+#' web services like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
 #' indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 #' 
 #' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
 #' 
-#' @return named list of Services (class ServiceList)
+#' @return named list of Services (class \code{ServiceList})
 #' @export
 list_services = function(con=NULL) {
     tryCatch(suppressWarnings({
@@ -46,9 +46,9 @@ list_services = function(con=NULL) {
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent on this service
-#' @param con connected and authenticated openEO clien object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #'  
 #' @return Service object
 #' @export
@@ -119,7 +119,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' @param budget numeric - the amount of credits that can be spent for this service
 #' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
-#' @param ... additional parameters passed to toJSON (like 'digits')
+#' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @return Service object
 #' 

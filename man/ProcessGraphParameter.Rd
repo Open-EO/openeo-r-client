@@ -8,10 +8,9 @@ Object of \code{\link{R6Class}} representing a ProcessGraph value.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
-Additional information can be found in the openEO API documention:
+Additional information can be found in the openEO API documentation:
 \itemize{
   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
-  \item \url{https://api.openeo.org/v/0.4.2/processgraphs/#callbacks}
 }
 }
 \seealso{

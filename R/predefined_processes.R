@@ -172,8 +172,7 @@ ProcessCollection = R6Class(
 #' Get a process graph builder / process collection from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a ProcessCollection object to build a process graph in R. To get a better overview about the process graph building, please have
-#' a look at \url{https://github.com/Open-EO/openeo-r-client/wiki/Process-Graph-Building}
+#' a ProcessCollection object to build a process graph in R.
 #' 
 #' @param con a connection to an openEO back-end (optional) otherwise \code{\link{active_connection}}
 #' is used.

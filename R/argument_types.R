@@ -220,7 +220,7 @@ Parameter = R6Class(
 #'   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
 #'   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
 #'   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
-#'   \item{\code{$getProcess()}}{returns the process this parameter belongs ro}
+#'   \item{\code{$getProcess()}}{returns the process this parameter belongs to}
 #'   \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 #' }
 #' @section Arguments: 
@@ -898,7 +898,7 @@ JobId = R6Class(
 #' \code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
 #' \code{\link{UdfRuntimeVersionArgument}}
 #' 
-#' @return Object of \code{\link{R6Class}} representing the udf runtime in a process argument.
+#' @return Object of \code{\link{R6Class}} representing the UDF runtime in a process argument.
 NULL
 
 UdfRuntimeArgument = R6Class(
@@ -974,7 +974,7 @@ UdfRuntimeVersionArgument = R6Class(
         
         if (is.null(coerced) || 
             is.na(coerced) ||
-            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a udf runtime version string."))
+            length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into an UDF runtime version string."))
         # correct value if you can
         private$value = coerced
       }
@@ -1750,10 +1750,9 @@ VectorCube = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 #' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 #' single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-#' added data. Additional information can be found in the openEO API documention:
+#' added data. Additional information can be found in the openEO API documentation:
 #' \itemize{
-#'   \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
-#'   \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+#'   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 #' }
 #' 
 #' @section Methods:
@@ -1881,10 +1880,9 @@ ProcessGraphArgument = R6Class(
 #' ProcessGraphParameter
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent the available data within a ProcessGraph graph.
-#' Additional information can be found in the openEO API documention:
+#' Additional information can be found in the openEO API documentation:
 #' \itemize{
 #'   \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
-#'   \item \url{https://api.openeo.org/v/0.4.2/processgraphs/#callbacks}
 #' }
 #' 
 #' @name ProcessGraphParameter

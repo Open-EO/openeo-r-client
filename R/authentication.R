@@ -3,7 +3,7 @@
 #'
 #' An interface that states the intended behavior for the authentication.
 #'
-#' @field access_token The access_token to query password restricted web services of an openEO back-end
+#' @field access_token The access_token to query password restricted  webservices of an openEO back-end
 #' @field id_token The id_token retrieved when exchanging the access_token at the identity provider
 #'
 #' @name IAuth
@@ -314,7 +314,7 @@ OIDCAuth <- R6Class(
 #' of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
 #' The authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
 #' is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token are obtained and 
-#' used as "bearer token" for the password restricted webservices.
+#' used as "bearer token" for the password restricted  web services.
 #'
 #' The class inherits all fields and function from \code{\link{IAuth}}
 #'

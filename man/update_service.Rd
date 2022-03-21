@@ -41,7 +41,7 @@ will return the results}
 \item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \value{
 Service object

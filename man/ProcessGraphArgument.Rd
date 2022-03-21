@@ -10,10 +10,9 @@ Object of \code{\link{R6Class}} representing a ProcessGraph.
 Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
 of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
 single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-added data. Additional information can be found in the openEO API documention:
+added data. Additional information can be found in the openEO API documentation:
 \itemize{
-  \item \url{https://open-eo.github.io/openeo-api/#section/Processes/Process-Graphs}
-  \item \url{https://open-eo.github.io/openeo-api/v/0.4.2/processgraphs/#callbacks}
+  \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 }
 }
 \section{Methods}{

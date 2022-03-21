@@ -9,7 +9,7 @@ openeo: Client Interface for openEO Servers
 
 # openEO Background
 
-The amount of available Earth Observation data (EO data) is steadily increasing due to different space missions such as Landsat and Sentinel. Resulting data products are often too large to be processed locally and therefore require new processing tools and functionalities. The [core concept of "openEO"](https://openeo.org/about.html) is related to big data processing strategies. OpenEO defines a unified API for back-end and client software as well as a number of common processes for manipulating spatio-temporal data cubes. The basic idea is to distinguish between computation (back-end server) and workflow definition (client software).
+The amount of available Earth Observation data (EO data) is steadily increasing due to different space missions such as Landsat and Sentinel. Resulting data products are often too large to be processed locally and therefore require new processing tools and functionalities. The [core concept of "openEO"](https://openeo.org/about.html) is related to big data processing strategies. "openEO"" defines a unified API for back-end and client software as well as a number of common processes for manipulating spatio-temporal data cubes. The basic idea is to distinguish between computation (back-end server) and workflow definition (client software).
 While some back-ends were developed in the main [openEO](https://openeo.org/) project, others were currently improved or developed within the ESA project [openEO Platform](https://openeo.cloud/). Those back-ends offer access to their data collections and processing platform while the client software (e.g., R, Python, JavaScript, QGIS) help creating processing workflows in a programming environment familiar to the user.
 
 ## openEO client in R
@@ -59,7 +59,7 @@ The 'openeo' package won't process anything on the local machine. It will always
 
 After installing and loading the package, you need to connect to the openEO back-end you want to use. The object returned by the `connect` function is essential for the interaction with this particular back-end. Afterwards, users can explore the data and processes and start creating a processing workflows, free of charge. To start processing data or publishing web services, however, the user needs to be registered and authenticated with the openEO back-end provider. The provider offers different execution plans the user can choose. These may include free-of-charge plans or other pricing concepts.
 
-Examplary back-end providers are:
+Exemplary back-end providers are:
 * https://earthengine.openeo.org
 * https://openeo.vito.be
 * https://openeo.cloud
@@ -140,11 +140,8 @@ library(help="openeo")
 ?connect
 ```
 
-
 If you are interested in more information, you can have a look at some [example scripts](https://github.com/Open-EO/openeo-r-client/tree/master/examples) that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.
 
-# Further Information
-The [Wiki](https://github.com/Open-EO/openeo-r-client/wiki) contains additional information on process graph building and other topics.
 
 # Funding
 The authors acknowledge the financial support for the development of this package during the H2020 project "openEO" (Oct 2017 to Sept 2020) by the European Union, funded by call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project "R4openEO" (Sept 2021 to Sept 2022). 

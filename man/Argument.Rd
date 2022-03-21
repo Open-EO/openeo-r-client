@@ -20,7 +20,7 @@ functions \code{$typeCheck()} and \code{$typeSerialization()}.
   \item{\code{$serialize()}}{returns a list representation of a openEO argument}
   \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
   \item{\code{$isEmpty()}}{returns TRUE if the value is set}
-  \item{\code{$getProcess()}}{returns the process this parameter belongs ro}
+  \item{\code{$getProcess()}}{returns the process this parameter belongs to}
   \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
 }
 }

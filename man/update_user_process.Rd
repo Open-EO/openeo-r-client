@@ -16,7 +16,7 @@ update_user_process(
 \arguments{
 \item{id}{process graph id}
 
-\item{graph}{a process graph definition created by combining 'process()', 'collection()' or using a ProcessGraphBuilder}
+\item{graph}{a process graph definition created by combining 'process()', 'collection()' or using a \code{ProcessGraphBuilder}}
 
 \item{summary}{summary of the process graph (optional)}
 
@@ -25,7 +25,7 @@ update_user_process(
 \item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
 is used.}
 
-\item{...}{additional parameters passed to toJSON (like 'digits')}
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
 }
 \description{
 You can change details on an already created user defined process. You can either edit the meta data like the summary or the description. Or
