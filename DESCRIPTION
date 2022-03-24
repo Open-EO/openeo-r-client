@@ -15,7 +15,6 @@ Suggests:
     knitr,
     sf,
     stars,
-    geojsonsf,
     pkgdown,
     rmarkdown,
     kableExtra,

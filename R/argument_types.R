@@ -1573,55 +1573,65 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
-      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
-      if (isNamespaceLoaded("sf")) {
-        if (all(c("XY","POLYGON") %in% class(value))) {
-          value = sf::st_sfc(value)
-        }
-        
-        if ("sfc_POLYGON" %in% class(value)) {
-          value = sf::st_sf(value)
-          sf::st_crs(value) = 4326
-        } 
-        
-        if ("sf" %in% class(value)) {
-          # since geojson only supports WGS84 we need to make sure that it is that crs
-          value = sf::st_transform(value, st_crs(4326))
-        }
+      if (is.list(value) && "type" %in% names(value) && !any(c("sf","sfc") %in% class(value))) {
+        tryCatch({
+          tmpfile = tempfile()
+          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE)
+          value = sf::read_sf(tmpfile)
+        }, finally = unlink(tmpfile)) 
+      }
+      
+      if (all(c("XY","POLYGON") %in% class(value))) {
+        value = sf::st_sfc(value)
       }
       
       private$value = value
+    },
+    getValue = function() {
+      return(private$value)
     }
   ),
   private = list(
     typeCheck = function() {
-      if (is.list(private$value)) {
-        #if list we assume that the geojson object was created as list
-        return(NULL)
-      } 
+       
       
       if ("sf" %in% class(private$value)) {
         return(NULL)
+      } else if ("sfc" %in% class(private$value)) {
+        return(NULL)
+      } else if (is.list(private$value)) {
+          
+          if (!"type" %in% names(private$value)) {
+            #TODO better probing
+            stop("Value is not GeoJSON.")
+          }
+          
+          #if list we assume that the geojson object was created as list
+          return(NULL)
       } else {
-        stop("Class ",class(private$value)[[1]], " not supported in GeoJson argument")
+        stop("Class ",paste(class(private$value)), " not supported in GeoJson argument")
       }
         
       
     },
     typeSerialization = function() {
-      if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
+      if (any(c("sf","sfc") %in% class(private$value))) {
+        
+        # TODO decide if this is a good idea or whether we are allowed to use crs in GeoJSON for the openEO back-ends
+        value = sf::st_transform(private$value,4326)
+        
+        tryCatch({
+          t = tempfile()
+          write_sf(value,t,driver="geojson")
+          return(jsonlite::read_json(t,simplifyVector = FALSE))
+        }, finally = unlink(t))
+          
+      } else if (is.list(private$value) && "type" %in% names(private$value)) {
         return(private$value)
-      } else if ("sf" %in% class(private$value)){
-        if (!.is_package_installed("geojsonsf")) {
-          stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
-        } else {
-          gson = geojsonsf::sf_geojson(private$value)
-          return(jsonlite::fromJSON(gson, simplifyVector = FALSE))
-        }
       } else {
         stop("Unsupported value type.")
       }
