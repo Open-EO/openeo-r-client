@@ -103,8 +103,8 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
         args = lapply(args,function(arg, e) {
           tryCatch({
             arg$setValue(e)
-            arg$validate()
-            if (length(arg$getValue()) > 0) {
+            msgs = arg$validate()
+            if (length(msgs) > 0) {
               return(NULL)
             } else {
               return(arg)
@@ -112,12 +112,12 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
           }, error=function(e) {
             return(NULL)
           })
-        }, e = sample_extent)
-        args[[sapply(args,is.null)]] = NULL
+        }, e = spatial_extent)
+        args[sapply(args,is.null)] = NULL
         
         if (length(args) == 0) stop("Cannot fill a Bounding Box argument with value from parameter 'spatial_extent'")
         
-        sample_extent = .create_sample_bbox(args[[1]])
+        sample_extent = args[[1]]$serialize()
       }
       
       var$setValue(sample_extent)
@@ -183,7 +183,8 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
     if (any(c("sf","sfc") %in% class(obj))) {
       if (!.is_package_installed("sf")) stop("Package 'sf' ist not installed to handle spatial vector data.")
       suppressWarnings({
-        center = as.vector(sf::st_centroid(sf::st_transform(obj, 4326))[[1]])
+        # take the first polygon object of the potential collection, get the center and create wgs84 coordinates        
+        center = as.numeric(unlist(sf::st_centroid(sf::st_transform(obj, 4326)[[1]])))
         # always treat coordinates in lon/lat like the default in sf
         names(center) = c("lon", "lat")
       })
