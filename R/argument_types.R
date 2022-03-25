@@ -1542,10 +1542,11 @@ Time = R6Class(
 #' GeoJson
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
-#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features from package 'sf'. 
-#' If sf-objects are used, keep in mind that the objects are projected in  Lat/Long EPSG:4326, unless marked otherwise.
-#' It is assumed that the coordinates have a projection. If the crs-object is set and does not match 
-#' EPSG:4326, the polygon is transformed accordingly.
+#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
+#' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
+#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
+#' original form (sf/sfc object) until it is serialized.
+#' 
 #' 
 #' @name GeoJson
 #' 
@@ -1621,13 +1622,19 @@ GeoJson = R6Class(
     typeSerialization = function() {
       if (any(c("sf","sfc") %in% class(private$value))) {
         
-        # TODO decide if this is a good idea or whether we are allowed to use crs in GeoJSON for the openEO back-ends
+        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
+        old_order = sf::st_axis_order()
+        sf::st_axis_order(TRUE)
         value = sf::st_transform(private$value,4326)
+        sf::st_axis_order(old_order)
         
         tryCatch({
           t = tempfile()
           write_sf(value,t,driver="geojson")
-          return(jsonlite::read_json(t,simplifyVector = FALSE))
+          obj = jsonlite::read_json(t,simplifyVector = FALSE)
+          # remove CRS just to be in line with the geojson specification (4326, lat/lon, no crs field)
+          obj["crs"] = NULL
+          return(obj)
         }, finally = unlink(t))
           
       } else if (is.list(private$value) && "type" %in% names(private$value)) {
