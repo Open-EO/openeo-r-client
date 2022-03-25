@@ -183,8 +183,13 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
     if (any(c("sf","sfc") %in% class(obj))) {
       if (!.is_package_installed("sf")) stop("Package 'sf' ist not installed to handle spatial vector data.")
       suppressWarnings({
-        # take the first polygon object of the potential collection, get the center and create wgs84 coordinates        
-        center = as.numeric(unlist(sf::st_centroid(sf::st_transform(obj, 4326)[[1]])))
+        # take the first polygon object of the potential collection, get the center and create wgs84 coordinates  
+        
+        old_order = sf::st_axis_order()
+        sf::st_axis_order(TRUE)
+        obj = sf::st_transform(obj,4326)
+        sf::st_axis_order(old_order)
+        center = as.numeric(unlist(sf::st_centroid(obj[[1]])))
         # always treat coordinates in lon/lat like the default in sf
         names(center) = c("lon", "lat")
       })

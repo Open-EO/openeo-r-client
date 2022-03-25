@@ -1579,10 +1579,18 @@ GeoJson = R6Class(
       }
       
       if (is.list(value) && "type" %in% names(value) && !any(c("sf","sfc") %in% class(value))) {
+        # this case is a geojson parsed as list
         tryCatch({
           tmpfile = tempfile()
           jsonlite::write_json(value,tmpfile, auto_unbox=TRUE)
-          value = sf::read_sf(tmpfile)
+          
+          suppressWarnings({
+            old_order = sf::st_axis_order()
+            sf::st_axis_order(TRUE)
+            value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
+            sf::st_axis_order(old_order)
+          })
+          
         }, finally = unlink(tmpfile)) 
       }
       
