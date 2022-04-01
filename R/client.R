@@ -466,6 +466,7 @@ OpenEOClient <- R6Class(
             
             auth_pkce = "authorization_code+pkce"
             device_pkce = "urn:ietf:params:oauth:grant-type:device_code+pkce"
+            device_code = "urn:ietf:params:oauth:grant-type:device_code"
             
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
@@ -478,6 +479,7 @@ OpenEOClient <- R6Class(
               full_credentials = all(c("client_id","secret") %in% names(config))
               is_auth_code = length(config$grant_type) > 0 && config$grant_type == 'authorization_code'
               
+              # either credentials are set and / or authorization_code as grant_type
               if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
                 private$auth_client = OIDCAuthCodeFlow$new(provider = provider, config = config, force=TRUE)
               }
@@ -491,8 +493,9 @@ OpenEOClient <- R6Class(
                 supported = which(sapply(default_clients, function(p) config$client_id == p$id))
                 if (length(supported) > 0 && device_pkce %in% default_clients[[supported[[1]]]]$grant_types) {
                   config$grant_type = device_pkce
-                }
-                else {
+                } else if (length(supported) > 0 && device_code %in% default_clients[[supported[[1]]]]$grant_types) {
+                  config$grant_type = device_code
+                } else {
                   config$grant_type = auth_pkce
                 }
               }
@@ -509,10 +512,17 @@ OpenEOClient <- R6Class(
                 # preferred device code + pkce
                 config = .get_client(default_clients, device_pkce, config)
                 # second choice auth_code + pkce
+                
+                if (is.null(config$client_id)) {
+                  config = .get_client(default_clients, device_code, config)
+                }
+                
                 if (is.null(config$client_id)) {
                   config = .get_client(default_clients, auth_pkce, config)
                 }
-              }
+              } 
+              
+              
               
               if (is.null(config$client_id)) {
                 stop("Please provide a client id or a valid combination of client_id and grant_type.")
@@ -521,6 +531,8 @@ OpenEOClient <- R6Class(
               
             if (device_pkce == config$grant_type) {
               private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
+            } else if (device_code == config$grant_type) {
+              private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
             } else if (is.null(config$grant_type) || auth_pkce == config$grant_type) {
               private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
             }

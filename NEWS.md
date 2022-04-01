@@ -10,6 +10,7 @@
   - authorization_code
   - authorization_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code+pkce
+  - urn:ietf:params:oauth:grant-type:device_code [#116](https://github.com/Open-EO/openeo-r-client/issues/116)
 * temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made available on CRAN
 
 ## Fixes

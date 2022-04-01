@@ -191,6 +191,11 @@ BasicAuth <- R6Class(
 #' the console or if R runs in the interactive mode the internet browser will be opened automatically.
 #' }
 #' 
+#' \subsection{device_code}{
+#' This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow, 
+#' but without the additional PKCE negotiation.
+#' }
+#' 
 #' @seealso 
 #' \describe{
 #' \item{openEO definition on Open ID connect}{\url{https://openeo.org/documentation/1.0/authentication.html#openid-connect}}
@@ -428,6 +433,43 @@ AbstractOIDCAuthentication <- R6Class(
   )
 )
 
+# [OIDCDeviceCodeFlow] ----
+OIDCDeviceCodeFlow <- R6Class(
+  "OIDCDeviceCodeFlow",
+  inherit = AbstractOIDCAuthentication,
+  # public ====
+  public = list(
+    # functions ####
+    login = function() {
+      
+      client <- oauth_client(
+        id = private$client_id,
+        token_url = private$endpoints$token_endpoint,
+        name = "openeo-r-oidc-auth"
+      )
+      
+      private$auth = oauth_flow_device(client = client,
+                                       auth_url = private$endpoints$device_authorization_endpoint,
+                                       scope=paste0(private$scopes,collapse=" "))
+      
+      
+      invisible(self)
+    }
+  ),
+  # private ====
+  private = list(
+    # attributes ####
+    grant_type = "urn:ietf:params:oauth:grant-type:device_code", # not used internally by httr2, but maybe useful in openeo
+    
+    # functions ####
+    isGrantTypeSupported = function(grant_types) {
+      if (!"urn:ietf:params:oauth:grant-type:device_code" %in% grant_types) {
+        stop("Device code flow is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    }
+  )
+)
 
 # [OIDCDeviceCodeFlowPkce] ----
 OIDCDeviceCodeFlowPkce <- R6Class(
@@ -460,7 +502,7 @@ OIDCDeviceCodeFlowPkce <- R6Class(
     # functions ####
     isGrantTypeSupported = function(grant_types) {
       # to be implemented in inheriting class
-      if (!any(c("urn:ietf:params:oauth:grant-type:device_code+pkce","urn:ietf:params:oauth:grant-type:device_code") %in% grant_types)) {
+      if (!"urn:ietf:params:oauth:grant-type:device_code+pkce" %in% grant_types) {
         stop("Device code flow with pkce is not supported by the authentication provider")
       }
       invisible(TRUE)
@@ -553,6 +595,7 @@ OIDCAuthCodeFlow <- R6Class(
   )
 )
 
+# utility functions ----
 .get_oidc_provider = function(provider) {
   if (length(provider) > 0 && is.character(provider)) {
     oidc_providers = list_oidc_providers()

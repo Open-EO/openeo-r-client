@@ -39,9 +39,9 @@ For further configuration, you can pass a named list of values as \code{config} 
 a file path to a JSON file.
 
 There are many different authentication mechanisms for OIDC and OAuth2.0, which OIDC is based on. The 'openeo' package supports
-currently the authorization_code, authorization_code+pkce and device_code+pkce (see \link{OIDCAuth}). For authorization_code
+currently the authorization_code, authorization_code+pkce, device_code and device_code+pkce (see \link{OIDCAuth}). For authorization_code
 you need to state the \code{client_id} and \code{secret}. In general the most comfortable available login mechanism is chosen
-automatically (1. device_code+pkce, 2. authorization_code+pkce, 3. authorization_code). For example, with the device_code 
+automatically (1. device_code+pkce, 2. device_code 3. authorization_code+pkce, 4. authorization_code). For example, with the device_code 
 flow you normally don't even need to specify any additional configuration. 
 
 If you really want to choose the authorization flow mechanism manually, you can add \code{grant_type} in the configuration
@@ -50,6 +50,7 @@ list. You can then use the following values:
 \itemize{
   \item authorization_code
   \item authorization_code+pkce
+  \item urn:ietf:params:oauth:grant-type:device_code
   \item urn:ietf:params:oauth:grant-type:device_code+pkce
 }
 }
