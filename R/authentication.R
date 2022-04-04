@@ -403,6 +403,10 @@ AbstractOIDCAuthentication <- R6Class(
       return(token$expires_at <= Sys.time())
     },
     
+    isInteractive = function() {
+      return(if (is_jupyter()) TRUE else rlang::is_interactive())
+    },
+    
     decodeToken = function(access_token, token_part) {
       tokens <- unlist(strsplit(access_token, "\\."))
       fromJSON(rawToChar(base64decode(tokens[token_part])))
@@ -447,12 +451,16 @@ OIDCDeviceCodeFlow <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_device(client = client,
-                                       auth_url = private$endpoints$device_authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "))
-      
-      
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_device(
+                        client = client,
+                        auth_url = private$endpoints$device_authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " ")
+                      ),
+                      value = private$isInteractive()
+                    )
+
       invisible(self)
     }
   ),
@@ -485,12 +493,17 @@ OIDCDeviceCodeFlowPkce <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_device(client = client,
-                                       auth_url = private$endpoints$device_authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "),pkce = TRUE)
-      
-      
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_device(
+                        client = client,
+                        auth_url = private$endpoints$device_authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = TRUE
+                      ),
+                      value = private$isInteractive()
+                    )
+
       invisible(self)
     }
   ),
@@ -525,15 +538,18 @@ OIDCAuthCodeFlowPKCE <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_auth_code(client = client,
-                                       auth_url = private$endpoints$authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "),
-                                       pkce = TRUE,
-                                       port=1410
-                                       )
-      
-      
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_auth_code(
+                        client = client,
+                        auth_url = private$endpoints$authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = TRUE,
+                        port = 1410
+                      ),
+                      value = private$isInteractive()
+                    )
+
       invisible(self)
     }
   ),
@@ -568,13 +584,17 @@ OIDCAuthCodeFlow <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_auth_code(client = client,
-                                          auth_url = private$endpoints$authorization_endpoint,
-                                          scope=paste0(private$scopes,collapse=" "),
-                                          pkce = FALSE,
-                                          port=1410
-      )
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_auth_code(
+                        client = client,
+                        auth_url = private$endpoints$authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = FALSE,
+                        port = 1410
+                      ),
+                      value = private$isInteractive()
+                    )
     }
   ),
   # private ====

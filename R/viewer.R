@@ -252,21 +252,6 @@ collection_viewer = function(x = NULL, con = NULL) {
   }, error = .capturedErrorToMessage)
 }
 
-# Is this in a Jupyter notebook?
-is_jupyter = function() {
-  return (isTRUE(getOption('jupyter.in_kernel')))
-}
-
-# Is this in a RStudio notebook?
-is_rstudio_nb = function() {
-  return (isTRUE(getOption('rstudio.notebook.executing')))
-}
-
-# Is this in a RMarkdown / knitr context?
-is_rmd = function() {
-  return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
-}
-
 # Is this in a HTML context (any onf the above)?
 is_html_context = function() {
   return (is_jupyter() || is_rstudio_nb() || is_rmd())

@@ -148,3 +148,18 @@ status = function(x, ...) {
     return(ns[subset])
   }
 }
+
+# Is this in a Jupyter notebook?
+is_jupyter = function() {
+  return (isTRUE(getOption('jupyter.in_kernel')))
+}
+
+# Is this in a RStudio notebook?
+is_rstudio_nb = function() {
+  return (isTRUE(getOption('rstudio.notebook.executing')))
+}
+
+# Is this in a RMarkdown / knitr context?
+is_rmd = function() {
+  return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
+}
