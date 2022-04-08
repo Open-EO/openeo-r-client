@@ -29,7 +29,7 @@ graphToJSON = function(graph) {
     # task is a Graph object
     
     if ("Graph" %in% class(graph)) {
-        return(toJSON(graph$serialize(), auto_unbox = T, pretty = T, force = TRUE))
+        return(toJSON(graph$serialize(), auto_unbox = T, pretty = T, force = TRUE, digits = NA))
     } else {
         stop("Parameter is no Graph object.")
         invisible(NULL)

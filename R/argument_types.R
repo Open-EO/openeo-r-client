@@ -1629,7 +1629,6 @@ GeoJson = R6Class(
     },
     typeSerialization = function() {
       if (any(c("sf","sfc") %in% class(private$value))) {
-        
         # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
         old_order = sf::st_axis_order()
         sf::st_axis_order(TRUE)
@@ -1975,7 +1974,7 @@ ProcessGraphParameter = R6Class(
       private$default = default
     },
     print = function() {
-      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE,digits=NA))
       invisible(self)
     },
     adaptType = function(fromParameter) {

@@ -41,7 +41,7 @@ print.response = function(x) {
         }
         
         if ("content-type" %in% rownames(headers) && unlist(headers["content-type", ]) == "application/json") {
-            print(toJSON(resp_body_json(x), auto_unbox = TRUE, pretty = TRUE))
+            print(toJSON(resp_body_json(x), auto_unbox = TRUE, pretty = TRUE, digits = NA))
         } else {
             print("Other formats not yet implemented.")
         }

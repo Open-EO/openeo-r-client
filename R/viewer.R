@@ -94,7 +94,7 @@ read_template = function(file, props, component = NULL) {
     template_file = system.file("extdata", paste(file, ".html", sep = ""), package = "openeo")
     html = readChar(template_file, nchars = file.info(template_file)$size)
     
-    json = jsonlite::toJSON(props, force = TRUE, auto_unbox = TRUE, null = "null")
+    json = jsonlite::toJSON(props, force = TRUE, auto_unbox = TRUE, null = "null", digits = NA)
     html = gsub(x = html, pattern = "{props}", replacement = json, fixed = TRUE)
     if (!is.null(component)) {
       html = gsub(x = html, pattern = "{component}", replacement = component, fixed = TRUE)
