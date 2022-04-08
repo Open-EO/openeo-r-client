@@ -36,7 +36,7 @@ oauth_flow_fetch = function (req) {
 #' @importFrom glue glue
 oauth_flow_device = function (client, auth_url, pkce = FALSE, scope = NULL, auth_params = list(), 
                               token_params = list()) {
-  httr2:::oauth_flow_check("device", client)
+  httr2:::oauth_flow_check("device", client, interactive = TRUE)
   
   if (pkce) { # added this
     code <- oauth_flow_auth_code_pkce()
