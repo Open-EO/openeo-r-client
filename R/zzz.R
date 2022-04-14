@@ -4,5 +4,5 @@ pkgEnvironment = new.env()
     assign(x = "DEBUG_MODE", value = FALSE, envir = pkgEnvironment)
     assign(x = "active_connection", value = NULL, envir = pkgEnvironment)
     
-    register_all_s3_methods()
+    register_all_spatial_s3_methods()
 }

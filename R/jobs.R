@@ -509,6 +509,8 @@ describe_job = function(job,con=NULL) {
     }, error = .capturedErrorToMessage)
 }
 
+# to make a class definition for the returned lists
+setOldClass("Job")
 
 #' Delete a job
 #'

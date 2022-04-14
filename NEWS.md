@@ -14,6 +14,8 @@
 * temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made available on CRAN
 
 ## Fixes
+* added a Job to Process coercion to match the messages instruction, when printing a Job [#115](https://github.com/Open-EO/openeo-r-client/issues/115)
+* during JSON serialization numbers were truncated to a certain amount of digits. Setting `digits=NA` during serialization removes the default value for the digits [#64](https://github.com/Open-EO/openeo-r-client/issues/64)
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
 
 ## Changed

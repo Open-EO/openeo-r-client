@@ -13,7 +13,6 @@ Suggests:
     tibble,
     testthat,
     knitr,
-    sf,
     stars,
     pkgdown,
     rmarkdown,
@@ -22,6 +21,7 @@ Suggests:
 Imports:
     jsonlite,
     httr2,
+    sf,
     methods,
     R6,
     lubridate,
@@ -42,15 +42,15 @@ Collate:
     'capabilities-mapping.R'
     'utilities.R'
     'client.R'
+    'debugging.R'
+    'jobs.R'
     'services.R'
     'process_graph_building.R'
     'user_defined_processes.R'
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
-    'debugging.R'
     'httr2_device_code.R'
-    'jobs.R'
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'

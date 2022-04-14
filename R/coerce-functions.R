@@ -1,6 +1,7 @@
 #' @include process_graph_building.R
 #' @include user_defined_processes.R
 #' @include services.R
+#' @include jobs.R
 #' @importFrom methods S3Part<-
 NULL
 

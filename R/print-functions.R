@@ -485,7 +485,7 @@ print.Process = function(x, ...) {
         return(print_html("process", x$serialize(), props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
     }
 
-    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE, digits=NA))
 }
 
 #' @export
