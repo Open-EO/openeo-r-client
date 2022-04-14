@@ -7,6 +7,7 @@
 \alias{as.Process.ProcessNode}
 \alias{as.Process.Service}
 \alias{as.Process.function}
+\alias{as.Process.Job}
 \title{Coerce into a Process}
 \usage{
 as.Process.ProcessInfo(from)
@@ -18,6 +19,8 @@ as.Process.ProcessNode(from)
 as.Process.Service(from)
 
 as.Process.function(from)
+
+as.Process.Job(from)
 }
 \arguments{
 \item{from}{the source from which to coerce (\code{ProcessInfo}, \code{\link{Graph}} or \code{\link{ProcessNode}})}
