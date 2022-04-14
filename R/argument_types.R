@@ -1578,27 +1578,40 @@ GeoJson = R6Class(
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
-      if (is.list(value) && "type" %in% names(value) && !any(c("sf","sfc") %in% class(value))) {
+      
+      if (all(c("XY","POLYGON") %in% class(value))) {
+        private$value = sf::st_sfc(value)
+        return()
+      }
+      
+      if (any(c("sf","sfc") %in% class(value))) {
+        private$value = value
+        return()
+      }
+      
+      old_class = class(value)
+      value = unclass(value)
+      
+      if (is.list(value) && "type" %in% names(value)) {
         # this case is a geojson parsed as list
         tryCatch({
           tmpfile = tempfile()
-          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE)
+          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE, digits = NA)
           
           suppressWarnings({
             old_order = sf::st_axis_order()
             sf::st_axis_order(TRUE)
-            value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
+            private$value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
             sf::st_axis_order(old_order)
           })
           
         }, finally = unlink(tmpfile)) 
+      } else {
+        stop("Cannot set given object for argument 'GeoJSON': class ",paste(sep=",",old_class)," not supported")
       }
       
-      if (all(c("XY","POLYGON") %in% class(value))) {
-        value = sf::st_sfc(value)
-      }
       
-      private$value = value
+      
     },
     getValue = function() {
       return(private$value)
@@ -2611,15 +2624,17 @@ AnyOf = R6Class(
         
         private$value = value
         return(self)
-      } else {
+      } 
+      else {
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
         
         validated = sapply(choice_copies, function(param) {
-          param$setValue(value)
+          
           
           tryCatch(
             {
+              param$setValue(value)
               validation = param$validate()
               return(is.null(validation))
             },
