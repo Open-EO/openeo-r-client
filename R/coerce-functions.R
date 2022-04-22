@@ -210,6 +210,12 @@ as.Graph.ProcessInfo = function(from) {
     return(parse_graph(json=from))
 }
 
+#' @rdname as.Graph
+#' @export
+as.Graph.Process = function(from) {
+  return(from$getProcessGraph)
+}
+
 #' @export
 as.character.UdfRuntime = function(x, ...) {
     return(x$id)
@@ -274,6 +280,7 @@ suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
     setAs(from="ProcessInfo",to="Graph",as.Graph.ProcessInfo)
+    setAs(from="Process",to="Graph",as.Graph.Process)
     setAs(from="ProcessInfo",to="Process",as.Process.ProcessInfo)
     setAs(from="Graph",to="Process",as.Process.Graph)
     setAs(from="ProcessNode",to="Process",as.Process.ProcessNode)

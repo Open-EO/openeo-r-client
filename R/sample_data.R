@@ -57,17 +57,17 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
         
         switch(process,
                load_collection={
-                 ext = x$parameters$spatial_extent$getValue()
+                 ext = x$parameters$spatial_extent
                  x$parameters$spatial_extent = var
                },
                filter_bbox={
-                 ext = x$parameters$extent$getValue()
+                 ext = x$parameters$extent
                  x$parameters$extent = var
                },
                filter_spatial = { 
                  # not sure if this messes things up, maybe this needs to get to be replaced later, 
                  # e.g. write bbox into load_collection and delete process filter_spatial
-                 ext = x$parameters$geometries$getValue()
+                 ext = x$parameters$geometries
                  x$parameters$geometries = var
                }, 
                # default
@@ -75,7 +75,7 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
                  ext = NULL
                })
         
-        if (is.null(ext) || ext$isEmpty()) {
+        if (is.null(ext) || ("Argument" %in% class(ext) && ext$isEmpty())) {
           ext = NULL
         }
         
