@@ -11,4 +11,10 @@ pkgEnvironment = new.env()
 #' 
 #' @name openeo-deprecated
 #' @rdname openeo-deprecated
+#' 
+#' @section Deprecated:
+#' \describe{
+#'  \item{graphToJSON(x,...)}{replaced by toJSON}
+#'  \item{processToJSON(x,...)}{replaced by toJSON}
+#' }
 NULL

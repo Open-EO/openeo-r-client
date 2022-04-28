@@ -29,14 +29,22 @@ NULL
   }
 }
 
-#' @rdname openeo-deprecated
+#' *toJSON functions
+#' 
+#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use \code{toJSON} instead.
+#' 
+#' @name graphToJSON-deprecated
+#' @rdname toJSON-deprecated
+#' @param x Graph or Process object
+#' @param ... arguments for jsonlite::toJSON
 #' @export
 graphToJSON = function(x,...) {
   .Deprecated(new="toJSON",package = "openeo")
   do.call("toJSON",args=c(x=x,list(...)))
 }
 
-#' @rdname openeo-deprecated
+#' @name processToJSON-deprecated
+#' @rdname toJSON-deprecated
 #' @export
 processToJSON = function(x, ...) {
   .Deprecated(new="toJSON",package = "openeo")
@@ -53,6 +61,7 @@ processToJSON = function(x, ...) {
 #' @param ... additional parameters that are passed to jsonlite::toJSON
 #' @return JSON string of the process as a character string 
 #' 
+#' @name toJSON
 #' @rdname toJSON
 #' 
 #' @examples
@@ -64,9 +73,12 @@ processToJSON = function(x, ...) {
 #' graph = process$getProcessGraph()
 #' toJSON(graph)
 #' }
-#' @export
-setGeneric("toJSON")
+NULL
+
+#' @rdname toJSON
 setMethod(f="toJSON", signature = "Process",definition = .toJSON)
+
+#' @rdname toJSON
 setMethod(f="toJSON", signature = "Graph",definition = .toJSON)
 
 .capturedErrorToMessage = function(e) {

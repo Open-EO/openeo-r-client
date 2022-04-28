@@ -199,7 +199,7 @@ terms_of_service = function(con = NULL) {
             res = req_perform(req)
 
             # the viewer does not render it nicely so redirecting to the internet browser
-            browseURL(sel$href)
+            utils::browseURL(sel$href)
             
             return(invisible(sel))
         }
@@ -240,7 +240,7 @@ privacy_policy = function(con = NULL) {
             res = req_perform(req)
             
             # the viewer does not render it nicely so redirecting to the internet browser
-            browseURL(sel$href)
+            utils::browseURL(sel$href)
             return(invisible(sel))
         }
         

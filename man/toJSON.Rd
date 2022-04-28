@@ -2,9 +2,29 @@
 % Please edit documentation in R/utilities.R
 \name{toJSON}
 \alias{toJSON}
+\alias{toJSON,Process-method}
+\alias{toJSON,Graph-method}
 \title{Wrapper for toJSON}
 \usage{
-toJSON(
+\S4method{toJSON}{Process}(
+  x,
+  dataframe = c("rows", "columns", "values"),
+  matrix = c("rowmajor", "columnmajor"),
+  Date = c("ISO8601", "epoch"),
+  POSIXt = c("string", "ISO8601", "epoch", "mongo"),
+  factor = c("string", "integer"),
+  complex = c("string", "list"),
+  raw = c("base64", "hex", "mongo", "int", "js"),
+  null = c("list", "null"),
+  na = c("null", "string"),
+  auto_unbox = FALSE,
+  digits = 4,
+  pretty = FALSE,
+  force = FALSE,
+  ...
+)
+
+\S4method{toJSON}{Graph}(
   x,
   dataframe = c("rows", "columns", "values"),
   matrix = c("rowmajor", "columnmajor"),

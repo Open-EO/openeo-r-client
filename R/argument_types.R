@@ -418,7 +418,7 @@ Integer = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Integer cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Integer cannot be an array.")
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
@@ -473,7 +473,7 @@ EPSGCode = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("EPSG code cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("EPSG code cannot be an array.")
       
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
@@ -538,7 +538,7 @@ Number = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Number cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Number cannot be an array.")
       
       if ("ProcessNode" %in% class(private$value)) {
         return_value = private$value$getReturns()
@@ -607,7 +607,7 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("String cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("String cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
@@ -630,7 +630,7 @@ String = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (length(private$value) > 1) stop("String cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("String cannot be an array.")
       
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
@@ -677,7 +677,7 @@ URI = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("URI cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("URI cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
@@ -744,7 +744,7 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Output format cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Output format cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         
@@ -808,7 +808,7 @@ CollectionId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Collection ID cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Collection ID cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
@@ -882,7 +882,7 @@ JobId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Job id cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Job id cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -938,7 +938,7 @@ UdfRuntimeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("UDF runtime cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF runtime cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -991,7 +991,7 @@ UdfRuntimeVersionArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("UDF runtime version cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF runtime version cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
@@ -1045,7 +1045,7 @@ UdfCodeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("UDF code cannot be an array cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         
@@ -1068,7 +1068,7 @@ UdfCodeArgument = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (length(private$value) > 1) stop("UDF code cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array.")
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
@@ -1130,7 +1130,7 @@ ProcessGraphId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Process graph id cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Process graph id cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
@@ -1188,7 +1188,7 @@ ProjDefinition = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("PROJ definition cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("PROJ definition cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1364,7 +1364,7 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Boolean cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Boolean cannot be an array.")
       
       if (length(private$value) > 0 && "ProcessNode" %in% class(private$value)) {
         if (! "boolean" %in% class(private$value$getReturns())) {
@@ -1425,7 +1425,7 @@ Date = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Date cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Date cannot be an array.")
       if (!is.na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
@@ -1480,7 +1480,7 @@ DateTime = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Timestamp cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Timestamp cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
@@ -1544,7 +1544,7 @@ Time = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1) stop("Time cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Time cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
