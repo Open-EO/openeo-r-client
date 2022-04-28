@@ -198,7 +198,7 @@ terms_of_service = function(con = NULL) {
             req = req_headers(req,`Content-Type`="text/html")
             res = req_perform(req)
 
-            htmlViewer(as.character(resp_body_html(res)))
+            html_viewer(as.character(resp_body_html(res)))
             
             cat(sel$href,"\n")
             
@@ -240,7 +240,7 @@ privacy_policy = function(con = NULL) {
             req = req_headers(req,`Content-Type`="text/html")
             res = req_perform(req)
             
-            htmlViewer(as.character(resp_body_html(res)))
+            html_viewer(as.character(resp_body_html(res)))
             
             cat(sel$href,"\n")
             return(invisible(sel))
