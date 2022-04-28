@@ -466,6 +466,7 @@ OpenEOClient <- R6Class(
             
             auth_pkce = "authorization_code+pkce"
             device_pkce = "urn:ietf:params:oauth:grant-type:device_code+pkce"
+            device_code = "urn:ietf:params:oauth:grant-type:device_code"
             
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
@@ -478,6 +479,7 @@ OpenEOClient <- R6Class(
               full_credentials = all(c("client_id","secret") %in% names(config))
               is_auth_code = length(config$grant_type) > 0 && config$grant_type == 'authorization_code'
               
+              # either credentials are set and / or authorization_code as grant_type
               if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
                 private$auth_client = OIDCAuthCodeFlow$new(provider = provider, config = config, force=TRUE)
               }
@@ -491,8 +493,9 @@ OpenEOClient <- R6Class(
                 supported = which(sapply(default_clients, function(p) config$client_id == p$id))
                 if (length(supported) > 0 && device_pkce %in% default_clients[[supported[[1]]]]$grant_types) {
                   config$grant_type = device_pkce
-                }
-                else {
+                } else if (length(supported) > 0 && device_code %in% default_clients[[supported[[1]]]]$grant_types) {
+                  config$grant_type = device_code
+                } else {
                   config$grant_type = auth_pkce
                 }
               }
@@ -509,10 +512,17 @@ OpenEOClient <- R6Class(
                 # preferred device code + pkce
                 config = .get_client(default_clients, device_pkce, config)
                 # second choice auth_code + pkce
+                
+                if (is.null(config$client_id)) {
+                  config = .get_client(default_clients, device_code, config)
+                }
+                
                 if (is.null(config$client_id)) {
                   config = .get_client(default_clients, auth_pkce, config)
                 }
-              }
+              } 
+              
+              
               
               if (is.null(config$client_id)) {
                 stop("Please provide a client id or a valid combination of client_id and grant_type.")
@@ -521,6 +531,8 @@ OpenEOClient <- R6Class(
               
             if (device_pkce == config$grant_type) {
               private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
+            } else if (device_code == config$grant_type) {
+              private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
             } else if (is.null(config$grant_type) || auth_pkce == config$grant_type) {
               private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
             }
@@ -594,6 +606,13 @@ OpenEOClient <- R6Class(
   
       query$req = req
       req = do.call(req_url_query,args = query)
+      
+      req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)
       
       if (is.debugging()) {
@@ -615,7 +634,7 @@ OpenEOClient <- R6Class(
         
 
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     DELETE = function(endpoint,authorized=FALSE,query = list(),...) {
@@ -632,6 +651,13 @@ OpenEOClient <- R6Class(
 
       query$req = req
       req = do.call(req_url_query,args = query)
+      
+      req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
+      
       response = req_perform(req)
       
       # response = DELETE(url=url, config = header, ...)
@@ -648,14 +674,13 @@ OpenEOClient <- R6Class(
           return(TRUE)
         }
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
       
       
     },
     POST = function(endpoint,authorized=FALSE,data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
       url = paste(private$host,endpoint,sep="/")
-      
       req = request(url)
       req = req_method(req, method="POST")
       
@@ -667,35 +692,6 @@ OpenEOClient <- R6Class(
       if (authorized && !is.null(private$auth_client)) {
         header = private$addAuthorization(header)
       }
-      
-      # if (length(data) > 0) {
-      #   if (! raw) {
-      #     if (is.character(data)) {
-      #       # data = fromJSON(data,simplifyDataFrame = FALSE)
-      #       if (encodeType == "json") {
-      #         encodeType = "raw"
-      #         header = append(header, list(`Content-Type` = "application/json"))
-      #       }
-      #     } else if (is.list(data)) {
-      #       
-      #       if (encodeType == "json") {
-      #         encodeType = "raw"
-      #         header = append(header, list(`Content-Type` = "application/json"))
-      #         
-      #         
-      #         # data = do.call(toJSON, args = list(x = data,
-      #         #                                    auto_unbox = TRUE,
-      #         #                                    ...))
-      #           
-      #       }
-      #       
-      #     } else {
-      #       stop("Cannot interpret data - not a list that can be transformed into json")
-      #     }
-      #   } else {
-      #     header = append(header, list(`Content-Type` = "application/octet-stream"))
-      #   }
-      # }
       
       req = do.call(req_headers,header)
       query$req = req
@@ -712,16 +708,14 @@ OpenEOClient <- R6Class(
         if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
+      req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
       
       response = req_perform(req)      
-      # response=POST(
-      #   url= url,
-      #   config = header,
-      #   query = query,
-      #   body = data,
-      #   encode = encodeType
-      # )
-      
+
       if (is.debugging()) {
         print(response)
       }
@@ -744,7 +738,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
@@ -759,29 +753,6 @@ OpenEOClient <- R6Class(
         header = private$addAuthorization(header)
       }
       
-
-      # create JSON and prepare to send graph as post body
-      # if (is.character(data)) {
-      #   if (encodeType == "json") {
-      #     encodeType = "raw"
-      #     header = append(header, add_headers(`Content-Type` = "application/json"))
-      #   }
-      # } else if (is.list(data)) {
-      #   
-      #   if (encodeType == "json") {
-      #     encodeType = "raw"
-      #     header = append(header, add_headers(`Content-Type` = "application/json"))
-      #     
-      #     
-      #     # data = do.call(toJSON, args = list(x = data,
-      #     #                                    auto_unbox = TRUE,
-      #     #                                    ...))
-      #     
-      #   }
-      #   
-      # } else {
-      #   stop("Cannot interpret data - not a list that can be transformed into JSON")
-      # }
       req = do.call(req_headers,header)
       query$req = req
       req = do.call(req_url_query,args = query)
@@ -797,18 +768,13 @@ OpenEOClient <- R6Class(
         if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
+      req = req_error(req,body=private$errorHandling)
       
-      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
       
       response = req_perform(req)  
-
-      # response=PUT(
-      #   url= url,
-      #   config = header,
-      #   query = query,
-      #   body = data,
-      #   encode = encodeType
-      # )
       
       if (is.debugging()) {
         print(response)
@@ -826,7 +792,7 @@ OpenEOClient <- R6Class(
         okMessage = resp_body_json(response)
         return(okMessage)
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
     PATCH = function(endpoint, authorized=FALSE, data=NULL, encodeType = NULL, parsed=TRUE, ...) {
@@ -840,20 +806,18 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
       
-      
-      
       params = list(url=url, 
                     config = header)
       
       if (!is.null(data)) {
-        # params = append(params, list(body = data))
         req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
       }
       
-      # if (!is.null(encodeType)) {
-      #   params = append(params, list(encode = encodeType))
-      # }
-      # response = do.call("PATCH", args = params)
+      req = req_error(req,body=private$errorHandling)
+      
+      if (is.debugging()) {
+        req_dry_run(req)
+      }
       
       response = req_perform(req)
       
@@ -873,7 +837,7 @@ OpenEOClient <- R6Class(
         okMessage = resp_body_json(response)
         return(okMessage)
       } else {
-        private$errorHandling(response,url)
+        private$errorHandling(response)
       }
     },
 
@@ -901,19 +865,19 @@ OpenEOClient <- R6Class(
 
       return(header)
     },
-    errorHandling = function(response,url) {
-      if (class(response) == "response") {
+    errorHandling = function(response) {
+      if (class(response) == "httr2_response" || class(response) == "response") {
         # errorMessage = content(response)
         errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {
-          stop(paste("SERVER-ERROR:", errorMessage[["message"]]))
+          paste("SERVER-ERROR:", errorMessage[["message"]])
         } else {
           # if there is an uncaptured error from the server then just return it as is
-          stop(paste("SERVER-ERROR:", errorMessage))
+          paste("SERVER-ERROR:", errorMessage)
         }
       } else {
         # never happens? it is something else than response object
-        stop(response)
+        response
       }
     }
   )

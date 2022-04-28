@@ -1542,10 +1542,11 @@ Time = R6Class(
 #' GeoJson
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
-#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features from package 'sf'. 
-#' If sf-objects are used, keep in mind that the objects are projected in  Lat/Long EPSG:4326, unless marked otherwise.
-#' It is assumed that the coordinates have a projection. If the crs-object is set and does not match 
-#' EPSG:4326, the polygon is transformed accordingly.
+#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
+#' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
+#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
+#' original form (sf/sfc object) until it is serialized.
+#' 
 #' 
 #' @name GeoJson
 #' 
@@ -1573,55 +1574,78 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
-      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
-      if (isNamespaceLoaded("sf")) {
-        if (all(c("XY","POLYGON") %in% class(value))) {
-          value = sf::st_sfc(value)
-        }
-        
-        if ("sfc_POLYGON" %in% class(value)) {
-          value = sf::st_sf(value)
-          sf::st_crs(value) = 4326
-        } 
-        
-        if ("sf" %in% class(value)) {
-          # since geojson only supports WGS84 we need to make sure that it is that crs
-          value = sf::st_transform(value, st_crs(4326))
-        }
+      if (is.list(value) && "type" %in% names(value) && !any(c("sf","sfc") %in% class(value))) {
+        # this case is a geojson parsed as list
+        tryCatch({
+          tmpfile = tempfile()
+          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE)
+          
+          suppressWarnings({
+            old_order = sf::st_axis_order()
+            sf::st_axis_order(TRUE)
+            value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
+            sf::st_axis_order(old_order)
+          })
+          
+        }, finally = unlink(tmpfile)) 
+      }
+      
+      if (all(c("XY","POLYGON") %in% class(value))) {
+        value = sf::st_sfc(value)
       }
       
       private$value = value
+    },
+    getValue = function() {
+      return(private$value)
     }
   ),
   private = list(
     typeCheck = function() {
-      if (is.list(private$value)) {
-        #if list we assume that the geojson object was created as list
-        return(NULL)
-      } 
+       
       
       if ("sf" %in% class(private$value)) {
         return(NULL)
+      } else if ("sfc" %in% class(private$value)) {
+        return(NULL)
+      } else if (is.list(private$value)) {
+          
+          if (!"type" %in% names(private$value)) {
+            #TODO better probing
+            stop("Value is not GeoJSON.")
+          }
+          
+          #if list we assume that the geojson object was created as list
+          return(NULL)
       } else {
-        stop("Class ",class(private$value)[[1]], " not supported in GeoJson argument")
+        stop("Class ",paste(class(private$value)), " not supported in GeoJson argument")
       }
         
       
     },
     typeSerialization = function() {
-      if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
+      if (any(c("sf","sfc") %in% class(private$value))) {
+        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
+        old_order = sf::st_axis_order()
+        sf::st_axis_order(TRUE)
+        value = sf::st_transform(private$value,4326)
+        sf::st_axis_order(old_order)
+        
+        tryCatch({
+          t = tempfile()
+          write_sf(value,t,driver="geojson")
+          obj = jsonlite::read_json(t,simplifyVector = FALSE)
+          # remove CRS just to be in line with the geojson specification (4326, lat/lon, no crs field)
+          obj["crs"] = NULL
+          return(obj)
+        }, finally = unlink(t))
+          
+      } else if (is.list(private$value) && "type" %in% names(private$value)) {
         return(private$value)
-      } else if ("sf" %in% class(private$value)){
-        if (!.is_package_installed("geojsonsf")) {
-          stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
-        } else {
-          gson = geojsonsf::sf_geojson(private$value)
-          return(jsonlite::fromJSON(gson, simplifyVector = FALSE))
-        }
       } else {
         stop("Unsupported value type.")
       }
@@ -1950,7 +1974,7 @@ ProcessGraphParameter = R6Class(
       private$default = default
     },
     print = function() {
-      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE,digits=NA))
       invisible(self)
     },
     adaptType = function(fromParameter) {
@@ -1972,7 +1996,16 @@ ProcessGraphParameter = R6Class(
       if (self$isEmpty()) {
         return(list(from_parameter=private$name))
       } else {
-        return(self$getValue())
+        
+        if ("Argument" %in% class(private$value)) {
+          value_serialization = self$getValue()$serialize()
+        } else if ("FileFormat" %in% class(private$value)) {
+          value_serialization = private$value$name
+        } else {
+          value_serialization = self$getValue()
+        }
+        
+        return(value_serialization)
       }
     }
   )
@@ -2445,9 +2478,11 @@ MetadataFilter <- R6Class(
             
             # assign new graph as value
             as(final_node,"Process")
+           } else if ("Graph" %in% class(FUN)) {
+              as(FUN,"Process")
            } else {
              stop("Value for the metadata filter needs to be a list of functions.")
-          }
+           }
           
           
           

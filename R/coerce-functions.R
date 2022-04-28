@@ -1,6 +1,7 @@
 #' @include process_graph_building.R
 #' @include user_defined_processes.R
 #' @include services.R
+#' @include jobs.R
 #' @importFrom methods S3Part<-
 NULL
 
@@ -173,6 +174,11 @@ as.data.frame.UserFileList = function(x, ...) {
   return(table)
 }
 
+#' @export
+as.data.frame.ResultList = function(x, ...) {
+  return(as.data.frame(x$assets))
+}
+
 #' Coercion into Graph
 #' 
 #' Creates a \code{Graph} object from a \code{\link{ProcessNode}}, \code{function} or \code{ProcessInfo} (Exchange object for 
@@ -202,6 +208,12 @@ as.Graph.function = function(from) {
 #' @export
 as.Graph.ProcessInfo = function(from) {
     return(parse_graph(json=from))
+}
+
+#' @rdname as.Graph
+#' @export
+as.Graph.Process = function(from) {
+  return(from$getProcessGraph)
 }
 
 #' @export
@@ -258,14 +270,22 @@ as.Process.function = function(from) {
     Process$new(id=NULL,process_graph=from)
 }
 
+#' @name as.Process
+#' @export
+as.Process.Job = function(from) {
+  Process$new(id=NULL,process_graph=from$process)
+}
+
 suppressWarnings({
     setAs(from="ProcessNode",to="Graph",as.Graph.ProcessNode)
     setAs(from="function",to="Graph",as.Graph.function)
     setAs(from="ProcessInfo",to="Graph",as.Graph.ProcessInfo)
+    setAs(from="Process",to="Graph",as.Graph.Process)
     setAs(from="ProcessInfo",to="Process",as.Process.ProcessInfo)
     setAs(from="Graph",to="Process",as.Process.Graph)
     setAs(from="ProcessNode",to="Process",as.Process.ProcessNode)
     setAs(from="Service",to="Process",as.Process.Service)
     setAs(from="function",to="Process",as.Process.function)
+    setAs(from="Job",to="Process",as.Process.Job)
 })
 

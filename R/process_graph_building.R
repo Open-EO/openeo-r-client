@@ -463,6 +463,9 @@ Process = R6Class(
   )
 )
 
+#'@export
+setOldClass(c("Process","R6"))
+
 setClass("ArgumentList")
 
 # ProcessNode ====
@@ -679,7 +682,21 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
         argument = p$parameters[[name]]
         value = pdef$arguments[[name]]
         
-        if ("process_graph" %in% names(value)) {
+        # if the list is named and contains process graphs treat it as intended for load_collection for example... a process for each entry
+        list_of_process_graphs = sapply(value, function(p) {
+          "process_graph" %in% names(p)
+        })
+        if (length(names(value)) > 0 && all(list_of_process_graphs)) {
+          params = argument$getProcessGraphParameters()
+          names(params) = sapply(params, function(p)p$getName())
+          
+          property_names = names(value)
+          value = lapply(1:length(value), function(index) {
+            parse_graph(con=con,json = value[[index]], parameters = params)
+          })
+          
+          names(value) = property_names
+        } else if ("process_graph" %in% names(value)) {
           # do subgraph
           if (!"ProcessGraphArgument" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
           
@@ -981,16 +998,23 @@ remove_variable = function(graph, variable) {
 }
 
 #' @export
+`$.ArgumentList` = function(x, name) {
+  val = unclass(x)[[name]]$getValue()
+  if ("anyOf" %in% class(val)) return(val$getValue())
+  else return(val)
+}
+
+#' @export
 `$<-.ArgumentList` = function(x, name, value) {
-  x[[name]]$setValue(value)
+  unclass(x)[[name]]$setValue(value)
 }
 
 #' @export
 `[<-.ArgumentList` = function(x, i, value) {
-  x[[i]]$setValue(value)
+  unclass(x)[[i]]$setValue(value)
 }
 
 #' @export
 `[[<-.ArgumentList` = function(x, i, value) {
-  x[[i]]$setValue(value)
+  unclass(x)[[i]]$setValue(value)
 }

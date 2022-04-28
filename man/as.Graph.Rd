@@ -5,6 +5,7 @@
 \alias{as.Graph.ProcessNode}
 \alias{as.Graph.function}
 \alias{as.Graph.ProcessInfo}
+\alias{as.Graph.Process}
 \title{Coercion into Graph}
 \usage{
 as.Graph.ProcessNode(from)
@@ -12,6 +13,8 @@ as.Graph.ProcessNode(from)
 as.Graph.function(from)
 
 as.Graph.ProcessInfo(from)
+
+as.Graph.Process(from)
 }
 \arguments{
 \item{from}{the source from which to coerce (\code{ProcessNode}, \code{function} or \code{ProcessInfo})}

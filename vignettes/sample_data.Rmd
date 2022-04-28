@@ -1,0 +1,214 @@
+---
+title: "Sample Data Retrieval"
+author: "Florian Lahn"
+date: "2022-03-11"
+output: html_document
+---
+
+During this examples, we will use *openEO Platform* as back-end implementation. Also the *openEO Platform* as a project is under continuous development and the assumptions for receiving sample data made in this project, had to consider the current state of the back-end implementations. In the following course of this vignette, we will give some examples, how to obtain sample data for developing and debugging your openEO workflows. The example code is printed, but the results for many code blocks will not be shown. This has to be this way, because there are interactive elements involved like authenticating with personal user credentials against the back-end service.
+
+```{r setup,echo=FALSE, eval=FALSE}
+library(openeo)
+```
+
+# Introduction
+
+For dealing with remote processing trust is one very important aspect. For once you must trust the provider that the data is correctly pre-processed, meaning the data collection is correct and valid. Then the provided operators like mathematical band operations or kernel operations need to work correctly. Also you must trust that the optimization and parallelization strategy work correctly and do not affect the quality of your analysis. One way to build trust towards a remote processing system is testing through local inspection of data. The other aspects in remote processing for the need of sample data with regard to *openEO* is debugging and the development of user defined functions (UDF).
+
+As for now, openEO Platform supports the user on this matter in the form that data can be processed until a specific processing step and the result can be downloaded.
+
+In order to minimize the effort for an R user to obtain a small data chunk as sample data for local inspection, the function `get_sample()` was developed. As *openEO* normally operates on spatio-temporal data cubes, the `get_sample()` function aims to reduce the amount of data by sub setting the initial data spatially. Furthermore by using this function you already download the sample data and retrieve it optionally as a `stars` object. The latter will require the package `stars` to be installed in your R environment.
+
+# Connecting
+
+At first, we need an enabled account at openEO platform, then we establish a connection to the back-end and start the login procedure. In the process you will be asked for your authentication provider and potentially your login credentials (e.g. Authentication with Github, where you will be redirected to the Github page). During the process you will be very likely asked for a device code, which will be printed to console during the authentication procedure. This code needs to be copied and pasted into the respective field in the internet browser. You will then need to authorize the connection of 'openeo' for this session, which you will be asked also in the browser window.
+
+```{r, eval=FALSE}
+con = connect("https://openeo.cloud")
+login()
+```
+
+# Use Case
+
+As an example use case we will calculate the NDVI for a certain temporal interval. To make comparison easier at the end, the original bounding box is stored as a separate variable `bounding_box`. Potentially the steps afterwards could be a spatial aggregation operation on polygons and calculating zonal statistics, but this will not be covered in this example.
+
+```{r, eval=FALSE}
+p = processes()
+coll = list_collections()
+f = list_file_formats()
+
+bounding_box = list(west=6.75,south=51.85,east=7.25,north=52.15)
+
+data = p$load_collection(id = coll$SENTINEL2_L2A,
+                         bands=c("B04","B08"),
+                         spatial_extent = bounding_box,
+                         temporal_extent = list("2021-03-01","2021-07-15"))
+
+ndvi = p$reduce_dimension(data=data, dimension = "bands",reducer = function(x, context) {
+  b04 = x[1]
+  b08 = x[2]
+  (b08-b04)/(b08+b04)
+})
+```
+
+# Excursion: Sample Data Retrieval without `get_sample()` function
+
+Without the sampling function you need to configure the workflow completely by yourself, which involves:
+
+1.  create a small subset like a bounding box
+2.  exchange the occuring bounding boxes with this new one
+3.  Also before the changes to `compute_result` you would have to manually set the `save_result` node.
+4.  send the workflow to the back-end
+5.  store the results into a file
+6.  load the file with `stars` or any other package that can handle spatial or spatio-temporal data
+
+A workflow would have looked like the following:
+
+```{r, eval=FALSE}
+res = p$save_result(ndvi, format = f$output$netCDF)
+```
+
+```{r, eval=FALSE}
+as(res,"Process")
+```
+
+Calculate a new bounding box.
+
+```{r, eval=FALSE}
+center = list(lon=mean(c(bounding_box$west, bounding_box$east)), lat=mean(c(bounding_box$south, bounding_box$north)))
+diff = 0.0003
+sample_bbox = list(west=center$lon-diff,south=center$lat-diff,east=center$lon+diff,north=center$lat+diff)
+```
+
+Replace the old bounding box with the new one.
+
+```{r, eval=FALSE}
+data$parameters$spatial_extent = sample_bbox
+```
+
+```{r, eval=FALSE}
+data
+```
+
+Compute the results and store them in a file on your local disk.
+
+```{r, eval=FALSE}
+manual_file = "test_manual.nc"
+file = compute_result(res,output_file = manual_file)
+```
+
+Check the data by opening the file with `stars`.
+
+```{r, eval=FALSE,results='asis', warning=FALSE}
+library(stars)
+obj = read_stars(manual_file,driver = detect.driver(manual_file))
+obj
+```
+
+Update the time dimension with a more useful representation.
+
+```{r, eval=FALSE, warning=FALSE}
+library(lubridate)
+library(stars)
+library(ggplot2)
+
+dates = as_date(st_get_dimension_values(obj,"t"))
+obj = st_set_dimensions(obj,which="t",values = dates)
+obj
+```
+
+```{r, eval=FALSE,out.height='400px',out.width='600px'}
+ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
+```
+
+```{r, eval=FALSE}
+data$parameters$spatial_extent = bounding_box
+data
+```
+
+Running sample data retrieval this way is still valid and reasonable, when more complex spatial features are used for spatial sub setting.
+
+```{r, eval=FALSE, warning=FALSE}
+library(mapview)
+library(sf)
+
+initial_bbox = as.numeric(bounding_box)
+names(initial_bbox) = c("xmin","ymin","xmax","ymax")
+sample_bbox = as.numeric(sample_bbox)
+names(sample_bbox) = c("xmin","ymin","xmax","ymax")
+
+initial_bbox = st_as_sfc(st_bbox(initial_bbox,crs=4326))
+sample_bbox = st_as_sfc(st_bbox(sample_bbox,crs=4326))
+
+received_data_bbox = st_as_sfc(st_bbox(obj))
+
+mapview(list(initial_bbox,sample_bbox,received_data_bbox))
+```
+
+# Sample Data Support
+
+The two driving functions for sample retrieval are `get_sample()` in combination with `compute_result()`
+
+```{r, eval=FALSE}
+?get_sample
+```
+
+```{r, eval=FALSE}
+?compute_result
+```
+
+For convenience and auto-completion options in RStudio, we can store the formats as `f`. A plain text format identifier like `format="netCDF"` would do the same in the end.
+
+```{r, eval=FALSE}
+f = list_file_formats()
+```
+
+```{r, eval=FALSE, warning=FALSE}
+sample_file = "test_get_sample.nc"
+obj = get_sample(ndvi, 
+                 as_stars=TRUE, 
+                 output_file=sample_file,
+                 format = f$output$netCDF)
+```
+
+The `get_sample()` function can be applied directly on an intermediate processing step, without the need of explicitly defining a `save_result` process. Internally either `compute_result` (synchronous call) or `create_job` (asynchronous call) is used, depending on the parameter `execution='async'|'sync'`. For `compute_result` several configurations can be passed to the function using the `...` parameter. In that function the automatic addition of `save_result` is handled. If no specific format was specified, then 'netCDF' will be chosen as a default, if the back-end support that format.
+
+In the former example, there were two more interesting parameters. As `format`, `output_file` is defined in `compute_result` and allows to specify a path were to store the sample data on your local machine. The parameter `as_stars` controls whether or not the downloaded sample will be opened as a `stars` object (requires package `stars` to be installed).
+
+```{r, eval=FALSE}
+obj
+```
+
+And as `obj` is already a `stars` object, we now completely work on local sample data. You can now test and check the sample data and potentially develop UDFs.
+
+Hint: Newer versions of 'stars' already interpret the temporal dimension into POSIX dates and the next code block can be skipped.
+
+```{r, eval=FALSE}
+library(lubridate)
+library(stars)
+library(ggplot2)
+
+dates = as_date(st_get_dimension_values(obj,"t"))
+obj = st_set_dimensions(obj,which="t",values = dates)
+```
+
+```{r, eval=FALSE, out.height="400px",out.width="600px"}
+ggplot() + geom_stars(data=obj) + facet_wrap(~t) + coord_equal() + theme_void()
+```
+
+Now, lets compare the bounding boxes of the original request with the one of the obtained data.
+
+```{r, eval=FALSE}
+library(mapview)
+library(sf)
+
+received_data_bbox = st_as_sfc(st_bbox(obj))
+
+mapview(list(initial_bbox,received_data_bbox))
+```
+
+Note: The bounding box of the obtained sample data is smaller than the original one. It should be even smaller, `get_sample()` takes the center point of the bounding box and fetches data in a 0.0003° radius, which is approximately 30 meter in all directions. If the bounding box coordinate reference is not in WGS84 (default EPSG:4326) the package `sf` is required to handle the coordinate transformations. As mentioned in the beginning the current realization of the back-end provider has realized a serialization of a minimum tile sizes of 256x256 pixel.
+
+# Why `stars`
+
+The `stars` package was chosen to represent multidimensional spatio-temporal data in this context, because that was the exact developers intention. Also `stars` offer several coercion functions to convert the data into formats of other packages for a more specialized purpose like `terra` for raster operations. Another reason is the planned use of `stars` in the UDF module for R. With this in mind the user can obtain a `stars` object and develop an R-UDF locally, which can potentially run on the back-end.

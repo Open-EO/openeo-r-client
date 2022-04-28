@@ -14,7 +14,7 @@ Suggests:
     testthat,
     knitr,
     sf,
-    geojsonsf,
+    stars,
     pkgdown,
     rmarkdown,
     kableExtra,
@@ -42,18 +42,19 @@ Collate:
     'capabilities-mapping.R'
     'utilities.R'
     'client.R'
+    'debugging.R'
+    'jobs.R'
     'services.R'
     'process_graph_building.R'
     'user_defined_processes.R'
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
-    'debugging.R'
     'httr2_device_code.R'
-    'jobs.R'
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'
+    'sample_data.R'
     'server_metadata.R'
     'udf.R'
     'user.R'

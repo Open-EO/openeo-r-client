@@ -15,7 +15,7 @@ start_job(job, log = FALSE, con = NULL)
 is used.}
 }
 \value{
-the job_id of the defined job
+the job object of the now started job
 }
 \description{
 The function sends a start signal to the back-end triggering a defined job.
