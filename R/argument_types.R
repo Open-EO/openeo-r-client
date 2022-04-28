@@ -1650,7 +1650,7 @@ GeoJson = R6Class(
         
         tryCatch({
           t = tempfile()
-          write_sf(value,t,driver="geojson")
+          sf::write_sf(value,t,driver="geojson")
           obj = jsonlite::read_json(t,simplifyVector = FALSE)
           # remove CRS just to be in line with the geojson specification (4326, lat/lon, no crs field)
           obj["crs"] = NULL

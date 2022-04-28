@@ -376,7 +376,11 @@ Process = R6Class(
         results$parameters = list()
       }
       
-      results$returns = self$getReturns()$asParameterInfo()
+      if (length(self$getReturns()) > 0) {
+        results$returns = self$getReturns()$asParameterInfo()
+      } else {
+        results$returns = NULL
+      }
       
       # clean the optional flag in the result
       if ("optional" %in% names(results$returns)) {
@@ -463,6 +467,7 @@ Process = R6Class(
   )
 )
 
+#' @export
 setOldClass(c("Process","R6"))
 
 setClass("ArgumentList")
