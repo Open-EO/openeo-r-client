@@ -1,8 +1,10 @@
 ---
 title: "Sample Data Retrieval"
-author: "Florian Lahn"
-date: "2022-03-11"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sample Data Retrieval}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 During this examples, we will use *openEO Platform* as back-end implementation. Also the *openEO Platform* as a project is under continuous development and the assumptions for receiving sample data made in this project, had to consider the current state of the back-end implementations. In the following course of this vignette, we will give some examples, how to obtain sample data for developing and debugging your openEO workflows. The example code is printed, but the results for many code blocks will not be shown. This has to be this way, because there are interactive elements involved like authenticating with personal user credentials against the back-end service.

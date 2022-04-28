@@ -73,6 +73,8 @@ processToJSON = function(x, ...) {
 #' graph = process$getProcessGraph()
 #' toJSON(graph)
 #' }
+#' @importFrom jsonlite toJSON
+#' @inheritParams jsonlite::toJSON 
 NULL
 
 #' @rdname toJSON

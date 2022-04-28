@@ -258,6 +258,8 @@ is_html_context = function() {
 }
 
 # Print a HTML component for the given data in several contexts (notebooks, markdown, ...)
+#' @importFrom IRdisplay display_html
+#' @importFrom htmltools HTML
 print_html = function(component, data, props = list()) {
   if (missing(component) && "html" %in% names(props)) html = props[["html"]]
   else html = get_component_html(component, data, props)

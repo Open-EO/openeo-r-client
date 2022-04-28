@@ -1,4 +1,10 @@
-# until we make an official pull request for httr2 (https://github.com/r-lib/httr2) we use this code to extent the device code flow for pkce
+# until the new httr2 package with my PR is on CRAN, we need to have the code here
+
+# this is a trick to get the not exported functions for a package, otherwise we need to use ::: which gets you warnings in the CRAN check
+oauth_flow_abort = utils::getFromNamespace("oauth_flow_abort", "httr2")
+oauth_flow_check = utils::getFromNamespace("oauth_flow_check", "httr2")
+oauth_flow_device_poll = utils::getFromNamespace("oauth_flow_device_poll", "httr2")
+
 
 #' @import rlang
 oauth_flow_device_request = function (client, auth_url, scope, auth_params) {
@@ -24,7 +30,7 @@ oauth_flow_fetch = function (req) {
       200) {
     return(body)
   } else if (rlang::has_name(body, "error")) {
-    httr2:::oauth_flow_abort(body$error, body$error_description, 
+    oauth_flow_abort(body$error, body$error_description, 
                      body$error_uri)
   }
   else { 
@@ -33,10 +39,11 @@ oauth_flow_fetch = function (req) {
   }
 }
 
+
 #' @importFrom glue glue
 oauth_flow_device = function (client, auth_url, pkce = FALSE, scope = NULL, auth_params = list(), 
                               token_params = list()) {
-  httr2:::oauth_flow_check("device", client, interactive = TRUE)
+  oauth_flow_check("device", client, interactive = TRUE)
   
   if (pkce) { # added this
     code <- oauth_flow_auth_code_pkce()
@@ -58,7 +65,7 @@ oauth_flow_device = function (client, auth_url, pkce = FALSE, scope = NULL, auth
     inform(glue("Visit <{url}> and enter code {request$user_code}"))
   }
   
-  token <- httr2:::oauth_flow_device_poll(client, request, token_params)
+  token <- oauth_flow_device_poll(client, request, token_params)
   if (is.null(token)) {
     rlang::abort("Expired without user confirmation; please try again.")
   }

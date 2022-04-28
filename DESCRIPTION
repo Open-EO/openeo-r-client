@@ -27,7 +27,9 @@ Imports:
     base64enc,
     rlang,
     glue,
-    sf
+    sf,
+    IRdisplay,
+    htmltools
 Encoding: UTF-8
 LazyData: false
 BugReports: https://github.com/Open-EO/openeo-r-client/issues
