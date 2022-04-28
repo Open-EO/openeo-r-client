@@ -463,7 +463,6 @@ Process = R6Class(
   )
 )
 
-#'@export
 setOldClass(c("Process","R6"))
 
 setClass("ArgumentList")

@@ -1,3 +1,7 @@
+#' @include process_graph_building.R
+#' @importFrom jsonlite toJSON
+NULL
+
 # utility functions ----
 .not_implemented_yet = function() {
     message("Not implemented yet.")
@@ -15,47 +19,55 @@
     message(paste0("There are no information about ",what," available at the service."))
 }
 
-#' Wrapper for toJSON
-#' 
-#' This function is intended to have a preconfigured toJSON function
-#' to allow a user to visualize the process graph in JSON (like it will
-#' be sent to the back-end)
-#' 
-#' @param graph a list / nested list representing the process graph
-#' @return JSON string of the process graph as a character string 
-#' 
-#' @export
-graphToJSON = function(graph) {    
-    if ("Graph" %in% class(graph)) {
-        return(toJSON(graph$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE, digits = NA))
-    } else {
-        stop("Parameter is no Graph object.")
-        invisible(NULL)
-    }
-    
+
+.toJSON = function(x, ...) {
+  if (any(c("Graph","Process") %in% class(x))) {
+    return(jsonlite::toJSON(x$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE, digits = NA))
+  } else {
+    stop("Parameter is no Graph or Process object.")
+    invisible(NULL)
+  }
 }
 
+#' @rdname openeo-deprecated
+#' @export
+graphToJSON = function(x,...) {
+  .Deprecated(new="toJSON",package = "openeo")
+  do.call("toJSON",args=c(x=x,list(...)))
+}
 
+#' @rdname openeo-deprecated
+#' @export
+processToJSON = function(x, ...) {
+  .Deprecated(new="toJSON",package = "openeo")
+  do.call("toJSON",args=c(x=x,list(...)))
+}
 
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
-#' to allow a user to visualize the process in JSON (like it will
-#' be sent to the back-end)
+#' to allow a user to visualize a process or graph in JSON. The JSON representation
+#' of a process is the same as it will be sent to the back-end.
 #' 
-#' @param process a list / nested list representing the process
+#' @param x a Process or Graph object
+#' @param ... additional parameters that are passed to jsonlite::toJSON
 #' @return JSON string of the process as a character string 
 #' 
+#' @rdname toJSON
+#' 
+#' @examples
+#' \dontrun{
+#' # node is a defined process node
+#' process = as(node, "Process")
+#' toJSON(process)
+#' 
+#' graph = process$getProcessGraph()
+#' toJSON(graph)
+#' }
 #' @export
-processToJSON = function(process) {    
-    if ("Process" %in% class(process)) {
-        return(toJSON(process$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE))
-    } else {
-        stop("Parameter is no Process object.")
-        invisible(NULL)
-    }
-    
-}
+setGeneric("toJSON")
+setMethod(f="toJSON", signature = "Process",definition = .toJSON)
+setMethod(f="toJSON", signature = "Graph",definition = .toJSON)
 
 .capturedErrorToMessage = function(e) {
     message(e)

@@ -11,8 +11,11 @@
   - authorization_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code [#116](https://github.com/Open-EO/openeo-r-client/issues/116)
-* temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made available on CRAN
-* `processToJSON` to easily convert a process to JSON
+* temporarily added changed code to realize device_code+pkce from the `httr2` package until the `httr2` package changes are made available on CRAN
+  - PR at httr2 [r-lib/httr2#109](https://github.com/r-lib/httr2/pull/109)
+* overloaded function `toJSON` for `Process` and `Graph`
+  - `processToJSON` to easily convert a process to JSON
+  - `processToJSON` and `graphToJSON` are marked as deprecated
 
 ## Fixes
 * `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)

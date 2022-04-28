@@ -465,7 +465,7 @@ print.CollectionList = function(x, ...) {
 
 #' @export
 print.Graph = function(x, ...) {
-    print(graphToJSON(x))
+    print(toJSON(x))
 }
 
 #' @export
