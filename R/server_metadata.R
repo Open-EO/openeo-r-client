@@ -198,9 +198,8 @@ terms_of_service = function(con = NULL) {
             req = req_headers(req,`Content-Type`="text/html")
             res = req_perform(req)
 
-            html_viewer(as.character(resp_body_html(res)))
-            
-            cat(sel$href,"\n")
+            # the viewer does not render it nicely so redirecting to the internet browser
+            browseURL(sel$href)
             
             return(invisible(sel))
         }
@@ -210,8 +209,8 @@ terms_of_service = function(con = NULL) {
 
 #' Visualize the privacy policy
 #' 
-#' If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
-#' viewer panel and visualizes the HTML content of the link.
+#' If the service provides information about their privacy policy in their capabilities, the function opens a browser window
+#' to visualize the web page.
 #' 
 #' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
 #' is used.
@@ -240,9 +239,8 @@ privacy_policy = function(con = NULL) {
             req = req_headers(req,`Content-Type`="text/html")
             res = req_perform(req)
             
-            html_viewer(as.character(resp_body_html(res)))
-            
-            cat(sel$href,"\n")
+            # the viewer does not render it nicely so redirecting to the internet browser
+            browseURL(sel$href)
             return(invisible(sel))
         }
         

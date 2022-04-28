@@ -14,6 +14,6 @@ is used.}
 a list of the link identifying the privacy policy from the service capabilities or NULL
 }
 \description{
-If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
-viewer panel and visualizes the HTML content of the link.
+If the service provides information about their privacy policy in their capabilities, the function opens a browser window
+to visualize the web page.
 }
