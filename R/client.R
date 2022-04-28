@@ -305,8 +305,11 @@ OpenEOClient <- R6Class(
     api_version = function () {
       return(private$version)
     },
-    # login_type is deprecated and unused.
     login = function(login_type=NULL, user=NULL, password=NULL, provider=NULL, config=NULL) {
+      if (length(login_type) > 0) {
+        warning("parameter 'login_type' is deprecated and unused")
+      }
+      
       self$stopIfNotConnected()
       
       tryCatch({

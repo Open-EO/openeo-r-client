@@ -115,7 +115,7 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
       graph = as(graph,"Graph")
     }
     
-    if (isFALSE(submit)) cat("Parameter 'submit' is deprecated and will be removed in the future. Please use \"as(obj,\"Process\")\" to obtain a process locally.\n\n")
+    if (isFALSE(submit)) warning("Parameter 'submit' is deprecated and will be removed in the future. Please use \"as(obj,\"Process\")\" to obtain a process locally.\n\n")
     
     if (length(id) == 0) {
       stop("No ID for was stated. Please name it before transmitting to the back-end.")
