@@ -209,6 +209,7 @@ BasicAuth <- R6Class(
 #' @importFrom R6 R6Class
 #' @importFrom base64enc base64decode
 #' @importFrom jsonlite fromJSON
+#' @importFrom rlang is_interactive
 NULL
 
 # [AbstractOIDCAuthentication] ----

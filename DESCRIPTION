@@ -25,11 +25,11 @@ Imports:
     R6,
     lubridate,
     base64enc,
-    rlang,
     glue,
     sf,
     IRdisplay,
-    htmltools
+    htmltools,
+    rlang
 Encoding: UTF-8
 LazyData: false
 BugReports: https://github.com/Open-EO/openeo-r-client/issues

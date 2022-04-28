@@ -6,7 +6,7 @@ oauth_flow_check = utils::getFromNamespace("oauth_flow_check", "httr2")
 oauth_flow_device_poll = utils::getFromNamespace("oauth_flow_device_poll", "httr2")
 
 
-#' @import rlang
+#' @importFrom rlang has_name abort exec
 oauth_flow_device_request = function (client, auth_url, scope, auth_params) {
   req <- request(auth_url)
   req <- req_body_form(req, rlang::list2(scope = scope, !!!auth_params))
@@ -41,6 +41,7 @@ oauth_flow_fetch = function (req) {
 
 
 #' @importFrom glue glue
+#' @importFrom rlang %||% !!! inform
 oauth_flow_device = function (client, auth_url, pkce = FALSE, scope = NULL, auth_params = list(), 
                               token_params = list()) {
   oauth_flow_check("device", client, interactive = TRUE)

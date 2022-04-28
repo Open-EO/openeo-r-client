@@ -51,6 +51,7 @@ NULL
 NULL
 
 #' @importFrom R6 R6Class
+#' @importFrom rlang is_null
 #' @import httr2
 #' @import jsonlite
 #' @export
@@ -869,7 +870,7 @@ OpenEOClient <- R6Class(
       return(header)
     },
     errorHandling = function(response) {
-      if (class(response) == "httr2_response" || class(response) == "response") {
+      if ("httr2_response" %in% class(response) || "response" %in% class(response) ) {
         # errorMessage = content(response)
         errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {
