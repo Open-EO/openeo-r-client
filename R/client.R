@@ -609,8 +609,7 @@ OpenEOClient <- R6Class(
       } 
   
       # httr2 v0.2.0 changed parameter req to .req
-      reqParam = ifelse(packageVersion("httr2") < '0.2.0',"req", ".req")
-      query[[reqParam]] = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
