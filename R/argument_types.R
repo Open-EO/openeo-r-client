@@ -808,7 +808,7 @@ CollectionId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("Collection ID cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value) && ! "Collection" %in% class(private$value)) stop("Collection ID cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
@@ -882,7 +882,9 @@ JobId = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("Job id cannot be an array.")
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"Job" %in% class(private$value)) stop("Job id cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -938,7 +940,9 @@ UdfRuntimeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF runtime cannot be an array.")
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntime" %in% class(private$value)) stop("UDF runtime cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -991,7 +995,9 @@ UdfRuntimeVersionArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF runtime version cannot be an array.")
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntimeVersion" %in% class(private$value)) stop("UDF runtime version cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
