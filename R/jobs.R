@@ -76,13 +76,12 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
-        
         if (!"Process" %in% class(graph)) {
           if ("Graph" %in% class(graph))  {
               # OK
           } else if (is.list(graph)) {
               graph = parse_graph(json=graph)
-          } else if (any(c("function","ProcessNode") %in% class(graph))){
+          } else if ("function" %in% class(graph)){
               graph = as(graph, "Graph")
           } else {
               stop("Parameter graph is not a Graph object. Expecting a Graph, a list object or a function.")
@@ -91,7 +90,8 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           process = Process$new(id=NA,description = NA,
                                 summary = NA,process_graph=graph)
         } else {
-          process = graph
+          if ("ProcessNode" %in% class(graph)) process = as(graph,"Graph")
+          else process = graph
         }
         
         # if format is set check if save_result is set, if not do that with the format stated, if it is 
