@@ -90,7 +90,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           process = Process$new(id=NA,description = NA,
                                 summary = NA,process_graph=graph)
         } else {
-          if ("ProcessNode" %in% class(graph)) process = as(graph,"Graph")
+          if ("ProcessNode" %in% class(graph)) process = as(graph,"Process")
           else process = graph
         }
         
@@ -111,7 +111,6 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           call_args = append(call_args, save_result_dots)
           
           if (length(save_node) == 0) {
-            
             # not existent
             call_args$data = process$getProcessGraph()$getFinalNode()
             
