@@ -608,7 +608,8 @@ OpenEOClient <- R6Class(
         # response = GET(url=url, config=private$addAuthorization(),query=query)
       } 
   
-      query$req = req
+      # httr2 v0.2.0 changed parameter req to .req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -653,7 +654,7 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
 
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -698,7 +699,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -709,7 +710,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -758,7 +759,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -769,7 +770,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -814,7 +815,7 @@ OpenEOClient <- R6Class(
                     config = header)
       
       if (!is.null(data)) {
-        req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)

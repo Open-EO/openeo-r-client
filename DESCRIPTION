@@ -20,12 +20,11 @@ Suggests:
     DT
 Imports:
     jsonlite,
-    httr2,
+    httr2 (>= 0.2.0),
     methods,
     R6,
     lubridate,
     base64enc,
-    glue,
     sf,
     IRdisplay,
     htmltools,
@@ -52,7 +51,6 @@ Collate:
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
-    'httr2_device_code.R'
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'
