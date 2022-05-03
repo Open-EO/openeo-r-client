@@ -654,7 +654,7 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
 
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -699,7 +699,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -759,7 +759,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
