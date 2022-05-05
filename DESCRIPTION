@@ -4,7 +4,8 @@ Title: Client Interface for 'openEO' Servers
 Version: 1.2.0
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
-        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
+        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb")),
+        person(given="Matthias",family = "Mohr", email="matthias.mohr@uni-muenster.de",role=c("ctb"))
     )
 Description: Access data and processing functionalities of 'openEO' compliant back-ends in R.
 Depends:
@@ -13,22 +14,22 @@ Suggests:
     tibble,
     testthat,
     knitr,
-    sf,
     stars,
-    geojsonsf,
     pkgdown,
     rmarkdown,
     kableExtra,
     DT
 Imports:
     jsonlite,
-    httr2,
+    httr2 (>= 0.2.0),
     methods,
     R6,
     lubridate,
     base64enc,
-    rlang,
-    glue
+    sf,
+    IRdisplay,
+    htmltools,
+    rlang
 Encoding: UTF-8
 LazyData: false
 BugReports: https://github.com/Open-EO/openeo-r-client/issues
@@ -41,17 +42,16 @@ Collate:
     'authentication.R'
     'zzz.R'
     'capabilities-mapping.R'
+    'process_graph_building.R'
     'utilities.R'
     'client.R'
+    'debugging.R'
+    'jobs.R'
     'services.R'
-    'process_graph_building.R'
     'user_defined_processes.R'
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
-    'debugging.R'
-    'httr2_device_code.R'
-    'jobs.R'
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'

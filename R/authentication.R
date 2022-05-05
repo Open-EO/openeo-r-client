@@ -191,6 +191,11 @@ BasicAuth <- R6Class(
 #' the console or if R runs in the interactive mode the internet browser will be opened automatically.
 #' }
 #' 
+#' \subsection{device_code}{
+#' This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow, 
+#' but without the additional PKCE negotiation.
+#' }
+#' 
 #' @seealso 
 #' \describe{
 #' \item{openEO definition on Open ID connect}{\url{https://openeo.org/documentation/1.0/authentication.html#openid-connect}}
@@ -204,6 +209,7 @@ BasicAuth <- R6Class(
 #' @importFrom R6 R6Class
 #' @importFrom base64enc base64decode
 #' @importFrom jsonlite fromJSON
+#' @importFrom rlang is_interactive
 NULL
 
 # [AbstractOIDCAuthentication] ----
@@ -398,6 +404,10 @@ AbstractOIDCAuthentication <- R6Class(
       return(token$expires_at <= Sys.time())
     },
     
+    isInteractive = function() {
+      return(if (is_jupyter()) TRUE else rlang::is_interactive())
+    },
+    
     decodeToken = function(access_token, token_part) {
       tokens <- unlist(strsplit(access_token, "\\."))
       fromJSON(rawToChar(base64decode(tokens[token_part])))
@@ -428,6 +438,47 @@ AbstractOIDCAuthentication <- R6Class(
   )
 )
 
+# [OIDCDeviceCodeFlow] ----
+OIDCDeviceCodeFlow <- R6Class(
+  "OIDCDeviceCodeFlow",
+  inherit = AbstractOIDCAuthentication,
+  # public ====
+  public = list(
+    # functions ####
+    login = function() {
+      
+      client <- oauth_client(
+        id = private$client_id,
+        token_url = private$endpoints$token_endpoint,
+        name = "openeo-r-oidc-auth"
+      )
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_device(
+                        client = client,
+                        auth_url = private$endpoints$device_authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " ")
+                      ),
+                      value = private$isInteractive()
+                    )
+
+      invisible(self)
+    }
+  ),
+  # private ====
+  private = list(
+    # attributes ####
+    grant_type = "urn:ietf:params:oauth:grant-type:device_code", # not used internally by httr2, but maybe useful in openeo
+    
+    # functions ####
+    isGrantTypeSupported = function(grant_types) {
+      if (!"urn:ietf:params:oauth:grant-type:device_code" %in% grant_types) {
+        stop("Device code flow is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    }
+  )
+)
 
 # [OIDCDeviceCodeFlowPkce] ----
 OIDCDeviceCodeFlowPkce <- R6Class(
@@ -443,12 +494,17 @@ OIDCDeviceCodeFlowPkce <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_device(client = client,
-                                       auth_url = private$endpoints$device_authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "),pkce = TRUE)
-      
-      
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_device(
+                        client = client,
+                        auth_url = private$endpoints$device_authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = TRUE
+                      ),
+                      value = private$isInteractive()
+                    )
+
       invisible(self)
     }
   ),
@@ -460,7 +516,7 @@ OIDCDeviceCodeFlowPkce <- R6Class(
     # functions ####
     isGrantTypeSupported = function(grant_types) {
       # to be implemented in inheriting class
-      if (!any(c("urn:ietf:params:oauth:grant-type:device_code+pkce","urn:ietf:params:oauth:grant-type:device_code") %in% grant_types)) {
+      if (!"urn:ietf:params:oauth:grant-type:device_code+pkce" %in% grant_types) {
         stop("Device code flow with pkce is not supported by the authentication provider")
       }
       invisible(TRUE)
@@ -483,15 +539,18 @@ OIDCAuthCodeFlowPKCE <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_auth_code(client = client,
-                                       auth_url = private$endpoints$authorization_endpoint,
-                                       scope=paste0(private$scopes,collapse=" "),
-                                       pkce = TRUE,
-                                       port=1410
-                                       )
-      
-      
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_auth_code(
+                        client = client,
+                        auth_url = private$endpoints$authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = TRUE,
+                        port = 1410
+                      ),
+                      value = private$isInteractive()
+                    )
+
       invisible(self)
     }
   ),
@@ -526,13 +585,17 @@ OIDCAuthCodeFlow <- R6Class(
         token_url = private$endpoints$token_endpoint,
         name = "openeo-r-oidc-auth"
       )
-      
-      private$auth = oauth_flow_auth_code(client = client,
-                                          auth_url = private$endpoints$authorization_endpoint,
-                                          scope=paste0(private$scopes,collapse=" "),
-                                          pkce = FALSE,
-                                          port=1410
-      )
+
+      private$auth = rlang::with_interactive(
+                      oauth_flow_auth_code(
+                        client = client,
+                        auth_url = private$endpoints$authorization_endpoint,
+                        scope = paste0(private$scopes, collapse = " "),
+                        pkce = FALSE,
+                        port = 1410
+                      ),
+                      value = private$isInteractive()
+                    )
     }
   ),
   # private ====
@@ -553,6 +616,7 @@ OIDCAuthCodeFlow <- R6Class(
   )
 )
 
+# utility functions ----
 .get_oidc_provider = function(provider) {
   if (length(provider) > 0 && is.character(provider)) {
     oidc_providers = list_oidc_providers()

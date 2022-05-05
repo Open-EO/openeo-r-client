@@ -39,6 +39,8 @@ list_jobs = function(con=NULL) {
     }, error = .capturedErrorToMessage)
 }
 
+setClass("Job")
+
 #' Executes a job and returns the data immediately
 #'
 #' Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
@@ -72,22 +74,25 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         
         output = list()
         
-        #TODO what if graph is already a Process?
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
-        
-        if ("Graph" %in% class(graph))  {
-            # OK
-        } else if (is.list(graph)) {
-            graph = parse_graph(json=graph)
-        } else if (any(c("function","ProcessNode") %in% class(graph))){
-            graph = as(graph, "Graph")
+        if (!"Process" %in% class(graph)) {
+          if ("Graph" %in% class(graph))  {
+              # OK
+          } else if (is.list(graph)) {
+              graph = parse_graph(json=graph)
+          } else if ("function" %in% class(graph)){
+              graph = as(graph, "Graph")
+          } else {
+              stop("Parameter graph is not a Graph object. Expecting a Graph, a list object or a function.")
+          }
+          
+          process = Process$new(id=NA,description = NA,
+                                summary = NA,process_graph=graph)
         } else {
-            stop("Parameter graph is not a Graph object. Awaiting a list object.")
+          if ("ProcessNode" %in% class(graph)) process = as(graph,"Process")
+          else process = graph
         }
-        
-        process = Process$new(id=NA,description = NA,
-                              summary = NA,process_graph=graph)
         
         # if format is set check if save_result is set, if not do that with the format stated, if it is 
         # check if the formats match else replace
@@ -106,7 +111,6 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           call_args = append(call_args, save_result_dots)
           
           if (length(save_node) == 0) {
-            
             # not existent
             call_args$data = process$getProcessGraph()$getFinalNode()
             

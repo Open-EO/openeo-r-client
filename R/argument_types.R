@@ -312,7 +312,7 @@ Argument = R6Class(
     isEmpty = function() {
       return(!is.environment(private$value) && !is.call(private$value) && (
                 is.null(private$value) ||
-                is.na(private$value) ||
+                (length(private$value) == 1 && is.na(private$value)) || all(is.na(private$value)) ||
                 length(private$value) == 0))
     },
     getProcess = function() {
@@ -418,6 +418,7 @@ Integer = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Integer cannot be an array.")
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
@@ -472,6 +473,8 @@ EPSGCode = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("EPSG code cannot be an array.")
+      
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
@@ -535,6 +538,7 @@ Number = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Number cannot be an array.")
       
       if ("ProcessNode" %in% class(private$value)) {
         return_value = private$value$getReturns()
@@ -603,6 +607,9 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -624,6 +631,9 @@ String = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)  && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
+      
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
@@ -669,6 +679,8 @@ URI = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("URI cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -734,6 +746,8 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if ("FileFormat" %in% class(private$value)) {
@@ -796,6 +810,7 @@ CollectionId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && ! "Collection" %in% class(private$value)) stop("Collection ID cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
@@ -869,6 +884,9 @@ JobId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"Job" %in% class(private$value)) stop("Job id cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -924,6 +942,9 @@ UdfRuntimeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntime" %in% class(private$value)) stop("UDF runtime cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -976,6 +997,10 @@ UdfRuntimeVersionArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntimeVersion" %in% class(private$value)) stop("UDF runtime version cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1028,6 +1053,8 @@ UdfCodeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if ("FileFormat" %in% class(private$value)) {
@@ -1049,6 +1076,7 @@ UdfCodeArgument = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array.")
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
@@ -1110,6 +1138,8 @@ ProcessGraphId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Process graph id cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1166,6 +1196,7 @@ ProjDefinition = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("PROJ definition cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1341,6 +1372,7 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Boolean cannot be an array.")
       
       if (length(private$value) > 0 && "ProcessNode" %in% class(private$value)) {
         if (! "boolean" %in% class(private$value$getReturns())) {
@@ -1401,6 +1433,7 @@ Date = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Date cannot be an array.")
       if (!is.na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
@@ -1455,6 +1488,7 @@ DateTime = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Timestamp cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
@@ -1518,6 +1552,7 @@ Time = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Time cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
@@ -1542,10 +1577,11 @@ Time = R6Class(
 #' GeoJson
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
-#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features from package 'sf'. 
-#' If sf-objects are used, keep in mind that the objects are projected in  Lat/Long EPSG:4326, unless marked otherwise.
-#' It is assumed that the coordinates have a projection. If the crs-object is set and does not match 
-#' EPSG:4326, the polygon is transformed accordingly.
+#' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
+#' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
+#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
+#' original form (sf/sfc object) until it is serialized.
+#' 
 #' 
 #' @name GeoJson
 #' 
@@ -1573,55 +1609,91 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
-      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
-      if (isNamespaceLoaded("sf")) {
-        if (all(c("XY","POLYGON") %in% class(value))) {
-          value = sf::st_sfc(value)
-        }
-        
-        if ("sfc_POLYGON" %in% class(value)) {
-          value = sf::st_sf(value)
-          sf::st_crs(value) = 4326
-        } 
-        
-        if ("sf" %in% class(value)) {
-          # since geojson only supports WGS84 we need to make sure that it is that crs
-          value = sf::st_transform(value, st_crs(4326))
-        }
+      
+      if (all(c("XY","POLYGON") %in% class(value))) {
+        private$value = sf::st_sfc(value)
+        return()
       }
       
-      private$value = value
+      if (any(c("sf","sfc") %in% class(value))) {
+        private$value = value
+        return()
+      }
+      
+      old_class = class(value)
+      value = unclass(value)
+      
+      if (is.list(value) && "type" %in% names(value)) {
+        # this case is a geojson parsed as list
+        tryCatch({
+          tmpfile = tempfile()
+          jsonlite::write_json(value,tmpfile, auto_unbox=TRUE, digits = NA)
+          
+          suppressWarnings({
+            old_order = sf::st_axis_order()
+            sf::st_axis_order(TRUE)
+            private$value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
+            sf::st_axis_order(old_order)
+          })
+          
+        }, finally = unlink(tmpfile)) 
+      } else {
+        stop("Cannot set given object for argument 'GeoJSON': class ",paste(sep=",",old_class)," not supported")
+      }
+      
+      
+      
+    },
+    getValue = function() {
+      return(private$value)
     }
   ),
   private = list(
     typeCheck = function() {
-      if (is.list(private$value)) {
-        #if list we assume that the geojson object was created as list
-        return(NULL)
-      } 
+       
       
       if ("sf" %in% class(private$value)) {
         return(NULL)
+      } else if ("sfc" %in% class(private$value)) {
+        return(NULL)
+      } else if (is.list(private$value)) {
+          
+          if (!"type" %in% names(private$value)) {
+            #TODO better probing
+            stop("Value is not GeoJSON.")
+          }
+          
+          #if list we assume that the geojson object was created as list
+          return(NULL)
       } else {
-        stop("Class ",class(private$value)[[1]], " not supported in GeoJson argument")
+        stop("Class ",paste(class(private$value)), " not supported in GeoJson argument")
       }
         
       
     },
     typeSerialization = function() {
-      if (is.list(private$value) && all(c("type","coordinates") %in% names(private$value))) {
+      if (any(c("sf","sfc") %in% class(private$value))) {
+        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
+        old_order = sf::st_axis_order()
+        sf::st_axis_order(TRUE)
+        value = sf::st_transform(private$value,4326)
+        sf::st_axis_order(old_order)
+        
+        tryCatch({
+          t = tempfile()
+          sf::write_sf(value,t,driver="geojson")
+          obj = jsonlite::read_json(t,simplifyVector = FALSE)
+          # remove CRS just to be in line with the geojson specification (4326, lat/lon, no crs field)
+          obj["crs"] = NULL
+          return(obj)
+        }, finally = unlink(t))
+          
+      } else if (is.list(private$value) && "type" %in% names(private$value)) {
         return(private$value)
-      } else if ("sf" %in% class(private$value)){
-        if (!.is_package_installed("geojsonsf")) {
-          stop("Package 'geojsonsf' is required for serializing geometries into GeoJson. Please install the package.")
-        } else {
-          gson = geojsonsf::sf_geojson(private$value)
-          return(jsonlite::fromJSON(gson, simplifyVector = FALSE))
-        }
       } else {
         stop("Unsupported value type.")
       }
@@ -1950,7 +2022,7 @@ ProcessGraphParameter = R6Class(
       private$default = default
     },
     print = function() {
-      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE))
+      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE,digits=NA))
       invisible(self)
     },
     adaptType = function(fromParameter) {
@@ -2587,15 +2659,17 @@ AnyOf = R6Class(
         
         private$value = value
         return(self)
-      } else {
+      } 
+      else {
         # set to all sub parameters and run validate
         choice_copies = self$getChoice()
         
         validated = sapply(choice_copies, function(param) {
-          param$setValue(value)
+          
           
           tryCatch(
             {
+              param$setValue(value)
               validation = param$validate()
               return(is.null(validation))
             },

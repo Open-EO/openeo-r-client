@@ -51,6 +51,7 @@ NULL
 NULL
 
 #' @importFrom R6 R6Class
+#' @importFrom rlang is_null
 #' @import httr2
 #' @import jsonlite
 #' @export
@@ -305,8 +306,11 @@ OpenEOClient <- R6Class(
     api_version = function () {
       return(private$version)
     },
-    # login_type is deprecated and unused.
     login = function(login_type=NULL, user=NULL, password=NULL, provider=NULL, config=NULL) {
+      if (length(login_type) > 0) {
+        warning("parameter 'login_type' is deprecated and unused")
+      }
+      
       self$stopIfNotConnected()
       
       tryCatch({
@@ -466,6 +470,7 @@ OpenEOClient <- R6Class(
             
             auth_pkce = "authorization_code+pkce"
             device_pkce = "urn:ietf:params:oauth:grant-type:device_code+pkce"
+            device_code = "urn:ietf:params:oauth:grant-type:device_code"
             
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
@@ -478,6 +483,7 @@ OpenEOClient <- R6Class(
               full_credentials = all(c("client_id","secret") %in% names(config))
               is_auth_code = length(config$grant_type) > 0 && config$grant_type == 'authorization_code'
               
+              # either credentials are set and / or authorization_code as grant_type
               if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
                 private$auth_client = OIDCAuthCodeFlow$new(provider = provider, config = config, force=TRUE)
               }
@@ -491,8 +497,9 @@ OpenEOClient <- R6Class(
                 supported = which(sapply(default_clients, function(p) config$client_id == p$id))
                 if (length(supported) > 0 && device_pkce %in% default_clients[[supported[[1]]]]$grant_types) {
                   config$grant_type = device_pkce
-                }
-                else {
+                } else if (length(supported) > 0 && device_code %in% default_clients[[supported[[1]]]]$grant_types) {
+                  config$grant_type = device_code
+                } else {
                   config$grant_type = auth_pkce
                 }
               }
@@ -509,10 +516,17 @@ OpenEOClient <- R6Class(
                 # preferred device code + pkce
                 config = .get_client(default_clients, device_pkce, config)
                 # second choice auth_code + pkce
+                
+                if (is.null(config$client_id)) {
+                  config = .get_client(default_clients, device_code, config)
+                }
+                
                 if (is.null(config$client_id)) {
                   config = .get_client(default_clients, auth_pkce, config)
                 }
-              }
+              } 
+              
+              
               
               if (is.null(config$client_id)) {
                 stop("Please provide a client id or a valid combination of client_id and grant_type.")
@@ -521,6 +535,8 @@ OpenEOClient <- R6Class(
               
             if (device_pkce == config$grant_type) {
               private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
+            } else if (device_code == config$grant_type) {
+              private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
             } else if (is.null(config$grant_type) || auth_pkce == config$grant_type) {
               private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
             }
@@ -592,7 +608,8 @@ OpenEOClient <- R6Class(
         # response = GET(url=url, config=private$addAuthorization(),query=query)
       } 
   
-      query$req = req
+      # httr2 v0.2.0 changed parameter req to .req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -637,7 +654,7 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
 
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -682,7 +699,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -693,7 +710,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -742,7 +759,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -753,7 +770,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -798,7 +815,7 @@ OpenEOClient <- R6Class(
                     config = header)
       
       if (!is.null(data)) {
-        req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -854,7 +871,7 @@ OpenEOClient <- R6Class(
       return(header)
     },
     errorHandling = function(response) {
-      if (class(response) == "httr2_response" || class(response) == "response") {
+      if ("httr2_response" %in% class(response) || "response" %in% class(response) ) {
         # errorMessage = content(response)
         errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {

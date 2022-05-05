@@ -42,6 +42,11 @@ This mechanism does not need to spawn a web server anymore. It will poll the end
 enters a specific device code that will be printed onto the R console. To enter the code either the URL is printed also to
 the console or if R runs in the interactive mode the internet browser will be opened automatically.
 }
+
+\subsection{device_code}{
+This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow, 
+but without the additional PKCE negotiation.
+}
 }
 \section{Fields}{
 

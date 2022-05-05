@@ -414,12 +414,12 @@ print.Service = function(x, ...) {
         x$configuration = "---"
         cat(paste("Configuration:\t", x$configuration, "\n", sep = ""))
     } else {
-        x$configuration = toJSON(x$configuration, pretty = TRUE, auto_unbox = TRUE)
+        x$configuration = jsonlite::toJSON(x$configuration, pretty = TRUE, auto_unbox = TRUE, digits = NA)
         cat(paste("Configuration:\n", x$configuration, "\n", sep = ""))
     }
     
     if (length(x$attributes) > 0) {
-        x$attributes = toJSON(x$attributes, pretty = TRUE, auto_unbox = TRUE)
+        x$attributes = jsonlite::toJSON(x$attributes, pretty = TRUE, auto_unbox = TRUE, digits = NA)
         cat(paste("Attributes:\n", x$attributes, "\n", sep = ""))
     }
     
@@ -465,7 +465,7 @@ print.CollectionList = function(x, ...) {
 
 #' @export
 print.Graph = function(x, ...) {
-    print(graphToJSON(x))
+    print(toJSON(x, ...))
 }
 
 #' @export
@@ -473,7 +473,7 @@ print.ProcessNode = function(x, ...) {
     node_validation = x$validate()
     
     if (is.null(node_validation)) {
-        print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+        print(jsonlite::toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE, digits = NA))
     } else {
       message(node_validation)
     }
@@ -485,12 +485,13 @@ print.Process = function(x, ...) {
         return(print_html("process", x$serialize(), props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
     }
 
-    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE,digits=NA))
 }
 
+# TODO is this still used somewhere?
 #' @export
 print.Json_Graph = function(x, ...) {
-    print(toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE))
+    print(jsonlite::toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE, digits = NA))
 }
 
 #' @export
