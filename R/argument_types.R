@@ -631,7 +631,8 @@ String = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("String cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value)  && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
       
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
