@@ -37,7 +37,7 @@ Also, the examples in this vignette will be reproducible, but it will not show a
 
 ## Registration
 
-As mentioned before, provider might charge money for accessing their infrastructure and hence you would need to [sign up with EGI](https://docs.egi.eu/documentation/333/users/check-in/signup/) first and then [enroll with openEO Platform](https://openeo.cloud/). This setup is also targeted for the long run (support of more recent openEO API versions). 
+As mentioned before, provider might charge money for accessing their infrastructure and hence you would need to [sign up with EGI](https://docs.egi.eu/users/aai/check-in/signup/) first and then [enroll with openEO Platform](https://openeo.cloud/). This setup is also targeted for the long run (support of more recent openEO API versions). 
 For a slightly older version of the API (v1.0.0) you can use the Google Earth Engine driver with limited capabilities. This system was developed and set up during the H2020 openEO project and you can still access it with the link and credentials provided at the [openeo-earthengine-driver project on Github](https://github.com/Open-EO/openeo-earthengine-driver) section "Demo".
 
 ## Connecting to backend
