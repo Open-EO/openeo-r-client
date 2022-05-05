@@ -607,7 +607,8 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("String cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value) && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
@@ -744,7 +745,7 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value)) stop("Output format cannot be an array.")
+      if (length(private$value) > 1 && !is.environment(private$value) && !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
       
       if (!is.na(private$value) && !is.character(private$value)) {
         

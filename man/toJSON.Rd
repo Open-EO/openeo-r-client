@@ -63,12 +63,12 @@
 
 \item{na}{how to print NA values: must be one of 'null' or 'string'. Defaults are class specific}
 
-\item{auto_unbox}{automatically \code{\link[jsonlite:unbox]{unbox()}} all atomic vectors of length 1. It is usually safer to avoid this and instead use the \code{\link[jsonlite:unbox]{unbox()}} function to unbox individual elements.
-An exception is that objects of class \code{AsIs} (i.e. wrapped in \code{\link[=I]{I()}}) are not automatically unboxed. This is a way to mark single values as length-1 arrays.}
+\item{auto_unbox}{automatically \code{\link[jsonlite]{unbox}} all atomic vectors of length 1. It is usually safer to avoid this and instead use the \code{\link[jsonlite]{unbox}} function to unbox individual elements.
+An exception is that objects of class \code{AsIs} (i.e. wrapped in \code{I()}) are not automatically unboxed. This is a way to mark single values as length-1 arrays.}
 
-\item{digits}{max number of decimal digits to print for numeric values. Use \code{\link[=I]{I()}} to specify significant digits. Use \code{NA} for max precision.}
+\item{digits}{max number of decimal digits to print for numeric values. Use \code{I()} to specify significant digits. Use \code{NA} for max precision.}
 
-\item{pretty}{adds indentation whitespace to JSON output. Can be TRUE/FALSE or a number specifying the number of spaces to indent. See \code{\link[jsonlite:prettify]{prettify()}}}
+\item{pretty}{adds indentation whitespace to JSON output. Can be TRUE/FALSE or a number specifying the number of spaces to indent. See \code{\link[jsonlite]{prettify}}}
 
 \item{force}{unclass/skip objects of classes with no defined JSON mapping}
 

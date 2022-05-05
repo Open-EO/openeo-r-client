@@ -231,6 +231,11 @@ as.character.CubeDimension = function(x, ...) {
     return(x$name)
 }
 
+#' @export
+as.character.FileFormat = function(x, ...) {
+  return(x$name)
+}
+
 
 #' Coerce into a Process
 #' 
