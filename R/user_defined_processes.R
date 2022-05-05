@@ -258,7 +258,7 @@ validate_process = function(graph, con=NULL, ...) {
     response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json", ...)
     
     if (length(response$errors) == 0) {
-      message("Process graph was sucessfully validated.")
+      message("Process graph was successfully validated.")
     } else {
       void = sapply(response$errors, function(obj) {
         paste0("[",obj$code,"] ",obj$message)
