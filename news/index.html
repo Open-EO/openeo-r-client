@@ -71,19 +71,26 @@
 <li>implemented the argument type <code>metadata-filter</code> in order to filter collections based on a list of functions mostly applied in <code>load_collection</code> <a href="https://github.com/Open-EO/openeo-r-client/issues/102" class="external-link">#102</a>
 </li>
 <li>implemented an abstract OIDC authentication</li>
-<li>implemented OIDC authentications for the following grant types:
-<ul><li>authorization_code</li>
+<li>implemented OIDC authentications for the following grant types:<ul><li>authorization_code</li>
 <li>authorization_code+pkce</li>
 <li><a href="urn:ietf:params:oauth:grant-type:device_code+pkce" class="uri">urn:ietf:params:oauth:grant-type:device_code+pkce</a></li>
+<li>
+<a href="urn:ietf:params:oauth:grant-type:device_code" class="uri">urn:ietf:params:oauth:grant-type:device_code</a> <a href="https://github.com/Open-EO/openeo-r-client/issues/116" class="external-link">#116</a>
+</li>
 </ul></li>
-<li>temporarily added changed code to realize device_code+pkce from the <code>httr2</code> package until an official pull request is made available on CRAN</li>
+<li>temporarily added changed code to realize device_code+pkce from the <code>httr2</code> package until the <code>httr2</code> package changes are made available on CRAN<ul><li>PR at httr2 <a href="https://github.com/r-lib/httr2/pull/109" class="external-link">r-lib/httr2#109</a>
+</li></ul></li>
+<li>overloaded function <code>toJSON</code> for <code>Process</code> and <code>Graph</code><ul><li>
+<code>processToJSON</code> to easily convert a process to JSON</li>
+<li>
+<code>processToJSON</code> and <code>graphToJSON</code> are marked as deprecated</li>
+</ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="fixes-1-2-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-2-0"></a></h3>
 <ul><li>
 <code>process_viewer</code> for user defined processes <a href="https://github.com/Open-EO/openeo-r-client/issues/110" class="external-link">#110</a>
-</li>
-</ul></div>
+</li></ul></div>
 <div class="section level3">
 <h3 id="changed-1-2-0">Changed<a class="anchor" aria-label="anchor" href="#changed-1-2-0"></a></h3>
 <ul><li>
@@ -104,8 +111,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="removed-1-2-0">Removed<a class="anchor" aria-label="anchor" href="#removed-1-2-0"></a></h3>
-<ul><li>login parameter <code>login_type</code> removed. type will be deduced based on the other parameters.</li>
-</ul></div>
+<ul><li>login parameter <code>login_type</code> removed. type will be deduced based on the other parameters.</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.1.1" id="version-111">version 1.1.1<a class="anchor" aria-label="anchor" href="#version-111"></a></h2>
@@ -132,8 +138,7 @@
 <div class="section level3">
 <h3 id="added-1-1-0">Added<a class="anchor" aria-label="anchor" href="#added-1-1-0"></a></h3>
 <ul><li>added a vignette for getting started <a href="https://github.com/Open-EO/openeo-r-client/issues/81" class="external-link">#81</a>
-</li>
-</ul></div>
+</li></ul></div>
 <div class="section level3">
 <h3 id="changes-1-1-0">Changes<a class="anchor" aria-label="anchor" href="#changes-1-1-0"></a></h3>
 <ul><li>clarified the currently used OIDC code flow and adapted documentation <a href="https://github.com/Open-EO/openeo-r-client/issues/71" class="external-link">#71</a>
@@ -190,8 +195,7 @@
 <li>function <code><a href="../reference/conformance.html">conformance()</a></code> operated on the new corresponding API endpoint</li>
 <li>added class <code>ProcessCollection</code> in order to divide the Graph object and the graph building. It is created upon connection and obtainable via <code><a href="../reference/processes.html">processes()</a></code>.</li>
 <li>added a function <code><a href="../reference/logs.html">logs()</a></code>, <code><a href="../reference/log_job.html">log_job()</a></code> and <code><a href="../reference/log_service.html">log_service()</a></code> to request the back-end logs of a job or a service. The logging blocks the console and requests every second an update of the log at the back-end. Also when queuing a job via <code><a href="../reference/start_job.html">start_job()</a></code> an immediate logging can be triggered.</li>
-<li>added S3 class labels, coerce and print functions for some exchange object:
-<ul><li>
+<li>added S3 class labels, coerce and print functions for some exchange object:<ul><li>
 <code>FileFormatList</code> (<code>as.data.frame.FileFormaList</code>)</li>
 <li>
 <code>FileFormat</code> (<code>print.FileFormat</code>)</li>
@@ -250,8 +254,7 @@
 <code>ProcessGraph</code> as a parameter requires a function wrapping - meaning you should not pass an openEO process like <code>p$min</code> directly, because with the elaborated <code>ProcessGraphParameter</code> we cannot do a reliable automatic variable matching, e.g. often the <code>ProcessGraphParameter</code> “context” is misinterpreted</li>
 <li>updated and externalized the scripts in the <code>*_viewer()</code> functions to visualize collection and processes following the new api definition</li>
 <li>‘anyOf’ was dropped as a top-level parameter definition schema in the API. The parameter <code>anyOf</code> is still be used in the client.</li>
-<li>classes were renamed:
-<ul><li>
+<li>classes were renamed:<ul><li>
 <code>Callback</code> was renamed into <code>ProcessGraphArgument</code> (Graph is still a different Concept), which is used in reducer or aggregation functions</li>
 <li>
 <code>callback-value</code> was renamed into <code>ProcessGraphParameter</code>
@@ -260,8 +263,7 @@
 <li>unset <code>ProcessGraphParameter</code> are derived automatically from R functions that are passed as <code>ProcessGraphArgument</code> (former <code>Callback</code>) and they become parameters that shall be set by a user upon use of this user defined graph</li>
 <li>updated the endpoint file for version 1.0.0</li>
 <li>adapted the exchange models (JSON models) and their parsing / serialization to the new API accordingly, especially in the <code>print</code> functions</li>
-<li>harmonized various function behavior:
-<ul><li>
+<li>harmonized various function behavior:<ul><li>
 <code>update_*</code> and <code>create_*</code> functions return their respective object (e.g. <code>update_job</code> –&gt; <code>Job</code>) instead of their ID (previous behavior)</li>
 <li>
 <code>list_*</code> functions return a named list of those particular exchange objects (e.g. <code>list_jobs</code> –&gt; named list of <code>Job</code>)</li>
@@ -271,8 +273,7 @@
 <li>the user defined processes management exchanges now Process objects instead of former Graph objects with the back-end</li>
 <li>when creating and storing user defined processes on a back-end, they now require a distinct id selected by the user</li>
 <li>updating an user defined process is done via replacement, so the old representation is queried in the <code>update_process_graph</code> and merged with the new information given by the function parameter</li>
-<li>renamed functions
-<ul><li>
+<li>renamed functions<ul><li>
 <code><a href="../reference/list_file_formats.html">list_file_formats()</a></code> to <code><a href="../reference/list_file_formats.html">list_file_formats()</a></code>
 </li>
 <li>
@@ -335,20 +336,17 @@
 </ul></div>
 <div class="section level3">
 <h3 id="added-0-6-2">Added<a class="anchor" aria-label="anchor" href="#added-0-6-2"></a></h3>
-<ul><li>URI parameter</li>
-</ul></div>
+<ul><li>URI parameter</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.1" id="version-061">version 0.6.1<a class="anchor" aria-label="anchor" href="#version-061"></a></h2>
 <div class="section level3">
 <h3 id="fixed-0-6-1">Fixed<a class="anchor" aria-label="anchor" href="#fixed-0-6-1"></a></h3>
-<ul><li>fixed <a href="https://github.com/Open-EO/openeo-r-client/issues/46" class="external-link">#46</a> were the process link of arguments was not set correctly</li>
-</ul></div>
+<ul><li>fixed <a href="https://github.com/Open-EO/openeo-r-client/issues/46" class="external-link">#46</a> were the process link of arguments was not set correctly</li></ul></div>
 <div class="section level3">
 <h3 id="removed-0-6-1">Removed<a class="anchor" aria-label="anchor" href="#removed-0-6-1"></a></h3>
 <ul><li>package dependency <code>commonmark</code>
-</li>
-</ul></div>
+</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="version-060">version 0.6.0<a class="anchor" aria-label="anchor" href="#version-060"></a></h2>
@@ -451,7 +449,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

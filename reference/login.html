@@ -103,16 +103,36 @@ authentication (if supported) is the simplest login mechanism for which user nee
 For further configuration, you can pass a named list of values as <code>config</code> or
 a file path to a JSON file.</p>
 <p>There are many different authentication mechanisms for OIDC and OAuth2.0, which OIDC is based on. The 'openeo' package supports
-currently the authorization_code, authorization_code+pkce and device_code+pkce (see <a href="OIDCAuth.html">OIDCAuth</a>). For authorization_code
-you need to state the <code>client_id</code> and <code>secret</code>. In general the most comfortable available login mechanism is chosen
-automatically (1. device_code+pkce, 2. authorization_code+pkce, 3. authorization_code). For example, with the device_code 
+currently the authorization_code, authorization_code+pkce, device_code and device_code+pkce (see <a href="OIDCAuth.html">OIDCAuth</a>). For authorization_code
+you need to state the <code>client_id</code> and <code>secret</code> in the configuration options. In general the most comfortable available login mechanism is chosen
+automatically (1. device_code+pkce, 2. device_code 3. authorization_code+pkce, 4. authorization_code). For example, with the device_code 
 flow you normally don't even need to specify any additional configuration.</p>
 <p>If you really want to choose the authorization flow mechanism manually, you can add <code>grant_type</code> in the configuration
 list. You can then use the following values:</p>
 <ul><li><p>authorization_code</p></li>
 <li><p>authorization_code+pkce</p></li>
+<li><p>urn:ietf:params:oauth:grant-type:device_code</p></li>
 <li><p>urn:ietf:params:oauth:grant-type:device_code+pkce</p></li>
 </ul></div>
+    <div id="configuration-options">
+    <h2>Configuration options</h2>
+    
+
+<dl><dt><code>client_id</code></dt>
+<dd><p>The client id to use, when authorization code is selected as grant_type</p></dd>
+
+   <dt><code>secret</code></dt>
+<dd><p>The client secret that matches the client_id to identify and validate this local client towards the identity provider</p></dd>
+
+   <dt><code>grant_type</code></dt>
+<dd><p>Manually selected authentication method from the ones stated above.</p></dd>
+
+   <dt><code>scope</code></dt>
+<dd><p>Manually select the scopes for the authentication method. Note: this is usually filled automatically with the information 
+   from the provider object</p></dd>
+
+
+</dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
@@ -148,7 +168,7 @@ list. You can then use the following values:</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>

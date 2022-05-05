@@ -232,11 +232,11 @@
         </td>
         <td><p>Returns the supported openEO API versions</p></td>
       </tr><tr><td>
-          <p><code><a href="as.Graph.html">as.Graph.ProcessNode()</a></code> <code><a href="as.Graph.html">as.Graph.function()</a></code> <code><a href="as.Graph.html">as.Graph.ProcessInfo()</a></code> </p>
+          <p><code><a href="as.Graph.html">as.Graph.ProcessNode()</a></code> <code><a href="as.Graph.html">as.Graph.function()</a></code> <code><a href="as.Graph.html">as.Graph.ProcessInfo()</a></code> <code><a href="as.Graph.html">as.Graph.Process()</a></code> </p>
         </td>
         <td><p>Coercion into Graph</p></td>
       </tr><tr><td>
-          <p><code><a href="as.Process.html">as.Process.ProcessInfo()</a></code> <code><a href="as.Process.html">as.Process.Graph()</a></code> <code><a href="as.Process.html">as.Process.ProcessNode()</a></code> <code><a href="as.Process.html">as.Process.Service()</a></code> <code><a href="as.Process.html">as.Process.function()</a></code> </p>
+          <p><code><a href="as.Process.html">as.Process.ProcessInfo()</a></code> <code><a href="as.Process.html">as.Process.Graph()</a></code> <code><a href="as.Process.html">as.Process.ProcessNode()</a></code> <code><a href="as.Process.html">as.Process.Service()</a></code> <code><a href="as.Process.html">as.Process.function()</a></code> <code><a href="as.Process.html">as.Process.Job()</a></code> </p>
         </td>
         <td><p>Coerce into a Process</p></td>
       </tr><tr><td>
@@ -356,10 +356,6 @@
         </td>
         <td><p>Get sample data</p></td>
       </tr><tr><td>
-          <p><code><a href="graphToJSON.html">graphToJSON()</a></code> </p>
-        </td>
-        <td><p>Wrapper for toJSON</p></td>
-      </tr><tr><td>
           <p><code><a href="group_ops.html">sum(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">sum(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">sum(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">prod(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">prod(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">prod(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">min(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">min(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">min(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">max(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">max(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">max(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">range(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">range(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">range(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">mean(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">mean(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">mean(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">median(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="group_ops.html">median(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="group_ops.html">median(<i>&lt;list&gt;</i>)</a></code> <code><a href="group_ops.html">sd.ProcessNode()</a></code> <code><a href="group_ops.html">sd.ProcessGraphParameter()</a></code> <code><a href="group_ops.html">sd.list()</a></code> <code><a href="group_ops.html">var.ProcessNode()</a></code> <code><a href="group_ops.html">var.ProcessGraphParameter()</a></code> <code><a href="group_ops.html">var.list()</a></code> </p>
         </td>
         <td><p>Group operator wrappers</p></td>
@@ -432,6 +428,10 @@
         </td>
         <td><p>Access logs of a Service or Job</p></td>
       </tr><tr><td>
+          <p><code><a href="openeo-deprecated.html">openeo-deprecated</a></code> </p>
+        </td>
+        <td><p>openeo-deprecated</p></td>
+      </tr><tr><td>
           <p><code><a href="parse_graph.html">parse_graph()</a></code> </p>
         </td>
         <td><p>Converts a JSON openEO graph into an R graph</p></td>
@@ -484,6 +484,14 @@
         </td>
         <td><p>Visualize the terms of service</p></td>
       </tr><tr><td>
+          <p><code><a href="toJSON-deprecated.html">graphToJSON()</a></code> <code><a href="toJSON-deprecated.html">processToJSON()</a></code> </p>
+        </td>
+        <td><p>*toJSON functions</p></td>
+      </tr><tr><td>
+          <p><code><a href="toJSON.html">toJSON(<i>&lt;Process&gt;</i>)</a></code> <code><a href="toJSON.html">toJSON(<i>&lt;Graph&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Wrapper for toJSON</p></td>
+      </tr><tr><td>
           <p><code><a href="unary_ops.html">abs(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">abs(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">sign(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">sign(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">sqrt(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">sqrt(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">trunc(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">trunc(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">floor(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">floor(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">ceiling(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">ceiling(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">round(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">round(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">exp(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">exp(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">log(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">log(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">log10.ProcessNode()</a></code> <code><a href="unary_ops.html">log10.ProcessGraphParameter()</a></code> <code><a href="unary_ops.html">cos(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cos(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">sin(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">sin(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">tan(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">tan(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">cosh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cosh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">sinh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">sinh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">tanh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">tanh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">acos(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">acos(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">asin(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">asin(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">atan(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">atan(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">acosh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">acosh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">asinh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">asinh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">atanh(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">atanh(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">cumsum(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cumsum(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">cummin(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cummin(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">cummax(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cummax(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">cumprod(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">cumprod(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">`[`(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">`!`(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">`!`(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> <code><a href="unary_ops.html">quantile(<i>&lt;ProcessNode&gt;</i>)</a></code> <code><a href="unary_ops.html">quantile(<i>&lt;ProcessGraphParameter&gt;</i>)</a></code> </p>
         </td>
         <td><p>Unary function wrappers</p></td>
@@ -528,7 +536,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer></div>
