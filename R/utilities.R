@@ -78,9 +78,11 @@ processToJSON = function(x, ...) {
 NULL
 
 #' @rdname toJSON
+#' @export
 setMethod(f="toJSON", signature = "Process",definition = .toJSON)
 
 #' @rdname toJSON
+#' @export
 setMethod(f="toJSON", signature = "Graph",definition = .toJSON)
 
 .capturedErrorToMessage = function(e) {
