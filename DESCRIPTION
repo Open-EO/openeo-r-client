@@ -4,7 +4,8 @@ Title: Client Interface for 'openEO' Servers
 Version: 1.2.0
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
-        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
+        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb")),
+        person(given="Matthias",family = "Mohr", email="matthias.mohr@uni-muenster.de",role=c("ctb"))
     )
 Description: Access data and processing functionalities of 'openEO' compliant back-ends in R.
 Depends:
