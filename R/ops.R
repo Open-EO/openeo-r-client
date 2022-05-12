@@ -866,7 +866,15 @@ NULL
   return(NULL) # variable not found
 }
 
-.checkMathConstants = function(x, graph) {
+.checkMathConstants = function(x, graph=NULL) {
+  if (length(graph) == 0) {
+    if (length(active_connection()) == 0) {
+      return(x)
+    } else {
+      graph = processes()
+    }
+  }
+  
   if (is.numeric(x)) {
     if (isTRUE(x == exp(1))) {
       FUN = "e"

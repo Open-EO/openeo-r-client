@@ -279,7 +279,6 @@ Argument = R6Class(
       tryCatch(
         {
           private$checkRequiredNotSet()
-          
           if (!self$isRequired && 
               !is.environment(private$value) && 
               self$isEmpty()) {
@@ -2149,7 +2148,12 @@ Array = R6Class(
     },
     
     setValue = function(value) {
-      process_collection = self$getProcess()$getGraph()
+      
+      if (length(self$getProcess()) > 0) {
+        process_collection = self$getProcess()$getGraph()
+      } else {
+        process_collection = NULL
+      }
       
       if (!is.environment(value) && length(value) > 0) {
         private$value = lapply(value, function(x, pc) {
@@ -2163,11 +2167,12 @@ Array = R6Class(
   private = list(
     typeCheck = function() {
       itemType = private$schema$items$type
-      if (itemType == "any") {
-        # this can be anything so we shift the responsibility to the back-end
-        return(invisible(NULL)) 
-      }
       
+      if (length(itemType) == 0 || length(itemType) > 1) {
+        # this can be anything or is to complicated to check in R so we shift the responsibility to the back-end
+        return(invisible(NULL))
+      }
+
       if (length(private$schema$minItems) == 1 && 
           length(private$value) < private$schema$minItems) {
         stop(paste0("Minimum items are not achieved. Found ",length(private$value)," items of minimal ",private$schema$minItems," items."))
