@@ -343,7 +343,8 @@ Argument = R6Class(
       # implemented / overwritten by children
       
       #if nothing is done, then simply return the object
-      return(private$value)
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(as.integer(private$value))
     },
     deep_clone = function(name, value) {
       
