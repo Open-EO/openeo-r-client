@@ -245,7 +245,10 @@ validate_process = function(graph, con=NULL, ...) {
       graph = Graph$new(final_node = graph)$serialize()
     } else if ("function" %in% class(graph)) {
       graph = as(graph,"Graph")$serialize()
+    } else if ("Process" %in% class(graph)) {
+      graph = (graph$serialize())$process_graph
     }
+    
     
     if (!is.list(graph) || is.null(graph)) {
       stop("The graph information is missing or not a list")
