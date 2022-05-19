@@ -98,6 +98,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         # check if the formats match else replace
         # more or less replace save_result of the graph with the customization stated in this function
         if (length(format) > 0) {
+          
           save_node = .find_process_by_name(process,"save_result")
           p = processes()
           
@@ -120,12 +121,15 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
             # check only first (or look for the final node)
             saved_graph = save_node[[1]]
             call_args$data = saved_graph$parameters$data
+            
+            if ("Argument" %in% class(call_args$data)) {
+              call_args$data = call_args$data$getValue()
+            }
           }
           
           saved_graph = do.call(p$save_result,call_args)
           process = as(saved_graph,"Process")
         }
-        
         job = list(
             process = process$serialize()
         )
