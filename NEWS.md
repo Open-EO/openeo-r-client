@@ -6,6 +6,7 @@
 ## Changed
 * not serializing basic `Argument` if not required, which affects mostly the "context" parameter of reducer functions
 * skip local validation of `Array` type if there is more than one sub type allowed
+* adapted GeoJSON coordinate order, now urn:ogc:def:crs:OGC::CRS84 is used as CRS, which means longitude / latitude order
 
 ## Fixes
 * compute_result now correctly swaps the file format from save_result, if it was already used in the process graph [#124](https://github.com/Open-EO/openeo-r-client/issues/124)
