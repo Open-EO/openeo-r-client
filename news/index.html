@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
       </span>
     </div>
 
@@ -61,7 +61,24 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.2.0" id="version-120">version 1.2.0<a class="anchor" aria-label="anchor" href="#version-120"></a></h2>
+<h2 class="page-header" data-toc-text="1.2.1" id="version-121">version 1.2.1<a class="anchor" aria-label="anchor" href="#version-121"></a></h2>
+<div class="section level3">
+<h3 id="added-1-2-1">Added<a class="anchor" aria-label="anchor" href="#added-1-2-1"></a></h3>
+<ul><li>allowed a Process object to be passed to <code>validate_process</code>
+</li></ul></div>
+<div class="section level3">
+<h3 id="changed-1-2-1">Changed<a class="anchor" aria-label="anchor" href="#changed-1-2-1"></a></h3>
+<ul><li>not serializing basic <code>Argument</code> if not required, which affects mostly the “context” parameter of reducer functions</li>
+<li>skip local validation of <code>Array</code> type if there is more than one sub type allowed</li>
+<li>adapted GeoJSON coordinate order, now <a href="urn:ogc:def:crs:OGC" class="uri">urn:ogc:def:crs:OGC</a>::CRS84 is used as CRS, which means longitude / latitude order</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-1-2-1">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-2-1"></a></h3>
+<ul><li>compute_result now correctly swaps the file format from save_result, if it was already used in the process graph <a href="https://github.com/Open-EO/openeo-r-client/issues/124" class="external-link">#124</a>
+</li></ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.2.0" id="version-120">version 1.2.0<small>2022-05-09</small><a class="anchor" aria-label="anchor" href="#version-120"></a></h2>
 <div class="section level3">
 <h3 id="added-1-2-0">Added<a class="anchor" aria-label="anchor" href="#added-1-2-0"></a></h3>
 <ul><li>implemented a method for sample data retrieval (<code><a href="../reference/get_sample.html">get_sample()</a></code>), which will modify a process graph by replacing the original spatial extent of the request with a smaller subset of 0.0003 degrees extent <a href="https://github.com/Open-EO/openeo-r-client/issues/94" class="external-link">#94</a>
