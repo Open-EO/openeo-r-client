@@ -279,7 +279,6 @@ Argument = R6Class(
       tryCatch(
         {
           private$checkRequiredNotSet()
-          
           if (!self$isRequired && 
               !is.environment(private$value) && 
               self$isEmpty()) {
@@ -344,7 +343,8 @@ Argument = R6Class(
       # implemented / overwritten by children
       
       #if nothing is done, then simply return the object
-      return(private$value)
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(private$value)
     },
     deep_clone = function(name, value) {
       
@@ -1579,8 +1579,10 @@ Time = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
 #' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
 #' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
-#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
-#' original form (sf/sfc object) until it is serialized.
+#' XY (e.g. if CRS84 is used then lon/lat is the default order).
+#' 
+#' As GeoJSON is defined in \url{RFC7946}{https://datatracker.ietf.org/doc/html/rfc7946} the coordinate reference system is
+#' \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 #' 
 #' 
 #' @name GeoJson
@@ -1634,10 +1636,7 @@ GeoJson = R6Class(
           jsonlite::write_json(value,tmpfile, auto_unbox=TRUE, digits = NA)
           
           suppressWarnings({
-            old_order = sf::st_axis_order()
-            sf::st_axis_order(TRUE)
-            private$value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
-            sf::st_axis_order(old_order)
+            private$value = sf::read_sf(tmpfile,crs=4326)
           })
           
         }, finally = unlink(tmpfile)) 
@@ -1677,11 +1676,8 @@ GeoJson = R6Class(
     },
     typeSerialization = function() {
       if (any(c("sf","sfc") %in% class(private$value))) {
-        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
-        old_order = sf::st_axis_order()
-        sf::st_axis_order(TRUE)
+        
         value = sf::st_transform(private$value,4326)
-        sf::st_axis_order(old_order)
         
         tryCatch({
           t = tempfile()
@@ -2148,7 +2144,12 @@ Array = R6Class(
     },
     
     setValue = function(value) {
-      process_collection = self$getProcess()$getGraph()
+      
+      if (length(self$getProcess()) > 0) {
+        process_collection = self$getProcess()$getGraph()
+      } else {
+        process_collection = NULL
+      }
       
       if (!is.environment(value) && length(value) > 0) {
         private$value = lapply(value, function(x, pc) {
@@ -2162,11 +2163,12 @@ Array = R6Class(
   private = list(
     typeCheck = function() {
       itemType = private$schema$items$type
-      if (itemType == "any") {
-        # this can be anything so we shift the responsibility to the back-end
-        return(invisible(NULL)) 
-      }
       
+      if (length(itemType) == 0 || length(itemType) > 1) {
+        # this can be anything or is to complicated to check in R so we shift the responsibility to the back-end
+        return(invisible(NULL))
+      }
+
       if (length(private$schema$minItems) == 1 && 
           length(private$value) < private$schema$minItems) {
         stop(paste0("Minimum items are not achieved. Found ",length(private$value)," items of minimal ",private$schema$minItems," items."))
