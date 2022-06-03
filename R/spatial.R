@@ -5,7 +5,7 @@ NULL
   # sf needs to be installed, error else (later for bbox creation)
   
   # almost the same code is applied in get_sample, but no replacement is made and no "reserialization"
-  
+  con = active_connection()
   con = .assure_connection(con)
   dots = list(...)
   # extract spatial_extent of load_collection, create a variable from it, 
