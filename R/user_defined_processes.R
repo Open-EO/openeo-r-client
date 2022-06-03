@@ -115,7 +115,7 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
       graph = as(graph,"Graph")
     }
     
-    if (isFALSE(submit)) cat("Parameter 'submit' is deprecated and will be removed in the future. Please use \"as(obj,\"Process\")\" to obtain a process locally.\n\n")
+    if (isFALSE(submit)) warning("Parameter 'submit' is deprecated and will be removed in the future. Please use \"as(obj,\"Process\")\" to obtain a process locally.\n\n")
     
     if (length(id) == 0) {
       stop("No ID for was stated. Please name it before transmitting to the back-end.")
@@ -245,7 +245,10 @@ validate_process = function(graph, con=NULL, ...) {
       graph = Graph$new(final_node = graph)$serialize()
     } else if ("function" %in% class(graph)) {
       graph = as(graph,"Graph")$serialize()
+    } else if ("Process" %in% class(graph)) {
+      graph = (graph$serialize())$process_graph
     }
+    
     
     if (!is.list(graph) || is.null(graph)) {
       stop("The graph information is missing or not a list")
@@ -258,7 +261,7 @@ validate_process = function(graph, con=NULL, ...) {
     response = con$request(tag = tag, authorized = con$isLoggedIn(), data = requestBody, encodeType = "json", ...)
     
     if (length(response$errors) == 0) {
-      message("Process graph was sucessfully validated.")
+      message("Process graph was successfully validated.")
     } else {
       void = sapply(response$errors, function(obj) {
         paste0("[",obj$code,"] ",obj$message)

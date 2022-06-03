@@ -63,7 +63,7 @@ but without the additional PKCE negotiation.
   \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
   \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
   \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
-  \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr'}
+  \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr2'}
 }
 }
 

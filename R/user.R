@@ -62,7 +62,6 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
         
         tag = "user_file_upload"
         
-        # m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = httr::upload_file(content, type = mime), encodeType = encode)
         m = con$request(tag = tag, parameters = list(target), authorized = TRUE, data = content, raw=TRUE)
         message("Upload of user data was successful.")
         return(m)

@@ -1,3 +1,19 @@
+# version 1.2.1
+
+## Added
+* allowed a Process object to be passed to `validate_process`
+
+## Changed
+* not serializing basic `Argument` if not required, which affects mostly the "context" parameter of reducer functions
+* skip local validation of `Array` type if there is more than one sub type allowed
+* adapted GeoJSON coordinate order, now urn:ogc:def:crs:OGC::CRS84 is used as CRS, which means longitude / latitude order
+
+## Fixes
+* compute_result now correctly swaps the file format from save_result, if it was already used in the process graph [#124](https://github.com/Open-EO/openeo-r-client/issues/124)
+* fixed messages thrown when validating arrays with multiple different allowed element types
+
+
+
 # version 1.2.0
 
 ## Added
@@ -11,7 +27,11 @@
   - authorization_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code+pkce
   - urn:ietf:params:oauth:grant-type:device_code [#116](https://github.com/Open-EO/openeo-r-client/issues/116)
-* temporarily added changed code to realize device_code+pkce from the `httr2` package until an official pull request is made available on CRAN
+* temporarily added changed code to realize device_code+pkce from the `httr2` package until the `httr2` package changes are made available on CRAN
+  - PR at httr2 [r-lib/httr2#109](https://github.com/r-lib/httr2/pull/109)
+* overloaded function `toJSON` for `Process` and `Graph`
+  - `processToJSON` to easily convert a process to JSON
+  - `processToJSON` and `graphToJSON` are marked as deprecated
 
 ## Fixes
 * added a Job to Process coercion to match the messages instruction, when printing a Job [#115](https://github.com/Open-EO/openeo-r-client/issues/115)

@@ -32,3 +32,19 @@ test_that("validation ProcessNode with non Boolean result does not succeed", {
     err = b2$validate()
     expect(err == "[caller] Parameter 'boolean_check': No logical return from ProcessNode.",failure_message = "It doesn't work") 
 })
+
+test_that("validation ProcessNode with array of Boolean does not succeed", {
+  a = openeo:::Boolean$new()
+  b = openeo:::Boolean$new()
+  
+  b2 = openeo:::Boolean$new()
+  b2$setValue(list(a,b))
+  b2$setName("boolean_check")
+  
+  ref_process = openeo:::Process$new(returns=b2)
+  pn2 = openeo:::ProcessNode$new(node_id = "caller",process=ref_process)
+  b2$setProcess(pn2)
+  
+  err = b2$validate()
+  expect(err == "[caller] Parameter 'boolean_check': Boolean cannot be an array.",failure_message = "It doesn't work") 
+})

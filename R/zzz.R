@@ -6,3 +6,17 @@ pkgEnvironment = new.env()
     
     register_all_spatial_s3_methods()
 }
+
+#' openeo-deprecated
+#' 
+#' Lists all currently deprecated functions that will be removed in the future.
+#' 
+#' @name openeo-deprecated
+#' @rdname openeo-deprecated
+#' 
+#' @section Deprecated:
+#' \describe{
+#'  \item{graphToJSON(x,...)}{replaced by toJSON}
+#'  \item{processToJSON(x,...)}{replaced by toJSON}
+#' }
+NULL

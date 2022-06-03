@@ -76,13 +76,12 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         
         if (is.null(graph)) 
             stop("No process graph was defined. Please provide a process graph.")
-        
         if (!"Process" %in% class(graph)) {
           if ("Graph" %in% class(graph))  {
               # OK
           } else if (is.list(graph)) {
               graph = parse_graph(json=graph)
-          } else if (any(c("function","ProcessNode") %in% class(graph))){
+          } else if ("function" %in% class(graph)){
               graph = as(graph, "Graph")
           } else {
               stop("Parameter graph is not a Graph object. Expecting a Graph, a list object or a function.")
@@ -91,13 +90,15 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           process = Process$new(id=NA,description = NA,
                                 summary = NA,process_graph=graph)
         } else {
-          process = graph
+          if ("ProcessNode" %in% class(graph)) process = as(graph,"Process")
+          else process = graph
         }
         
         # if format is set check if save_result is set, if not do that with the format stated, if it is 
         # check if the formats match else replace
         # more or less replace save_result of the graph with the customization stated in this function
         if (length(format) > 0) {
+          
           save_node = .find_process_by_name(process,"save_result")
           p = processes()
           
@@ -111,7 +112,6 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           call_args = append(call_args, save_result_dots)
           
           if (length(save_node) == 0) {
-            
             # not existent
             call_args$data = process$getProcessGraph()$getFinalNode()
             
@@ -121,12 +121,15 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
             # check only first (or look for the final node)
             saved_graph = save_node[[1]]
             call_args$data = saved_graph$parameters$data
+            
+            if ("Argument" %in% class(call_args$data)) {
+              call_args$data = call_args$data$getValue()
+            }
           }
           
           saved_graph = do.call(p$save_result,call_args)
           process = as(saved_graph,"Process")
         }
-        
         job = list(
             process = process$serialize()
         )

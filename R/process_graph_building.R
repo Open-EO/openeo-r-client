@@ -325,7 +325,7 @@ Process = R6Class(
           private$process_graph = as(process_graph,"Graph")
         } else if ("Graph" %in% class(process_graph)) {
           private$process_graph = process_graph
-        } else if (is.list(process_graph) || class(process_graph) == "Json_Graph"){
+        } else if (is.list(process_graph) || "Json_Graph" %in% class(process_graph)){
           # when we read it from JSON basically 
           private$process_graph = parse_graph(json=process_graph)
         }
@@ -376,7 +376,11 @@ Process = R6Class(
         results$parameters = list()
       }
       
-      results$returns = self$getReturns()$asParameterInfo()
+      if (length(self$getReturns()) > 0) {
+        results$returns = self$getReturns()$asParameterInfo()
+      } else {
+        results$returns = NULL
+      }
       
       # clean the optional flag in the result
       if ("optional" %in% names(results$returns)) {
@@ -463,7 +467,7 @@ Process = R6Class(
   )
 )
 
-#'@export
+#' @export
 setOldClass(c("Process","R6"))
 
 setClass("ArgumentList")

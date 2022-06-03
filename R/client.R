@@ -51,6 +51,7 @@ NULL
 NULL
 
 #' @importFrom R6 R6Class
+#' @importFrom rlang is_null
 #' @import httr2
 #' @import jsonlite
 #' @export
@@ -305,8 +306,11 @@ OpenEOClient <- R6Class(
     api_version = function () {
       return(private$version)
     },
-    # login_type is deprecated and unused.
     login = function(login_type=NULL, user=NULL, password=NULL, provider=NULL, config=NULL) {
+      if (length(login_type) > 0) {
+        warning("parameter 'login_type' is deprecated and unused")
+      }
+      
       self$stopIfNotConnected()
       
       tryCatch({
@@ -604,7 +608,8 @@ OpenEOClient <- R6Class(
         # response = GET(url=url, config=private$addAuthorization(),query=query)
       } 
   
-      query$req = req
+      # httr2 v0.2.0 changed parameter req to .req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -649,7 +654,7 @@ OpenEOClient <- R6Class(
         req = do.call(req_headers,header)
       }
 
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       
       req = req_error(req,body=private$errorHandling)
@@ -694,7 +699,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -705,7 +710,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -754,7 +759,7 @@ OpenEOClient <- R6Class(
       }
       
       req = do.call(req_headers,header)
-      query$req = req
+      query[[".req"]] = req
       req = do.call(req_url_query,args = query)
       # response = req_perform(req)
       if (isTRUE(raw)) {
@@ -765,7 +770,7 @@ OpenEOClient <- R6Class(
         }
         
       } else {
-        if (length(data) > 0) req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        if (length(data) > 0) req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -810,7 +815,7 @@ OpenEOClient <- R6Class(
                     config = header)
       
       if (!is.null(data)) {
-        req = req_body_json(req = req,data = data,auto_unbox = TRUE, ...)
+        req = req_body_json(req,data = data,auto_unbox = TRUE, ...)
       }
       
       req = req_error(req,body=private$errorHandling)
@@ -866,7 +871,7 @@ OpenEOClient <- R6Class(
       return(header)
     },
     errorHandling = function(response) {
-      if (class(response) == "httr2_response" || class(response) == "response") {
+      if ("httr2_response" %in% class(response) || "response" %in% class(response) ) {
         # errorMessage = content(response)
         errorMessage = resp_body_json(response)
         if (!is.null(errorMessage[["message"]])) {

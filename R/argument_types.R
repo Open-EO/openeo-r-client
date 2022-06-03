@@ -9,7 +9,7 @@
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
 #' objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
-#' \url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
+#' \href{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}{RFC7946}
 #' 
 #' @name Parameter
 #' 
@@ -279,7 +279,6 @@ Argument = R6Class(
       tryCatch(
         {
           private$checkRequiredNotSet()
-          
           if (!self$isRequired && 
               !is.environment(private$value) && 
               self$isEmpty()) {
@@ -312,7 +311,7 @@ Argument = R6Class(
     isEmpty = function() {
       return(!is.environment(private$value) && !is.call(private$value) && (
                 is.null(private$value) ||
-                is.na(private$value) ||
+                (length(private$value) == 1 && is.na(private$value)) || all(is.na(private$value)) ||
                 length(private$value) == 0))
     },
     getProcess = function() {
@@ -344,7 +343,8 @@ Argument = R6Class(
       # implemented / overwritten by children
       
       #if nothing is done, then simply return the object
-      return(private$value)
+      if (self$isEmpty() && !self$isRequired) return(NULL) 
+      else return(private$value)
     },
     deep_clone = function(name, value) {
       
@@ -418,6 +418,7 @@ Integer = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Integer cannot be an array.")
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
@@ -472,6 +473,8 @@ EPSGCode = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("EPSG code cannot be an array.")
+      
       if (!is.na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
@@ -535,6 +538,7 @@ Number = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Number cannot be an array.")
       
       if ("ProcessNode" %in% class(private$value)) {
         return_value = private$value$getReturns()
@@ -603,6 +607,9 @@ String = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -624,6 +631,9 @@ String = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)  && 
+          !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
+      
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
@@ -669,6 +679,8 @@ URI = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("URI cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -734,6 +746,8 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if ("FileFormat" %in% class(private$value)) {
@@ -796,6 +810,7 @@ CollectionId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value) && ! "Collection" %in% class(private$value)) stop("Collection ID cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
@@ -869,6 +884,9 @@ JobId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"Job" %in% class(private$value)) stop("Job id cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -924,6 +942,9 @@ UdfRuntimeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntime" %in% class(private$value)) stop("UDF runtime cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -976,6 +997,10 @@ UdfRuntimeVersionArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"UdfRuntimeVersion" %in% class(private$value)) stop("UDF runtime version cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1028,6 +1053,8 @@ UdfCodeArgument = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         
         if ("FileFormat" %in% class(private$value)) {
@@ -1049,6 +1076,7 @@ UdfCodeArgument = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array.")
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
@@ -1110,6 +1138,8 @@ ProcessGraphId = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Process graph id cannot be an array.")
+      
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1166,6 +1196,7 @@ ProjDefinition = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("PROJ definition cannot be an array.")
       if (!is.na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
@@ -1341,6 +1372,7 @@ Boolean = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Boolean cannot be an array.")
       
       if (length(private$value) > 0 && "ProcessNode" %in% class(private$value)) {
         if (! "boolean" %in% class(private$value$getReturns())) {
@@ -1401,6 +1433,7 @@ Date = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Date cannot be an array.")
       if (!is.na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
@@ -1455,6 +1488,7 @@ DateTime = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Timestamp cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
@@ -1518,6 +1552,7 @@ Time = R6Class(
   ),
   private = list(
     typeCheck = function() {
+      if (length(private$value) > 1 && !is.environment(private$value)) stop("Time cannot be an array.")
       if (!is.na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
@@ -1544,8 +1579,10 @@ Time = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
 #' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
 #' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
-#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
-#' original form (sf/sfc object) until it is serialized.
+#' XY (e.g. if CRS84 is used then lon/lat is the default order).
+#' 
+#' As GeoJSON is defined in \url{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
+#' \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 #' 
 #' 
 #' @name GeoJson
@@ -1599,10 +1636,7 @@ GeoJson = R6Class(
           jsonlite::write_json(value,tmpfile, auto_unbox=TRUE, digits = NA)
           
           suppressWarnings({
-            old_order = sf::st_axis_order()
-            sf::st_axis_order(TRUE)
-            private$value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
-            sf::st_axis_order(old_order)
+            private$value = sf::read_sf(tmpfile,crs=4326)
           })
           
         }, finally = unlink(tmpfile)) 
@@ -1642,15 +1676,12 @@ GeoJson = R6Class(
     },
     typeSerialization = function() {
       if (any(c("sf","sfc") %in% class(private$value))) {
-        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
-        old_order = sf::st_axis_order()
-        sf::st_axis_order(TRUE)
+        
         value = sf::st_transform(private$value,4326)
-        sf::st_axis_order(old_order)
         
         tryCatch({
           t = tempfile()
-          write_sf(value,t,driver="geojson")
+          sf::write_sf(value,t,driver="geojson")
           obj = jsonlite::read_json(t,simplifyVector = FALSE)
           # remove CRS just to be in line with the geojson specification (4326, lat/lon, no crs field)
           obj["crs"] = NULL
@@ -2113,7 +2144,12 @@ Array = R6Class(
     },
     
     setValue = function(value) {
-      process_collection = self$getProcess()$getGraph()
+      
+      if (length(self$getProcess()) > 0) {
+        process_collection = self$getProcess()$getGraph()
+      } else {
+        process_collection = NULL
+      }
       
       if (!is.environment(value) && length(value) > 0) {
         private$value = lapply(value, function(x, pc) {
@@ -2127,11 +2163,12 @@ Array = R6Class(
   private = list(
     typeCheck = function() {
       itemType = private$schema$items$type
-      if (itemType == "any") {
-        # this can be anything so we shift the responsibility to the back-end
-        return(invisible(NULL)) 
-      }
       
+      if (length(itemType) == 0 || length(itemType) > 1) {
+        # this can be anything or is to complicated to check in R so we shift the responsibility to the back-end
+        return(invisible(NULL))
+      }
+
       if (length(private$schema$minItems) == 1 && 
           length(private$value) < private$schema$minItems) {
         stop(paste0("Minimum items are not achieved. Found ",length(private$value)," items of minimal ",private$schema$minItems," items."))
