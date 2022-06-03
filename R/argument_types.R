@@ -1611,10 +1611,15 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
+      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
+      if (!is.environment(value) && (is.null(value) || is.na(value))) {
+        private$value = value
+        return()
+      }
       
       if (all(c("XY","POLYGON") %in% class(value))) {
         private$value = sf::st_sfc(value)
@@ -1628,7 +1633,6 @@ GeoJson = R6Class(
       
       old_class = class(value)
       value = unclass(value)
-      
       if (is.list(value) && "type" %in% names(value)) {
         # this case is a geojson parsed as list
         tryCatch({
