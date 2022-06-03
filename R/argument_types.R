@@ -9,7 +9,7 @@
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
 #' objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
-#' \url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
+#' \href{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}{RFC7946}
 #' 
 #' @name Parameter
 #' 
@@ -1581,7 +1581,7 @@ Time = R6Class(
 #' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
 #' XY (e.g. if CRS84 is used then lon/lat is the default order).
 #' 
-#' As GeoJSON is defined in \url{RFC7946}{https://datatracker.ietf.org/doc/html/rfc7946} the coordinate reference system is
+#' As GeoJSON is defined in \url{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
 #' \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 #' 
 #' 

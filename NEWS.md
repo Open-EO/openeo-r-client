@@ -10,6 +10,7 @@
 
 ## Fixes
 * compute_result now correctly swaps the file format from save_result, if it was already used in the process graph [#124](https://github.com/Open-EO/openeo-r-client/issues/124)
+* fixed messages thrown when validating arrays with multiple different allowed element types
 
 
 

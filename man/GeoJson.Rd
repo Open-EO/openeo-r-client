@@ -10,8 +10,11 @@ Object of \code{\link{R6Class}} representing an object in GeoJson.
 Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
 Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
 from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
-XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
-original form (sf/sfc object) until it is serialized.
+XY (e.g. if CRS84 is used then lon/lat is the default order).
+}
+\details{
+As GeoJSON is defined in \url{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
+\code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
