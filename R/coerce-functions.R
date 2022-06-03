@@ -213,7 +213,7 @@ as.Graph.ProcessInfo = function(from) {
 #' @rdname as.Graph
 #' @export
 as.Graph.Process = function(from) {
-  return(from$getProcessGraph)
+  return(from$getProcessGraph())
 }
 
 #' @export
