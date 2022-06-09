@@ -1616,7 +1616,8 @@ GeoJson = R6Class(
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
-      if (!is.environment(value) && (is.null(value) || is.na(value))) {
+      # lists are checked for each element for is.na if run under unix
+      if (!is.environment(value) && (is.null(value) || all(is.na(value)))) {
         private$value = value
         return()
       }
@@ -1679,6 +1680,11 @@ GeoJson = R6Class(
       
     },
     typeSerialization = function() {
+      
+      if (self$isEmpty()) {
+        return(private$value)
+      }
+      
       if (any(c("sf","sfc") %in% class(private$value))) {
         
         value = sf::st_transform(private$value,4326)
