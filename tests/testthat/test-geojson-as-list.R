@@ -76,3 +76,20 @@ test_that("geojson as point feature list", {
   
   testthat::expect(sf::st_as_text(sf::st_as_sfc(arg$getValue())) == "POINT (11.1167 46.0665)",failure_message = "Coordinates have been manipulated")
 })
+
+test_that("geojson allows NA / NULL", {
+  
+  arg = openeo:::GeoJson$new(name = "polygon",required = FALSE)
+  process = openeo:::Process$new(id = "test_process",parameters = list(arg))
+  node = openeo:::ProcessNode$new(node_id = "some_node",process = process)
+  arg$setProcess(node)
+  
+  arg$setValue(NA)
+  msg = arg$validate()
+  testthat::expect(is.na(arg$getValue()), failure_message = "not NA")
+  
+  arg$setValue(NULL)
+  msg = arg$validate()
+  testthat::expect(is.null(arg$getValue()), failure_message = "not NULL")
+  
+})
