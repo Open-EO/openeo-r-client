@@ -1221,8 +1221,8 @@ ProjDefinition = R6Class(
 #' BoundingBox
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of an area of 
-#' interest. Its value is usually a named list with "west","south","east" and "north". An NA value means an open
-#' interval.
+#' interest. Its value is usually a named list with "west","south","east" and "north". For this argument
+#' the 'bbox' object of the sf package is also recognized (\code{\link[sf]{st_bbox}}).
 #' 
 #' @name BoundingBox
 #' 
@@ -1235,6 +1235,35 @@ ProjDefinition = R6Class(
 #' \code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
 #' 
 #' @return Object of \code{\link{R6Class}} representing a bounding box / extent.
+#' 
+#' @examples \dontrun{
+#' # most of the time BoundingBox is a choice as parameter value for spatial_extent in 'load_collection'
+#' p = processes()
+#' 
+#' # using a list
+#' bbox = list(west=10.711799440170706, 
+#'             east= 11.542794097651838, 
+#'             south=45.92724558214729, 
+#'             north= 46.176044942018734)
+#' 
+#' data = p$load_collection(id = "SENTINEL2_L2A", 
+#'                          spatial_extent = bbox,
+#'                          temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+#'                          bands = list("B04","B08"))
+#' 
+#' # using sf bbox
+#' bbox = st_bbox(c(xmin=10.711799440170706, 
+#'                  xmax= 11.542794097651838, 
+#'                  ymin=45.92724558214729, 
+#'                  ymax= 46.176044942018734),
+#'                crs = 4326)
+#' 
+#' data = p$load_collection(id = "SENTINEL2_L2A", 
+#'                          spatial_extent = bbox,
+#'                          temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+#'                          bands = list("B04","B08"))
+#'                          
+#' }
 NULL
 
 BoundingBox = R6Class(
@@ -1258,16 +1287,21 @@ BoundingBox = R6Class(
           }
         }
       }
+      
       private$value= value
     }
   ),
   private = list(
     typeCheck = function() {
+      value = private$value
       # should be a list
-      if (!is.list(private$value)) {
+      if ("bbox" %in% class(value)) {
+        # TODO maybe check completeness?
+        return(NULL)
+      } else if (!is.list(value)) {
         tryCatch(
           {
-            private$value = as.list(private$value)
+            value = as.list(value)
           },
           error = function(e) {
             stop("Cannot coerce values of bounding box into a list")
@@ -1275,7 +1309,7 @@ BoundingBox = R6Class(
         )
       }
       
-      obj_names = names(private$value)
+      obj_names = names(value)
       
       if (length(obj_names) == 0) stop("Bounding box parameter are unnamed. Cannot distinguish between values.") 
       
@@ -1286,26 +1320,27 @@ BoundingBox = R6Class(
       ))
       
       suppressWarnings({
-        vals = lapply(private$value[obj_names],as.numeric)
+        vals = lapply(value[obj_names],as.numeric)
         nas = sapply(vals, is.na)
         
         if (any(nas)) {
           stop("Not all bbox parameters are numeric or can be coerced into numeric automatically: ",paste0(obj_names[nas],collapse = ", "))
         } else {
-          private$value[obj_names] = vals
+          value[obj_names] = vals
         }
         
       })
 
       # check if crs is set (either proj string or epsg code)
       if ("crs" %in% obj_names) {
-        crs_value = private$value[["crs"]]
+        crs_value = value[["crs"]]
         if (!is.integer(crs_value) && !is.numeric(crs_value)) {
           if (!is.character(crs_value)) stop("CRS is not an EPSG identifier or a PROJ string")
           
           # automatical conversion in this EPSG cases
-          if (grepl(pattern="epsg:", tolower(crs_value))) {
-            private$value[["crs"]] = as.integer(sub(pattern = "epsg:",replacement = "",tolower(crs_value)))
+          if (!grepl(pattern="epsg:", tolower(crs_value))) {
+            stop("CRS String does not contain an EPSG identifier")
+            # value[["crs"]] = as.integer(sub(pattern = "epsg:",replacement = "",tolower(crs_value)))
           }
         }
       } # else nothing, since it is not required, but its assumed to be WGS84
@@ -1317,14 +1352,14 @@ BoundingBox = R6Class(
       }
       
       if (all(height_selector %in% obj_names)) {
-        height_extent = private$value[height_selector]
+        height_extent = value[height_selector]
         suppressWarnings({
           height_extent = sapply(height_extent,as.numeric)
           
           if (any(sapply(height_extent,is.na))) {
             stop("'Base' or 'height' cannot be interpreted as numeric value")
           } else {
-            private$value[height_selector] = height_extent
+            value[height_selector] = height_extent
           }
         })
       }
@@ -1335,7 +1370,35 @@ BoundingBox = R6Class(
       if (length(self$getValue()) == 0) {
         return(NULL)
       } else {
-        return(self$getValue())
+        #if bbox from sf package serialize it accordingly
+        if ("bbox" %in% class(private$value)) {
+          bbox = private$value
+          crs = sf::st_crs(bbox)
+          
+          result = list(west=unname(bbox$xmin),
+                        east=unname(bbox$xmax),
+                        south=unname(bbox$ymin),
+                        north=unname(bbox$ymax))
+          
+          if (crs != sf::st_crs(4326)) {
+            result$crs = crs$input
+          }
+          
+
+        } else {
+          result = self$getValue()
+        }
+        
+        if (is.list(result)) {
+          if ("crs" %in% names(result)) {
+            crs_value = result[["crs"]]
+            if (is.character(crs_value) && grepl(tolower(crs_value),pattern = "^epsg:")) {
+              result[["crs"]] = as.integer(gsub(x = crs_value,replacement = "",pattern = "[^0-9]"))
+            }
+          }
+        }
+        
+        return(result)
       }
     }
   )
