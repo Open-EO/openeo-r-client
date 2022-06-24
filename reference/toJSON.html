@@ -113,39 +113,70 @@ of a process is the same as it will be sent to the back-end.</p>
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>a Process or Graph object</p></dd>
+
+
 <dt>dataframe</dt>
 <dd><p>how to encode data.frame objects: must be one of 'rows', 'columns' or 'values'</p></dd>
+
+
 <dt>matrix</dt>
 <dd><p>how to encode matrices and higher dimensional arrays: must be one of 'rowmajor' or 'columnmajor'.</p></dd>
+
+
 <dt>Date</dt>
 <dd><p>how to encode Date objects: must be one of 'ISO8601' or 'epoch'</p></dd>
+
+
 <dt>POSIXt</dt>
 <dd><p>how to encode POSIXt (datetime) objects: must be one of 'string', 'ISO8601', 'epoch' or 'mongo'</p></dd>
+
+
 <dt>factor</dt>
 <dd><p>how to encode factor objects: must be one of 'string' or 'integer'</p></dd>
+
+
 <dt>complex</dt>
 <dd><p>how to encode complex numbers: must be one of 'string' or 'list'</p></dd>
+
+
 <dt>raw</dt>
 <dd><p>how to encode raw objects: must be one of 'base64', 'hex' or 'mongo'</p></dd>
+
+
 <dt>null</dt>
 <dd><p>how to encode NULL values within a list: must be one of 'null' or 'list'</p></dd>
+
+
 <dt>na</dt>
 <dd><p>how to print NA values: must be one of 'null' or 'string'. Defaults are class specific</p></dd>
+
+
 <dt>auto_unbox</dt>
 <dd><p>automatically <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox</a></code> all atomic vectors of length 1. It is usually safer to avoid this and instead use the <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox</a></code> function to unbox individual elements.
 An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>) are not automatically unboxed. This is a way to mark single values as length-1 arrays.</p></dd>
+
+
 <dt>digits</dt>
 <dd><p>max number of decimal digits to print for numeric values. Use <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code> to specify significant digits. Use <code>NA</code> for max precision.</p></dd>
+
+
 <dt>pretty</dt>
 <dd><p>adds indentation whitespace to JSON output. Can be TRUE/FALSE or a number specifying the number of spaces to indent. See <code><a href="https://rdrr.io/pkg/jsonlite/man/prettify.html" class="external-link">prettify</a></code></p></dd>
+
+
 <dt>force</dt>
 <dd><p>unclass/skip objects of classes with no defined JSON mapping</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters that are passed to jsonlite::toJSON</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>JSON string of the process as a character string</p>
+    
+
+<p>JSON string of the process as a character string</p>
     </div>
 
     <div id="ref-examples">
@@ -172,7 +203,7 @@ An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

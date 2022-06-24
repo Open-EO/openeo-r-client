@@ -77,21 +77,32 @@ explore the capabilities and want to compute something, then you need to log in 
     <h2>Arguments</h2>
     <dl><dt>user</dt>
 <dd><p>the user name</p></dd>
+
+
 <dt>password</dt>
 <dd><p>the password</p></dd>
+
+
 <dt>provider</dt>
 <dd><p>provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
 and <code>provider_type="oidc"</code> then the first available provider is chosen from the list.</p></dd>
+
+
 <dt>config</dt>
 <dd><p>named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL and 
 <code>provider_type="oidc"</code> the configuration parameters are taken from the default authentication client of the OIDC provider.</p></dd>
+
+
 <dt>con</dt>
 <dd><p>connected back-end connection (optional) otherwise <code><a href="active_connection.html">active_connection</a></code>
 is used.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a connected and authenticated back-end connection</p>
+    
+
+<p>a connected and authenticated back-end connection</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -168,7 +179,7 @@ list. You can then use the following values:</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

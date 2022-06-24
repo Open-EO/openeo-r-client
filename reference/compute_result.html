@@ -95,27 +95,46 @@ data is opened and interpreted into a stars object.</p>
     <dl><dt>graph</dt>
 <dd><p>a <code><a href="Graph.html">Graph</a></code>, a function returning a <code><a href="ProcessNode.html">ProcessNode</a></code> as an endpoint or the <code><a href="ProcessNode.html">ProcessNode</a></code> 
 will return the results</p></dd>
+
+
 <dt>output_file</dt>
 <dd><p>storage location for the returned data</p></dd>
+
+
 <dt>budget</dt>
 <dd><p>numeric, maximum spendable amount for testing</p></dd>
+
+
 <dt>plan</dt>
 <dd><p>character, selection of a service plan</p></dd>
+
+
 <dt>as_stars</dt>
 <dd><p>logical to indicate if the data shall be interpreted as a stars object</p></dd>
+
+
 <dt>format</dt>
 <dd><p>character or <code>FileFormat</code> specifying the File format for the output, if 'save_result' is not
 set in the process then it will be added otherwise the value stated here will replace the original value</p></dd>
+
+
 <dt>con</dt>
 <dd><p>connected and authenticated openEO client (optional) otherwise <code><a href="active_connection.html">active_connection</a></code>
 is used.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
 be passed to the openEO process 'save_result'</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a local path to the downloaded file or a <code>stars</code> object if <code>as_stars=TRUE</code></p>
+    
+
+<p>a local path to the downloaded file or a <code>stars</code> object if <code>as_stars=TRUE</code></p>
+
+
     </div>
 
   </div>
@@ -130,7 +149,7 @@ be passed to the openEO process 'save_result'</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
