@@ -320,11 +320,11 @@ OpenEOClient <- R6Class(
         else {
           if (is.null(provider)) {
             providers = list_oidc_providers()
-            provider = providers[[1]]
-            if (is_null(provider)) {
+            if (length(providers) <= 0) {
               message("Either a provider needs to be provided, or a username and password for basic authentication.")
               return(invisible(self))
             }
+            provider = providers[[1]]
           }
           private$loginOIDC(provider = provider, config = config)
         }
