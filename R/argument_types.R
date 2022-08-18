@@ -9,7 +9,7 @@
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
 #' objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
-#' \url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
+#' \href{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}{RFC7946}
 #' 
 #' @name Parameter
 #' 
@@ -344,7 +344,7 @@ Argument = R6Class(
       
       #if nothing is done, then simply return the object
       if (self$isEmpty() && !self$isRequired) return(NULL) 
-      else return(as.integer(private$value))
+      else return(private$value)
     },
     deep_clone = function(name, value) {
       
@@ -1579,8 +1579,10 @@ Time = R6Class(
 #' Inheriting from \code{\link{Argument}} in order to represent a GeoJson object. This class represents geospatial features. 
 #' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
 #' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
-#' XY (e.g. if CRS84 is used then lon/lat is the default order). The value that is set for this argument type is kept in its
-#' original form (sf/sfc object) until it is serialized.
+#' XY (e.g. if CRS84 is used then lon/lat is the default order).
+#' 
+#' As GeoJSON is defined in \url{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
+#' \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 #' 
 #' 
 #' @name GeoJson
@@ -1609,10 +1611,16 @@ GeoJson = R6Class(
     },
     
     setValue = function(value) {
+      
       if (!.is_package_installed("sf")) {
         warnings("Package sf is not installed but required for GeoJson support.")
       }
       
+      # lists are checked for each element for is.na if run under unix
+      if (!is.environment(value) && (is.null(value) || all(is.na(value)))) {
+        private$value = value
+        return()
+      }
       
       if (all(c("XY","POLYGON") %in% class(value))) {
         private$value = sf::st_sfc(value)
@@ -1626,7 +1634,6 @@ GeoJson = R6Class(
       
       old_class = class(value)
       value = unclass(value)
-      
       if (is.list(value) && "type" %in% names(value)) {
         # this case is a geojson parsed as list
         tryCatch({
@@ -1634,10 +1641,7 @@ GeoJson = R6Class(
           jsonlite::write_json(value,tmpfile, auto_unbox=TRUE, digits = NA)
           
           suppressWarnings({
-            old_order = sf::st_axis_order()
-            sf::st_axis_order(TRUE)
-            private$value = sf::st_transform(sf::read_sf(tmpfile,crs=4326),pipeline="+proj=pipeline +step +proj=axisswap +order=2,1")
-            sf::st_axis_order(old_order)
+            private$value = sf::read_sf(tmpfile,crs=4326)
           })
           
         }, finally = unlink(tmpfile)) 
@@ -1676,12 +1680,14 @@ GeoJson = R6Class(
       
     },
     typeSerialization = function() {
+      
+      if (self$isEmpty()) {
+        return(private$value)
+      }
+      
       if (any(c("sf","sfc") %in% class(private$value))) {
-        # axis order: https://github.com/r-spatial/sf/issues/1033#issuecomment-569353295
-        old_order = sf::st_axis_order()
-        sf::st_axis_order(TRUE)
+        
         value = sf::st_transform(private$value,4326)
-        sf::st_axis_order(old_order)
         
         tryCatch({
           t = tempfile()

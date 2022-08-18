@@ -1,3 +1,21 @@
+# version 1.2.1
+
+## Added
+* allowed a Process object to be passed to `validate_process`
+
+## Changed
+* not serializing basic `Argument` if not required, which affects mostly the "context" parameter of reducer functions
+* skip local validation of `Array` type if there is more than one sub type allowed
+* adapted GeoJSON coordinate order, now urn:ogc:def:crs:OGC::CRS84 is used as CRS, which means longitude / latitude order
+
+## Fixes
+* compute_result now correctly swaps the file format from save_result, if it was already used in the process graph [#124](https://github.com/Open-EO/openeo-r-client/issues/124)
+* fixed messages thrown when validating arrays with multiple different allowed element types
+* fixed missing NA / NULL setting in GeoJSON argument
+* fixed missing brackets in coercion from Process to Graph
+
+
+
 # version 1.2.0
 
 ## Added
