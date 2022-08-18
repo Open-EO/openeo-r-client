@@ -320,9 +320,11 @@ OpenEOClient <- R6Class(
         else {
           if (is.null(provider)) {
             providers = list_oidc_providers()
-            if (length(providers) <= 0) {
-              message("Either a provider needs to be provided, or a username and password for basic authentication.")
-              return(invisible(self))
+            
+            # if it happens to be that the oidc provider list is empty then use a more meaningful error message
+            if (length(providers) == 0) {
+              stop("OIDC provider list from 'list_oidc_providers()' is empty. Please contact the back-end provider.")
+              # 
             }
             provider = providers[[1]]
           }
