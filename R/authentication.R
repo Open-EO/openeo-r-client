@@ -405,7 +405,7 @@ AbstractOIDCAuthentication <- R6Class(
     },
     
     isInteractive = function() {
-      return(if (is_jupyter()) TRUE else rlang::is_interactive())
+      return(if (is_jupyter()) FALSE else rlang::is_interactive())
     },
     
     decodeToken = function(access_token, token_part) {
