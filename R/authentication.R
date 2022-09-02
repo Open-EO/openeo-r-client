@@ -304,7 +304,7 @@ AbstractOIDCAuthentication <- R6Class(
       if (length(private$endpoints$end_session_endpoint) == 1) {
         url = url_parse(private$endpoints$end_session_endpoint)
         response = req_perform(req_url_query(
-          req=request(url),
+          .req=request(url),
           id_token_hint = private$auth$id_token))
         
         if (response$status_code < 400) {
