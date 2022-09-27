@@ -367,9 +367,8 @@ OpenEOClient <- R6Class(
     
     getCapabilities = function() {
       if (is.null(private$capabilities)) {
-        endpoint = "/"
         tryCatch({
-          private$capabilities = private$GET(endpoint = endpoint)
+          private$capabilities = private$GET(endpoint = "")
             
           class(private$capabilities) = "OpenEOCapabilities"
         }, error = .capturedErrorToMessage)
