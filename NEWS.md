@@ -1,3 +1,8 @@
+# Version 1.2.1.9000 Upcoming Version
+
+## Fixes
+* OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, #131, #119)
+
 # version 1.2.1
 
 ## Added

@@ -21,7 +21,7 @@ Suggests:
     DT
 Imports:
     jsonlite,
-    httr2 (>= 0.2.0),
+    httr2 (>= 0.2.2),
     methods,
     R6,
     lubridate,
