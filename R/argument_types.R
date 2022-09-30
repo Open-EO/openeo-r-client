@@ -1283,12 +1283,15 @@ BoundingBox = R6Class(
       private$schema$subtype = "bounding-box"
     },
     setValue = function(value) {
-      # the value will be a posixct where we just return the time component
-      if (is.list(value)) {
-        if ("crs" %in% names(value)) {
-          crs_value = value[["crs"]]
-          if (is.character(crs_value) && grepl(tolower(crs_value),pattern = "^epsg:")) {
-            value[["crs"]] = as.integer(gsub(x = crs_value,replacement = "",pattern = "[^0-9]"))
+      bbox=tryCatch(sf::st_bbox(value),error=function(e) NULL)
+      
+      if (is.null(bbox)) {
+        if (is.list(value)) {
+          if ("crs" %in% names(value)) {
+            crs_value = value[["crs"]]
+            if (is.character(crs_value) && grepl(tolower(crs_value),pattern = "^epsg:")) {
+              value[["crs"]] = as.integer(gsub(x = crs_value,replacement = "",pattern = "[^0-9]"))
+            }
           }
         }
       }
