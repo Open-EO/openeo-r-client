@@ -2,6 +2,7 @@
 
 ## Fixes
 * OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, #131, #119)
+* `download_results` could not interprete a Job object due to the `length(job) != 1` restriction
 
 # version 1.2.1
 
