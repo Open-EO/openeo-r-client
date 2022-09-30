@@ -56,3 +56,26 @@ test_that("class bbox with non 4326 crs works with argument BoundingBox", {
     expect(FALSE,failure_message=e$message)
   })
 })
+
+test_that("bboxable sf", {
+  geojson = sf::read_sf("D:/Downloads/file_001.json")
+  code = openeo:::BoundingBox$new()
+  code$setValue(geojson)
+  
+  msg = code$validate()
+  expect(length(msg)==0,failure_message = paste("It doesn't work:",msg)) 
+  
+  serialized = code$serialize()
+  print(serialized)
+})
+
+# test_that("bboxable stars", {
+#   img = stars::read_stars("D:/data/3217-r4openeo/2022-09-30/openEO_2020-07-05Z.tif")
+#   code = openeo:::BoundingBox$new()
+#   code$setValue(img)
+#   
+#   msg = code$validate()
+#   expect(length(msg)==0,failure_message = paste("It doesn't work:",msg))
+#   
+#   
+# })

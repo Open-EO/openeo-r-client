@@ -1294,9 +1294,13 @@ BoundingBox = R6Class(
             }
           }
         }
+        
+        private$value= value
+      } else {
+        private$value = bbox
       }
       
-      private$value= value
+      
     }
   ),
   private = list(
@@ -1381,6 +1385,7 @@ BoundingBox = R6Class(
         #if bbox from sf package serialize it accordingly
         if ("bbox" %in% class(private$value)) {
           bbox = private$value
+          
           crs = sf::st_crs(bbox)
           
           result = list(west=unname(bbox$xmin),
@@ -1388,10 +1393,14 @@ BoundingBox = R6Class(
                         south=unname(bbox$ymin),
                         north=unname(bbox$ymax))
           
-          if (crs != sf::st_crs(4326)) {
-            result$crs = crs$input
-          }
           
+          if (crs != sf::st_crs(4326)) {
+            if (grepl(tolower(crs$input),pattern="^epsg:")) {
+              result$crs = crs$input
+            } else {
+              result$crs = crs$wkt
+            }
+          }
 
         } else {
           result = self$getValue()
