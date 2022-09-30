@@ -309,7 +309,7 @@ Argument = R6Class(
     },
     
     isEmpty = function() {
-      return(!is.environment(private$value) && !is.call(private$value) && (
+      return(!is.environment(private$value) && !is.function(private$value) && !is.call(private$value) && (
                 is.null(private$value) ||
                 (length(private$value) == 1 && is.na(private$value)) || all(is.na(private$value)) ||
                 length(private$value) == 0))
@@ -1024,7 +1024,8 @@ UdfRuntimeVersionArgument = R6Class(
 # UdfCode argument ====
 #' UdfCodeArgument class
 #' 
-#' Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+#' Inheriting from \code{\link{Argument}} in order to represent the UDF code that will be executed in a UDF call. The script has to 
+#' be passed as a character string or as a local file path from which the script can be loaded.
 #' 
 #' @name UdfCodeArgument
 #' 
@@ -1055,15 +1056,17 @@ UdfCodeArgument = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      # parse
+      if (!self$isEmpty() && !is.character(private$value)) {
         
-        if ("FileFormat" %in% class(private$value)) {
-          # what to do?
+        if (is.function(private$value)) {
+          
         } else {
+          
           suppressWarnings({
             coerced = as.character(private$value)
           })
-          
+            
           if (is.null(coerced) || 
               is.na(coerced) ||
               length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
@@ -1071,14 +1074,16 @@ UdfCodeArgument = R6Class(
           
           private$value = coerced
         }
+        
+        
       }
       
       return(invisible(NULL))
     },
     typeSerialization = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("UDF code cannot be an array.")
-      if (is.call(private$value)) {
-        return(paste(deparse(private$value),collapse = "\n"))
+      if (is.call(private$value) || is.function(private$value)) {
+        return(deparse1(private$value,collapse = "\n"))
       } else if (is.character(private$value)) {
         if (file.exists(private$value)) {
           # if valid file path open file and attach
