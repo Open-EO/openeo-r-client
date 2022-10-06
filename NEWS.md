@@ -1,7 +1,7 @@
 # Version 1.2.1.9000 Upcoming Version
 
 ## Changed
-* allowed objects as values for BoundingBox where `st_bbox()` can be applied
+* allowed objects as values for argument BoundingBox where `st_bbox()` can be applied
 
 ## Fixes
 * OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, #131, #119)
