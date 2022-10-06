@@ -45,7 +45,7 @@ Currently, the package complies to the major openEO API version 1.0.x. It is als
 
 | openeo R client version | openEO API version | openEO API status |
 | --- | --- | --- |
-| not yet | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| >= v1.1.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v1.0.x | [v1.0.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |

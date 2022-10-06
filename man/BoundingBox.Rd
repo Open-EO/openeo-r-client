@@ -8,8 +8,47 @@ Object of \code{\link{R6Class}} representing a bounding box / extent.
 }
 \description{
 Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of an area of 
-interest. Its value is usually a named list with "west","south","east" and "north". An NA value means an open
-interval.
+interest. Its value is usually a named list with "west","south","east" and "north". For this argument
+the 'bbox' object of the sf package is also recognized (\code{\link[sf]{st_bbox}}). This holds also true for
+classes that support \code{\link[sf]{st_bbox}} and return a valid 'bbox' object.
+}
+\examples{
+\dontrun{
+# most of the time BoundingBox is a choice as parameter value for 
+# spatial_extent in 'load_collection'
+p = processes()
+
+# using a list
+bbox = list(west=10.711799440170706, 
+            east= 11.542794097651838, 
+            south=45.92724558214729, 
+            north= 46.176044942018734)
+
+data = p$load_collection(id = "SENTINEL2_L2A", 
+                         spatial_extent = bbox,
+                         temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+                         bands = list("B04","B08"))
+
+# using sf bbox
+bbox = st_bbox(c(xmin=10.711799440170706, 
+                 xmax= 11.542794097651838, 
+                 ymin=45.92724558214729, 
+                 ymax= 46.176044942018734),
+               crs = 4326)
+
+data = p$load_collection(id = "SENTINEL2_L2A", 
+                         spatial_extent = bbox,
+                         temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+                         bands = list("B04","B08"))
+
+# objects supporting sf::st_bbox()
+img = stars::read_stars(system.file("tif/L7_ETMs.tif",package = "stars"))
+data = p$load_collection(id = "SENTINEL2_L2A", 
+                         spatial_extent = img,
+                         temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+                         bands = list("B04","B08"))
+                         
+}
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

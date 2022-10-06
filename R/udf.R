@@ -148,12 +148,6 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
   
   res = req_perform(req)
   
-  # res = httr::POST(url = url,
-  #                  config=add_headers(Date=start),
-  #                  content_type_json(),
-  #                  body=toJSON(payload,auto_unbox = T),
-  #                  encode="raw")
-  
   end = Sys.time()
   if (debug) {
     print(end-start)

@@ -7,7 +7,8 @@
 Object of \code{\link{R6Class}} is an argument that expects an UDF code or a file path.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent the id of an UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+Inheriting from \code{\link{Argument}} in order to represent the UDF code that will be executed in a UDF call. The script has to 
+be passed as a character string or as a local file path from which the script can be loaded.
 }
 \seealso{
 \code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 

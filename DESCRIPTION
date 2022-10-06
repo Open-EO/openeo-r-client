@@ -1,7 +1,7 @@
 Package: openeo
 Type: Package
 Title: Client Interface for 'openEO' Servers
-Version: 1.2.1
+Version: 1.2.2
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
         person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb")),
@@ -18,10 +18,11 @@ Suggests:
     pkgdown,
     rmarkdown,
     kableExtra,
-    DT
+    DT,
+    terra
 Imports:
     jsonlite,
-    httr2 (>= 0.2.0),
+    httr2 (>= 0.2.2),
     methods,
     R6,
     lubridate,
@@ -57,6 +58,7 @@ Collate:
     'print-functions.R'
     'sample_data.R'
     'server_metadata.R'
+    'spatial.R'
     'udf.R'
     'user.R'
     'viewer.R'

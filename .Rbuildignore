@@ -1,6 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.Rhistory$
 ^\.httr-oauth$
+^\.gitignore$
 ^examples$
 ^wiki$
 ^docs$

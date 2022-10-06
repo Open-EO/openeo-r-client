@@ -465,7 +465,8 @@ print.CollectionList = function(x, ...) {
 
 #' @export
 print.Graph = function(x, ...) {
-    print(toJSON(x, ...))
+  # use internal toJSON function
+  print(.toJSON(x, ...))
 }
 
 #' @export
@@ -484,11 +485,11 @@ print.Process = function(x, ...) {
     if (is_html_context()) {
         return(print_html("process", x$serialize(), props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
     }
-
-    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE,digits=NA))
+    
+    # use internal toJSON function
+    print(.toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE,digits=NA)) 
 }
 
-# TODO is this still used somewhere?
 #' @export
 print.Json_Graph = function(x, ...) {
     print(jsonlite::toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE, digits = NA))
