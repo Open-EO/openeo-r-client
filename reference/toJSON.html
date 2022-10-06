@@ -19,7 +19,7 @@ of a process is the same as it will be sent to the back-end."><meta property="og
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -70,43 +70,43 @@ of a process is the same as it will be sent to the back-end.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S4 method for Process</span>
-<span class="fu">toJSON</span><span class="op">(</span>
-  <span class="va">x</span>,
-  dataframe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rows"</span>, <span class="st">"columns"</span>, <span class="st">"values"</span><span class="op">)</span>,
-  matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rowmajor"</span>, <span class="st">"columnmajor"</span><span class="op">)</span>,
-  Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ISO8601"</span>, <span class="st">"epoch"</span><span class="op">)</span>,
-  POSIXt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"ISO8601"</span>, <span class="st">"epoch"</span>, <span class="st">"mongo"</span><span class="op">)</span>,
-  factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"integer"</span><span class="op">)</span>,
-  complex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"list"</span><span class="op">)</span>,
-  raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"base64"</span>, <span class="st">"hex"</span>, <span class="st">"mongo"</span>, <span class="st">"int"</span>, <span class="st">"js"</span><span class="op">)</span>,
-  null <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="st">"null"</span><span class="op">)</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"null"</span>, <span class="st">"string"</span><span class="op">)</span>,
-  auto_unbox <span class="op">=</span> <span class="cn">FALSE</span>,
-  digits <span class="op">=</span> <span class="fl">4</span>,
-  pretty <span class="op">=</span> <span class="cn">FALSE</span>,
-  force <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S4 method for Graph</span>
-<span class="fu">toJSON</span><span class="op">(</span>
-  <span class="va">x</span>,
-  dataframe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rows"</span>, <span class="st">"columns"</span>, <span class="st">"values"</span><span class="op">)</span>,
-  matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rowmajor"</span>, <span class="st">"columnmajor"</span><span class="op">)</span>,
-  Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ISO8601"</span>, <span class="st">"epoch"</span><span class="op">)</span>,
-  POSIXt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"ISO8601"</span>, <span class="st">"epoch"</span>, <span class="st">"mongo"</span><span class="op">)</span>,
-  factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"integer"</span><span class="op">)</span>,
-  complex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"list"</span><span class="op">)</span>,
-  raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"base64"</span>, <span class="st">"hex"</span>, <span class="st">"mongo"</span>, <span class="st">"int"</span>, <span class="st">"js"</span><span class="op">)</span>,
-  null <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="st">"null"</span><span class="op">)</span>,
-  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"null"</span>, <span class="st">"string"</span><span class="op">)</span>,
-  auto_unbox <span class="op">=</span> <span class="cn">FALSE</span>,
-  digits <span class="op">=</span> <span class="fl">4</span>,
-  pretty <span class="op">=</span> <span class="cn">FALSE</span>,
-  force <span class="op">=</span> <span class="cn">FALSE</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S4 method for Process</span></span>
+<span><span class="fu">toJSON</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  dataframe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rows"</span>, <span class="st">"columns"</span>, <span class="st">"values"</span><span class="op">)</span>,</span>
+<span>  matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rowmajor"</span>, <span class="st">"columnmajor"</span><span class="op">)</span>,</span>
+<span>  Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ISO8601"</span>, <span class="st">"epoch"</span><span class="op">)</span>,</span>
+<span>  POSIXt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"ISO8601"</span>, <span class="st">"epoch"</span>, <span class="st">"mongo"</span><span class="op">)</span>,</span>
+<span>  factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"integer"</span><span class="op">)</span>,</span>
+<span>  complex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"list"</span><span class="op">)</span>,</span>
+<span>  raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"base64"</span>, <span class="st">"hex"</span>, <span class="st">"mongo"</span>, <span class="st">"int"</span>, <span class="st">"js"</span><span class="op">)</span>,</span>
+<span>  null <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="st">"null"</span><span class="op">)</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"null"</span>, <span class="st">"string"</span><span class="op">)</span>,</span>
+<span>  auto_unbox <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  pretty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for Graph</span></span>
+<span><span class="fu">toJSON</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  dataframe <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rows"</span>, <span class="st">"columns"</span>, <span class="st">"values"</span><span class="op">)</span>,</span>
+<span>  matrix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rowmajor"</span>, <span class="st">"columnmajor"</span><span class="op">)</span>,</span>
+<span>  Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ISO8601"</span>, <span class="st">"epoch"</span><span class="op">)</span>,</span>
+<span>  POSIXt <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"ISO8601"</span>, <span class="st">"epoch"</span>, <span class="st">"mongo"</span><span class="op">)</span>,</span>
+<span>  factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"integer"</span><span class="op">)</span>,</span>
+<span>  complex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"string"</span>, <span class="st">"list"</span><span class="op">)</span>,</span>
+<span>  raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"base64"</span>, <span class="st">"hex"</span>, <span class="st">"mongo"</span>, <span class="st">"int"</span>, <span class="st">"js"</span><span class="op">)</span>,</span>
+<span>  null <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="st">"null"</span><span class="op">)</span>,</span>
+<span>  na <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"null"</span>, <span class="st">"string"</span><span class="op">)</span>,</span>
+<span>  auto_unbox <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  pretty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -152,7 +152,7 @@ of a process is the same as it will be sent to the back-end.</p>
 
 
 <dt>auto_unbox</dt>
-<dd><p>automatically <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox</a></code> all atomic vectors of length 1. It is usually safer to avoid this and instead use the <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox</a></code> function to unbox individual elements.
+<dd><p>automatically <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox()</a></code> all atomic vectors of length 1. It is usually safer to avoid this and instead use the <code><a href="https://rdrr.io/pkg/jsonlite/man/unbox.html" class="external-link">unbox()</a></code> function to unbox individual elements.
 An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>) are not automatically unboxed. This is a way to mark single values as length-1 arrays.</p></dd>
 
 
@@ -161,7 +161,7 @@ An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><
 
 
 <dt>pretty</dt>
-<dd><p>adds indentation whitespace to JSON output. Can be TRUE/FALSE or a number specifying the number of spaces to indent. See <code><a href="https://rdrr.io/pkg/jsonlite/man/prettify.html" class="external-link">prettify</a></code></p></dd>
+<dd><p>adds indentation whitespace to JSON output. Can be TRUE/FALSE or a number specifying the number of spaces to indent. See <code><a href="https://rdrr.io/pkg/jsonlite/man/prettify.html" class="external-link">prettify()</a></code></p></dd>
 
 
 <dt>force</dt>
@@ -181,14 +181,14 @@ An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="co"># node is a defined process node</span></span>
-<span class="r-in"><span class="va">process</span> <span class="op">=</span> <span class="fu">as</span><span class="op">(</span><span class="va">node</span>, <span class="st">"Process"</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">toJSON</span><span class="op">(</span><span class="va">process</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">graph</span> <span class="op">=</span> <span class="va">process</span><span class="op">$</span><span class="fu">getProcessGraph</span><span class="op">(</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">toJSON</span><span class="op">(</span><span class="va">graph</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># node is a defined process node</span></span></span>
+<span class="r-in"><span><span class="va">process</span> <span class="op">=</span> <span class="fu">as</span><span class="op">(</span><span class="va">node</span>, <span class="st">"Process"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">toJSON</span><span class="op">(</span><span class="va">process</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">graph</span> <span class="op">=</span> <span class="va">process</span><span class="op">$</span><span class="fu">getProcessGraph</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">toJSON</span><span class="op">(</span><span class="va">graph</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -203,7 +203,7 @@ An exception is that objects of class <code>AsIs</code> (i.e. wrapped in <code><
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

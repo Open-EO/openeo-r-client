@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -61,7 +61,30 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.2.1" id="version-121">version 1.2.1<a class="anchor" aria-label="anchor" href="#version-121"></a></h2>
+<h2 class="page-header" data-toc-text="1.2.2" id="version-122">Version 1.2.2<a class="anchor" aria-label="anchor" href="#version-122"></a></h2>
+<div class="section level3">
+<h3 id="changed-1-2-2">Changed<a class="anchor" aria-label="anchor" href="#changed-1-2-2"></a></h3>
+<ul><li>allowed objects as values for argument BoundingBox where <code><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox()</a></code> can be applied</li>
+<li>very minor refinement in argument UdfCode and added test case <a href="https://github.com/Open-EO/openeo-r-client/issues/132" class="external-link">#132</a>
+</li>
+<li>now throws a more readable error when the authentication provider is missing in the wellknown document</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-1-2-2">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-2-2"></a></h3>
+<ul><li>OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (<a href="https://github.com/m-mohr" class="external-link">@m-mohr</a>, <a href="https://github.com/flahn" class="external-link">@flahn</a>, <a href="https://github.com/Open-EO/openeo-r-client/pull/131" class="external-link">#131</a>, <a href="https://github.com/Open-EO/openeo-r-client/pull/119" class="external-link">#119</a>)</li>
+<li>remote environments now login with <code>rlang::is_interactive() == FALSE</code> so that for example Jupyter environments print the device code URL and the code instead of trying to open the systems internet browser <a href="https://github.com/Open-EO/openeo-r-client/issues/128" class="external-link">#128</a>
+</li>
+<li>
+<code>download_results</code> could not interprete a Job object due to the <code>length(job) != 1</code> restriction</li>
+<li>added a Job to Process coercion to match the messages instruction, when printing a Job <a href="https://github.com/Open-EO/openeo-r-client/issues/115" class="external-link">#115</a>
+</li>
+<li>during JSON serialization numbers were truncated to a certain amount of digits. Setting <code>digits=NA</code> during serialization removes the default value for the digits <a href="https://github.com/Open-EO/openeo-r-client/issues/64" class="external-link">#64</a>
+</li>
+<li>fixed parameter in logout query (req -&gt; .req)</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.2.1" id="version-121">version 1.2.1<small>2022-06-24</small><a class="anchor" aria-label="anchor" href="#version-121"></a></h2>
 <div class="section level3">
 <h3 id="added-1-2-1">Added<a class="anchor" aria-label="anchor" href="#added-1-2-1"></a></h3>
 <ul><li>allowed a Process object to be passed to <code>validate_process</code>
@@ -417,13 +440,13 @@
 <h3 id="changed-0-5-0">Changed<a class="anchor" aria-label="anchor" href="#changed-0-5-0"></a></h3>
 <ul><li>modified <code>connect</code> with new parameters <code>exchange_token</code> and <code>external</code>. With the latter we can specify ‘google’ as an external identity provider and with <code>exchange_token</code> we can specify if we send the default <code>access_token</code> or the <code>id_token</code> as Bearer token in the authentication header</li>
 <li>some endpoints allowed optional sending of a bearer token in the header, which was not yet considered. Added a function to check if a user has logged in (<code>OpenEOClient$isLoggedIn()</code>) and made it optional at the following endpoints to sent a Bearer token as Authorization-header depending on whether the user is logged in:</li>
-</ul><pre><code><span class="va">GET</span> <span class="op">/</span><span class="va">output_formats</span>
-<span class="va">GET</span> <span class="op">/</span><span class="va">udf_runtimes</span>
-<span class="va">GET</span> <span class="op">/</span><span class="va">service_types</span>
-<span class="va">GET</span> <span class="op">/</span><span class="va">collections</span>
-<span class="va">GET</span> <span class="op">/</span><span class="va">collections</span><span class="op">/</span><span class="op">{</span><span class="va">collection_id</span><span class="op">}</span>
-<span class="va">GET</span> <span class="op">/</span><span class="va">processes</span>
-<span class="va">POST</span> <span class="op">/</span><span class="va">validation</span></code></pre>
+</ul><pre><code><span><span class="va">GET</span> <span class="op">/</span><span class="va">output_formats</span></span>
+<span><span class="va">GET</span> <span class="op">/</span><span class="va">udf_runtimes</span></span>
+<span><span class="va">GET</span> <span class="op">/</span><span class="va">service_types</span></span>
+<span><span class="va">GET</span> <span class="op">/</span><span class="va">collections</span></span>
+<span><span class="va">GET</span> <span class="op">/</span><span class="va">collections</span><span class="op">/</span><span class="op">{</span><span class="va">collection_id</span><span class="op">}</span></span>
+<span><span class="va">GET</span> <span class="op">/</span><span class="va">processes</span></span>
+<span><span class="va">POST</span> <span class="op">/</span><span class="va">validation</span></span></code></pre>
 <ul><li>modified <code>gee-evi-example</code> now that the GEE driver supports all relevant openEO processes, it now creates the graph with apply, linear_scale and saves it as PNG; added also an example for the band_arithmetic use case</li>
 <li>client public function <code>client_version</code> was renamed into <code>api_version</code> and returns the openEO API version which the client uses</li>
 <li>graphs are initialized with a connection instead of the parsed processes list</li>
@@ -470,7 +493,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

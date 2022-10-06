@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
       </span>
     </div>
 
@@ -133,13 +133,13 @@
 <h3 id="connecting-to-backend">Connecting to backend<a class="anchor" aria-label="anchor" href="#connecting-to-backend"></a>
 </h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span>
-
-<span class="va">url</span> <span class="op">=</span> <span class="st">"https://earthengine.openeo.org"</span>
-
-<span class="va">con</span> <span class="op">=</span> <span class="fu"><a href="../reference/connect.html">connect</a></span><span class="op">(</span>host<span class="op">=</span><span class="va">url</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">url</span> <span class="op">=</span> <span class="st">"https://earthengine.openeo.org"</span></span>
+<span></span>
+<span><span class="va">con</span> <span class="op">=</span> <span class="fu"><a href="../reference/connect.html">connect</a></span><span class="op">(</span>host<span class="op">=</span><span class="va">url</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/capabilities.html">capabilities</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/capabilities.html">capabilities</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>As you can see, you can either omit the connection or you state it explicitly via the parameter <code>con</code>. All static functions designed to interact with any openEO back-end will have the connections parameter where you are able to state the designated back-end connection. If you omit it, R tries to get the most recent connection. If you want to change the active connection and don’t want to pass the connection to every single interaction function you can call an already established connection with <code><a href="../reference/active_connection.html">active_connection()</a></code>.</p>
 </div>
 <div class="section level3">
@@ -151,56 +151,56 @@
 <p>List objects are S3-objects with dedicated <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and <code><a href="../reference/as.data.frame.html">as.data.frame()</a></code> methods. This ensures that these objects are printed as a data.frame or tibble.</p>
 <p>Here are some examples on the collections:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">colls</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">colls</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">colls</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">colls</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span><span class="op">)</span></span></code></pre></div>
 <p>As in the example before, you are advised to use auto-completion. In this way you retrieve an object list such as collections or file formats and are able to select a particular entry by its name. These lists are very similar to named lists.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/describe_collection.html">describe_collection</a></span><span class="op">(</span>collection <span class="op">=</span> <span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_collection.html">describe_collection</a></span><span class="op">(</span>collection <span class="op">=</span> <span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span><span class="op">)</span></span></code></pre></div>
 <p>The processes are handled similarly. With <code><a href="../reference/list_processes.html">list_processes()</a></code> you will get a list of process objects which are visualized through a dedicated <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method. The processes obtained here, are just for information purposes. For process graph / workflow creation we will use <code><a href="../reference/processes.html">processes()</a></code>, which creates process collection containing parametrized functions.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">process_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_processes.html">list_processes</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">process_list</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">process_list</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_processes.html">list_processes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">process_list</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span></code></pre></div>
 <p>In the example above you print the basic information about the processes to the console. If you want to have a nicer visualization of the process in HTML, you can use <code><a href="../reference/process_viewer.html">process_viewer()</a></code>. Simply pass the process name, function or process object to the function.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"load_collection"</span><span class="op">)</span>
-
-<span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">process_list</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-
-<span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"load_collection"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">process_list</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/process_viewer.html">process_viewer</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></span></code></pre></div>
 <p>As beforehand you can access particular objects by their ID.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">process_list</span><span class="op">$</span><span class="va">`if`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">process_list</span><span class="op">$</span><span class="va">`if`</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">process_list</span><span class="op">$</span><span class="va">`sum`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">process_list</span><span class="op">$</span><span class="va">`sum`</span></span></code></pre></div>
 <p>File formats and service types can be obtained and visualized with the previous functions. On a side note, you can also use those objects when assigning the file format in the openEO process for <code>save_results</code> or the service type when creating a particular web service.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formats</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_file_formats.html">list_file_formats</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">formats</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">formats</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_file_formats.html">list_file_formats</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">formats</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formats</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">formats</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span><span class="op">)</span></span></code></pre></div>
 <p>For formats we have to distinguish between supported input and output formats. Output formats are used when serializing results and input formats are used when aggregating data via polygons, creating a mask from a geometry or potentially uploading a raster image as mask.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">service_types</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_service_types.html">list_service_types</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">service_types</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">service_types</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_service_types.html">list_service_types</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">service_types</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="login">Login<a class="anchor" aria-label="anchor" href="#login"></a>
 </h3>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">user</span> <span class="op">=</span> <span class="st">""</span>
-<span class="va">pwd</span> <span class="op">=</span> <span class="st">""</span>
-
-<span class="fu"><a href="../reference/login.html">login</a></span><span class="op">(</span>user <span class="op">=</span> <span class="va">user</span>,password <span class="op">=</span> <span class="va">pwd</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">user</span> <span class="op">=</span> <span class="st">""</span></span>
+<span><span class="va">pwd</span> <span class="op">=</span> <span class="st">""</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/login.html">login</a></span><span class="op">(</span>user <span class="op">=</span> <span class="va">user</span>,password <span class="op">=</span> <span class="va">pwd</span><span class="op">)</span></span></code></pre></div>
 <p>Note: You might explore more data collections and processes once you are registered and logged in. Without logging in you can just see the free data sets that do not conflict with any terms of use.</p>
 </div>
 <div class="section level3">
@@ -211,7 +211,7 @@
 <h4 id="user-account">User account<a class="anchor" aria-label="anchor" href="#user-account"></a>
 </h4>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/describe_account.html">describe_account</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_account.html">describe_account</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-workspace">File workspace<a class="anchor" aria-label="anchor" href="#file-workspace"></a>
@@ -219,30 +219,30 @@
 <p>In your file space you can upload a variety of data. You can put here all external data you need for your analysis. This can range from area of interests, over scripts for user defined functions (UDF scripts) to trained machine learning models that shall be applied on a larger scale.</p>
 <p>To get an overview of the uploaded files, you can use the <code>list_*</code> function - in this case it is <code><a href="../reference/list_files.html">list_files()</a></code>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>As an example for the upload, we will first download a temporary GeoJSON file from the Github repository, then upload it using <code><a href="../reference/upload_file.html">upload_file()</a></code> and lastly remove the temporary download file. For a better workspace organization you can use subfolders as <code>target</code> parameter. If the subfolder does not exist, it will be created during the upload.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span>
-  
-<span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/examples/polygons.geojson"</span>, destfile <span class="op">=</span> <span class="va">file</span><span class="op">)</span>
-
-<span class="fu">openeo</span><span class="fu">::</span><span class="fu"><a href="../reference/upload_file.html">upload_file</a></span><span class="op">(</span>content<span class="op">=</span><span class="va">file</span>,target<span class="op">=</span><span class="st">"aoi/polygons.json"</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".json"</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span>url <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/examples/polygons.geojson"</span>, destfile <span class="op">=</span> <span class="va">file</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">openeo</span><span class="fu">::</span><span class="fu"><a href="../reference/upload_file.html">upload_file</a></span><span class="op">(</span>content<span class="op">=</span><span class="va">file</span>,target<span class="op">=</span><span class="st">"aoi/polygons.json"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></code></pre></div>
 <p>Now, we call <code><a href="../reference/list_files.html">list_files()</a></code> once more, and as you can see, the file is now at the specific workspace location.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The <code><a href="../reference/download_file.html">download_file()</a></code> function works inverse to the upload and lets you retrieve the uploaded data.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dl_file</span> <span class="op">=</span> <span class="fu"><a href="../reference/download_file.html">download_file</a></span><span class="op">(</span>src<span class="op">=</span><span class="st">"aoi/polygons.json"</span>, dst <span class="op">=</span> <span class="va">file</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dl_file</span> <span class="op">=</span> <span class="fu"><a href="../reference/download_file.html">download_file</a></span><span class="op">(</span>src<span class="op">=</span><span class="st">"aoi/polygons.json"</span>, dst <span class="op">=</span> <span class="va">file</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readChar.html" class="external-link">readChar</a></span><span class="op">(</span><span class="va">dl_file</span>,nchars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.size</a></span><span class="op">(</span><span class="va">dl_file</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readChar.html" class="external-link">readChar</a></span><span class="op">(</span><span class="va">dl_file</span>,nchars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.size</a></span><span class="op">(</span><span class="va">dl_file</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The last function in this context is the <code><a href="../reference/delete_file.html">delete_file()</a></code> function, which removes a specific file from the workspace.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/delete_file.html">delete_file</a></span><span class="op">(</span>src <span class="op">=</span> <span class="st">"aoi/polygons.json"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/delete_file.html">delete_file</a></span><span class="op">(</span>src <span class="op">=</span> <span class="st">"aoi/polygons.json"</span><span class="op">)</span></span></code></pre></div>
 <p>And now the workspace is empty. (If not maybe other users may have left data on this demo account)</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_files.html">list_files</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -250,24 +250,24 @@
 </h3>
 <p>The <code>ProcessCollection</code> is an object that returns the processes available by <code><a href="../reference/list_processes.html">list_processes()</a></code> as functions of an R6 object. Therefore, all parameter definitions and the process metadata are evaluated and translated into functions in R. To create the <code>ProcessCollection</code> use <code><a href="../reference/processes.html">processes()</a></code> during an active openEO connection or specify a new one by making use of parameter <code>con</code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Lets explore object <code>p</code> a bit further.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 <p>Here you can see all the available processes on the openEO service. The functions or fields in ".__enclos_env__“,”clone" and “initialize” are R6-specific functions, whereas the others are dynamically added functions. This means that when you connect to a different openEO service the functions here might be different or they have different parameter.</p>
 <p>For comparison here are the processes listed in <code><a href="../reference/list_processes.html">list_processes()</a></code>:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/list_processes.html">list_processes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="../reference/list_processes.html">list_processes</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>“load_collection” is a key function since the data is selected for further processing.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">p</span><span class="op">$</span><span class="va">load_collection</span><span class="op">)</span></span></code></pre></div>
 <p>You can see that there are four defined parameters. They are initialized with <code>NA</code>. More detailed information can be obtained by using the <code><a href="../reference/describe_process.html">describe_process()</a></code>. By typing the different arguments and evaluating the function you receive a <code>ProcessNode</code> object. These are the building blocks of the process graph / workflow.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/describe_process.html">describe_process</a></span><span class="op">(</span>process <span class="op">=</span> <span class="st">"load_collection"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_process.html">describe_process</a></span><span class="op">(</span>process <span class="op">=</span> <span class="st">"load_collection"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="example-analysis-setup">Example: Analysis setup<a class="anchor" aria-label="anchor" href="#example-analysis-setup"></a>
@@ -276,83 +276,83 @@
 <p>In the following example we will select a collection (Sentinel-2) and with a certain spatial and temporal extent. Additionally, we filter the bands, as we need just red and near-infrared wavelengths. Afterwards we calculate the NDVI for each time step by reducing “bands” and stating the NDVI band arithmetic function. Afterwards we will reduce the temporal dimension by selecting the minimum NDVI value per “pixel” (x and y coordinate). As the selected back-end offers PNG as an image format, which we might need for a web service like WMS, we need to scale the NDVI value range from (-1 to 1) to the PNG value range (0,255). Lastly, we store the results as a PNG image.</p>
 <p>In openEO terminology the defined analysis workflow will be called “user defined process” (UDP).</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">data</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">load_collection</span><span class="op">(</span>id <span class="op">=</span> <span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span>,
-                             spatial_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-                               west<span class="op">=</span><span class="fl">16.1</span>,
-                               east<span class="op">=</span><span class="fl">16.6</span>,
-                               north<span class="op">=</span><span class="fl">48.6</span>,
-                               south<span class="op">=</span> <span class="fl">47.2</span>
-                             <span class="op">)</span>,
-                             temporal_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-                               <span class="st">"2018-04-01"</span>, <span class="st">"2018-05-01"</span>
-                             <span class="op">)</span>,
-                             bands<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"B8"</span>,<span class="st">"B4"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">spectral_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>, dimension <span class="op">=</span> <span class="st">"bands"</span>,reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>,<span class="va">context</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">b8</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>
-  <span class="va">b4</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>
-  
-  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">(</span><span class="va">b8</span><span class="op">-</span><span class="va">b4</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">b8</span><span class="op">+</span><span class="va">b4</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-
-<span class="va">temporal_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data<span class="op">=</span><span class="va">spectral_reduce</span>,dimension <span class="op">=</span> <span class="st">"t"</span>, reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-
-<span class="va">apply_linear_transform</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">apply</span><span class="op">(</span>data<span class="op">=</span><span class="va">temporal_reduce</span>,process <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span>,<span class="va">...</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">p</span><span class="op">$</span><span class="fu">linear_scale_range</span><span class="op">(</span>x <span class="op">=</span> <span class="va">value</span>, 
-                           inputMin <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, 
-                           inputMax <span class="op">=</span> <span class="fl">1</span>, 
-                           outputMin <span class="op">=</span> <span class="fl">0</span>, 
-                           outputMax <span class="op">=</span> <span class="fl">255</span><span class="op">)</span>
-<span class="op">}</span><span class="op">)</span>
-
-<span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span>data<span class="op">=</span><span class="va">apply_linear_transform</span>,format<span class="op">=</span><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">data</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">load_collection</span><span class="op">(</span>id <span class="op">=</span> <span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span>,</span>
+<span>                             spatial_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                               west<span class="op">=</span><span class="fl">16.1</span>,</span>
+<span>                               east<span class="op">=</span><span class="fl">16.6</span>,</span>
+<span>                               north<span class="op">=</span><span class="fl">48.6</span>,</span>
+<span>                               south<span class="op">=</span> <span class="fl">47.2</span></span>
+<span>                             <span class="op">)</span>,</span>
+<span>                             temporal_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                               <span class="st">"2018-04-01"</span>, <span class="st">"2018-05-01"</span></span>
+<span>                             <span class="op">)</span>,</span>
+<span>                             bands<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"B8"</span>,<span class="st">"B4"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">spectral_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>, dimension <span class="op">=</span> <span class="st">"bands"</span>,reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>,<span class="va">context</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">b8</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="va">b4</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">(</span><span class="va">b8</span><span class="op">-</span><span class="va">b4</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">b8</span><span class="op">+</span><span class="va">b4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">temporal_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data<span class="op">=</span><span class="va">spectral_reduce</span>,dimension <span class="op">=</span> <span class="st">"t"</span>, reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">apply_linear_transform</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">apply</span><span class="op">(</span>data<span class="op">=</span><span class="va">temporal_reduce</span>,process <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span>,<span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">p</span><span class="op">$</span><span class="fu">linear_scale_range</span><span class="op">(</span>x <span class="op">=</span> <span class="va">value</span>, </span>
+<span>                           inputMin <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, </span>
+<span>                           inputMax <span class="op">=</span> <span class="fl">1</span>, </span>
+<span>                           outputMin <span class="op">=</span> <span class="fl">0</span>, </span>
+<span>                           outputMax <span class="op">=</span> <span class="fl">255</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span>data<span class="op">=</span><span class="va">apply_linear_transform</span>,format<span class="op">=</span><span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">PNG</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="calculate-immediate-results">Calculate immediate results<a class="anchor" aria-label="anchor" href="#calculate-immediate-results"></a>
 </h3>
 <p>For development and testing of the process graph you can use the <code>compute_result</code> function. Please keep in mind that there might be costs involved to these processes depending on the payment plan. This process will block your command line until the calculations are done and the results are sent. It is recommended to choose a small data sample when using this function. It might also be the case that some provider won’t allow UDF for this function. In cases where payments are involved you have the possibility to set the payment plan and the maximum amount of credits spent.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">file</span> <span class="op">=</span> <span class="fu"><a href="../reference/compute_result.html">compute_result</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">result</span>, output_file <span class="op">=</span> <span class="va">temp</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">temp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">file</span> <span class="op">=</span> <span class="fu"><a href="../reference/compute_result.html">compute_result</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">result</span>, output_file <span class="op">=</span> <span class="va">temp</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">r</span> <span class="op">=</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu">raster</span><span class="op">(</span><span class="va">file</span><span class="op">)</span>
-<span class="fu">raster</span><span class="fu">::</span><span class="fu">spplot</span><span class="op">(</span><span class="va">r</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">r</span> <span class="op">=</span> <span class="fu">raster</span><span class="fu">::</span><span class="fu">raster</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="fu">raster</span><span class="fu">::</span><span class="fu">spplot</span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="creating-a-job">Creating a job<a class="anchor" aria-label="anchor" href="#creating-a-job"></a>
 </h3>
 <p>In contrast to the synchronous execution of the user defined process (UDP), you can also create a job at the back-end, which means that the console is not blocked in the meantime. The job needs to be started in order to perform the analysis and obtain the results.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">job</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_job.html">create_job</a></span><span class="op">(</span>graph<span class="op">=</span><span class="va">result</span>,title <span class="op">=</span> <span class="st">"Minimum NDVI"</span>, description <span class="op">=</span> <span class="st">"Minimum NDVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file."</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">job</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_job.html">create_job</a></span><span class="op">(</span>graph<span class="op">=</span><span class="va">result</span>,title <span class="op">=</span> <span class="st">"Minimum NDVI"</span>, description <span class="op">=</span> <span class="st">"Minimum NDVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file."</span><span class="op">)</span></span></code></pre></div>
 <p>In addition to the response message you can list your jobs and look if the new job is listed.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">jobs</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_jobs.html">list_jobs</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">jobs</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">jobs</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_jobs.html">list_jobs</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">jobs</span></span></code></pre></div>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">jobs</span><span class="op">[[</span><span class="va">job</span><span class="op">$</span><span class="va">id</span><span class="op">]</span><span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">jobs</span><span class="op">[[</span><span class="va">job</span><span class="op">$</span><span class="va">id</span><span class="op">]</span><span class="op">]</span></span></code></pre></div>
 <p>Similarly to the process graph, <code><a href="../reference/describe_job.html">describe_job()</a></code> returns a more detailed description of the job.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/describe_job.html">describe_job</a></span><span class="op">(</span>job <span class="op">=</span> <span class="va">job</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_job.html">describe_job</a></span><span class="op">(</span>job <span class="op">=</span> <span class="va">job</span><span class="op">)</span></span></code></pre></div>
 <p>You can queue the job for execution by using <code><a href="../reference/start_job.html">start_job()</a></code>.</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/start_job.html">start_job</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/start_job.html">start_job</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></span></code></pre></div>
 <p>Now, we need to wait for the job to finish. We can get information on the status either by the job list or by the job meta data.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_jobs.html">list_jobs</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_jobs.html">list_jobs</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>When it is finished, we can inspect the results.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_results.html">list_results</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_results.html">list_results</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></span></code></pre></div>
 <p>In most cases we want to download the results.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dir</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>
-<span class="fu"><a href="../reference/download_results.html">download_results</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span>, folder <span class="op">=</span> <span class="va">dir</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dir</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/download_results.html">download_results</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span>, folder <span class="op">=</span> <span class="va">dir</span><span class="op">)</span></span></code></pre></div>
 <p>With the download function all result assets are downloaded into the target folder.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/delete_job.html">delete_job</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/delete_job.html">delete_job</a></span><span class="op">(</span>job<span class="op">=</span><span class="va">job</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="creating-a-service">Creating a service<a class="anchor" aria-label="anchor" href="#creating-a-service"></a>
@@ -360,21 +360,21 @@
 <p>If the openEO back-end supports the retrieval of results as a service you can use this package to create one. For example, if you want to have a WMS layer or a Web Map Tile service in leaflet, QGIS or mapview.</p>
 <p>First, you can explore the different offered service types of the back-end.</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">service_types</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_service_types.html">list_service_types</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">service_types</span> <span class="op">=</span> <span class="fu"><a href="../reference/list_service_types.html">list_service_types</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Then you create a service similarly to the creation of a job. Here you also need to state the kind of service to be created and whether or not it shall be enabled.</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">test_service</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_service.html">create_service</a></span><span class="op">(</span>type <span class="op">=</span> <span class="va">service_types</span><span class="op">$</span><span class="va">xyz</span>, graph <span class="op">=</span> <span class="va">result</span>, title <span class="op">=</span> <span class="st">"XYZ service for minimum EVI"</span>, description <span class="op">=</span> <span class="st">"XYZ service for minimum EVI from the getting_started guide."</span>,enabled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">test_service</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_service.html">create_service</a></span><span class="op">(</span>type <span class="op">=</span> <span class="va">service_types</span><span class="op">$</span><span class="va">xyz</span>, graph <span class="op">=</span> <span class="va">result</span>, title <span class="op">=</span> <span class="st">"XYZ service for minimum EVI"</span>, description <span class="op">=</span> <span class="st">"XYZ service for minimum EVI from the getting_started guide."</span>,enabled <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>The idea behind services is that you might want the analysis results for a interactive web application for users to explore the data. The back-end decides whether or not it caches the results or if it processes the result on-the-fly.</p>
 <p>As for the other endpoints, you are able to explore your services by listing them, getting detailed information, updating and deleting.</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/list_services.html">list_services</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/list_services.html">list_services</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/describe_service.html">describe_service</a></span><span class="op">(</span>service <span class="op">=</span> <span class="va">test_service</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_service.html">describe_service</a></span><span class="op">(</span>service <span class="op">=</span> <span class="va">test_service</span><span class="op">)</span></span></code></pre></div>
 <p>As a practical use case for this we prepared a small web map example with leaflet which uses the WMTS created before.</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/leaflet/" class="external-link">leaflet</a></span><span class="op">)</span>
-<span class="fu">leaflet</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">addTiles</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">addTiles</span><span class="op">(</span><span class="va">test_service</span><span class="op">$</span><span class="va">url</span>, <span class="fu">tileOptions</span><span class="op">(</span>tms<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">setView</span><span class="op">(</span>lng <span class="op">=</span> <span class="fl">16.363449</span>,lat<span class="op">=</span><span class="fl">48.210033</span>,zoom <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/leaflet/" class="external-link">leaflet</a></span><span class="op">)</span></span>
+<span><span class="fu">leaflet</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">addTiles</span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">addTiles</span><span class="op">(</span><span class="va">test_service</span><span class="op">$</span><span class="va">url</span>, <span class="fu">tileOptions</span><span class="op">(</span>tms<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">setView</span><span class="op">(</span>lng <span class="op">=</span> <span class="fl">16.363449</span>,lat<span class="op">=</span><span class="fl">48.210033</span>,zoom <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="rstudio-specific-features">RStudio specific features<a class="anchor" aria-label="anchor" href="#rstudio-specific-features"></a>
@@ -412,7 +412,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

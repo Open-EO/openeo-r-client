@@ -157,6 +157,9 @@
     <loc>/reference/as.Process.html</loc>
   </url>
   <url>
+    <loc>/reference/as.bbox.html</loc>
+  </url>
+  <url>
     <loc>/reference/as.data.frame.html</loc>
   </url>
   <url>
@@ -326,6 +329,9 @@
   </url>
   <url>
     <loc>/reference/send_udf.html</loc>
+  </url>
+  <url>
+    <loc>/reference/st_bbox.ProcessNode.html</loc>
   </url>
   <url>
     <loc>/reference/start_job.html</loc>
