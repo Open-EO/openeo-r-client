@@ -1004,7 +1004,7 @@ remove_variable = function(graph, variable) {
 #' @export
 `$.ArgumentList` = function(x, name) {
   val = unclass(x)[[name]]$getValue()
-  if ("anyOf" %in% class(val)) return(val$getValue())
+  if ("Argument" %in% class(val)) return(val$getValue())
   else return(val)
 }
 

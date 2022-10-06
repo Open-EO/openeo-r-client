@@ -57,6 +57,7 @@ Collate:
     'print-functions.R'
     'sample_data.R'
     'server_metadata.R'
+    'spatial.R'
     'udf.R'
     'user.R'
     'viewer.R'

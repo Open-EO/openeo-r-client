@@ -12,7 +12,6 @@ test_that("UdfCode Argument takes script as character", {
 
 
 test_that("UdfCode Argument validates with function", {
-  # suppressWarnings({
   arg = openeo:::UdfCodeArgument$new()
   
   udf = function(a) {
@@ -23,8 +22,6 @@ test_that("UdfCode Argument validates with function", {
   error = arg$validate()
   
   expect(is.null(error),failure_message = paste0("not valid, reason: ",error))
-  # expect(error == "cannot coerce type 'closure' to vector of type 'character'", failure_message = paste0("different error message: ",error))
-  # })
 })
 
 test_that("UdfCode Argument validates with list", {
