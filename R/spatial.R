@@ -90,6 +90,17 @@ register_all_spatial_s3_methods = function() {
 
 setOldClass(c("bounding-box","Argument","Parameter","R6"))
 
+
+#' coerce to bbox
+#' 
+#' A coercion function for extracting a 'bbox' object that can usualy be obtained by \code{\link[sf]{st_bbox}}. This coercion
+#' function was created to easily extract the boúnding box from the openeos argument objects \code{\link{BoundingBox}} and \code{\link{GeoJson}}.
+#'
+#' @param from a \code{\link{BoundingBox}} argument object or a \code{\link{GeoJson}} argument object
+#' 
+#' @return a bbox object from \code{\link[sf]{st_bbox}}
+#' 
+#' @name as.bbox
 #' @export
 `as.bbox.bounding-box` = function(from) {
   box = from$getValue()
@@ -124,13 +135,15 @@ setOldClass(c("bounding-box","Argument","Parameter","R6"))
 }
 
 setOldClass(c("geojson","Argument","Parameter","R6"))
+
+#' @name as.bbox
 #' @export
 `as.bbox.geojson` = function(from) {
   if (is.null(from) || !"Argument" %in% class(from) || from$isEmpty()) {
     return(NA)
   }
   
-  return(st_bbox(from$getValue()))
+  return(sf::st_bbox(from$getValue()))
 }
 
 suppressWarnings({
