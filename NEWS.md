@@ -1,4 +1,4 @@
-# Version 1.2.1.9000 Upcoming Version
+# Version 1.2.2
 
 ## Changed
 * allowed objects as values for argument BoundingBox where `st_bbox()` can be applied
