@@ -2,12 +2,16 @@
 
 ## Changed
 * allowed objects as values for argument BoundingBox where `st_bbox()` can be applied
+* very minor refinement in argument UdfCode and added test case [#132](https://github.com/Open-EO/openeo-r-client/issues/132)
+* now throws a more readable error when the authentication provider is missing in the wellknown document
 
 ## Fixes
-* OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, #131, #119)
+* OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, [#131](https://github.com/Open-EO/openeo-r-client/pull/131), [#119](https://github.com/Open-EO/openeo-r-client/pull/119))
+* remote environments now login with `rlang::is_interactive() == FALSE` so that for example Jupyter environments print the device code URL and the code instead of trying to open the systems internet browser [#128](https://github.com/Open-EO/openeo-r-client/issues/128)
 * `download_results` could not interprete a Job object due to the `length(job) != 1` restriction
 * added a Job to Process coercion to match the messages instruction, when printing a Job [#115](https://github.com/Open-EO/openeo-r-client/issues/115)
 * during JSON serialization numbers were truncated to a certain amount of digits. Setting `digits=NA` during serialization removes the default value for the digits [#64](https://github.com/Open-EO/openeo-r-client/issues/64)
+* fixed parameter in logout query (req -> .req)
 
 # version 1.2.1
 
