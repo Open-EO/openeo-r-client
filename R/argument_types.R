@@ -1243,7 +1243,8 @@ ProjDefinition = R6Class(
 #' @return Object of \code{\link{R6Class}} representing a bounding box / extent.
 #' 
 #' @examples \dontrun{
-#' # most of the time BoundingBox is a choice as parameter value for spatial_extent in 'load_collection'
+#' # most of the time BoundingBox is a choice as parameter value for 
+#' # spatial_extent in 'load_collection'
 #' p = processes()
 #' 
 #' # using a list

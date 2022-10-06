@@ -18,7 +18,8 @@ Suggests:
     pkgdown,
     rmarkdown,
     kableExtra,
-    DT
+    DT,
+    terra
 Imports:
     jsonlite,
     httr2 (>= 0.2.2),

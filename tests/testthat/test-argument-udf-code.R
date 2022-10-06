@@ -65,7 +65,14 @@ test_that("UdfCode Argument serializes with file", {
   serialized = arg$serialize()
   file.remove(tmp)
   
-  expect(serialized == "udf = function (a) \r\n{\r\n    a\r\n}",failure_message = "file is wrongly serialized")
+  if (.Platform$OS.type == "unix") {
+    expect(serialized == "udf = function (a) \n{\n    a\n}",failure_message = "file is wrongly serialized on unix")
+  } else {
+    expect(serialized == "udf = function (a) \r\n{\r\n    a\r\n}",failure_message = "file is wrongly serialized on windows")
+  }
+  
+    
+  
   
 })
 

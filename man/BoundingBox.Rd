@@ -14,7 +14,8 @@ classes that support \code{\link[sf]{st_bbox}} and return a valid 'bbox' object.
 }
 \examples{
 \dontrun{
-# most of the time BoundingBox is a choice as parameter value for spatial_extent in 'load_collection'
+# most of the time BoundingBox is a choice as parameter value for 
+# spatial_extent in 'load_collection'
 p = processes()
 
 # using a list
