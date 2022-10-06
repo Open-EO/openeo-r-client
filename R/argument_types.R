@@ -1227,7 +1227,8 @@ ProjDefinition = R6Class(
 #' 
 #' Inheriting from \code{\link{Argument}} in order to represent a bounding box / extent of an area of 
 #' interest. Its value is usually a named list with "west","south","east" and "north". For this argument
-#' the 'bbox' object of the sf package is also recognized (\code{\link[sf]{st_bbox}}).
+#' the 'bbox' object of the sf package is also recognized (\code{\link[sf]{st_bbox}}). This holds also true for
+#' classes that support \code{\link[sf]{st_bbox}} and return a valid 'bbox' object.
 #' 
 #' @name BoundingBox
 #' 
@@ -1265,6 +1266,13 @@ ProjDefinition = R6Class(
 #' 
 #' data = p$load_collection(id = "SENTINEL2_L2A", 
 #'                          spatial_extent = bbox,
+#'                          temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
+#'                          bands = list("B04","B08"))
+#' 
+#' # objects supporting sf::st_bbox()
+#' img = stars::read_stars(system.file("tif/L7_ETMs.tif",package = "stars"))
+#' data = p$load_collection(id = "SENTINEL2_L2A", 
+#'                          spatial_extent = img,
 #'                          temporal_extent = list("2020-01-01T00:00:00Z", "2020-01-20T00:00:00Z"), 
 #'                          bands = list("B04","B08"))
 #'                          
@@ -2108,7 +2116,7 @@ ProcessGraphParameter = R6Class(
       private$default = default
     },
     print = function() {
-      cat(toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE,digits=NA))
+      cat(jsonlite::toJSON(self$serialize(),pretty = TRUE, auto_unbox = TRUE,digits=NA))
       invisible(self)
     },
     adaptType = function(fromParameter) {

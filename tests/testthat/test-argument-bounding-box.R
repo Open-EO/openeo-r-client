@@ -24,7 +24,7 @@ test_that("epsg code as string works", {
 
 test_that("class bbox works with argument BoundingBox", {
   tryCatch({
-    bbox = st_bbox(c(xmin=10.711799440170706, xmax= 11.542794097651838, ymin=45.92724558214729, ymax= 46.176044942018734),crs = 4326)
+    bbox = sf::st_bbox(c(xmin=10.711799440170706, xmax= 11.542794097651838, ymin=45.92724558214729, ymax= 46.176044942018734),crs = 4326)
     code = openeo:::BoundingBox$new()
     code$setValue(bbox)
     
@@ -58,24 +58,34 @@ test_that("class bbox with non 4326 crs works with argument BoundingBox", {
 })
 
 test_that("bboxable sf", {
-  geojson = sf::read_sf("D:/Downloads/file_001.json")
+  skip_if_not_installed("sf")
+  # geojson = sf::read_sf("D:/Downloads/file_001.json")
+  geojson = sf::read_sf(system.file("geojson/polygons.geojson",package="openeo"))
   code = openeo:::BoundingBox$new()
   code$setValue(geojson)
   
   msg = code$validate()
-  expect(length(msg)==0,failure_message = paste("It doesn't work:",msg)) 
+  expect(length(msg)==0,failure_message = paste("It doesn't validate:",msg)) 
   
   serialized = code$serialize()
-  print(serialized)
 })
 
-# test_that("bboxable stars", {
-#   img = stars::read_stars("D:/data/3217-r4openeo/2022-09-30/openEO_2020-07-05Z.tif")
-#   code = openeo:::BoundingBox$new()
-#   code$setValue(img)
-#   
-#   msg = code$validate()
-#   expect(length(msg)==0,failure_message = paste("It doesn't work:",msg))
-#   
-#   
-# })
+test_that("bboxable stars", {
+  skip_if_not_installed("stars")
+  img = stars::read_stars(system.file("tif/L7_ETMs.tif",package = "stars"))
+  code = openeo:::BoundingBox$new()
+  code$setValue(img)
+
+  msg = code$validate()
+  expect(length(msg)==0,failure_message = paste("It doesn't validate:",msg))
+})
+
+test_that("bboxable terra", {
+  skip_if_not_installed("terra")
+  img = terra::rast(system.file("tif/L7_ETMs.tif",package = "stars"))
+  code = openeo:::BoundingBox$new()
+  code$setValue(img)
+  
+  msg = code$validate()
+  expect(length(msg)==0,failure_message = paste("It doesn't validate:",msg))
+})
