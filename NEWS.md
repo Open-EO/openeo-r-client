@@ -7,6 +7,9 @@ ongoing development
 ## Changed
 * naming of the vignettes to achieve an order in the vignette index entries
 
+## Fixes
+* an issue when calling the JSON serialization of class Process
+
 # Version 1.2.2
 
 ## Changed
