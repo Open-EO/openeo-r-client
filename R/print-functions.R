@@ -487,7 +487,7 @@ print.Process = function(x, ...) {
     }
     
     # use internal toJSON function
-    print(.toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE,digits=NA)) 
+    print(.toJSON(x,...)) 
 }
 
 #' @export
