@@ -1,0 +1,46 @@
+---
+title: "Process Graph Building"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Process Graph Building}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+This guide will provide details about the process graph building in the openeo package with respect to the [openEO API](https://api.openeo.org/#section/Processes) and [openEO processes](https://processes.openeo.org/) from a user perspective. In the following we will briefly state the logical structure of an openEO process description and how process graphs are created from processes. Afterwards we dive into some detail about the parameters and arguments of processes, especially how this relates to R where function parameters are usually type free.
+
+Note: For examples we will use the openEO processes and their descriptions in order to make them easier to understand. 
+
+# Concepts
+
+The main idea in openEO is that back-ends provide spatio-temporal data collections, a set of processes specifying how the data shall be manipulated as well as the computing power to process the data accordingly. The data in general is abstracted to be an n-dimensional data cube, more often the used dimensions are spatial (x,y), temporal (t) and there are different bands which denote sensory properties in a categorical way, e.g. a specific wavelength interval for optical measurements or the kind of polarization used in SAR measurements.
+
+## Processes
+
+The openEO API defines processes in a general way, meaning that to be conformant to the API back-ends do not need to implement the whole set of openEO processes, which can be recognized as a set of Good-Practice functions that cover almost all relevant operations on n-dimensional spatio-temporal data. As for this package it means that the “tools” are dependent on the connected back-end and they have to be interpreted dynamically after the connection has been established. The openEO API defines how processes information has to be structured to be interpreted by this package and the openEO processes suggest a set of processes with descriptions and parameters, but the back-end is not obliged to implement or provide any of them. They might even change parameter types or the naming all together. 
+
+What remains of it is that all the openEO processes are described in the way the openEO API defines processes.
+
+Now we also need to distinguish between predefined and user-defined processes. The predefined processes are those that are already provided by the back-end and which are implanted ready to be used for processing. The user-defined processes are those process graphs a user can create out of the predefined processes. There we can also define variables to allow for a parametrization, which more or less works like placeholders in the graph that will be filled upon use. This user defined processes can be stored on the back-end `create_user_process()`, which are then only available for the user that have created that processes. Similarly to the initialization of the predefined processes with `processes()`, the users own processes can be loaded by `user_processes()`. The user defined processes can then also be used as building blocks, hiding more complex functions.
+
+```
+# EVI example to create a user-defined processes
+```
+
+## Process Graph and Process Node
+
+We have established that user-defined processes and process graphs are the same. By combining the processes, we will create a graph structure. And as graphs consist of nodes, we refer to a process that has been used in a process graph as Process Node. With “used” we mean that the processes parameters have been bound with values. By using a Process Node as input parameter, we create the relations between the Process Nodes and hence the process graph.
+Usually, the return values of processes that can be used for relation building is again a n-dimensional data cube (either raster or vector cubes). But there are also processes that either return arrays or single values. Those processes can by itself create also a process graph. They are used in process graph definitions for subroutines like band arithmetic operations, mask creation or aggregation functions. 
+The openEO processes define some data loading functions, like `load_collection`, which define starting points in a process graph that is going to be executed to create a result. For the processing at the backend those processes denote points where actual data is loaded into the processing chain. On the other side `save_result` marks point where data is serialized, which is usually the end of the process graph and contains the data a user wants to obtain as an end result.
+The following examples shows a process graph that will calculate the minimum value of Enhanced Vegetation Index (EVI) for a data subset. First a data collection was chosen with `load_collection` and a spatial, temporal and band constraint was applied, which limits the data collection to a specific spatial subset for the given time interval and it also selects the three bands B02, B04 and B08. Then two reduce_dimension operations are performed. The first enables a band arithmetic operation by reducing the bands, which will mean that a reducer function will be applied on each of the remaining cells in x, y and t. This means that the data input of this reducer function will be an array of the measurement values for each band, e.g. [7000,4000,5000] with the order specified in the `load_collection` function for parameter “band”. The used EVI function was ideally created beforehand and was stored as a user-defined process on the back-end. Then we reduced over the time dimension t, be selecting the minimum in this time period. The input for the minimum aggregation will be again a vector, but this time it already contains the EVI values from the previous step, e.g. [0.3246, 0.3021, 0.2345, 0.1231, 0.3456, 0.4367, 0.6753] where the value corresponds to the recording time of the scene and a natural time order is assumed. The final step stores the result as a GTiff file, which marks also the end of processing.
+
+[image]
+
+For referencing in the graph each node is assigned a unique node id, with which a reference inside the process graph can be made.
+
+## Arguments and Parameters
+
+All the processes offer various kinds of parameters so the user can control the process. One parameter, usually “data”, transports the input data that will be manipulated. If the parameter type is a raster or vector cube the whole n-dimensional data cube will be manipulated. But it is also possible to manipulate arrays or scalars of data. This kind of input is often times transferred to the process, when a process graph is allowed as value for the parameter. The user-defined process that is passed to that parameter needs to accept the parameters provided “process graph parameters” as input.
+
+The other controlling parameters can have a [variety of types](https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json). 
