@@ -1,7 +1,7 @@
 # Version 1.2.2.9000
 ongoing development
 
-# Fixes
+## Fixes
 * an issue when calling the JSON serialization of class Process
 
 # Version 1.2.2
