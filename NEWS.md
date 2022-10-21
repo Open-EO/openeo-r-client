@@ -1,12 +1,15 @@
 # Version 1.2.2.9000
 ongoing development
 
+<<<<<<< HEAD
 ## Added
 * vignette about the software and package architecture and design choices based on API requirements
 
 ## Changed
 * naming of the vignettes to achieve an order in the vignette index entries
 
+=======
+>>>>>>> refs/heads/develop
 ## Fixes
 * an issue when calling the JSON serialization of class Process
 
