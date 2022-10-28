@@ -98,6 +98,8 @@ describe_process = function(process = NA, con=NULL) {
 #'    \item{con}{optional an active and authenticated Connection (optional) otherwise [active_connection()]
 #' is used.}
 #' }
+#' 
+#' @seealso [`processes()`]
 NULL 
 
 ProcessCollection = R6Class(
@@ -186,12 +188,12 @@ ProcessCollection = R6Class(
 #' Get a process graph builder / process collection from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a ProcessCollection object to build a process graph in R. The current [`ProcessCollection`] is stored internally at the package environment
+#' a [`ProcessCollection`] object to build a process graph in R. The current [`ProcessCollection`] is stored internally at the package environment
 #' variable `process_collection`, which can be fetched and set with `active_process_collection`.
 #' 
 #' @param con a connection to an openEO back-end (optional) otherwise [active_connection()]
 #' is used.
-#' @return a ProcessCollection object with the offered processes of the back-end
+#' @return a [`ProcessCollection`] object with the offered processes of the back-end
 #' 
 #' @rdname processes
 #' @export
