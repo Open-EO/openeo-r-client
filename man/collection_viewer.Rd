@@ -8,7 +8,7 @@ collection_viewer(x = NULL, con = NULL)
 }
 \arguments{
 \item{x}{(optional) character with the name of a collection or the \code{Collection} obtained
-with \code{\link{describe_collection}}.
+with \code{\link[=describe_collection]{describe_collection()}}.
 If NULL is provided (default), the list of all collections is shown.}
 
 \item{con}{a specific connection (optional), last connected service if omitted.}

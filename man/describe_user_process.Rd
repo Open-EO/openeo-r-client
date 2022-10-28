@@ -9,7 +9,7 @@ describe_user_process(id, con = NULL)
 \arguments{
 \item{id}{The id of the user process on the back-end}
 
-\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

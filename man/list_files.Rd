@@ -7,7 +7,7 @@
 list_files(con = NULL)
 }
 \arguments{
-\item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authorized connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

@@ -7,7 +7,7 @@
 list_oidc_providers(con = NULL)
 }
 \arguments{
-\item{con}{active openEO service connection (\code{\link{OpenEOClient}})}
+\item{con}{active openEO service connection (\code{\link[=OpenEOClient]{OpenEOClient()}})}
 }
 \value{
 a \code{ProviderList} object which is a named list of \code{Provider} objects.

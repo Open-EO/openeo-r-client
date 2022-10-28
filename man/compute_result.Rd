@@ -16,7 +16,7 @@ compute_result(
 )
 }
 \arguments{
-\item{graph}{a \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+\item{graph}{a \code{\link[=Graph]{Graph()}}, a function returning a \code{\link[=ProcessNode]{ProcessNode()}} as an endpoint or the \code{\link[=ProcessNode]{ProcessNode()}}
 will return the results}
 
 \item{output_file}{storage location for the returned data}
@@ -30,21 +30,21 @@ will return the results}
 \item{format}{character or \code{FileFormat} specifying the File format for the output, if 'save_result' is not
 set in the process then it will be added otherwise the value stated here will replace the original value}
 
-\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
-\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
+\item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall
 be passed to the openEO process 'save_result'}
 }
 \value{
 a local path to the downloaded file or a \code{stars} object if \code{as_stars=TRUE}
 }
 \description{
-Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to 
-the server remains open. This function allows to debug the code and check the results immediately. 
-Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
+Executes a job directly on the connected openEO service and returns the data. During the execution phase the connection to
+the server remains open. This function allows to debug the code and check the results immediately.
+Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available.
 Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
-e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for 
+e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for
 'save_result' will be replaced. If the 'stars' package is installed and parameter \code{as_stars} is set to TRUE, then the downloaded
 data is opened and interpreted into a stars object.
 }

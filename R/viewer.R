@@ -140,8 +140,8 @@ add_basemap_from_env = function(props) {
 #' Opens up a viewer panel in RStudio and renders one or more processes of the connected 
 #' openEO service in HTML. The components of openeo-vue-components are reused.
 #' 
-#' @param x (optional) a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
-#' \code{\link{Process}} or a character containing the process id.
+#' @param x (optional) a function from the [ProcessCollection()], a [ProcessNode()],
+#' [Process()] or a character containing the process id.
 #' If NULL is provided (default), the list of processes is shown.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 
@@ -207,8 +207,8 @@ process_viewer = function(x = NULL, con = NULL) {
 #' The function opens a viewer panel in RStudio which renders the collection information
 #' in an HTML. It reuses common components from the openeo-vue-components.
 #' 
-#' @param x (optional) character with the name of a collection or the \code{Collection} obtained
-#' with \code{\link{describe_collection}}.
+#' @param x (optional) character with the name of a collection or the `Collection` obtained
+#' with [describe_collection()].
 #' If NULL is provided (default), the list of all collections is shown.
 #' @param con a specific connection (optional), last connected service if omitted.
 #' 

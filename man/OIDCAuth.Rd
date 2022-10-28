@@ -8,32 +8,32 @@ defines classes for different OpenID connect interaction mechanisms. The classes
 fashion by inheriting functions from \code{IAuth} and \code{AbstractOIDCAuthentication}.
 }
 \details{
-The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID 
+The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID
 Connect (OIDC) authentication. The first is covered at \link{BasicAuth}. And since OIDC is based
-on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the 
-back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google, 
+on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the
+back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google,
 etc, by pointing to the respective endpoints during the service discovery of the back-end. Normally
-users would not create those classes manually, but state the general login type (oidc or basic) and some 
+users would not create those classes manually, but state the general login type (oidc or basic) and some
 additional information (see \link{login}).
 
 This client supports the following interaction mechanisms (grant types):
 \itemize{
-  \item{authorization_code}
-  \item{authorization_code+pkce}
-  \item{urn:ietf:params:oauth:grant-type:device_code+pkce}
+\item{authorization_code}
+\item{authorization_code+pkce}
+\item{urn:ietf:params:oauth:grant-type:device_code+pkce}
 }
 
 \subsection{authorization_code}{
 During the login process an internet browser window will be opened and you will be asked to enter your credentials.
-The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in 
-the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with 
-the openEO service provider and ask them for a configuration file that will contain information about the \code{client_id} and 
-\code{secret}. The redirect URL requested from the provider is \code{http://localhost:1410/}
+The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in
+the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with
+the openEO service provider and ask them for a configuration file that will contain information about the \code{client_id} and
+\code{secret}. The redirect URL requested from the provider is \verb{http://localhost:1410/}
 }
 
 \subsection{authorization_code+pkce}{
-This procedure also spawns a temporary web server to capture the redirect URL from the OIDC provider. The benefit of this 
-mechanism is that it does not require a client secret issued from the OIDC provider anymore. However, it will still open 
+This procedure also spawns a temporary web server to capture the redirect URL from the OIDC provider. The benefit of this
+mechanism is that it does not require a client secret issued from the OIDC provider anymore. However, it will still open
 the internet browser and asks the user for credentials and authorization.
 }
 
@@ -44,7 +44,7 @@ the console or if R runs in the interactive mode the internet browser will be op
 }
 
 \subsection{device_code}{
-This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow, 
+This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow,
 but without the additional PKCE negotiation.
 }
 }
@@ -59,23 +59,23 @@ but without the additional PKCE negotiation.
 \section{Methods}{
 
 \describe{
-  \item{\code{$new(provider, config=NULL, ...)}}{the constructor for the authentication}
-  \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
-  \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
-  \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
-  \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr2'}
+\item{\verb{$new(provider, config=NULL, ...)}}{the constructor for the authentication}
+\item{\verb{$login()}}{Initiates the authentication / login in order to obtain the access_token}
+\item{\verb{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
+\item{\verb{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
+\item{\verb{$getAuth()}}{returns the internal authentication client as created from package 'httr2'}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{provider}}{the name of an OIDC provider registered on the back-end or a provider object as returned by \code{list_oidc_providers()}}
-  \item{\code{config}}{either a JSON file containing information about 'client_id' and 
-  'secret' or a named list. Experienced user and developer can also add 'scopes' to 
-  overwrite the default settings of the OIDC provider}
-  \item{\code{...}}{additional parameter might contain \code{force=TRUE} specifying to force the use 
-  of a specific authentication flow}
+\item{\code{provider}}{the name of an OIDC provider registered on the back-end or a provider object as returned by \code{list_oidc_providers()}}
+\item{\code{config}}{either a JSON file containing information about 'client_id' and
+'secret' or a named list. Experienced user and developer can also add 'scopes' to
+overwrite the default settings of the OIDC provider}
+\item{\code{...}}{additional parameter might contain \code{force=TRUE} specifying to force the use
+of a specific authentication flow}
 }
 }
 

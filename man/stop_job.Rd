@@ -9,7 +9,7 @@ stop_job(job, con = NULL)
 \arguments{
 \item{job}{the job object or the id of job that will be canceled}
 
-\item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

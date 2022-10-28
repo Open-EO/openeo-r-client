@@ -9,32 +9,32 @@ connect(host, version = NULL, exchange_token = "access_token", ...)
 \arguments{
 \item{host}{URL pointing to the openEO server service host}
 
-\item{version}{the openEO API version number as string (optional), see also \code{\link{api_versions}}}
+\item{version}{the openEO API version number as string (optional), see also \code{\link[=api_versions]{api_versions()}}}
 
 \item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
 
-\item{...}{parameters that are passed on to \code{\link{login}}}
+\item{...}{parameters that are passed on to \code{\link[=login]{login()}}}
 }
 \description{
 Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
 specific versions you should provide the version parameter.
 }
 \details{
-You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
+You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you
 have an overview about their status and connection details like the URL and supported features. You can explore the
 service for free through the access to publicly available metadata of data collections as well as the offered
 processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 your choice. There you will get further information on credentials and the log in procedure.
 
-The \code{...} parameter allows you to pass on arguments directly for \code{\link{login}}. If they are omitted the 
-client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards. 
+The \code{...} parameter allows you to pass on arguments directly for \code{\link[=login]{login()}}. If they are omitted the
+client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards.
 Based on the provided login parameters user / password or OIDC provider the appropriate login procedure for basic authentication
 or OIDC authentication will be chosen.
 
 The parameter \code{version} is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).
 
-When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+When calling this function the \code{\link[=OpenEOClient]{OpenEOClient()}} is also stored in a variable in the package
 which marks the latest service that was connected to.
 }
 \examples{
@@ -61,5 +61,5 @@ con = connect(host='http://example.openeo.org',
 
 }
 \seealso{
-\code{\link{active_connection}}
+\code{\link[=active_connection]{active_connection()}}
 }

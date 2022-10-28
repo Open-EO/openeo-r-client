@@ -7,7 +7,7 @@
 list_processes(con = NULL)
 }
 \arguments{
-\item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
+\item{con}{Connection object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

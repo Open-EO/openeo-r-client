@@ -2,7 +2,7 @@
 #' 
 #' A visualization for the user account information obtained by /me
 #' 
-#' @param x an User object that can be retrieved at \link{describe_account}
+#' @param x an User object that can be retrieved at [describe_account]
 #' @param ... additional parameters (not used)
 #' 
 #' @export
@@ -29,7 +29,7 @@ print.User = function(x, ...) {
 #' 
 #' Print function to visualize relevant information about an openEO process
 #' 
-#' @param x process info that is received on \link{list_processes} and \link{describe_process}
+#' @param x process info that is received on [list_processes] and [describe_process]
 #' @param ... additional parameters (not used)
 #' 
 #' @export

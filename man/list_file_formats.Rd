@@ -7,7 +7,7 @@
 list_file_formats(con = NULL)
 }
 \arguments{
-\item{con}{openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
@@ -17,6 +17,6 @@ a FileFormatList object
 The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
 }
 \details{
-The \code{FileFormatList} object is a named list, which is organized into 'input' and 'output'. For each category a different 
+The \code{FileFormatList} object is a named list, which is organized into 'input' and 'output'. For each category a different
 named list with the \code{FileFormat} is indexed by its format ID.
 }

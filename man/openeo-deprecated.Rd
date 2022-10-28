@@ -9,8 +9,8 @@ Lists all currently deprecated functions that will be removed in the future.
 \section{Deprecated}{
 
 \describe{
- \item{graphToJSON(x,...)}{replaced by toJSON}
- \item{processToJSON(x,...)}{replaced by toJSON}
+\item{graphToJSON(x,...)}{replaced by toJSON}
+\item{processToJSON(x,...)}{replaced by toJSON}
 }
 }
 

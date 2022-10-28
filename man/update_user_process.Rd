@@ -22,7 +22,7 @@ update_user_process(
 
 \item{description}{description of the process graph (optional)}
 
-\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}

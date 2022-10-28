@@ -62,3 +62,4 @@ Collate:
     'udf.R'
     'user.R'
     'viewer.R'
+Roxygen: list(markdown = TRUE)

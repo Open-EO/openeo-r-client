@@ -4,23 +4,23 @@
 \alias{ProcessNode}
 \title{Process Node object}
 \description{
-This class inherits all functions and fields from \code{\link{Process}} and extends it with a node id and a 
-special serialization function. The ProcessNode is an essential building block of the \code{\link{Graph}}.
+This class inherits all functions and fields from \code{\link[=Process]{Process()}} and extends it with a node id and a
+special serialization function. The ProcessNode is an essential building block of the \code{\link[=Graph]{Graph()}}.
 }
 \section{Methods}{
 
 \describe{
-   \item{$getNodeId()}{returns the node id}
-   \item{$setNodeId(id)}{set the node id, which is of interest when \code{\link{parse_graph}} is executed}
-   \item{$serializeAsReference()}{during the serialization the process node might be used as a 
-   reference and this function serializes the process node accordingly}
+\item{$getNodeId()}{returns the node id}
+\item{$setNodeId(id)}{set the node id, which is of interest when \code{\link[=parse_graph]{parse_graph()}} is executed}
+\item{$serializeAsReference()}{during the serialization the process node might be used as a
+reference and this function serializes the process node accordingly}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-   \item{id}{the node id}
+\item{id}{the node id}
 }
 }
 

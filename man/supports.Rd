@@ -7,7 +7,7 @@
 supports(con = NULL, tag_name)
 }
 \arguments{
-\item{con}{backend connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{backend connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{tag_name}{the endpoints 'tag' name as character}

@@ -17,7 +17,7 @@ dimensions = function(x, ...) {
 #' Returns dimension information
 #' 
 #' The function returns the dimension information of a Collection object. This object is usually obtained when calling 
-#' \link{describe_collection}. It returns the meta data information for the cube dimensions.
+#' [describe_collection]. It returns the meta data information for the cube dimensions.
 #' 
 #' @param x a Collection object
 #' @param ... parameters to pass on (not used)

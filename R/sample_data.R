@@ -14,16 +14,16 @@ NULL
 #' the package 'sf' is present.
 #' 
 #' If the spatial extent was explicitly set to a small custom extent, then you can disable the replacement of the area of 
-#' interest with \code{replace_aoi = FALSE}.
+#' interest with `replace_aoi = FALSE`.
 #'
 #' @param graph a ProcessGraph, a Process or the final node in a process for which the sample shall be calculated
 #' @param replace_aoi a logical flag to indicate whether or not the original spatial extent shall be substituted with a different one, default TRUE
 #' @param spatial_extent a bounding box or a spatial feature from which to derive a bounding box
-#' @param execution \code{sync} or \code{async} which indicates the processing chain, a not "async" value results in a synchronous processing
+#' @param execution `sync` or `async` which indicates the processing chain, a not "async" value results in a synchronous processing
 #' @param immediate flag to be considered if the retrieval shall be immediately queued on the back-end
-#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
-#' @param ... additional parameters that are passed to \code{\link{compute_result}} or \code{\link{create_job}}
+#' @param ... additional parameters that are passed to [compute_result()] or [create_job()]
 #' 
 #' @export
 get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="sync",immediate=TRUE,con=NULL, ...) {

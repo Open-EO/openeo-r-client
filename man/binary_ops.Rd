@@ -95,7 +95,7 @@ xor.ProcessGraphParameter(x, y)
 \method{>}{ProcessGraphParameter}(e1, e2)
 }
 \arguments{
-\item{e1}{\code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
+\item{e1}{\code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into
 the function or a numeric value}
 
 \item{e2}{same as e1}
@@ -109,6 +109,6 @@ a \code{ProcessNode}
 }
 \description{
 The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
-it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
+it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO
 processes counterparts.
 }

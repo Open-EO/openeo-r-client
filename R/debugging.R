@@ -71,7 +71,7 @@ print.request = function(x) {
 #' 
 #' Prints contents of the log file of a Job or Service to the console. Requests the log every second if the service is enabled or the batch job is
 #' active. If the log response always empty for a given timeout, the logging stops. Also if the job or service is not active at the moment timeout
-#' is ignored and the log is just printed once. To call the different logs \code{\link{log_job}} or \code{\link{log_service}} are used internally.
+#' is ignored and the log is just printed once. To call the different logs [log_job()] or [log_service()] are used internally.
 #' 
 #' In Jupyter, RMarkdown and knitr HTML environments the timeout parameter does not apply and this function only returns the
 #' logs that are available at the time of the request. To refresh the logs, you have to re-execute the function again.
@@ -79,11 +79,11 @@ print.request = function(x) {
 #' @param obj Service or Job object
 #' @param job_id character the jobs ID
 #' @param service_id character - the services ID
-#' @param con a connected openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param timeout integer the timeout for the logging of active jobs or services after no update in seconds, if omitted it is determined internally (running / queued / enabled -> 60s)
 #' 
-#' @seealso \code{\link{log_job}} or \code{\link{log_service}}
+#' @seealso [log_job()] or [log_service()]
 #' 
 #' @export
 logs = function(obj=NULL,job_id=NULL,service_id=NULL, con=NULL, timeout = NULL) {

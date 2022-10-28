@@ -7,7 +7,7 @@
 logout(con = NULL)
 }
 \arguments{
-\item{con}{a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \description{

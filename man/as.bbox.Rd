@@ -11,12 +11,12 @@
 as.bbox.geojson(from)
 }
 \arguments{
-\item{from}{a \code{\link{BoundingBox}} argument object or a \code{\link{GeoJson}} argument object}
+\item{from}{a \code{\link[=BoundingBox]{BoundingBox()}} argument object or a \code{\link[=GeoJson]{GeoJson()}} argument object}
 }
 \value{
-a bbox object from \code{\link[sf]{st_bbox}}
+a bbox object from \code{\link[sf:st_bbox]{sf::st_bbox()}}
 }
 \description{
-A coercion function for extracting a 'bbox' object that can usualy be obtained by \code{\link[sf]{st_bbox}}. This coercion
-function was created to easily extract the boúnding box from the openeos argument objects \code{\link{BoundingBox}} and \code{\link{GeoJson}}.
+A coercion function for extracting a 'bbox' object that can usualy be obtained by \code{\link[sf:st_bbox]{sf::st_bbox()}}. This coercion
+function was created to easily extract the boúnding box from the openeos argument objects \code{\link[=BoundingBox]{BoundingBox()}} and \code{\link[=GeoJson]{GeoJson()}}.
 }
