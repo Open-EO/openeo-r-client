@@ -9,7 +9,7 @@ delete_file(src, con = NULL)
 \arguments{
 \item{src}{the relative file path of the source file on the openEO back-end that shall be deleted}
 
-\item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authorized connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

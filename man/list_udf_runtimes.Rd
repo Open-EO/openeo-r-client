@@ -7,7 +7,7 @@
 list_udf_runtimes(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

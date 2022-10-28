@@ -7,7 +7,7 @@
 list_jobs(con = NULL)
 }
 \arguments{
-\item{con}{the authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{the authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \description{

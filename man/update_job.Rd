@@ -22,14 +22,14 @@ update_job(
 
 \item{description}{update description}
 
-\item{process}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint, the \code{\link{ProcessNode}} 
-will return the results or a self defined \code{\link{Process}}}
+\item{process}{A \code{\link[=Graph]{Graph()}}, a function returning a \code{\link[=ProcessNode]{ProcessNode()}} as an endpoint, the \code{\link[=ProcessNode]{ProcessNode()}}
+will return the results or a self defined \code{\link[=Process]{Process()}}}
 
 \item{plan}{replaces plan with the set value}
 
 \item{budget}{replaces or sets the credits that can be spent at maximum}
 
-\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
@@ -40,10 +40,10 @@ that will be replaced or removed. The return shows a message of result or failur
 }
 \details{
 The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
-keys. 
+keys.
 The 'process_graph' option will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
 The 'format' option will change the desired output format.
 All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
-e.g. if you just want to update the output format. 
+e.g. if you just want to update the output format.
 To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.
 }

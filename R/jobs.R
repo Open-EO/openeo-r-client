@@ -7,7 +7,7 @@ NULL
 #'
 #' Lists the jobs that a user has uploaded or in that are in execution
 #'
-#' @param con the authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con the authenticated Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @export
 list_jobs = function(con=NULL) {
@@ -48,23 +48,23 @@ setClass("Job")
 #' Please keep in mind, that computational functions might be related to monetary costs, if no 'free' plan is available. 
 #' Make sure to keep the data selection relatively small, also some openEO service provider might offer limited processes support,
 #' e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for 
-#' 'save_result' will be replaced. If the 'stars' package is installed and parameter \code{as_stars} is set to TRUE, then the downloaded
+#' 'save_result' will be replaced. If the 'stars' package is installed and parameter `as_stars` is set to TRUE, then the downloaded
 #' data is opened and interpreted into a stars object.
 #'
-#' @param graph a \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' @param graph a [Graph()], a function returning a [ProcessNode()] as an endpoint or the [ProcessNode()] 
 #' will return the results
 #' @param output_file storage location for the returned data
 #' @param budget numeric, maximum spendable amount for testing
 #' @param plan character, selection of a service plan
 #' @param as_stars logical to indicate if the data shall be interpreted as a stars object
-#' @param format character or \code{FileFormat} specifying the File format for the output, if 'save_result' is not
+#' @param format character or `FileFormat` specifying the File format for the output, if 'save_result' is not
 #' set in the process then it will be added otherwise the value stated here will replace the original value
-#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
 #' be passed to the openEO process 'save_result'
 #' 
-#' @return a local path to the downloaded file or a \code{stars} object if \code{as_stars=TRUE}
+#' @return a local path to the downloaded file or a `stars` object if `as_stars=TRUE`
 #' 
 #' @importFrom methods as
 #' @export
@@ -195,13 +195,13 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
 #' will be scheduled when the required resources are available. To do so the user provides the process graph with optional descriptive meta
 #' data and the desired execution plan or the maximum amount of credits spent.
 #' 
-#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' @param graph A [Graph()], a function returning a [ProcessNode()] as an endpoint or the [ProcessNode()] 
 #' will return the results
 #' @param title Optional title of a job
 #' @param description Optional detailed information about a job
 #' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
-#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
@@ -256,7 +256,7 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
 #' 
 #' @param job the job object or the job id
 #' @param log logical - whether to enable automatic logging after starting the job
-#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @return the job object of the now started job
@@ -304,11 +304,11 @@ start_job = function(job, log=FALSE, con=NULL) {
 #' @param id the job id of a created job
 #' @param title update title for the job
 #' @param description update description
-#' @param process A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint, the \code{\link{ProcessNode}} 
-#' will return the results or a self defined \code{\link{Process}}
+#' @param process A [Graph()], a function returning a [ProcessNode()] as an endpoint, the [ProcessNode()] 
+#' will return the results or a self defined [Process()]
 #' @param plan replaces plan with the set value
 #' @param budget replaces or sets the credits that can be spent at maximum
-#' @param con connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
@@ -365,7 +365,7 @@ update_job = function(id, title = NULL, description = NULL, process = NULL, plan
 #' The function queries the back-end to receive the URLs to the downloadable files of a particular job.
 #' 
 #' @param job the job object or the id of the job
-#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @return result object containing of URLs for download
@@ -395,9 +395,9 @@ list_results = function(job, con=NULL) {
 #' 'folder' is the target location on the local computer.
 #' 
 #' @param job job object or the job_id for which the results are fetched. Also the return value of 
-#' \code{\link{list_results}} or its 'assets' field is also accepted.
+#' [list_results()] or its 'assets' field is also accepted.
 #' @param folder a character string that is the target path on the local computer
-#' @param con a connected and authenticated openEO connection (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected and authenticated openEO connection (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @return a list of the target file paths or NULL if 'job' was incorrect
@@ -459,7 +459,7 @@ download_results = function(job, folder, con=NULL) {
 #' Informs the server that the specified job needs to be terminated to prevent further costs.
 #'
 #' @param job the job object or the id of job that will be canceled
-#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authenticated Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @return a success / failure notification
 #' @export
@@ -493,7 +493,7 @@ stop_job = function(job, con=NULL) {
 #' Returns a detailed description about a specified job (e.g., the status)
 #'
 #' @param job the job object or the id of the job
-#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authenticated Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @return a detailed description about the job
 #' @export
@@ -529,7 +529,7 @@ setOldClass("Job")
 #' Deletes a job from the back-end.
 #'
 #' @param job the job or the id of the job
-#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authenticated Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @return logical with state of success
 #' @export
@@ -559,7 +559,7 @@ delete_job = function(job, con=NULL) {
 #' and whether or not the job owners data download is already included in the monetary costs.
 #'
 #' @param job the job or the id of the job
-#' @param con authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authenticated Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @return JobCostsEstimation containing information how much money and time will be spent
 #' @export
@@ -595,7 +595,7 @@ estimate_job = function(job, con=NULL) {
 #' @param limit the limit of lines to be shown
 #' @param con an optional connection if you want to address a specific service
 #' 
-#' @return a \code{Log} object
+#' @return a `Log` object
 #' @export
 log_job = function(job, offset=NULL,limit=NULL, con=NULL) {
     tryCatch({

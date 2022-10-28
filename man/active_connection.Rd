@@ -7,19 +7,19 @@
 active_connection(con = NULL)
 }
 \arguments{
-\item{con}{optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
+\item{con}{optional \code{\link[=OpenEOClient]{OpenEOClient()}} to set, if omitted or NULL the currently active
 connection is returned}
 }
 \value{
-\code{\link{OpenEOClient}}
+\code{\link[=OpenEOClient]{OpenEOClient()}}
 }
 \description{
 The function gets or sets the currently active connection to an openEO service. Usually, the
-active connection is set when calling the \code{\link{connect}} function. Just the last 
+active connection is set when calling the \code{\link[=connect]{connect()}} function. Just the last
 connection is set as active.
 An application for the active connection is the optional connection within all the functions
-that interact with the openEO service and require a connection. If the connection is omitted 
-in the function, this function is called in order to try to fetch a connection. If you 
+that interact with the openEO service and require a connection. If the connection is omitted
+in the function, this function is called in order to try to fetch a connection. If you
 want to operate on multiple services at once, you should use an explicit connection.
 }
 \examples{
@@ -38,5 +38,5 @@ active_connection() # this will now return the previous set connection con1
 
 }
 \seealso{
-\code{\link{connect}}
+\code{\link[=connect]{connect()}}
 }

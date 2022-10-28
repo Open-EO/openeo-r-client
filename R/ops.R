@@ -7,18 +7,18 @@
 
 #' Unary function wrappers
 #' 
-#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} and facilitate
+#' The functions here are used in combination with `ProcessGraphParameter` and `ProcessNode` and facilitate
 #' writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
 #' processes counterparts.
 #' 
-#' @param x \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector. Passes internal data to the function
+#' @param x `ProcessGraphParameter`, `ProcessNode` or a list or vector. Passes internal data to the function
 #' @param ... further arguments to pass on, see the documentation of primitive functions of R for further information
 #' @param digits the amount of decimal digits to round to
 #' @param i the index of the element in a vector or list
 #' @param drop listed for completeness but not used in openEO processes.
 #' @param base the base of the exponential operation
 #' 
-#' @return a \code{ProcessNode}
+#' @return a `ProcessNode`
 #' 
 #' @name unary_ops
 NULL
@@ -381,17 +381,17 @@ NULL
 
 #' Binary function wrappers
 #' 
-#' The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} in order to make
+#' The functions here are used in combination with `ProcessGraphParameter` and `ProcessNode` in order to make
 #' it easier to write arithmetic functions for openEO user defined processes in R. The functions map into their openEO 
 #' processes counterparts.
 #' 
-#' @param e1 \code{ProcessGraphParameter}, \code{ProcessNode} or a list or vector, which internal data is passed into 
+#' @param e1 `ProcessGraphParameter`, `ProcessNode` or a list or vector, which internal data is passed into 
 #' the function or a numeric value
 #' @param e2 same as e1
 #' @param x the first expression in the xor statement
 #' @param y the second expression in the xor statement
 #' 
-#' @return a \code{ProcessNode}
+#' @return a `ProcessNode`
 #' 
 #' @name binary_ops
 NULL
@@ -620,17 +620,17 @@ NULL
 #' 
 #' R's mathematical group primitives that are translated to openEO processes.
 #' 
-#' @details The \code{...} parameter is required to start with the \code{ProcessNode} or a \code{ProcessGraphParameter} that returns 
+#' @details The `...` parameter is required to start with the [`ProcessNode`] or a [`ProcessGraphParameter`] that returns 
 #' a numeric value. If it starts with a number the corresponding function in base R will be used, which will result in most cases in 
 #' an error because base R cannot interprete the ProcessNode and ProcessGraphParameter objects. In that case you need to reorder the 
-#' elements so that \link{group_ops} will be used.
+#' elements so that [openeo's group operators][group_ops] will be used.
 #' 
-#' @param ... multiple arguments that start with a \code{ProcessNode} or a \code{ProcessGraphParameter}
+#' @param ... multiple arguments that start with a [`ProcessNode`] or a [`ProcessGraphParameter`]
 #' @param na.rm logical to determine if NA values shall be removed in the calculation
-#' @param x a vector or list of values that are mixed or consist fully of \code{ProcessNode}, 
-#' \code{ProcessGraphParameter} or numerical values
+#' @param x a vector or list of values that are mixed or consist fully of [`ProcessNode`], 
+#' [`ProcessGraphParameter`] or numerical values
 #' 
-#' @return \code{ProcessNode}
+#' @return [`ProcessNode`]
 #' @name group_ops
 #' 
 NULL

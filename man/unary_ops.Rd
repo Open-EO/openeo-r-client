@@ -193,6 +193,6 @@ a \code{ProcessNode}
 }
 \description{
 The functions here are used in combination with \code{ProcessGraphParameter} and \code{ProcessNode} and facilitate
-writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO 
+writing arithmetic functions for openEO user defined processes in R. The functions translate into their openEO
 processes counterparts.
 }

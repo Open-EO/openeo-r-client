@@ -7,7 +7,7 @@
 capabilities(con = NULL)
 }
 \arguments{
-\item{con}{A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used}
+\item{con}{A connected OpenEO client (optional), if omitted \code{\link[=active_connection]{active_connection()}} is used}
 }
 \value{
 capabilities object

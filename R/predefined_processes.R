@@ -6,7 +6,7 @@ NULL
 #' List available processes on server
 #'
 #' List all processes available on the back-end
-#' @param con Connection object (optional) otherwise \code{\link{active_connection}}
+#' @param con Connection object (optional) otherwise [active_connection()]
 #' is used.
 #' @return a list of lists with process_id and description
 #' @export
@@ -34,7 +34,7 @@ list_processes = function(con=NULL) {
 #' Describe a process
 #'
 #' Queries an openEO back-end and retrieves more detailed information about offered processes
-#' @param con Authentication object (optional) otherwise \code{\link{active_connection}}
+#' @param con Authentication object (optional) otherwise [active_connection()]
 #' is used.
 #' @param process id of a process to be described or the ProcessInfo object
 #'
@@ -79,11 +79,11 @@ describe_process = function(process = NA, con=NULL) {
 #' 
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
+#'    \item{`$new(con = NULL)`}{The object creator created an openEO connection.} 
 #' } 
 #' @section Arguments:
 #' \describe{
-#'    \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+#'    \item{con}{optional an active and authenticated Connection (optional) otherwise [active_connection()]
 #' is used.}
 #' }
 NULL 
@@ -175,7 +175,7 @@ ProcessCollection = R6Class(
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
 #' a ProcessCollection object to build a process graph in R.
 #' 
-#' @param con a connection to an openEO back-end (optional) otherwise \code{\link{active_connection}}
+#' @param con a connection to an openEO back-end (optional) otherwise [active_connection()]
 #' is used.
 #' @return a ProcessCollection object with the offered processes of the back-end
 #' @export

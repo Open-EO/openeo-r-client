@@ -7,16 +7,16 @@
 user_processes(con = NULL)
 }
 \arguments{
-\item{con}{a connection to an openEO back-end (optional). Otherwise \code{\link{active_connection}}
+\item{con}{a connection to an openEO back-end (optional). Otherwise \code{\link[=active_connection]{active_connection()}}
 is used in order to access personal user defined processes. You need to be logged in}
 }
 \value{
-\code{\link{UserProcessCollection}}
+\code{\link[=UserProcessCollection]{UserProcessCollection()}}
 }
 \description{
-The created process graphs via \code{\link{create_user_process}} at the openEO service are user defined processes. 
-They can be used for the creation of process graphs themselves. For processes provided by the 
-particular openEO service the \code{\link{processes}} function can be used to obtain a builder for those processes. 
+The created process graphs via \code{\link[=create_user_process]{create_user_process()}} at the openEO service are user defined processes.
+They can be used for the creation of process graphs themselves. For processes provided by the
+particular openEO service the \code{\link[=processes]{processes()}} function can be used to obtain a builder for those processes.
 Analogous to this idea, this function creates a builder object for user defined processes listed and described
-in \code{\link{describe_user_process}} and \code{\link{list_user_processes}}.
+in \code{\link[=describe_user_process]{describe_user_process()}} and \code{\link[=list_user_processes]{list_user_processes()}}.
 }

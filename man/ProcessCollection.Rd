@@ -10,14 +10,14 @@ an unlocked R6 object, in order to add new functions at runtime.
 \section{Methods}{
 
 \describe{
-   \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
+\item{\verb{$new(con = NULL)}}{The object creator created an openEO connection.}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-   \item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{optional an active and authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 }

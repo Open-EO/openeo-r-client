@@ -10,43 +10,43 @@ NULL
 #' 
 #' @field user_id The user_id obtained after authentication
 #' @field api.mapping The mapping of the API endpoints and the back-end published ones
-#' @field processes a list of \code{\link{Process}} objects offered by the back-end
+#' @field processes a list of [Process()] objects offered by the back-end
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$new(host=NULL)}}{the constructor with an optional host URL to connect to}
-#'   \item{\code{$getBackendEndpoint(endpoint_name)}}{returns the URL for the requested endpoint tag}
-#'   \item{\code{$request(tag,parameters=NULL,authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
+#'   \item{`$new(host=NULL)`}{the constructor with an optional host URL to connect to}
+#'   \item{`$getBackendEndpoint(endpoint_name)`}{returns the URL for the requested endpoint tag}
+#'   \item{`$request(tag,parameters=NULL,authorized=FALSE, ...)`}{performs the desired HTTP request by endpoint tag with 
 #'   path parameters and whether or not authorization (access_token) is necessary}
-#'   \item{\code{$isConnected()}}{whether or not the client has a host set}
-#'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
-#'   \item{\code{$getHost()}}{returns the host URL}
-#'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
-#'   \item{\code{$connect(url=NULL,version=NULL)}}{connects to a specific version of a back-end}
-#'   \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
-#'   \item{\code{$login(user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link{IAuth}} object}
-#'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
-#'   \item{\code{$getAuthClient()}}{returns the authentication client}
-#'   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
-#'   \item{\code{$getCapabilities()}}{service exploration to retrieve the supported openEO endpoints}
-#'   \item{\code{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
-#'   \item{\code{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
-#'   \item{\code{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
-#'   \item{\code{$getTitle()}}{returns the title of the connection as stated in the getCapabilities document}
+#'   \item{`$isConnected()`}{whether or not the client has a host set}
+#'   \item{`$isLoggedIn()`}{returns a logical describing whether the user is logged in}
+#'   \item{`$getHost()`}{returns the host URL}
+#'   \item{`$stopIfNotConnected()`}{throws an error if called and the client is not connected}
+#'   \item{`$connect(url=NULL,version=NULL)`}{connects to a specific version of a back-end}
+#'   \item{`$api_version()`}{returns the openEO API version this client is compliant to}
+#'   \item{`$login(user=NULL, password=NULL,provider=NULL,config=NULL)`}{creates an [IAuth()] object}
+#'   \item{`$logout()`}{invalidates the access_token and terminates the current session}
+#'   \item{`$getAuthClient()`}{returns the authentication client}
+#'   \item{`$setAuthClient(value)`}{sets the authentication client if it was configured and set externally}
+#'   \item{`$getCapabilities()`}{service exploration to retrieve the supported openEO endpoints}
+#'   \item{`$getDataCollection()`}{returns the list of collections as obtainable at 'list_collections()'}
+#'   \item{`$getProcessCollection()`}{returns the evaluated process list as obtainable at 'processes()'}
+#'   \item{`$getId()`}{returns the ID of the Connection as stated in the getCapabilities document}
+#'   \item{`$getTitle()`}{returns the title of the connection as stated in the getCapabilities document}
 #' }
 #' 
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{host}}{the openEO host URL}
-#'   \item{\code{endpoint_name}}{the endpoint tag the client uses for the endpoints}
-#'   \item{\code{tag}}{endpoint tag}
-#'   \item{\code{parameters}}{named list of values to be replaced in the endpoint}
-#'   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
-#'   \item{\code{url}}{url of an openEO back-end either directly versioned or with the separate version statement}
-#'   \item{\code{version}}{the openEO API version to be used, or a list of available API versions if set to NULL}
-#'   \item{\code{user}}{the user name}
-#'   \item{\code{password}}{the user password}
-#'   \item{\code{value}}{an authentication object}
+#'   \item{`host`}{the openEO host URL}
+#'   \item{`endpoint_name`}{the endpoint tag the client uses for the endpoints}
+#'   \item{`tag`}{endpoint tag}
+#'   \item{`parameters`}{named list of values to be replaced in the endpoint}
+#'   \item{`authorized`}{whether or not the endpoint requires authentication via access_token}
+#'   \item{`url`}{url of an openEO back-end either directly versioned or with the separate version statement}
+#'   \item{`version`}{the openEO API version to be used, or a list of available API versions if set to NULL}
+#'   \item{`user`}{the user name}
+#'   \item{`password`}{the user password}
+#'   \item{`value`}{an authentication object}
 #' }
 NULL
 

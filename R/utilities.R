@@ -31,7 +31,7 @@ NULL
 
 #' *toJSON functions
 #' 
-#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use \code{toJSON} instead.
+#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use `toJSON` instead.
 #' 
 #' @name graphToJSON-deprecated
 #' @rdname toJSON-deprecated

@@ -7,7 +7,7 @@
 processes(con = NULL)
 }
 \arguments{
-\item{con}{a connection to an openEO back-end (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connection to an openEO back-end (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

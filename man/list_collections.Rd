@@ -7,14 +7,14 @@
 list_collections(con = NULL)
 }
 \arguments{
-\item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
+\item{con}{Connection object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
 object of class 'CollectionList'
 }
 \description{
-List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects. 
-The names are the collection IDs. Although the result at \code{\link{describe_collection}} is also a Collection, the Collection object of returned
+List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects.
+The names are the collection IDs. Although the result at \code{\link[=describe_collection]{describe_collection()}} is also a Collection, the Collection object of returned
 from \code{list_collections()} is considered a list entry with less detailed information.
 }

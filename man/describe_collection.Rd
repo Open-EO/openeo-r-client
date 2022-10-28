@@ -9,7 +9,7 @@ describe_collection(collection = NA, con = NULL)
 \arguments{
 \item{collection}{Collection object or the collections id}
 
-\item{con}{Authentication object (optional) otherwise \code{\link{active_connection}}
+\item{con}{Authentication object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

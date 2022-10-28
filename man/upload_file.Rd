@@ -21,7 +21,7 @@ upload_file(
 
 \item{mime}{mime type used in upload_file ('application/octet-stream' as a default)}
 
-\item{con}{authorized Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authorized Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

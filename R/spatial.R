@@ -93,12 +93,12 @@ setOldClass(c("bounding-box","Argument","Parameter","R6"))
 
 #' coerce to bbox
 #' 
-#' A coercion function for extracting a 'bbox' object that can usualy be obtained by \code{\link[sf]{st_bbox}}. This coercion
-#' function was created to easily extract the boúnding box from the openeos argument objects \code{\link{BoundingBox}} and \code{\link{GeoJson}}.
+#' A coercion function for extracting a 'bbox' object that can usualy be obtained by [sf::st_bbox()]. This coercion
+#' function was created to easily extract the boúnding box from the openeos argument objects [BoundingBox()] and [GeoJson()].
 #'
-#' @param from a \code{\link{BoundingBox}} argument object or a \code{\link{GeoJson}} argument object
+#' @param from a [BoundingBox()] argument object or a [GeoJson()] argument object
 #' 
-#' @return a bbox object from \code{\link[sf]{st_bbox}}
+#' @return a bbox object from [sf::st_bbox()]
 #' 
 #' @name as.bbox
 #' @export

@@ -86,22 +86,22 @@ var.ProcessGraphParameter(x, na.rm = FALSE)
 var.list(x, na.rm = FALSE)
 }
 \arguments{
-\item{...}{multiple arguments that start with a \code{ProcessNode} or a \code{ProcessGraphParameter}}
+\item{...}{multiple arguments that start with a \code{\link{ProcessNode}} or a \code{\link{ProcessGraphParameter}}}
 
 \item{na.rm}{logical to determine if NA values shall be removed in the calculation}
 
-\item{x}{a vector or list of values that are mixed or consist fully of \code{ProcessNode}, 
-\code{ProcessGraphParameter} or numerical values}
+\item{x}{a vector or list of values that are mixed or consist fully of \code{\link{ProcessNode}},
+\code{\link{ProcessGraphParameter}} or numerical values}
 }
 \value{
-\code{ProcessNode}
+\code{\link{ProcessNode}}
 }
 \description{
 R's mathematical group primitives that are translated to openEO processes.
 }
 \details{
-The \code{...} parameter is required to start with the \code{ProcessNode} or a \code{ProcessGraphParameter} that returns 
-a numeric value. If it starts with a number the corresponding function in base R will be used, which will result in most cases in 
-an error because base R cannot interprete the ProcessNode and ProcessGraphParameter objects. In that case you need to reorder the 
-elements so that \link{group_ops} will be used.
+The \code{...} parameter is required to start with the \code{\link{ProcessNode}} or a \code{\link{ProcessGraphParameter}} that returns
+a numeric value. If it starts with a number the corresponding function in base R will be used, which will result in most cases in
+an error because base R cannot interprete the ProcessNode and ProcessGraphParameter objects. In that case you need to reorder the
+elements so that \link[=group_ops]{openeo's group operators} will be used.
 }
