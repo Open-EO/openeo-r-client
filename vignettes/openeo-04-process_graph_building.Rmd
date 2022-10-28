@@ -18,15 +18,32 @@ The main idea in openEO is that back-ends provide spatio-temporal data collectio
 
 ## Processes
 
-The openEO API defines processes in a general way, meaning that to be conformant to the API back-ends do not need to implement the whole set of openEO processes, which can be recognized as a set of Good-Practice functions that cover almost all relevant operations on n-dimensional spatio-temporal data. As for this package it means that the “tools” are dependent on the connected back-end and they have to be interpreted dynamically after the connection has been established. The openEO API defines how processes information has to be structured to be interpreted by this package and the openEO processes suggest a set of processes with descriptions and parameters, but the back-end is not obliged to implement or provide any of them. They might even change parameter types or the naming all together. 
+The openEO API defines processes in a general way, meaning that to be conformant to the API back-ends do not need to implement the whole set of openEO processes, which can be considered to be a set of Good-Practice functions that cover almost all relevant operations on n-dimensional spatio-temporal data. As for this package it means that the “tools” are dependent on the connected back-end and they have to be interpreted dynamically after the connection has been established. The openEO API defines how processes information has to be structured to be interpreted by this package and the openEO processes suggest a set of processes with descriptions and parameters, but the back-end is not obliged to implement or provide any of them. They might even change parameter types or the naming all together. 
 
 What remains of it is that all the openEO processes are described in the way the openEO API defines processes.
 
 Now we also need to distinguish between predefined and user-defined processes. The predefined processes are those that are already provided by the back-end and which are implanted ready to be used for processing. The user-defined processes are those process graphs a user can create out of the predefined processes. There we can also define variables to allow for a parametrization, which more or less works like placeholders in the graph that will be filled upon use. This user defined processes can be stored on the back-end `create_user_process()`, which are then only available for the user that have created that processes. Similarly to the initialization of the predefined processes with `processes()`, the users own processes can be loaded by `user_processes()`. The user defined processes can then also be used as building blocks, hiding more complex functions.
 
-```
+```{r, evi_example, eval=FALSE}
+library(openeo)
 # EVI example to create a user-defined processes
+con = connect("openeo.cloud")
+
+p = processes()
+
+evi_function = function(x,context) {
+  b02 = x[1]
+  b04 = x[2]
+  b08 = x[3]
+  
+  2.5*((b08-b04)/sum(b08,6*b04,-7.5*b02,1))
+}
+
+evi_process = as(evi_function, "Process")
+evi_process
 ```
+
+
 
 ## Process Graph and Process Node
 
