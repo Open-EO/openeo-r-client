@@ -99,3 +99,9 @@ var.list(x, na.rm = FALSE)
 \description{
 R's mathematical group primitives that are translated to openEO processes.
 }
+\details{
+The \code{...} parameter is required to start with the \code{ProcessNode} or a \code{ProcessGraphParameter} that returns 
+a numeric value. If it starts with a number the corresponding function in base R will be used, which will result in most cases in 
+an error because base R cannot interprete the ProcessNode and ProcessGraphParameter objects. In that case you need to reorder the 
+elements so that \link{group_ops} will be used.
+}
