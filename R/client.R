@@ -176,8 +176,6 @@ OpenEOClient <- R6Class(
         } else {
           
           if ("versions" %in% names(private$backendVersions())) {
-            # hostInfo=private$backendVersions()$versions
-            # hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
             hostInfo=as.data.frame(private$backendVersions())
             
             
@@ -201,84 +199,17 @@ OpenEOClient <- R6Class(
           }
         }
         
-        # connections contract for RStudio
-        observer = getOption("connectionObserver")
-        
-        if (!is.null(observer)) {
-          observer$connectionOpened(type="OpenEO Service",
-                                    displayName= self$getTitle(), 
-                                    host=self$getHost(), 
-                                    listObjectTypes = function() {
-                                      list(
-                                        resource = list(
-                                          contains = list(
-                                            collection = list(
-                                              contains="data"
-                                            )
-                                          )
-                                        )
-                                      )
-                                      
-                                    },
-                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",self$getHost(),"\")"),
-                                    disconnect = function() {
-                                      logout()
-                                      .remove_connection(con = self)
-                                      observer <- getOption("connectionObserver")
-                                      
-                                      if (!is.null(observer))
-                                        observer$connectionClosed("OpenEO Service", self$getHost())
-                                    },
-                                    listObjects = function() {
-                                      active_connection(con = self)
-                                      
-                                      if (!is.null(active_connection())) {
-                                          cids = self$getCollectionNames()
-                                          types = rep("collection",times=length(cids))
-                                          
-                                          df = data.frame(name=cids,type=types,stringsAsFactors = FALSE)
-                                          return(df)
-                                      } else {
-                                        return(list())
-                                      }
-                                    },
-                                    listColumns = function(collection=NULL) {
-                                      if (!is.null(collection)) {
-                                        coll = describe_collection(collection=collection)
-                                        dim_names = names(dimensions(coll))
-                                        
-                                        types = sapply(dimensions(coll), function(dim) {
-                                          type = dim$type
-                                          
-                                          if ("axis" %in% names(dim)) {
-                                            type = paste0(type,", axis: ",dim$axis)
-                                          }
-                                          
-                                          if ("extent" %in% names(dim)) {
-                                            type = paste0(type,", extent: [",dim$extent[1],",",dim$extent[2],"]")
-                                          }
-                                          
-                                          if ("values" %in% names(dim)) {
-                                            type = paste0(type,", enum: [",paste(dim$values,collapse=","),"]")
-                                          }
-                                          
-                                          return(type)
-                                        })
-                                        
-                                        df = data.frame(name=dim_names, type=types, stringsAsFactors = FALSE)
-                                        
-                                        df = rbind(df,list(name="value",type="numeric"))
-                                        return(df)
-                                      }
-                                    },
-                                    previewObject = function(rowLimit=1,collection=NULL) {
-                                      return(data.frame())
-                                    },
-                                    connectionObject = self)
-        }
+        # set active connection
+        active_connection(con = self)
         
         self$api.mapping = endpoint_mapping(self)
         cat("Connected to service: ",private$host,"\n")
+        
+        # connections contract for RStudio
+        .fill_rstudio_observer()
+        
+        
+        
         cat("Please check the terms of service (terms_of_service()) and the privacy policy (privacy_policy()). By further usage of this service, you acknowledge and agree to those terms and policies.\n")
 
         if (!hostInfo[hostInfo$url == private$host,]$production) {
@@ -377,42 +308,7 @@ OpenEOClient <- R6Class(
       return(private$capabilities)
     },
     getDataCollection=function() {
-      if (is.null(private$data_collection)) {
-        
-        tryCatch({
-          tag = "data_overview"
-          
-          collection_list = self$request(tag = tag, authorized = self$isLoggedIn(), type = "application/json")
-          collection_list = collection_list$collections
-          
-          collection_list = lapply(collection_list, function(coll) {
-            coll$extent$spatial = unlist(coll$extent$spatial$bbox)
-            coll$extent$temporal = lapply(coll$extent$temporal$interval, function(t) {
-              # t is list
-              return(lapply(t,function(elem) {
-                if (is.null(elem)) return(NA)
-                else return(elem)
-              }))
-              
-            })
-              
-            class(coll) = "Collection"
-            return(coll)
-          })
-          
-          class(collection_list) = "CollectionList"
-          
-          collection_names = sapply(collection_list, function(coll) {
-            return(coll$id)
-          })
-          
-          names(collection_list) = collection_names
-          
-          private$data_collection = collection_list
-        }, error = .capturedErrorToMessage)
-      }
-      
-      return(private$data_collection)
+      return(list_collections(con=self))
     },
     getCollectionNames = function() {
       return(names(self$getDataCollection()))
@@ -452,7 +348,6 @@ OpenEOClient <- R6Class(
     exchange_token="access_token",
     capabilities=NULL,
     process_collection=NULL,
-    data_collection=NULL,
     
     # functions ====
     setHost = function(host) {
@@ -931,4 +826,89 @@ client_version = function() {
   sel = which(sel)
   
   rm(list = names(sel), envir=globalenv())
+}
+
+.fill_rstudio_observer = function() {
+  observer = getOption("connectionObserver")
+  
+  if (!is.null(observer)) {
+    con = active_connection()
+    observer$connectionOpened(type="OpenEO Service",
+                              displayName= con$getTitle(), 
+                              host=con$getHost(), 
+                              listObjectTypes = function() {
+                                list(
+                                  collection = list(
+                                    contains="data"
+                                  )
+                                )
+                              },
+                              connectCode = paste0("library(openeo)\n\nconnect(host=\"",con$getHost(),"\")"),
+                              disconnect = function() {
+                                logout()
+                                .remove_connection(con = con)
+                                observer <- getOption("connectionObserver")
+                                
+                                if (!is.null(observer))
+                                  observer$connectionClosed("OpenEO Service", con$getHost())
+                              },
+                              listObjects = function(type="collection") {
+                                con = active_connection()
+                                if (!is.null(con)) {
+                                  colls = list_collections(con = con)
+                                  cids = names(colls)
+                                  types = rep(type,times=length(cids))
+                                  
+                                  df = data.frame(name=cids,type=types,stringsAsFactors = FALSE)
+                                  return(df)
+                                } else {
+                                  return(list())
+                                }
+                              },
+                              listColumns = function(collection) {
+                                if (!is.null(collection)) {
+                                  coll = describe_collection(collection=collection)
+                                  dim_names = names(dimensions(coll))
+                                  
+                                  types = sapply(dimensions(coll), function(dim) {
+                                    type = dim$type
+                                    
+                                    if ("axis" %in% names(dim)) {
+                                      type = paste0(type,", axis: ",dim$axis)
+                                    }
+                                    
+                                    if ("extent" %in% names(dim)) {
+                                      type = paste0(type,", extent: [",dim$extent[1],",",dim$extent[2],"]")
+                                    }
+                                    
+                                    if ("values" %in% names(dim)) {
+                                      type = paste0(type,", enum: [",paste(dim$values,collapse=","),"]")
+                                    }
+                                    
+                                    return(type)
+                                  })
+                                  
+                                  df = data.frame(name=dim_names, type=types, stringsAsFactors = FALSE)
+                                  
+                                  df = rbind(df,list(name="value",type="numeric"))
+                                  return(df)
+                                }
+                              },
+                              previewObject = function(collection, ...) {
+                                return(data.frame())
+                              },
+                              # actions = list(
+                              #     tos = list(
+                              #       callback = function() {
+                              #         terms_of_service()
+                              #       }
+                              #     ),
+                              #     pp = list(
+                              #       callback = function() {
+                              #         privacy_policy()
+                              #       }
+                              #     )
+                              #   ),
+                              connectionObject = con)
+  }
 }
