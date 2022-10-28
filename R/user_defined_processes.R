@@ -159,6 +159,7 @@ create_user_process = function(graph, id=NULL, summary=NULL, description = NULL,
       message("Process was sucessfully stored on the back-end.")
       return(id) 
     } else {
+      class(process_graph_description) = "ProcessInfo"
       return(process_graph_description)
     }
     
