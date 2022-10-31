@@ -212,6 +212,21 @@ is_rmd = function() {
   return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
 }
 
+is_connected = function() {
+  con = active_connection()
+  
+  if (is.null(con)) return(FALSE)
+  
+  return(con$isConnected())
+}
+
+is_logged_in = function() {
+  if (!is_connected()) return(FALSE)
+  
+  con = active_connection()
+  return(con$isLoggedIn())
+}
+
 # from r-spatial/stars @ github /R/tidyverse
 register_s3_method <- function(pkg, generic, class, fun = NULL) {
   stopifnot(is.character(pkg), length(pkg) == 1)

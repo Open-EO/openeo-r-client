@@ -133,7 +133,15 @@ OpenEOClient <- R6Class(
         stop("Not connected to a back-end. Please connect to one before proceeding")
       }
     },
-    
+    disconnect = function() {
+      observer = getOption("connectionObserver")
+      
+      if (!is.null(observer)) observer$connectionClosed(type="OpenEO Service",host=private$host)
+      .remove_connection(con = self)
+      
+      .initPackageEnvVariables()
+      
+    },
     connect = function(url=NULL,version=NULL,exchange_token="access_token") {
       tryCatch({
         if (is.null(url) && length(self$getHost()) == 0) {
@@ -259,6 +267,8 @@ OpenEOClient <- R6Class(
       if (!is.null(private$auth_client)){
         private$auth_client$logout()
       }
+      
+      
       
       assign(x = "active_connection", value = NULL, envir = pkgEnvironment)
       
@@ -804,6 +814,7 @@ client_version = function() {
   rm(list = names(sel), envir=globalenv())
 }
 
+
 .fill_rstudio_observer = function() {
   observer = getOption("connectionObserver")
   
@@ -821,12 +832,12 @@ client_version = function() {
                               },
                               connectCode = paste0("library(openeo)\n\nconnect(host=\"",con$getHost(),"\")"),
                               disconnect = function() {
-                                logout()
-                                .remove_connection(con = con)
-                                observer <- getOption("connectionObserver")
+                                if (is_logged_in()) logout()
                                 
-                                if (!is.null(observer))
-                                  observer$connectionClosed("OpenEO Service", con$getHost())
+                                con = active_connection()
+                                if (!is.null(con)) {
+                                  con$disconnect()
+                                }
                               },
                               listObjects = function(type="collection") {
                                 con = active_connection()
