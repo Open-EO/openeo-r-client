@@ -277,3 +277,16 @@ and as Process:
 All the processes offer various kinds of parameters so the user can control the process. One parameter, usually “data”, transports the input data that will be manipulated. If the parameter type is a raster or vector cube the whole n-dimensional data cube will be manipulated. But it is also possible to manipulate arrays or scalars of data. This kind of input is often times transferred to the process, when a process graph is allowed as value for the parameter. The user-defined process that is passed to that parameter needs to accept the parameters provided “process graph parameters” as input.
 
 The other controlling parameters can have a [variety of types](https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json). 
+
+To clarify, the parameter type matching is completely hidden from the user. A user simply tries to pass a value to a process parameter and the most suitable allowed parameter type is chosen automatically. If the value cannot be matched to the allowed types for the parameter, then at some point a warning or an error will be raised. To inform yourself about the allowed parameter types, please look up the process descriptions.
+
+```{r, eval=FALSE}
+p = processes()
+
+process_viewer(p$load_collection())
+describe_process("load_collection")
+
+
+data_node = p$load_collection(id = "SENTINEL2_L2A_SENTINELHUB",temporal_extent = c("2022-05-01","2022-07-01"),bands = c("B04","B08"))
+```
+
