@@ -186,6 +186,18 @@ processes = function(con = NULL) {
     }, error = .capturedErrorToMessage)
 }
 
+#TODO document
+#' @export
+active_process_collection = function(processes=NULL) {
+  if (is.null(processes)) {
+    return(get(x = "process_collection", envir = pkgEnvironment))
+  } else if ("ProcessCollection" %in% class(processes)) {
+    assign(x = "process_collection", value = processes, envir = pkgEnvironment)
+    invisible(processes)
+  } else {
+    stop(paste0("Cannot set processes collection with object of class '",utils::head(class(con),1),"'"))
+  }
+}
 
 
 

@@ -66,9 +66,9 @@ list_collections = function(con=NULL) {
 #' @export
 active_data_collection = function(collection=NULL) {
   if (is.null(collection)) {
-    return(get(x = "dataCollection", envir = pkgEnvironment))
+    return(get(x = "data_collection", envir = pkgEnvironment))
   } else if ("CollectionList" %in% class(collection)) {
-    assign(x = "dataCollection", value = collection, envir = pkgEnvironment)
+    assign(x = "data_collection", value = collection, envir = pkgEnvironment)
     invisible(collection)
   } else {
     stop(paste0("Cannot set data collection with object of class '",utils::head(class(con),1),"'"))
