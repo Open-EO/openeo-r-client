@@ -10,6 +10,9 @@ ongoing development
 ## Fixes
 * an issue when calling the JSON serialization of class Process
 
+## Removed
+* functions to call data collection from connection
+
 # Version 1.2.2
 
 ## Changed
