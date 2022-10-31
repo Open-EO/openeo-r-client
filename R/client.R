@@ -10,7 +10,6 @@ NULL
 #' 
 #' @field user_id The user_id obtained after authentication
 #' @field api.mapping The mapping of the API endpoints and the back-end published ones
-#' @field processes a list of [Process()] objects offered by the back-end
 #' 
 #' @section Methods:
 #' \describe{
@@ -61,7 +60,6 @@ OpenEOClient <- R6Class(
     user_id = NULL,
     
     api.mapping = NULL,
-    processes = NULL,
 
     # functions ====
     initialize = function(host=NULL) {
@@ -135,6 +133,8 @@ OpenEOClient <- R6Class(
     },
     disconnect = function() {
       observer = getOption("connectionObserver")
+      
+      if (is_logged_in()) logout()
       
       if (!is.null(observer)) observer$connectionClosed(type="OpenEO Service",host=private$host)
       .remove_connection(con = self)
@@ -333,7 +333,6 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     exchange_token="access_token",
     capabilities=NULL,
-    process_collection=NULL,
     
     # functions ====
     setHost = function(host) {

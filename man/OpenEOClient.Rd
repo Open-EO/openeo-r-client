@@ -12,8 +12,6 @@ An R6Class that interacts with an openEO compliant back-end.
 \item{\code{user_id}}{The user_id obtained after authentication}
 
 \item{\code{api.mapping}}{The mapping of the API endpoints and the back-end published ones}
-
-\item{\code{processes}}{a list of \code{\link[=Process]{Process()}} objects offered by the back-end}
 }}
 
 \section{Methods}{

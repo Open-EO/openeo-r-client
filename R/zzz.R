@@ -23,9 +23,11 @@ pkgEnvironment = new.env()
 }
 
 .onUnload = function(libpath) {
-  if (is_logged_in()) logout()
+  con = active_connection()
+  if (!is.null(con)) {
+    con$disconnect()
+  }
   
-  .initPackageEnvVariables()
   gc()
 }
 

@@ -224,6 +224,17 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
     return(invisible(con))
 }
 
+# TODO document!
+#' @export
+disconnect = function() {
+  con = active_connection()
+  
+  if (!is.null(con)) {
+    con$disconnect()
+  }
+  invisible(NULL)
+}
+
 #' Log in on a specific back-end
 #' 
 #' Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step
