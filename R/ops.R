@@ -89,6 +89,7 @@ NULL
 .round = function(x,digits=0) {
   graph = .getProcessCollection(x)
   
+  
   FUN = "round"
   if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
@@ -928,8 +929,8 @@ NULL
 
 .genericBinaryFunction = function(e1,e2,FUN) {
   graph = .getProcessCollection(e1,e2)
-  
-  if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
+
+    if (!FUN %in% names(graph)) stop(paste0("Process '",FUN,"' is not available on the back-end. Please check the provided processes for alternatives and create a ProcessGraph graph via the function 'openeo::ProcessGraphArgument'."))
   
   # if ProcessGraphParameter, then check if array or single value
   e1 = .autoArraySubset(e1)

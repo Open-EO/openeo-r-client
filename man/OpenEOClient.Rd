@@ -34,8 +34,6 @@ path parameters and whether or not authorization (access_token) is necessary}
 \item{\verb{$getAuthClient()}}{returns the authentication client}
 \item{\verb{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
 \item{\verb{$getCapabilities()}}{service exploration to retrieve the supported openEO endpoints}
-\item{\verb{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
-\item{\verb{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
 \item{\verb{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
 \item{\verb{$getTitle()}}{returns the title of the connection as stated in the getCapabilities document}
 }

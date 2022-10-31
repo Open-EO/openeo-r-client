@@ -150,14 +150,14 @@ process_viewer = function(x = NULL, con = NULL) {
   tryCatch({
     if (length(con) == 0) con = .assure_connection(con)
     
-    if (is.null(x)) {
-      x = list_processes(con=con)
+    process_list = list_processes(con=con)
+    
+    if (is.null(x) || "ProcessCollection" %in% class(x)) {
+      x = process_list
     }
     
     if (is.function(x)) {
       x = do.call(x, args = list())
-    } else if ("ProcessCollection" %in% class(x)) {
-      x = con$processes
     } else if (is.character(x)) {
       x = describe_process(con = con,process = x)
       
@@ -171,7 +171,7 @@ process_viewer = function(x = NULL, con = NULL) {
         x = list(x$serialize())
       } else {
         pid = x$getId()
-        if (!pid %in% names(con$processes)) {
+        if (!pid %in% names(process_list)) {
           warning(paste0("Process '",pid,"' is not supported by the current openEO service"))
           return(invisible(NULL))
         }

@@ -59,7 +59,6 @@ list_collections = function(con=NULL) {
   } 
   
   return(collection_list)
-    # return(con$getDataCollection())
 }
 
 # TODO document!

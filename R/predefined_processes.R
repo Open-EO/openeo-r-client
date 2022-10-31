@@ -5,30 +5,42 @@ NULL
 
 #' List available processes on server
 #'
-#' List all processes available on the back-end
+#' List all processes available on the back-end. 
+#' 
+#' @Details Usually you won't need to authenticate yourself for this endpoint, but it the back-end provider might 
+#' offer more functionalities for registered users. Therefore the authentication token will be sent, if already logged in.
+#' 
 #' @param con Connection object (optional) otherwise [active_connection()]
 #' is used.
 #' @return a list of lists with process_id and description
 #' @export
 list_processes = function(con=NULL) {
+  
+  process_list = get(x = "process_collection", envir = pkgEnvironment)
+  
+  # if the list was not called already, then fetch the processes from the back-end, otherwise return the stored data
+  if (is.null(process_list)) {
     tryCatch({
-        con = .assure_connection(con)
-        
-        if (is.null(con$processes)) {
-            tag = "process_overview"
-            
-            listOfProcesses = con$request(tag = tag, authorized=con$isLoggedIn(), type = "application/json")
-            con$processes = lapply(listOfProcesses$processes, function(process) {
-                class(process) = "ProcessInfo"
-                return(process)
-            })
-            
-            names(con$processes) = sapply(con$processes, function(p) p$id)
-            class(con$processes) = "ProcessList"
-        }
-        
-        return(con$processes)
+      con = .assure_connection(con)
+      
+      tag = "process_overview"
+      
+      listOfProcesses = con$request(tag = tag, authorized=con$isLoggedIn(), type = "application/json")
+      process_list = lapply(listOfProcesses$processes, function(process) {
+        class(process) = "ProcessInfo"
+        return(process)
+      })
+      
+      names(process_list) = sapply(process_list, function(p) p$id)
+      class(process_list) = "ProcessList"
+      
+      assign(x = "process_list", value = process_list, envir = pkgEnvironment)
+      
     }, error = .capturedErrorToMessage)
+    
+  }
+  
+  return(process_list)
 }
 
 #' Describe a process
@@ -55,16 +67,18 @@ describe_process = function(process = NA, con=NULL) {
             return(process)
         }
         
-        if (is.null(con$processes)) {
+        process_list = list_processes(con=con)
+        
+        if (is.null(process_list)) {
             message("No processes found or loaded from the back-end")
             invisible(NULL)
         }
         
-        if (!process %in% names(con$processes)) {
+        if (!process %in% names(process_list)) {
             message(paste("Cannot describe process '", process, "'. Process does not exist.", sep = ""))
             invisible(NULL)
         } else {
-            return(con$processes[[process]])
+            return(process_list[[process]])
         }
     }, error = .capturedErrorToMessage)
 }
@@ -92,11 +106,12 @@ ProcessCollection = R6Class(
     "ProcessCollection",
     lock_objects = FALSE,
     public = list(
+        # public ====
         initialize = function(con=NULL) {
             tryCatch({
                 con = .assure_connection(con)
-                
-                private$processes = lapply(con$processes, function(process_description) {
+                process_list = list_processes(con=con)
+                private$processes = lapply(process_list, function(process_description) {
                     process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
                     return(processFromJson(process_description))
                 })
@@ -163,6 +178,7 @@ ProcessCollection = R6Class(
         }
     ),
     private = list(
+      # private ====
         conection = NULL,
         node_ids = character(),
         processes = list(),
@@ -180,11 +196,20 @@ ProcessCollection = R6Class(
 #' @return a ProcessCollection object with the offered processes of the back-end
 #' @export
 processes = function(con = NULL) {
+  process_collection = active_process_collection()
+  
+  if (rlang::is_null(process_collection)) {
+  
     tryCatch({
         con = .assure_connection(con)
-        return(con$getProcessCollection())
+        process_collection = ProcessCollection$new(con = con)
+        active_process_collection(processes = process_collection)
     }, error = .capturedErrorToMessage)
+  }
+  
+  return(process_collection)
 }
+
 
 #TODO document
 #' @export

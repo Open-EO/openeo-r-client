@@ -618,7 +618,9 @@ setOldClass(c("ProcessNode","Process","R6"))
 parse_graph = function(json, parameters = NULL, con=NULL) {
   tryCatch({
     con = .assure_connection(con)
-    processes = con$getProcessCollection()
+    processes = processes()
+    
+    # TODO what to do with "json" being a process node which need to be readded to the node id list?
     
     if (is.list(json)) {
       parsed_json = json

@@ -29,7 +29,6 @@ NULL
 #'   \item{`$getAuthClient()`}{returns the authentication client}
 #'   \item{`$setAuthClient(value)`}{sets the authentication client if it was configured and set externally}
 #'   \item{`$getCapabilities()`}{service exploration to retrieve the supported openEO endpoints}
-#'   \item{`$getProcessCollection()`}{returns the evaluated process list as obtainable at 'processes()'}
 #'   \item{`$getId()`}{returns the ID of the Connection as stated in the getCapabilities document}
 #'   \item{`$getTitle()`}{returns the title of the connection as stated in the getCapabilities document}
 #' }
@@ -215,17 +214,8 @@ OpenEOClient <- R6Class(
           message("Warning: Connected host is not production-ready. Unexpected errors might occur.")
         }
         
-        tryCatch({
-          if (is.null(self$processes)) {
-            processes = list_processes(self)
-            pids = sapply(processes, function(x)x$id)
-            names(processes) = pids
-            self$processes = processes
-          }
-          
-        }, error = function(e){
-          self$processes = NULL
-        })
+        void = list_processes(self)
+        
         return(invisible(self))
         
       }, 
@@ -305,13 +295,6 @@ OpenEOClient <- R6Class(
       }
       
       return(private$capabilities)
-    },
-    getProcessCollection=function() {
-      if (is.null(private$process_collection)) {
-        private$process_collection = ProcessCollection$new(con = self)
-      }
-      
-      return(private$process_collection)
     },
     
     getId =function() {
