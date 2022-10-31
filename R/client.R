@@ -22,6 +22,7 @@ NULL
 #'   \item{`$getHost()`}{returns the host URL}
 #'   \item{`$stopIfNotConnected()`}{throws an error if called and the client is not connected}
 #'   \item{`$connect(url=NULL,version=NULL)`}{connects to a specific version of a back-end}
+#'   \item{`$disconnect()`}{disconnects from the back-end by logout and clearing of active back-end package variables}
 #'   \item{`$api_version()`}{returns the openEO API version this client is compliant to}
 #'   \item{`$login(user=NULL, password=NULL,provider=NULL,config=NULL)`}{creates an [IAuth()] object}
 #'   \item{`$logout()`}{invalidates the access_token and terminates the current session}
@@ -211,6 +212,8 @@ OpenEOClient <- R6Class(
         self$api.mapping = endpoint_mapping(self)
         cat("Connected to service: ",private$host,"\n")
         
+        void = list_collections()
+        
         # connections contract for RStudio
         .fill_rstudio_observer()
         
@@ -262,6 +265,8 @@ OpenEOClient <- R6Class(
         invisible(self)
       },
       error=.capturedErrorToMessage)
+      
+      .refresh_rstudio_connection_observer()
     },
     logout = function() {
       if (!is.null(private$auth_client)){
@@ -628,7 +633,6 @@ OpenEOClient <- R6Class(
       }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
-      # TODO remove raw as parameter?
       url = paste(private$host,endpoint,sep="/")
       
       req = request(url)
@@ -642,7 +646,6 @@ OpenEOClient <- R6Class(
       req = do.call(req_headers,header)
       query[[".req"]] = req
       req = do.call(req_url_query,args = query)
-      # response = req_perform(req)
       if (isTRUE(raw)) {
         if (file.exists(data)) {
           if (length(data) > 0) req = req_body_file(req,data, type = "application/octet-stream")
@@ -813,6 +816,18 @@ client_version = function() {
   rm(list = names(sel), envir=globalenv())
 }
 
+.refresh_rstudio_connection_observer = function() {
+  con = active_connection()
+  
+  if (is.null(con)) stop("openEO cannot refresh the connectionObserver panel, because there is no active connection")
+  
+  assign(x = "data_collection", value = NULL, envir = pkgEnvironment)
+  void = list_collections()
+  
+  observer <- getOption("connectionObserver")
+  if (!is.null(observer))
+    observer$connectionUpdated(type="OpenEO Service", host=con$getHost(),hint="collections")
+}
 
 .fill_rstudio_observer = function() {
   observer = getOption("connectionObserver")

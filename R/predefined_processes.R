@@ -5,10 +5,8 @@ NULL
 
 #' List available processes on server
 #'
-#' List all processes available on the back-end. 
-#' 
-#' @Details Usually you won't need to authenticate yourself for this endpoint, but it the back-end provider might 
-#' offer more functionalities for registered users. Therefore the authentication token will be sent, if already logged in.
+#' List all processes available on the back-end. This returns the R translation of the JSON metadata as lists. This process description
+#' is stored internally at the environment package variable `process_list`, which is not directly accessible apart from this function.
 #' 
 #' @param con Connection object (optional) otherwise [active_connection()]
 #' is used.
@@ -179,7 +177,6 @@ ProcessCollection = R6Class(
     ),
     private = list(
       # private ====
-        conection = NULL,
         node_ids = character(),
         processes = list(),
         getNodeIds = function() {private$node_ids}
@@ -189,11 +186,14 @@ ProcessCollection = R6Class(
 #' Get a process graph builder / process collection from the connection
 #' 
 #' Queries the connected back-end for all available processes and collection names and registers them via R functions on
-#' a ProcessCollection object to build a process graph in R.
+#' a ProcessCollection object to build a process graph in R. The current [`ProcessCollection`] is stored internally at the package environment
+#' variable `process_collection`, which can be fetched and set with `active_process_collection`.
 #' 
 #' @param con a connection to an openEO back-end (optional) otherwise [active_connection()]
 #' is used.
 #' @return a ProcessCollection object with the offered processes of the back-end
+#' 
+#' @rdname processes
 #' @export
 processes = function(con = NULL) {
   process_collection = active_process_collection()
@@ -203,7 +203,7 @@ processes = function(con = NULL) {
     tryCatch({
         con = .assure_connection(con)
         process_collection = ProcessCollection$new(con = con)
-        active_process_collection(processes = process_collection)
+        void = active_process_collection(processes = process_collection)
     }, error = .capturedErrorToMessage)
   }
   
@@ -211,7 +211,7 @@ processes = function(con = NULL) {
 }
 
 
-#TODO document
+#' @rdname processes
 #' @export
 active_process_collection = function(processes=NULL) {
   if (is.null(processes)) {

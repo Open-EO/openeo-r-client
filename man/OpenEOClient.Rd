@@ -26,6 +26,7 @@ path parameters and whether or not authorization (access_token) is necessary}
 \item{\verb{$getHost()}}{returns the host URL}
 \item{\verb{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 \item{\verb{$connect(url=NULL,version=NULL)}}{connects to a specific version of a back-end}
+\item{\verb{$disconnect()}}{disconnects from the back-end by logout and clearing of active back-end package variables}
 \item{\verb{$api_version()}}{returns the openEO API version this client is compliant to}
 \item{\verb{$login(user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link[=IAuth]{IAuth()}} object}
 \item{\verb{$logout()}}{invalidates the access_token and terminates the current session}

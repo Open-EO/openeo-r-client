@@ -3,7 +3,8 @@
 #'
 #' List available collections stored on an openEO server and return them as a `CollectionList` - a named list of `Collection` objects. 
 #' The names are the collection IDs. Although the result at [describe_collection()] is also a Collection, the Collection object of returned
-#' from `list_collections()` is considered a list entry with less detailed information.
+#' from `list_collections()` is considered a list entry with less detailed information. The collection list is stored internally as the package
+#' environment variable `data_collection`, which can be accessed and set with `active_data_collection()`.
 #' 
 #' @param con Connection object (optional) otherwise [active_connection()]
 #' is used.
@@ -11,6 +12,7 @@
 #' @return object of class 'CollectionList'
 #' 
 #' @importFrom rlang is_null 
+#' @rdname list_collections
 #'  
 #' @export
 list_collections = function(con=NULL) {
@@ -61,7 +63,7 @@ list_collections = function(con=NULL) {
   return(collection_list)
 }
 
-# TODO document!
+#' @rdname list_collections
 #' @export
 active_data_collection = function(collection=NULL) {
   if (is.null(collection)) {

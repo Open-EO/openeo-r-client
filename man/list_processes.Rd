@@ -14,5 +14,6 @@ is used.}
 a list of lists with process_id and description
 }
 \description{
-List all processes available on the back-end.
+List all processes available on the back-end. This returns the R translation of the JSON metadata as lists. This process description
+is stored internally at the environment package variable \code{process_list}, which is not directly accessible apart from this function.
 }
