@@ -15,7 +15,7 @@ NULL
 list_processes = function(con=NULL) {
   
   process_list = get(x = "process_list", envir = pkgEnvironment)
-  
+
   # if the list was not called already, then fetch the processes from the back-end, otherwise return the stored data
   if (is.null(process_list)) {
     tryCatch({

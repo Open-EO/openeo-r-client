@@ -1,0 +1,430 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# openEO Project
+
+The openEO concept thrives in context of an ever increasing amount of EO data. This leads to problems in managing, analyzing and more importantly processing big amount of data by researchers and companies. The core idea is to provide open-source tools to interact with back-end providers via an open API with a predefined set of processes. Those processes are intended to manipulate the underlying multidimensional data cubes as a data abstraction layer. In this case, the back-end provider offers the EO data and the processing infrastructure while the end-users provide the code for their analysis. Therefore, different client software comes in handy to help users during their production phase. There are currently openEO clients for Python, JavaScript (web based), R and QGIS.
+
+This description only scratches the surface of openEO. If you want to dive deeper you can use the [openEOs official web page](https://openeo.org) as a point of reference or you get involved in the various projects at [Github](https://github.com/Open-EO).
+
+# openEO R client
+
+As part of openEOs product range this client was developed to address the R user community in order to give them access to openEO and to blend the openEO concept into R and it's commonly used IDE RStudio.
+
+## Package Goals and General Architecture
+
+The openEO architecture is simply client-server based. The clients communicate with the back-ends via static functions for exploring server capabilities, data sets, processes or visualization services (WMS,WFS,WCS) and for managing the calculation on the back-end. Then there is also a degree of freedom regarding the tools / processes provided by the back-end. Usually openEO back-ends adopt the [predefined processes](https://processes.openeo.org/1.0.0/) that aim to define a set of common processes for working with multidimensional data cubes. On top of that provider might offer additional processes to either boost their performance or ease usability. 
+When talking about client-server based processing, hardly any processing is done by this package, but it will delegate the processing to the back-end and ease your analysis workflow by offering a familiar developing environment in R and RStudio. 
+
+## Funding Acknowledgements
+
+The authors acknowledge the financial support for the development of this package during the H2020 project "openEO" (Oct 2017 to Sept 2020) by the European Union, funded by call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project "R4openEO" (Sept 2021 to Sept 2022). 
+
+Furthermore, openEO was improved and operationalized by ESA funding in the project "openEO Platform" (Sept 2020 to Sept 2022).
+
+## Disclaimer
+This software is free of charge. You can use it, distribute it and improve it under the Apache2 license. In openEO exploration of services and data is also free of charge in most cases. You can even start developing your analysis with the processes provided by the back-end. 
+However, storing EO data and providing processing capabilities costs money. This means that openEO providers might charge money for using their infrastructure. Please inform yourselves about eventual costs.
+The examples in this vignette are created with the openEO implementation for Google Earth Engine (GEE). Provided processes and data sets will vary among different platform providers. This means that you might not be able to copy and paste the examples given here. This vignette serves the purpose to explain how to interact with this package in order to execute your analysis.
+Again, we would like to stress out that the heavy lifting will be done by server back-ends and this package just offers the functions to interact with the back-end in a "mostly" R familiar way. Here and there you may find some "quirks" that are due to the generic implementation of dynamically parsed collections and predefined processes for any openEO back-end. However the "quirk" will be that you might call processes that are registered at an R6 object the same way you would call named fields in a list (see `processes()` in "Executing and storing of user-defined processes").
+Also, the examples in this vignette will be reproducible, but it will not show any results in the vignette. This is due to the interactive part, when dealing with remote platforms - you will need access to them and we cannot share the credentials publicly without explicit consent. The vignette guides you on how to perform certain actions in openEO by providing code examples.
+
+## Registration
+
+As mentioned before, provider might charge money for accessing their infrastructure and hence you would need to [sign up with EGI](https://docs.egi.eu/users/aai/check-in/signup/) first and then [enroll with openEO Platform](https://openeo.cloud/). This setup is also targeted for the long run (support of more recent openEO API versions). 
+For a slightly older version of the API (v1.0.0) you can use the Google Earth Engine driver with limited capabilities. This system was developed and set up during the H2020 openEO project and you can still access it with the link and credentials provided at the [openeo-earthengine-driver project on Github](https://github.com/Open-EO/openeo-earthengine-driver) section "Demo".
+
+## Connecting to backend
+
+```{r, eval=FALSE }
+library(openeo)
+
+url = "https://earthengine.openeo.org"
+
+con = connect(host=url)
+```
+```{r, eval=FALSE}
+capabilities()
+```
+
+As you can see, you can either omit the connection or you state it explicitly via the parameter `con`. All static functions designed to interact with any openEO back-end will have the connections parameter where you are able to state the designated back-end connection. If you omit it, R tries to get the most recent connection. If you want to change the active connection and don't want to pass the connection to every single interaction function you can call an already established connection with `active_connection()`.
+
+## Exploration of data, services and processes
+
+The exploratory functions do not need a user to be registered or signed-in and are free of costs. Typically, you might want to know which collections and processes are implemented, as well as the available file formats for export and the web services for integration in GIS or web apps.
+
+With the list_* functions you will get overviews of the elements. Jobs, services and process graphs are bound to a user and require an authentication. To get more detailed information on those objects, you can use describe_* functions with their respective ID.
+
+Objects stated in the list object and objects returned as detailed information have the same class, but in the list view some information are hidden. They are treated and printed in the same way.
+
+List objects are S3-objects with dedicated `print()` and `as.data.frame()` methods. This ensures that these objects are printed as a data.frame or tibble.
+
+Here are some examples on the collections:
+
+```{r, eval=FALSE}
+list_collections()
+```
+
+
+```{r, eval=FALSE}
+colls = list_collections()
+class(colls)
+```
+
+```{r, eval=FALSE}
+str(colls$`COPERNICUS/S2`)
+```
+
+As in the example before, you are advised to use auto-completion. In this way you retrieve an object list such as collections or file formats and are able to select a particular entry by its name. These lists are very similar to named lists.
+
+```{r, paged.print = FALSE, eval=FALSE}
+describe_collection(collection = colls$`COPERNICUS/S2`)
+```
+
+The processes are handled similarly. With `list_processes()` you will get a list of process objects which are visualized through a dedicated `print()` method. The processes obtained here, are just for information purposes. For process graph / workflow creation we will use `processes()`, which creates process collection containing parametrized functions.
+
+```{r, paged.print=FALSE, eval=FALSE}
+process_list = list_processes()
+
+process_list[1:3]
+```
+
+In the example above you print the basic information about the processes to the console. If you want to have a nicer visualization of the process in HTML, you can use `process_viewer()`. Simply pass the process name, function or process object to the function.
+
+```{r, eval=FALSE}
+process_viewer(x = "load_collection")
+
+process_viewer(x=process_list[1])
+
+p = processes()
+process_viewer(x=p$load_collection)
+```
+
+
+As beforehand you can access particular objects by their ID.
+
+```{r, paged.print = FALSE, eval=FALSE}
+process_list$`if`
+```
+
+```{r, paged.print = FALSE, eval=FALSE}
+process_list$`sum`
+```
+
+
+File formats and service types can be obtained and visualized with the previous functions. On a side note, you can also use those objects when assigning the file format in the openEO process for `save_results` or the service type when creating a particular web service.
+
+```{r, eval=FALSE}
+formats = list_file_formats()
+class(formats)
+```
+
+```{r, paged.print = FALSE, eval=FALSE}
+formats
+```
+
+```{r, paged.print=FALSE, eval=FALSE}
+formats$output$PNG
+```
+
+```{r, eval=FALSE}
+class(formats$output$PNG)
+```
+
+For formats we have to distinguish between supported input and output formats. Output formats are used when serializing results and input formats are used when aggregating data via polygons, creating a mask from a geometry or potentially uploading a raster image as mask.
+
+```{r, paged.print=FALSE, eval=FALSE}
+service_types = list_service_types()
+service_types
+```
+
+
+## Login
+
+```{r, eval=FALSE}
+user = ""
+pwd = ""
+
+login(user = user,password = pwd)
+```
+
+Note: You might explore more data collections and processes once you are registered and logged in. Without logging in you can just see the free data sets that do not conflict with any terms of use.
+
+## User data
+
+As a registered user, you will have a dedicated file space for your uploads (like a workspace), as well as the jobs and services linked to your account. Further more you can explore your accounts quota in terms of used and available disk space and credits.
+
+### User account 
+```{r, paged.print = FALSE, eval=FALSE}
+describe_account()
+```
+
+### File workspace
+
+In your file space you can upload a variety of data. You can put here all external data you need for your analysis. This can range from area of interests, over scripts for user defined functions (UDF scripts) to trained machine learning models that shall be applied on a larger scale.
+
+To get an overview of the uploaded files, you can use the `list_*` function - in this case it is `list_files()`.
+
+```{r, eval=FALSE}
+list_files()
+```
+
+As an example for the upload, we will first download a temporary GeoJSON file from the Github repository, then upload it using `upload_file()` and lastly remove the temporary download file. For a better workspace organization you can use subfolders as `target` parameter. If the subfolder does not exist, it will be created during the upload.
+
+```{r, eval=FALSE}
+file = tempfile(fileext = ".json")
+  
+download.file(url = "https://raw.githubusercontent.com/Open-EO/openeo-r-client/master/examples/polygons.geojson", destfile = file)
+
+openeo::upload_file(content=file,target="aoi/polygons.json")
+
+file.remove(file)
+```
+
+Now, we call `list_files()` once more, and as you can see, the file is now at the specific workspace location.
+
+```{r, eval=FALSE}
+list_files()
+```
+
+The `download_file()` function works inverse to the upload and lets you retrieve the uploaded data.
+
+```{r, eval=FALSE}
+dl_file = download_file(src="aoi/polygons.json", dst = file)
+```
+
+```{r, eval=FALSE}
+cat(readChar(dl_file,nchars = file.size(dl_file)))
+```
+
+The last function in this context is the `delete_file()` function, which removes a specific file from the workspace.
+
+```{r, eval=FALSE}
+delete_file(src = "aoi/polygons.json")
+```
+
+And now the workspace is empty. (If not maybe other users may have left data on this demo account)
+
+```{r, eval=FALSE}
+list_files()
+```
+
+```{r, echo=FALSE, include=FALSE, eval=FALSE}
+file.remove(dl_file)
+rm(dl_file)
+```
+
+
+## Creation and storage of user-defined processes
+
+
+The `ProcessCollection` is an object that returns the processes available by `list_processes()` as functions of an R6 object. Therefore, all parameter definitions and the process metadata are evaluated and translated into functions in R. To create the `ProcessCollection` use `processes()` during an active openEO connection or specify a new one by making use of parameter `con`.
+
+```{r, eval=FALSE}
+p = processes()
+```
+
+Lets explore object `p` a bit further.
+
+```{r, eval=FALSE}
+class(p)
+```
+
+```{r, eval=FALSE}
+names(p)
+```
+
+Here you can see all the available processes on the openEO service. The functions or fields in ".__enclos_env__", "clone" and "initialize" are R6-specific functions, whereas the others are dynamically added functions. This means that when you connect to a different openEO service the functions here might be different or they have different parameter.
+
+For comparison here are the processes listed in `list_processes()`:
+```{r, eval=FALSE}
+names(list_processes())
+```
+
+"load_collection" is a key function since the data is selected for further processing. 
+
+```{r, eval=FALSE}
+class(p$load_collection)
+```
+
+```{r, eval=FALSE}
+formals(p$load_collection)
+```
+
+You can see that there are four defined parameters. They are initialized with `NA`. More detailed information can be obtained by using the `describe_process()`. By typing the different arguments and evaluating the function you receive a `ProcessNode` object. These are the building blocks of the process graph / workflow.
+
+```{r, paged.print=FALSE, eval=FALSE}
+describe_process(process = "load_collection")
+```
+
+## Example: Analysis setup
+
+Now I will present a simple use case on how to create your first analysis using the openEO processes. First, please bear in mind, that the initial data set has to be seen as a multidimensional data cube. Such data cubes often consist of space (2 dimensions), time (another dimension) and bands or maybe even the wavelengths or polarization (yet another dimension). As main operations on data cubes we have reducers and aggregation functions. These allow to get rid of a certain dimension or restructure them by changing the spatial or temporal resolution. In any case you need to define a function that handles the data accordingly.
+
+In the following example we will select a collection (Sentinel-2) and with a certain spatial and temporal extent. Additionally, we filter the bands, as we need just red and near-infrared wavelengths. Afterwards we calculate the NDVI for each time step by reducing "bands" and stating the NDVI band arithmetic function. Afterwards we will reduce the temporal dimension by selecting the minimum NDVI value per "pixel" (x and y coordinate). As the selected back-end offers PNG as an image format, which we might need for a web service like WMS, we need to scale the NDVI value range from (-1 to 1) to the PNG value range (0,255). Lastly, we store the results as a PNG image.
+
+In openEO terminology the defined analysis workflow will be called "user defined process" (UDP).
+
+```{r, eval=FALSE}
+data = p$load_collection(id = colls$`COPERNICUS/S2`,
+                             spatial_extent = list(
+                               west=16.1,
+                               east=16.6,
+                               north=48.6,
+                               south= 47.2
+                             ),
+                             temporal_extent = list(
+                               "2018-04-01", "2018-05-01"
+                             ),
+                             bands=list("B8","B4"))
+
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
+  b8 = data[1]
+  b4 = data[2]
+  
+  return((b8-b4)/(b8+b4))
+})
+
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+
+result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+```
+
+## Calculate immediate results
+
+For development and testing of the process graph you can use the `compute_result` function. Please keep in mind that there might be costs involved to these processes depending on the payment plan. This process will block your command line until the calculations are done and the results are sent. It is recommended to choose a small data sample when using this function. It might also be the case that some provider won't allow UDF for this function. In cases where payments are involved you have the possibility to set the payment plan and the maximum amount of credits spent.
+
+```{r, eval=FALSE}
+temp = tempfile()
+file = compute_result(graph = result, output_file = temp)
+```
+
+```{r, eval=FALSE}
+r = raster::raster(file)
+raster::spplot(r)
+```
+
+
+## Creating a job
+
+In contrast to the synchronous execution of the user defined process (UDP), you can also create a job at the back-end, which means that the console is not blocked in the meantime. The job needs to be started in order to perform the analysis and obtain the results.
+
+```{r, eval=FALSE}
+job = create_job(graph=result,title = "Minimum NDVI", description = "Minimum NDVI calculation on Sentinel-2 data, including a linear scaling into 0 to 255 and exporting as PNG file.")
+```
+
+In addition to the response message you can list your jobs and look if the new job is listed.
+
+```{r, eval=FALSE}
+jobs = list_jobs()
+jobs
+```
+
+
+```{r, eval=FALSE}
+jobs[[job$id]]
+```
+
+Similarly to the process graph, `describe_job()` returns a more detailed description of the job.
+
+```{r, eval=FALSE}
+describe_job(job = job)
+```
+
+You can queue the job for execution by using `start_job()`.
+
+```{r, eval=FALSE}
+start_job(job=job)
+```
+
+Now, we need to wait for the job to finish. We can get information on the status either by the job list or by the job meta data.
+
+```{r, eval=FALSE}
+list_jobs()
+```
+
+When it is finished, we can inspect the results.
+
+```{r, paged.print=FALSE, eval=FALSE}
+list_results(job=job)
+```
+
+In most cases we want to download the results.
+
+```{r, eval=FALSE}
+dir = tempdir()
+download_results(job=job, folder = dir)
+```
+
+With the download function all result assets are downloaded into the target folder.
+
+```{r, eval=FALSE}
+list.files(dir)
+```
+
+```{r, eval=FALSE}
+delete_job(job=job)
+```
+
+
+## Creating a service
+
+If the openEO back-end supports the retrieval of results as a service you can use this package to create one. For example, if you want to have a WMS layer or a Web Map Tile service in leaflet, QGIS or mapview.
+
+First, you can explore the different offered service types of the back-end.
+
+```{r, eval=FALSE}
+service_types = list_service_types()
+```
+
+Then you create a service similarly to the creation of a job. Here you also need to state the kind of service to be created and whether or not it shall be enabled.
+
+```{r, eval=FALSE}
+test_service = create_service(type = service_types$xyz, graph = result, title = "XYZ service for minimum EVI", description = "XYZ service for minimum EVI from the getting_started guide.",enabled = TRUE)
+```
+
+The idea behind services is that you might want the analysis results for a interactive web application for users to explore the data. The back-end decides whether or not it caches the results or if it processes the result on-the-fly.
+
+As for the other endpoints, you are able to explore your services by listing them, getting detailed information, updating and deleting.
+
+```{r, eval=FALSE}
+list_services()
+```
+
+```{r, eval=FALSE}
+describe_service(service = test_service)
+```
+
+As a practical use case for this we prepared a small web map example with leaflet which uses the WMTS created before.
+
+```{r, eval=FALSE}
+library(magrittr)
+library(leaflet)
+leaflet() %>% addTiles() %>% addTiles(test_service$url, tileOptions(tms=TRUE)) %>% setView(lng = 16.363449,lat=48.210033,zoom = 7)
+```
+
+## RStudio specific features
+
+In this web page representation certain features cannot be shown, but shall be mentioned, for you to try out in RStudio.
+
+- `process_viewer()`: opens the viewer panel and renders the process information as HTML web page
+- `collection_viewer()`: similar to `process_viewer()`, but for collections
+- `terms_of_service()`: also a web view of the terms of service
+- `privacy_policy`: web view of the privacy policy
+- connection contract implementation: creates a connection in the connections pane for the openEO service

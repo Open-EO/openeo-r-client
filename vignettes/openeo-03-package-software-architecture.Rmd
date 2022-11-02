@@ -1,0 +1,75 @@
+---
+title: "Software and Package Architecture"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Software and Package Architecture}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This R package is a client in terms of the openEO architecture (?link). This sets the aim of the package to make openEO back-ends with their Earth Observation data collections (EO collections) and functions available to the R community. As described in the openEO API (?link) the clients communicate with the back-end via RESTful HTTP calls in order to exchange JSON objects which mostly contains meta data about collections, processes, jobs or process graphs.
+
+You can only obtain actual data by downloading processed results as files. But for development and testing purposes subsets of immediate results can be directly imported into R as stars objects. Other than that, the processing is done remotely on the back-end and the developed functions in R will aid to visualize and manage the data and service exploration and the creation of processing workflows.
+
+This means that ultimately each call in R will be translated into a corresponding JSON representation and/or HTTP call and vice versa.
+
+In the following topics we will briefly state what requirements can be derived by using the openEO API and how those requirements influenced the design choices of the package.
+
+
+# API
+
+We will not dive to deep into this topic, because the openEO API is very well-documented and covers every aspect about the intended communication between clients and openEO back-ends.
+
+Those well-defined endpoints with their parameters are templated and stored as internal CSV files of this package (see /inst/extdata/api_xxx.csv).  This files are loaded during the “connection” to an openEO back-end and used as a lookup table to map the static functions of the “openeo” package like list_collections(), create_job() or compute_results() to their HTTP counterparts including the naming of the parameters.
+
+When I speak about static functions in this context, I mean those functions that interact with the openEO back-end via the endpoints defined in the openEO API. The reason for this is that those functions are binding to an openEO conformant back-end and need to be implemented in order to allow successful communication and data processing from any openEO client.
+
+In two ways there are dynamic aspects to this. First, the back-end provider can choose which components are implemented and made available for a user, which needs to be checked during the connection phase. The second dynamic aspect is the whole topic about process graph building. With openEO processes (?link) there is a set of processes published that aim to processes EO data where the data is abstracted into an n-dimensional data cube (?link). The openEO API defines an endpoint that lists all actually supported processes by the back-end for process graph building. The processes come also as JSON objects that contain descriptive meta data about the processes itself as well as the name and types of arguments for those processes. Those self-describing processes allow the openEO back-end to use the predefined openEO processes, but they can change the naming, the allowed types or invent completely new processes.
+
+This flexibility requires from this R package that the processes for process graph building cannot be provided as static R function of this package, but have to be read and interpreted dynamically at runtime in order to make it compatible between different openEO back-ends. More on that topic later (?link).
+
+
+# R package dependencies
+
+So, there are several package dependencies from this package, which will be discussed briefly:
+
+* httr2
+* jsonlite
+* sf
+* R6
+
+Apart from the major packages, we use also other packages like IRdisplay and htmltools. Those are imported for visualization purposes for a seamless integration of the openEO Vue components [?](link) for a general look and feel in interactive R reporting environments like R markdown / notebook as well, as Jupyter notebooks with an R Kernel. 
+
+## httr2
+
+As stated in the beginning the openEO architecture requires back-ends to expose their functionalities via RESTful HTTP endpoints. So the client needs tools for that purpose which are provided by the httr2 package. Earlier versions used the package httr, but httr2 was chosen over the latter, because it offered more authentication methods (for example the “OAuth2 device code flow”).
+
+## jsonlite
+
+Also for communication purpose jsonlite was chosen to serialize the objects into JSON.
+
+## sf
+
+For geospatial reasons we use sf as main package for spatial vector data. It is established, widely used and well-known by users. Inside the package it handles the translation between geospatial objects in R and GeoJSON.
+
+## R6
+
+R6 is an object oriented programming style like S3 or S4 in R that is based on [R environments](http://adv-r.had.co.nz/Environments.html), which can be referenced by an address pointer. This makes them reusable and a solid choice when it comes to realize configurable graphs in R, which we will want to achieve in "openeo" in order to create the process workflows for the openEO back-end in order to manipulate EO data. During the creation of those graphs we might reuse the result of a prior process in multiple following processes. Objects in S3 and S4 create hard copies of itself, if passed to other functions, whereas an R6 object will always reference to the same entity. Just this feature will allow process parameter to be easily changed after it is created. This means, we will use R6 objects when it comes to dynamic data, e.g. process graph building and connection handling. Mere meta data representation as obtained from the JSON objects will be handled as S3 objects.
+
+# Authentication
+
+To get access to the computation capabilities and user stored data openEO you need to be a registered user at the openEO back-end, where you want to carry out your analysis. In order to proof that to the system you need to be authenticated. The openEO API offers Open ID Connect (OIDC) and Basic Authentication as authentication methods. In this package the we use primarily OIDC, but also offer Basic Authentication for legacy support. As OIDC is based on OAuth2 there are several different sub mechanisms, e.g. Authcode Flow or Device Code Flow with or without PKCE. The mechanisms are covered by the httr2 package `httr2::oauth_flow_device()`, which is used to negotiate the authentication and to obtain the required access token. In the code the different authentication methods are realized by the different R6 classes that share a common interface `IAuth`. Inheriting classes implement and overload those functions so that by using the function `..$login()` or the active field access_token all objects behave in the same manor and ultimately provide the access token.
+
+# Visual Components
+
+The openEO Team has released [Vue components for openEO](https://www.npmjs.com/package/@openeo/vue-components/v/2.0.0) which is a JavaScript library combined with some CSS files. Those components visualize static objects like collections, processes and jobs in a unified way. This generates a general Look and Feel throughout different openEO clients as the Web Client [?]() and the Python client [?]() uses those components too. In this package the `collection_viewer()` or `process_viewer()` can be used to open those HTML templates spiked with the actual data to be visualized. Further more, the Vue components are rendered when the respective objects are printed in R managed HTML environments like R-Markdown or R-Notebook (even Jupyter Notebook with an R Kernel).
+
+# Print Behavior, Coercion and S3
+
+The JSON objects that are returned at various openEO API endpoints are internally tagged as S3 objects like `class(object) = "SomeClass"`, where object is a list object that was translated from JSON with jsonlite functions and "SomeClass" being a used S3 class of the "openeo" package. For those classes we have defined a different print behavior for the prior list objects. This is especially the case for the table like objects on the static `list_xxx()` functions. Before printing those R lists are coerced with `as.data.frame()` functions before printing to console. But the original object is not changed. If tables shall be created for those lists, then they need to be coerced manually.
+
+See `openeo::as.data.frame()` and `/R/print-functions.R` for further information.
+
+# Process Graph Building
+
+We will dedicate a separate vignette on this topic, where we will explain the concepts involved on parsing the process definitions and creating typed input parameters for validation. For now, the openEO API defines how processes are defined as JSON object. Conceptually those processes consist of general metadata like description and examples and parameters, which are used to control the process. All those parameters allow different types of data, so we need to somehow circumvent R's type free assignment of variables by defining mechanisms to type checking and validation.
