@@ -224,6 +224,22 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
     return(invisible(con))
 }
 
+#' disconnect
+#'
+#' Uses the connections disconnect method to logout and clear all variables in the package for this active back-end. This will also refresh
+#' RStudios connection observer if it can be found.
+#' 
+#' @return invisible NULL
+#' @export
+disconnect = function() {
+  con = active_connection()
+  
+  if (!is.null(con)) {
+    con$disconnect()
+  }
+  invisible(NULL)
+}
+
 #' Log in on a specific back-end
 #' 
 #' Retrieves the bearer-token from the back-end by sending user name and password to the back-end. This step

@@ -12,8 +12,6 @@ An R6Class that interacts with an openEO compliant back-end.
 \item{\code{user_id}}{The user_id obtained after authentication}
 
 \item{\code{api.mapping}}{The mapping of the API endpoints and the back-end published ones}
-
-\item{\code{processes}}{a list of \code{\link[=Process]{Process()}} objects offered by the back-end}
 }}
 
 \section{Methods}{
@@ -28,14 +26,13 @@ path parameters and whether or not authorization (access_token) is necessary}
 \item{\verb{$getHost()}}{returns the host URL}
 \item{\verb{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
 \item{\verb{$connect(url=NULL,version=NULL)}}{connects to a specific version of a back-end}
+\item{\verb{$disconnect()}}{disconnects from the back-end by logout and clearing of active back-end package variables}
 \item{\verb{$api_version()}}{returns the openEO API version this client is compliant to}
 \item{\verb{$login(user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link[=IAuth]{IAuth()}} object}
 \item{\verb{$logout()}}{invalidates the access_token and terminates the current session}
 \item{\verb{$getAuthClient()}}{returns the authentication client}
 \item{\verb{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
 \item{\verb{$getCapabilities()}}{service exploration to retrieve the supported openEO endpoints}
-\item{\verb{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
-\item{\verb{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
 \item{\verb{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
 \item{\verb{$getTitle()}}{returns the title of the connection as stated in the getCapabilities document}
 }

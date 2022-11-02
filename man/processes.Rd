@@ -2,18 +2,22 @@
 % Please edit documentation in R/predefined_processes.R
 \name{processes}
 \alias{processes}
+\alias{active_process_collection}
 \title{Get a process graph builder / process collection from the connection}
 \usage{
 processes(con = NULL)
+
+active_process_collection(processes = NULL)
 }
 \arguments{
 \item{con}{a connection to an openEO back-end (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
-a ProcessCollection object with the offered processes of the back-end
+a \code{\link{ProcessCollection}} object with the offered processes of the back-end
 }
 \description{
 Queries the connected back-end for all available processes and collection names and registers them via R functions on
-a ProcessCollection object to build a process graph in R.
+a \code{\link{ProcessCollection}} object to build a process graph in R. The current \code{\link{ProcessCollection}} is stored internally at the package environment
+variable \code{process_collection}, which can be fetched and set with \code{active_process_collection}.
 }
