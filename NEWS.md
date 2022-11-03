@@ -7,6 +7,7 @@ ongoing development
 * vignette about the software and package architecture and design choices based on API requirements
 
 ## Changed
+* added a warning and a note for `compute_result()` if neither parameter 'format' of the function was set nor process 'save_result' was used in the process graph
 * refresh data collections after separate login as part of [#83](https://github.com/Open-EO/openeo-r-client/issues/83)
 * improved disconnection behavior by adding a `disconnect()` function and a logout and disconnect on package unload
 * decoupled processes and data collection from the OpenEO connection

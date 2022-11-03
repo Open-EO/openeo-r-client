@@ -50,6 +50,10 @@ setClass("Job")
 #' e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for 
 #' 'save_result' will be replaced. If the 'stars' package is installed and parameter `as_stars` is set to TRUE, then the downloaded
 #' data is opened and interpreted into a stars object.
+#' 
+#' @note 
+#' If parameter 'format' is ignored, it is assumed that 'save_result' was already used in the process graph. Otherwise it is up to the
+#' back-end provider how data is stored if 'save_result' was omitted.
 #'
 #' @param graph a [Graph()], a function returning a [ProcessNode()] as an endpoint or the [ProcessNode()] 
 #' will return the results
@@ -58,7 +62,7 @@ setClass("Job")
 #' @param plan character, selection of a service plan
 #' @param as_stars logical to indicate if the data shall be interpreted as a stars object
 #' @param format character or `FileFormat` specifying the File format for the output, if 'save_result' is not
-#' set in the process then it will be added otherwise the value stated here will replace the original value
+#' set in the process then it will be added otherwise the value stated here will replace the original value.
 #' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
@@ -71,7 +75,6 @@ setClass("Job")
 compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_stars=FALSE, format = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
-        
         output = list()
         
         if (is.null(graph)) 
@@ -94,12 +97,18 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
           else process = graph
         }
         
+        save_node = .find_process_by_name(process,"save_result")
+        
+        if (length(save_node) == 0 && length(format) == 0) {
+          warning("No 'save_result' used in the process graph and no 'format' specified. Relying on the default setting of the back-end provider, which might result in an error or an unexpected file format.")
+        }
+        
         # if format is set check if save_result is set, if not do that with the format stated, if it is 
         # check if the formats match else replace
         # more or less replace save_result of the graph with the customization stated in this function
         if (length(format) > 0) {
           
-          save_node = .find_process_by_name(process,"save_result")
+          
           p = processes()
           
           dots = list(...)
@@ -148,7 +157,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
         
-        
+        # find a suitable file suffix if it is just a tempfile
         if (length(format) > 0 && length(output_file) == 0) {
           if (is.character(format)) {
             driver = format
