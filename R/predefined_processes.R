@@ -193,6 +193,8 @@ ProcessCollection = R6Class(
 #' 
 #' @param con a connection to an openEO back-end (optional) otherwise [active_connection()]
 #' is used.
+#' @param processes the [`ProcessCollection`] that is obtained from `processes()` to be set as the active process collection or left empty to fetch the `ProcessCollection` from the package variable.
+#' 
 #' @return a [`ProcessCollection`] object with the offered processes of the back-end
 #' 
 #' @rdname processes
@@ -222,7 +224,7 @@ active_process_collection = function(processes=NULL) {
     assign(x = "process_collection", value = processes, envir = pkgEnvironment)
     invisible(processes)
   } else {
-    stop(paste0("Cannot set processes collection with object of class '",utils::head(class(con),1),"'"))
+    stop(paste0("Cannot set processes collection with object of class '",utils::head(class(processes),1),"'"))
   }
 }
 

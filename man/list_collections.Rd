@@ -12,6 +12,8 @@ active_data_collection(collection = NULL)
 \arguments{
 \item{con}{Connection object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
+
+\item{collection}{the 'CollectionList' object of list_collections to be set as the active data collection in the package environment or left empty or NULL to return the package environment variable.}
 }
 \value{
 object of class 'CollectionList'

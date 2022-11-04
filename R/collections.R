@@ -8,6 +8,7 @@
 #' 
 #' @param con Connection object (optional) otherwise [active_connection()]
 #' is used.
+#' @param collection the 'CollectionList' object of list_collections to be set as the active data collection in the package environment or left empty or NULL to return the package environment variable.
 #' 
 #' @return object of class 'CollectionList'
 #' 
@@ -72,7 +73,7 @@ active_data_collection = function(collection=NULL) {
     assign(x = "data_collection", value = collection, envir = pkgEnvironment)
     invisible(collection)
   } else {
-    stop(paste0("Cannot set data collection with object of class '",utils::head(class(con),1),"'"))
+    stop(paste0("Cannot set data collection with object of class '",utils::head(class(collection),1),"'"))
   }
 }
 

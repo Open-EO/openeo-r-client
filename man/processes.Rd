@@ -12,6 +12,8 @@ active_process_collection(processes = NULL)
 \arguments{
 \item{con}{a connection to an openEO back-end (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
+
+\item{processes}{the \code{\link{ProcessCollection}} that is obtained from \code{processes()} to be set as the active process collection or left empty to fetch the \code{ProcessCollection} from the package variable.}
 }
 \value{
 a \code{\link{ProcessCollection}} object with the offered processes of the back-end
