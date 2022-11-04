@@ -9,7 +9,7 @@ Authors@R: c(
     )
 Description: Access data and processing functionalities of 'openEO' compliant back-ends in R.
 Depends:
-    R (>= 3.3)
+    R (>= 3.5.0)
 Suggests:
     tibble,
     testthat,
