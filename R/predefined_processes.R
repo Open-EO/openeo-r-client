@@ -109,7 +109,6 @@ ProcessCollection = R6Class(
         # public ====
         initialize = function(con=NULL) {
             tryCatch({
-                con = .assure_connection(con)
                 process_list = list_processes(con=con)
                 private$processes = lapply(process_list, function(process_description) {
                     process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
@@ -205,7 +204,6 @@ processes = function(con = NULL) {
   if (rlang::is_null(process_collection)) {
   
     tryCatch({
-        con = .assure_connection(con)
         process_collection = ProcessCollection$new(con = con)
         void = active_process_collection(processes = process_collection)
     }, error = .capturedErrorToMessage)
@@ -228,5 +226,14 @@ active_process_collection = function(processes=NULL) {
   }
 }
 
-
+active_process_list = function(process_list=NULL) {
+  if (is.null(process_list)) {
+    return(get(x = "process_list", envir = pkgEnvironment))
+  } else if ("ProcessList" %in% class(process_list)) {
+    assign(x = "process_list", value = process_list, envir = pkgEnvironment)
+    invisible(process_list)
+  } else {
+    stop(paste0("Cannot set processes list with object of class '",utils::head(class(process_list),1),"'"))
+  }
+}
 
