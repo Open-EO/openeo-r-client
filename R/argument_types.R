@@ -44,6 +44,8 @@
 #'   \item{`default`}{the regexp as a string indicating how to formulate the value}   
 #'   \item{`schema`}{the parsed schema object of a process parameter as a list}
 #' }
+#' 
+#' @importFrom rlang is_na
 NULL
 
 Parameter = R6Class(
@@ -152,7 +154,7 @@ Parameter = R6Class(
       } else {
         value = as.logical(value)
         
-        if (is.na(value)) {
+        if (rlang::is_na(value)) {
           warning("Cannot cast value to logical. Assume FALSE.")
           value = FALSE
         }
@@ -166,7 +168,7 @@ Parameter = R6Class(
       } else {
         value = as.logical(value)
         
-        if (is.na(value)) {
+        if (rlang::is_na(value)) {
           warning("Cannot cast value to logical. Assume FALSE.")
           value = FALSE
         }
@@ -228,6 +230,8 @@ Parameter = R6Class(
 #'   \item{`value`}{The value for this argument.}
 #'   \item{`p`}{An object of class 'Process' or inheriting like 'ProcessNode'}
 #' }
+#' 
+#' @importFrom rlang is_na
 NULL
 
 Argument = R6Class(
@@ -246,7 +250,7 @@ Argument = R6Class(
       if (self$isNullable && 
           (length(self$getValue()) == 0 || 
            (!is.environment(self$getValue()) && 
-            is.na(self$getValue()))) 
+            rlang::is_na(self$getValue())))
           ) {
         if (self$isRequired) {
           return(NA)
@@ -311,7 +315,7 @@ Argument = R6Class(
     isEmpty = function() {
       return(!is.environment(private$value) && !is.function(private$value) && !is.call(private$value) && (
                 is.null(private$value) ||
-                (length(private$value) == 1 && is.na(private$value)) || all(is.na(private$value)) ||
+                rlang::is_na(private$value) ||
                 length(private$value) == 0))
     },
     getProcess = function() {
@@ -1685,6 +1689,8 @@ Time = R6Class(
 #' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
 #' 
 #' @return Object of [R6Class()] representing an object in GeoJson.
+#' 
+#' @importFrom rlang is_na
 NULL
 
 GeoJson = R6Class(
@@ -1706,7 +1712,7 @@ GeoJson = R6Class(
       }
       
       # lists are checked for each element for is.na if run under unix
-      if (!is.environment(value) && (is.null(value) || all(is.na(value)))) {
+      if (!is.environment(value) && (is.null(value) || rlang::is_na(value))) {
         private$value = value
         return()
       }
@@ -2020,7 +2026,7 @@ ProcessGraphArgument = R6Class(
         private$value = Graph$new(final_node = final_node)
       } else if ("ProcessNode" %in% class(value)) {
         private$value = Graph$new(final_node = value)
-      } else if ("Graph" %in% class(value) || is.na(value)) {
+      } else if ("Graph" %in% class(value) || rlang::is_na(value)) {
         private$value = value
       } else {
         stop("Assigned value for process graph needs to be function, graph or a final process node.")
@@ -2188,6 +2194,8 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
 #' 
 #' @return Object of [R6Class()] representing a single valued array.
+#' 
+#' @importFrom rlang is_na
 NULL
 
 Array = R6Class(
@@ -2392,7 +2400,7 @@ Array = R6Class(
       return(invisible(NULL))
     },
     typeSerialization = function() {
-      if (!is.environment(self$getValue()) && (length(self$getValue()) == 0 || is.na(self$getValue()))) {
+      if (!is.environment(self$getValue()) && (length(self$getValue()) == 0 || rlang::is_na(self$getValue()))) {
         return(NA)
       }
       
@@ -2583,6 +2591,8 @@ TemporalIntervals = R6Class(
 #' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
 #' 
 #' @return Object of [R6Class()] representing a list of [Process()] in order to filter for collections.
+#' 
+#' @importFrom rlang is_na
 NULL
 
 MetadataFilter <- R6Class(
@@ -2597,7 +2607,7 @@ MetadataFilter <- R6Class(
       private$schema$subtype = "metadata-filter"
     },
     setValue = function(value) {
-      if (length(value) == 0 || is.na(value)) {
+      if (length(value) == 0 || rlang::is_na(value)) {
         private$value = value
       } else if (is.list(value)) {
         
@@ -2695,6 +2705,7 @@ MetadataFilter <- R6Class(
 #' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
 #' 
 #' @return Object of [R6Class()] representing an argument choice object.
+#' @importFrom rlang is_na
 NULL
 
 AnyOf = R6Class(
@@ -2827,7 +2838,7 @@ AnyOf = R6Class(
       } else {
         value = as.logical(value)
         
-        if (is.na(value)) {
+        if (rlang::is_na(value)) {
           warning("Cannot cast value to logical. Assume FALSE.")
           value = FALSE
         }

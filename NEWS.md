@@ -15,6 +15,7 @@ ongoing development
 * naming of the vignettes to achieve an order in the vignette index entries
 
 ## Fixes
+* coercion problems from checking with is.na on values with length > 1 have been fixed by using rlang::is_na [#130](https://github.com/Open-EO/openeo-r-client/issues/130), [#123](https://github.com/Open-EO/openeo-r-client/issues/123)
 * an issue when calling the JSON serialization of class Process
 
 ## Removed

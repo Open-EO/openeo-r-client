@@ -412,16 +412,17 @@ list_results = function(job, con=NULL) {
 #' @return a list of the target file paths or NULL if 'job' was incorrect
 #' 
 #' @importFrom utils download.file
+#' @importFrom rlang is_na
 #' @export
 download_results = function(job, folder, con=NULL) {
     con = .assure_connection(con)
     
-    if (missing(job) || is.null(job) || all(is.na(job))) {
+    if (missing(job) || is.null(job) || rlang::is_na(job)) {
       message("Parameter 'job' is not set.")
       return(invisible(NULL))
     }
     
-    if (missing(folder) || is.null(folder) || all(is.na(folder)) || length(folder) != 1) {
+    if (missing(folder) || is.null(folder) || rlang::is_na(folder) || length(folder) != 1) {
       folder = tempdir()
     }
     

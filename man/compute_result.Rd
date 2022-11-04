@@ -28,7 +28,7 @@ will return the results}
 \item{as_stars}{logical to indicate if the data shall be interpreted as a stars object}
 
 \item{format}{character or \code{FileFormat} specifying the File format for the output, if 'save_result' is not
-set in the process then it will be added otherwise the value stated here will replace the original value}
+set in the process then it will be added otherwise the value stated here will replace the original value.}
 
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
@@ -47,4 +47,8 @@ Make sure to keep the data selection relatively small, also some openEO service 
 e.g. not supporting UDFs at this endpoint. When a file format is set, then the process graph will be parsed and the arguments for
 'save_result' will be replaced. If the 'stars' package is installed and parameter \code{as_stars} is set to TRUE, then the downloaded
 data is opened and interpreted into a stars object.
+}
+\note{
+If parameter 'format' is ignored, it is assumed that 'save_result' was already used in the process graph. Otherwise it is up to the
+back-end provider how data is stored if 'save_result' was omitted.
 }

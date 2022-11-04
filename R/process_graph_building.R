@@ -490,6 +490,8 @@ setClass("ArgumentList")
 #' \describe{
 #'    \item{id}{the node id}
 #' }
+#' 
+#' @importFrom rlang is_na
 NULL
 
 ProcessNode = R6Class(
@@ -567,7 +569,7 @@ ProcessNode = R6Class(
       if (missing(value)) {
         return(private$.namespace)
       } else {
-        if (!is.na(value) || (!is.character(value) && !tolower(value) %in% c("user","backend"))) {
+        if (!rlang::is_na(value) || (!is.character(value) && !tolower(value) %in% c("user","backend"))) {
           warning("Cannot assign namespace to the process. It has to be NA, 'user' or 'backend'")
         } else {
           private$.namespace = value
@@ -784,6 +786,7 @@ create_variable = function(name,description=NULL,type=NULL,subtype=NULL,default=
 #' @param x a process graph object or a process node
 #' @return a named list of Variables
 #' 
+#' @importFrom rlang is_na
 #' @export
 variables = function(x) {
   if ("Graph" %in% class(x)) {
@@ -806,7 +809,7 @@ variables = function(x) {
       
       value = param$getValue()
       
-      if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+      if (length(value) > 0 && (is.environment(value) || !rlang::is_na(value))) {
         if ("Graph" %in% class(value)) {
           return(value$getVariables())
         # } else if ("variable" %in% class(value)) {
