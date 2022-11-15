@@ -795,14 +795,12 @@ variables = function(x) {
   if (length(x) == 0 || 
       !"ProcessNode" %in% class(x)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
   
-  
   # get all the available process nodes of that graph
   used_nodes = .final_node_serializer(x)
   
   variables = lapply(used_nodes,function(node){
     # check all parameter
     node_variables = lapply(node$parameters,function(param) {
-      
       value = param$getValue()
       
       if (length(value) > 0 && (is.environment(value) || !rlang::is_na(value))) {
@@ -828,7 +826,7 @@ variables = function(x) {
       return(NULL)
     })
     
-    
+    return(node_variables)
   })
   variables = unname(unlist(unique(variables)))
   
@@ -910,8 +908,6 @@ variables = function(x) {
     
     return(variables)
   }
-  
-  
 }
   
   

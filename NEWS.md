@@ -8,6 +8,7 @@ ongoing development
 * vignette about the software and package architecture and design choices based on API requirements
 
 ## Changed
+* use the active process list when looking up the description of an openEO process
 * package now depends on R > 3.5.0, because of RDS object de-/serialization (openEO test processes)
 * added a warning and a note for `compute_result()` if neither parameter 'format' of the function was set nor process 'save_result' was used in the process graph
 * refresh data collections after separate login as part of [#83](https://github.com/Open-EO/openeo-r-client/issues/83)
@@ -17,6 +18,7 @@ ongoing development
 * naming of the vignettes to achieve an order in the vignette index entries
 
 ## Fixes
+* `variables()` function now returns the extracted variables correctly
 * coercion problems from checking with is.na on values with length > 1 have been fixed by using rlang::is_na [#130](https://github.com/Open-EO/openeo-r-client/issues/130), [#123](https://github.com/Open-EO/openeo-r-client/issues/123)
 * an issue when calling the JSON serialization of class Process
 
