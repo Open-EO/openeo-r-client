@@ -50,11 +50,12 @@ list_processes = function(con=NULL) {
 #'
 #' @return a list of detailed information
 #' @export
+#' @importFrom rlang is_na
 describe_process = function(process = NA, con=NULL) {
     tryCatch({
-        con = .assure_connection(con)
+        process_list = list_processes(con=con)
         
-        describeProcess = !missing(process) && !is.na(process)
+        describeProcess = !missing(process) && !rlang::is_na(process)
         
         if (!describeProcess) {
             message("No or invalid process_id(s) or process")
@@ -64,8 +65,6 @@ describe_process = function(process = NA, con=NULL) {
         if ("ProcessInfo" %in% class(process)) {
             return(process)
         }
-        
-        process_list = list_processes(con=con)
         
         if (is.null(process_list)) {
             message("No processes found or loaded from the back-end")
@@ -237,3 +236,8 @@ active_process_list = function(process_list=NULL) {
   }
 }
 
+demo_processes = function() {
+  process_list = readRDS(system.file("openeo_processes/openeo_processes_1.2.0.rds",package = "openeo"))
+  active_process_list(process_list = process_list)
+  invisible(processes())
+}

@@ -28,33 +28,32 @@ this package.
 \section{Methods}{
 
 \describe{
-\item{\verb{$new(con = NULL, final_node=NULL)}}{The object creator created from processes and available data.}
-\item{$getNodes()}{a function to return a list of created \code{\link[=ProcessNode]{ProcessNode()}}s for this graph}
-\item{$serialize()}{creates a list representation of the graph by recursively calling \verb{$serialize}}
-\item{$validate()}{runs through the nodes and checks the validity of its argument values}
-\item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
-\item{$addNode(node)}{adds a \code{\link[=ProcessNode]{ProcessNode()}} to the graph}
-\item{$removeNode(node_id)}{removes a process node from the graph}
-\item{$getFinalNode()}{gets the result process node of a process graph}
-\item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
-\item{$getVariables()}{creates a named list of the defined variables of a process graph}
-\item{$setVariables(list_of_vars)}{sets the \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} ( former variables) of graph}
+\item{\verb{$new(final_node=NULL)}}{The object creator created from processes and available data.}
+\item{\verb{$getNodes()}}{a function to return a list of created \code{\link[=ProcessNode]{ProcessNode()}}s for this graph}
+\item{\verb{$serialize()}}{creates a list representation of the graph by recursively calling \verb{$serialize}}
+\item{\verb{$validate()}}{runs through the nodes and checks the validity of its argument values}
+\item{\verb{$getNode(node_id)}}{searches and returns a node from within the graph referenced by its node id}
+\item{\verb{$addNode(node)}}{adds a \code{\link[=ProcessNode]{ProcessNode()}} to the graph}
+\item{\verb{$removeNode(node_id)}}{removes a process node from the graph}
+\item{\verb{$getFinalNode()}}{gets the result process node of a process graph}
+\item{\verb{$setFinalNode(node)}}{sets the result process node by node id or a ProcessNode}
+\item{\verb{$getVariables()}}{creates a named list of the defined variables of a process graph}
+\item{\verb{$setVariables(list_of_vars)}}{sets the \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} ( former variables) of graph}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-\item{con}{openEO connection (optional) otherwise \code{\link[=active_connection]{active_connection()}} is used}
-\item{final_node}{optional, the final node (end node) that was used to create a graph}
-\item{node_id}{the id of a process node}
-\item{node}{process node or  its node id}
-\item{parameter}{the name of a parameter in a process}
-\item{value}{the value to be set for a parameter of a particular process}
-\item{id or variable_id}{the variable id}
-\item{description}{a description field for a variable}
-\item{type}{the type of variable, default 'string'}
-\item{default}{optional default value to be set for a variable}
+\item{\code{final_node}}{optional, the final node (end node) that was used to create a graph}
+\item{\code{node_id}}{the id of a process node}
+\item{\code{node}}{process node or  its node id}
+\item{\code{parameter}}{the name of a parameter in a process}
+\item{\code{value}}{the value to be set for a parameter of a particular process}
+\item{\code{id} or \code{variable_id}}{the variable id}
+\item{\code{description}}{a description field for a variable}
+\item{\code{type}}{the type of variable, default 'string'}
+\item{\code{default}}{optional default value to be set for a variable}
 }
 }
 
