@@ -207,21 +207,22 @@ describe_account = function(con=NULL) {
 #' @seealso [active_connection()]
 #' @export
 connect = function(host, version = NULL, exchange_token="access_token", ...) {
-    con = OpenEOClient$new()
-    
-    con = con$connect(url = host, version = version,exchange_token=exchange_token)
-    
-    if (length(con) == 0) {
-        message("Invalid openEO host stated. Please use an URL pointing to a valid openEO web service implementation.")
-        return(invisible(NULL))
-    }
-    
-    args = list(...)
-    if(length(args) > 0) {
-      do.call(login,args)
-    }
-    
-    return(invisible(con))
+  .initPackageEnvVariables()
+  con = OpenEOClient$new()
+  
+  con = con$connect(url = host, version = version,exchange_token=exchange_token)
+  
+  if (length(con) == 0) {
+      message("Invalid openEO host stated. Please use an URL pointing to a valid openEO web service implementation.")
+      return(invisible(NULL))
+  }
+  
+  args = list(...)
+  if(length(args) > 0) {
+    do.call(login,args)
+  }
+  
+  return(invisible(con))
 }
 
 #' disconnect

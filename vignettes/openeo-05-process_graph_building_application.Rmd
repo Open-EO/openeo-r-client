@@ -2,15 +2,14 @@
 title: "Process Graph Building Application"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{User Defined Processes}
+  %\VignetteIndexEntry{Process Graph Building Application}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 As the title suggests, we will describe in more detail how to create process graphs and respectively "User Defined Processes" (UDP). Those processes can be seen as the analysis workflows you want to run at the openEO back-end of your choice. You might call them later directly or you might add some variables to the UDP to customize the processes at runtime, e.g. set the temporal interval or the area of interest. This vignette focuses the user point of view.
 
-
-### EVI Graph
+# EVI calculation from function
 
 In the following we will create the [EVI calculation](https://www.usgs.gov/landsat-missions/landsat-enhanced-vegetation-index) and store it as a process graph on the openEO service.
 
@@ -18,8 +17,11 @@ Most of the processes offered by openEO services are standardized, this means th
 
 The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands "red", "blue" and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like `raster::calc`. Similarly we use this mechanism in the openeo package.
 
-```{r, include=FALSE}
+```{r}
 library(openeo)
+```
+
+```{r, include=FALSE}
 openeo:::demo_processes()
 ```
 
@@ -35,15 +37,101 @@ evi = function(data,context) {
 }
 ```
 
-The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function stored at `evi` itself or the resulting `ProcessNode` is passed to define a process graph.
+Just to get an impression what happens behind the scenes, we will now have a look at the JSON graph of this quite simple looking arithmetic function. Under normal circumstances you would not need to deal with creating the JSON representation by yourself, this will be handled internally by the package.
 
+The following coerce function will create an internal `Graph` object and using its `print` function the object is automatically serialized into the JSON graph. 
 ```{r}
 as(evi,"Graph")
 ```
 
-The example before should demonstrate what would happen behind the scenes, that such a small code fragment for the band arithmetic translates into a more complex process graph. But usually you would not need to use that coerce function directly.
+The coercion was just an excursion in order to get a glimpse at the data structure that will be sent to the back-end. We now continue with the user-defined process creation.
 
-So, now we have created a small graph and we want to store it for later use at the openEO service.
+# Building the graph for data manipulation
+
+The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetic as an inbound function.
+
+```{r, eval=FALSE}
+library(sf)
+
+p = processes()
+
+bbox = st_bbox(c(xmin=16.1,
+                 xmax=16.6,
+                 ymax=48.6,
+                 ymin= 47.2), crs = 4326)
+
+data = p$load_collection(id = "SENTINEL2_L2A_SENTINELHUB",
+                         spatial_extent = bbox,
+                         temporal_extent = list(
+                           "2018-04-01", "2018-05-01"
+                         ),
+                         bands=list("B08","B04","B02"))
+```
+
+Here we are using the EVI calculation at the variable `evi` from example in the beginning.
+```{r, eval=FALSE}
+spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = evi)
+```
+
+
+```{r, eval=FALSE}
+temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
+  min(x)
+})
+```
+
+As a "reducer" or "aggregator" function you will have to always create an anonymous function or use a predefined one, with the same amount of process graph parameters. The naming of parameters does not matter, because simply the order matters. To know how to formulate the function, you need to check the back-end processes documentation, e.g. `process_viewer(p$reduce_dimension)` or `describe_process(p$reduce_dimension)`.
+
+```{r, eval=FALSE}
+apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
+  p$linear_scale_range(x = value, 
+                           inputMin = -1, 
+                           inputMax = 1, 
+                           outputMin = 0, 
+                           outputMax = 255)
+})
+```
+
+As a last step we will store the results as a PNG file. The `ProcessNode` returned from that function will be our end node in the graph and so we will pass it on towards openEO service functions.
+
+```{r, eval=FALSE}
+result = p$save_result(data=apply_linear_transform,format="PNG")
+```
+
+The result might be considered as the final node in this graph. This node we can pass to a processing function like `compute_result()` or `create_job()`. Or we store the process at the back-end in order to be reused (Note: it depends on whether a particular back-end supports the user-defined processes).
+
+You don't necessarily need to store each intermediate step in a separate variable, but it might speed things up, when you want to edit some parameters. This means you can write this graph also little tidy'er like this:
+
+```{r, eval=FALSE}
+library(magrittr)
+
+p = processes()
+
+result2 = p$load_collection(id = "SENTINEL2_L2A_SENTINELHUB",
+                         spatial_extent = bbox,
+                         temporal_extent = list(
+                           "2018-04-01", "2018-05-01"
+                         ),
+                         bands=list("B08","B04","B02")) %>% 
+  p$reduce_dimension(dimension = "bands",reducer = evi) %>% 
+  p$reduce_dimension(dimension = "t", reducer = function(x,y){
+    min(x)
+  }) %>% 
+  p$apply(process = function(value,...) {
+    p$linear_scale_range(x = value, 
+                             inputMin = -1, 
+                             inputMax = 1, 
+                             outputMin = 0, 
+                             outputMax = 255)
+  }) %>% 
+  p$save_result(format="PNG")
+
+```
+
+
+# User-defined processes
+
+So, now we have created a small evi graph and one carrying out the whole processing on the data. In the next steps we store it for later use at the openEO service. The next section depends on the features supported by the connected back-end and might not be present. In any case the next functions showcase the intended use of the user-defined processes. In short, user-defined processes allow you to store your process graphs as reuseable processes on the back-end in the same way predefined-processes exists as the basic graph building blocks. However, the same functionality you already have with the fact, that you can write R scripts and let the code run again, this is the reasoning for back-end provider that don't support user-defined processes.
 
 ```{r, paged.print=FALSE, eval=FALSE}
 list_user_processes()
@@ -53,6 +141,7 @@ With the next command you can check your process graph locally for potential pro
 ```{r, eval=FALSE}
 validate_process(graph = evi)
 ```
+## UDP: EVI band aritmethic
 
 ```{r, eval=FALSE}
 graph_id = create_user_process(graph = evi, id = "evi", summary = "EVI calculation on an array with 3 bands", description = "The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order.")
@@ -79,60 +168,9 @@ If you want the graph representation reimported into R, you can use `parse_graph
 evi_graph = parse_graph(json = evi_process) # or use as(evi_process,"Graph")
 ```
 
-### Minimum EVI example
+## UDP: Minimum EVI
 
-The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetic as an inbound function.
-
-We have used the variables `colls` and `formats` before. They originate from their respective list_* function.
-
-```{r, eval=FALSE}
-data = p$load_collection(id = colls$`COPERNICUS/S2`,
-                             spatial_extent = list(
-                               west=16.1,
-                               east=16.6,
-                               north=48.6,
-                               south= 47.2
-                             ),
-                             temporal_extent = list(
-                               "2018-04-01", "2018-05-01"
-                             ),
-                             bands=list("B8","B4","B2"))
-```
-
-Here we are using the EVI calculation as used in the previous example.
-```{r, eval=FALSE}
-spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
-  B08 = data[1]
-  B04 = data[2]
-  B02 = data[3]
-  (2.5 * (B08 - B04)) / sum(B08, 6 * B04, -7.5 * B02, 1)
-})
-```
-
-
-```{r, eval=FALSE}
-temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
-  min(x)
-})
-```
-
-As a "reducer" or "aggregator" function you will have to always create an anonymous function or use a predefined one, with the same amount of parameters. The naming of parameters does not matter, because simply the order matters. To know how to formulate the function, you need to check the back-end processes documentation, e.g. `process_viewer(p$reduce_dimension)` or `describe_process(p$reduce_dimension)`.
-
-```{r, eval=FALSE}
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
-  p$linear_scale_range(x = value, 
-                           inputMin = -1, 
-                           inputMax = 1, 
-                           outputMin = 0, 
-                           outputMax = 255)
-})
-```
-
-As a last step we will store the results as a PNG file. The `ProcessNode` returned from that function will be our endnode in the graph and so we will pass it on towards openEO service functions.
-
-```{r, eval=FALSE}
-result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
-```
+Note: depending on the supported back-end functionalities storing user-defined processes might not be implemented. But the following code sample shows, how you would create a user-defined processes on the back-end.
 
 ```{r, eval=FALSE}
 min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="Minimum EVI calculation on Sentinel-2", description = "A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG.")
@@ -142,62 +180,28 @@ min_evi_graph_id = create_user_process( graph = result, id = "min_evi",summary="
 list_user_processes()
 ```
 
-Feel free to delete the example process again.
+As this graph has no parameters and will simply run like a pre-configured job, feel free to delete the example process again.
 
 ```{r, eval=FALSE}
 delete_user_process(id = min_evi_graph_id)
 ```
 
-### Integration of user defined processes
+## Integration of user defined processes
 
-In the section "EVI Graph" we created and stored a sub graph that resembles the same code that was used as a reducer when creating the node 'spectral_reduce'. In an alternative approach we can load and reuse user defined processes. In analogy to the predefined processes of the openEO service we use `user_processes()` to create an easy-to-use ProcessNode builder.
+As we have eventually created a user-defined process for the `evi` function. The openeo package allows you to reuse this processes in a similar way as predefined processes. Instead of `processes()`, you can also use `user_processes()` to create a process node builder object. We named the process also `evi` which helps to reference to the correct processes. We will now use the the complete workflow, where we have stored the intermediate nodes in individual variables. We will then edit the parameter that holds the `evi` function and replace the function with the user-defined process `evi`.
+
 
 ```{r, eval=FALSE}
 p = processes()
 udps = user_processes()
-colls = list_collections()
-formats = list_file_formats()
 ```
 
 ```{r, eval=FALSE}
-example_udp_node = udps$evi()
-
-example_udp_node
-```
-
-```{r, eval=FALSE}
-data = p$load_collection(id = colls$`COPERNICUS/S2`,
-                             spatial_extent = list(
-                               west=16.1,
-                               east=16.6,
-                               north=48.6,
-                               south= 47.2
-                             ),
-                             temporal_extent = list(
-                               "2018-04-01", "2018-05-01"
-                             ),
-                             bands=list("B8","B4","B2"))
-
-spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
-  udps$evi(data = data)
-})
-
-temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
-  min(x)
-})
-
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
-  p$linear_scale_range(x = value, 
-                           inputMin = -1, 
-                           inputMax = 1, 
-                           outputMin = 0, 
-                           outputMax = 255)
-})
-
-result = p$save_result(data=apply_linear_transform,format=formats$output$PNG)
+spectral_reduce$parameters$reducer = function(x,context) {
+  udps$evi(x)
+}
 
 min_evi_graph = as(result,"Process")
-
 ```
 
-Note that we reused our pre defined user process "evi" in the aggregation function, which shows that you can reuse your code in different contexts.
+As all the process nodes and arguments are R6 classes, the value is replaced at object level. The R6 object is uniquely referable which means that the value is updated wherever the process node was used.

@@ -19,7 +19,8 @@ Suggests:
     rmarkdown,
     kableExtra,
     DT,
-    terra
+    terra,
+    magrittr
 Imports:
     jsonlite,
     httr2 (>= 0.2.2),
