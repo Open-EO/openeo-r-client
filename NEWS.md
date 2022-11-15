@@ -2,12 +2,14 @@
 ongoing development
 
 ## Added
+* new vignettes: TODO add
 * added the default openEO processes v1.2.0 as test data to the package in the RDS file  format (`system.file("openeo_processes/openeo_process_1.2.0.rds")`) and added a test case for process parsing
 * `active_process_list()` and `active_process_collection()` which refer to the currently connected back-ends process list as well as the package interpretation of those process descriptions. See environment variables `process_list` and `process_collection`
 * `active_data_collection()` to fetch the data collection of the currently active back-end, which refers to the package variable `data_collection`
 * vignette about the software and package architecture and design choices based on API requirements
 
 ## Changed
+* `describe_process()` also works now with `Process` and `ProcessNode` objects
 * use the active process list when looking up the description of an openEO process
 * package now depends on R > 3.5.0, because of RDS object de-/serialization (openEO test processes)
 * added a warning and a note for `compute_result()` if neither parameter 'format' of the function was set nor process 'save_result' was used in the process graph

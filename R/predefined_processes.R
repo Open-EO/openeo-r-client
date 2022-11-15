@@ -46,38 +46,53 @@ list_processes = function(con=NULL) {
 #' Queries an openEO back-end and retrieves more detailed information about offered processes
 #' @param con Authentication object (optional) otherwise [active_connection()]
 #' is used.
-#' @param process id of a process to be described or the ProcessInfo object
+#' @param process id of a process to be described, the ProcessInfo object or a Process object
 #'
 #' @return a list of detailed information
 #' @export
 #' @importFrom rlang is_na
+#' @importFrom rlang is_null
 describe_process = function(process = NA, con=NULL) {
     tryCatch({
         process_list = list_processes(con=con)
-        
-        describeProcess = !missing(process) && !rlang::is_na(process)
+        describeProcess = !missing(process) && !rlang::is_na(process) && !rlang::is_null(process)
         
         if (!describeProcess) {
             message("No or invalid process_id(s) or process")
-            invisible(NULL)
+            return(invisible(NULL))
+        }
+        
+        if (is.null(process_list)) {
+          message("No processes found or loaded from the back-end")
+          return(invisible(NULL))
+        }
+        
+        if ("function" %in% class(process)) {
+          message("Parameter process was passed as function. Cannot derive the functions name.")
+          return(invisible(NULL))
+        }
+        
+        if ("Process" %in% class(process)) {
+          process = process$getId()
         }
         
         if ("ProcessInfo" %in% class(process)) {
             return(process)
         }
         
-        if (is.null(process_list)) {
-            message("No processes found or loaded from the back-end")
-            invisible(NULL)
+        if (!is.character(process)) {
+          message("Cannot derive and interprete the process name.")
+          return(invisible(NULL))
         }
         
         if (!process %in% names(process_list)) {
             message(paste("Cannot describe process '", process, "'. Process does not exist.", sep = ""))
             invisible(NULL)
-        } else {
-            return(process_list[[process]])
         }
-    }, error = .capturedErrorToMessage)
+        
+        
+        return(process_list[[process]])
+        }, error = .capturedErrorToMessage)
 }
 
 # ProcessCollection ====
