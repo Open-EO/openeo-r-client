@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This guide will provide details about the process graph building in the `openeo` package with respect to the [openEO API](https://api.openeo.org/#section/Processes) and [openEO processes](https://processes.openeo.org/) from a user perspective. In the following we will briefly state the logical structure of an openEO process description and how process graphs are created from processes. Afterwards we dive into some detail about the parameters and arguments of processes, especially how this relates to R where function parameters are usually type free.
+In this guide you will familiarize yourself with the concepts of the process graph building in the `openeo` package with respect to the [openEO API](https://api.openeo.org/#section/Processes) and [openEO processes](https://processes.openeo.org/) from a user perspective. In the following we will briefly state the logical structure of an openEO process description and how process graphs are created from processes. Afterwards we dive into some detail about the parameters and arguments of processes, especially how this relates to R where function parameters are usually type free.
 
 Note: For demonstration purposes we will use the general definitions of the *openEO processes* and their descriptions in order to make them easier to understand.
 
@@ -267,18 +267,71 @@ and as Process:
 
 ## Arguments and Parameters
 
+```{r, include=FALSE}
+openeo:::demo_processes()
+```
+
 All the processes offer various kinds of parameters so the user can control the process. One parameter, usually "data", transports the input data that will be manipulated. If the parameter type is a raster or vector cube the whole n-dimensional data cube will be manipulated. But it is also possible to manipulate arrays or scalars of data. This kind of input is often times transferred to the process, when a process graph is allowed as value for the parameter. The user-defined process that is passed to that parameter needs to accept the parameters provided "process graph parameters" as input.
 
 The other controlling parameters can have a [variety of types](https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json).
 
 To clarify, the parameter type matching is completely hidden from the user. A user simply tries to pass a value to a process parameter and the most suitable allowed parameter type is chosen automatically. If the value cannot be matched to the allowed types for the parameter, then at some point a warning or an error will be raised. To inform yourself about the allowed parameter types, please look up the process descriptions.
 
-```{r, eval=FALSE}
+```{r}
+describe_process("load_collection")
+```
+
+
+### Parameter manipulation
+
+In order to set the values for the parameters of the processes you can use the builder functions of the `ProcessCollection`, where you can pass arguments as the function parameters.
+
+```{r}
+library(sf)
 p = processes()
 
-process_viewer(p$load_collection())
-describe_process("load_collection")
+bbox = st_bbox(c(xmin=7,xmax=7.5,ymin=52,ymax=52.5))
+st_crs(bbox) = 4326
 
-
-data_node = p$load_collection(id = "SENTINEL2_L2A_SENTINELHUB",temporal_extent = c("2022-05-01","2022-07-01"),bands = c("B04","B08"))
+dc = p$load_collection(id = "S2", spatial_extent = bbox,temporal_extent = list("2022-05-20","2022-06-10"))
+dc
 ```
+
+As a second option you can manipulate the parameters of the process node by interacting with the field `parameters` of `ProcessNode`.
+
+```{r}
+dc$parameters$bands = c("B04","B08")
+dc
+```
+
+The values can also replace existing values, in the same way.
+
+```{r}
+dc$parameters$temporal_extent = c("2022-05-01",NA)
+dc
+```
+
+Of course, you can simply return the current value for a parameter as well.
+
+```{r}
+dc$parameters$spatial_extent
+```
+
+### Variables
+
+Another useful function is the concept of variables. Those are considered to be placeholder for certain arguments. 
+
+```{r}
+bbox_var = create_variable(name="bbox",description = "The bounding box of the process graph")
+
+dc$parameters$spatial_extent = bbox_var
+dc
+```
+
+When creating parameterized user-defined processes the variables are used as the functions input parameter.
+
+```{r}
+ndvi_prep_loader = as(dc,"Process")
+ndvi_prep_loader
+```
+
