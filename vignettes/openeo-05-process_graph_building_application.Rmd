@@ -1,5 +1,5 @@
 ---
-title: "User Defined Processes"
+title: "Process Graph Building Application"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{User Defined Processes}
@@ -7,20 +7,26 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# User Defined Processes
-
-As the title suggests, we will describe in more detail how to create "User Defined Processes" (UDP). Those processes can be seen as the analysis workflows you want to run at the openEO back-end of your choice. You might call them later directly or you might add some variables to the UDP to customize the processes at runtime, e.g. set the temporal interval or the area of interest.
+As the title suggests, we will describe in more detail how to create process graphs and respectively "User Defined Processes" (UDP). Those processes can be seen as the analysis workflows you want to run at the openEO back-end of your choice. You might call them later directly or you might add some variables to the UDP to customize the processes at runtime, e.g. set the temporal interval or the area of interest. This vignette focuses the user point of view.
 
 
 ### EVI Graph
 
-In the following we will create the EVI calculation and store it as a process graph on the openEO service.
+In the following we will create the [EVI calculation](https://www.usgs.gov/landsat-missions/landsat-enhanced-vegetation-index) and store it as a process graph on the openEO service.
 
 Most of the processes offered by openEO services are standardized, this means that it will be possible to use mathematical operators like `+`, `-` and alike coherently between different services. That also allowed us to overload the primitive mathematical operators in R so that it becomes easy to use.
 
 The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands "red", "blue" and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like `raster::calc`. Similarly we use this mechanism in the openeo package.
 
-```{r, eval=FALSE}
+```{r, include=FALSE}
+library(openeo)
+openeo:::demo_processes()
+```
+
+
+```{r}
+p = processes()
+
 evi = function(data,context) {
   B08 = data[1]
   B04 = data[2]
@@ -29,11 +35,12 @@ evi = function(data,context) {
 }
 ```
 
-The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function itself or the resulting `ProcessNode` is passed to define a process graph.
+The following coerce function will create an internal `Graph` object. Usually you won't need this explicit type cast, but in this case you can see the node and graph structure serialized as JSON object. Later use either the function stored at `evi` itself or the resulting `ProcessNode` is passed to define a process graph.
 
-```{r, eval=FALSE}
+```{r}
 as(evi,"Graph")
 ```
+
 The example before should demonstrate what would happen behind the scenes, that such a small code fragment for the band arithmetic translates into a more complex process graph. But usually you would not need to use that coerce function directly.
 
 So, now we have created a small graph and we want to store it for later use at the openEO service.
