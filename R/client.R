@@ -821,8 +821,13 @@ client_version = function() {
   
   if (is.null(con)) stop("openEO cannot refresh the connectionObserver panel, because there is no active connection")
   
+  # refresh is usually triggered after a separate login, authorized user might explore more data and processes
   assign(x = "data_collection", value = NULL, envir = pkgEnvironment)
   void = list_collections()
+  
+  assign(x = "process_collection", value = NULL, envir = pkgEnvironment)
+  assign(x = "process_list", value = NULL, envir = pkgEnvironment)
+  # force refreshing of processes
   
   observer <- getOption("connectionObserver")
   if (!is.null(observer))
@@ -898,18 +903,6 @@ client_version = function() {
                               previewObject = function(collection, ...) {
                                 return(data.frame())
                               },
-                              # actions = list(
-                              #     tos = list(
-                              #       callback = function() {
-                              #         terms_of_service()
-                              #       }
-                              #     ),
-                              #     pp = list(
-                              #       callback = function() {
-                              #         privacy_policy()
-                              #       }
-                              #     )
-                              #   ),
                               connectionObject = con)
   }
 }
