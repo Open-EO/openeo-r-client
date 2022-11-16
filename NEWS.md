@@ -2,7 +2,11 @@
 ongoing development
 
 ## Added
-* new vignettes: TODO add
+* new vignettes:
+  - Package Software Architecture
+  - Process Graph Building Concepts
+  - Process Graph Building Application
+  - Developer Implementation Details
 * added the default openEO processes v1.2.0 as test data to the package in the RDS file  format (`system.file("openeo_processes/openeo_process_1.2.0.rds")`) and added a test case for process parsing
 * `active_process_list()` and `active_process_collection()` which refer to the currently connected back-ends process list as well as the package interpretation of those process descriptions. See environment variables `process_list` and `process_collection`
 * `active_data_collection()` to fetch the data collection of the currently active back-end, which refers to the package variable `data_collection`
