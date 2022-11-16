@@ -215,7 +215,7 @@ OpenEOClient <- R6Class(
         void = list_collections()
         
         # connections contract for RStudio
-        .fill_rstudio_observer()
+        .fill_rstudio_connection_observer()
         
         
         
@@ -829,7 +829,7 @@ client_version = function() {
     observer$connectionUpdated(type="OpenEO Service", host=con$getHost(),hint="collections")
 }
 
-.fill_rstudio_observer = function() {
+.fill_rstudio_connection_observer = function() {
   observer = getOption("connectionObserver")
   
   if (!is.null(observer)) {
