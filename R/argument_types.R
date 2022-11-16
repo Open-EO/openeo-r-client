@@ -429,7 +429,7 @@ Integer = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into integer."))
         # correct value if you can
         private$value = coerced
@@ -485,7 +485,7 @@ EPSGCode = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) {
           if (is.character(private$value) && grepl(tolower(private$value),pattern = "^epsg:")) {
             coerced = as.integer(gsub(x = private$value,replacement = "",pattern = "[^0-9]"))
@@ -560,7 +560,7 @@ Number = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a number."))
         # correct value if you can
         private$value = coerced
@@ -620,7 +620,7 @@ String = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
@@ -691,7 +691,7 @@ URI = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
@@ -762,7 +762,7 @@ OutputFormat = R6Class(
           })
           
           if (is.null(coerced) || 
-              is.na(coerced) ||
+              rlang::is_na(coerced) ||
               length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
           # correct value if you can
           
@@ -828,7 +828,7 @@ CollectionId = R6Class(
           
           
           if (is.null(coerced) || 
-              is.na(coerced) ||
+              rlang::is_na(coerced) ||
               length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
           # correct value if you can
           private$value = coerced
@@ -836,7 +836,7 @@ CollectionId = R6Class(
           coerced = private$value$id
           
           if (is.null(coerced) || 
-              is.na(coerced) ||
+              rlang::is_na(coerced) ||
               length(coerced) == 0) stop(paste0("CollectionId obtained from service is not valid, please contact the openEO service support."))
         }
       } else {
@@ -899,7 +899,7 @@ JobId = R6Class(
         if (!grepl(pattern=private$schema$pattern,x=private$value, perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
@@ -955,7 +955,7 @@ UdfRuntimeArgument = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a runtime id."))
         # correct value if you can
         private$value = coerced
@@ -1011,7 +1011,7 @@ UdfRuntimeVersionArgument = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into an UDF runtime version string."))
         # correct value if you can
         private$value = coerced
@@ -1072,7 +1072,7 @@ UdfCodeArgument = R6Class(
           })
             
           if (is.null(coerced) || 
-              is.na(coerced) ||
+              rlang::is_na(coerced) ||
               length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
           # correct value if you can
           
@@ -1157,7 +1157,7 @@ ProcessGraphId = R6Class(
         if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided regexpr pattern does not match the value: ",private$value))
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character string."))
         # correct value if you can
         private$value = coerced
@@ -1212,7 +1212,7 @@ ProjDefinition = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a character proj definition."))
         # correct value if you can
         private$value = coerced
@@ -1480,7 +1480,7 @@ Boolean = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a boolean/logical."))
         # correct value if you can
         private$value = coerced
@@ -1533,7 +1533,7 @@ Date = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a date"))
         # correct value if you can
         private$value = coerced
@@ -1588,7 +1588,7 @@ DateTime = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a date time object"))
         # correct value if you can
         private$value = coerced
@@ -1652,7 +1652,7 @@ Time = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a time representation"))
         # correct value if you can
         private$value = coerced
@@ -2393,7 +2393,7 @@ Array = R6Class(
         })
         
         if (is.null(coerced) || 
-            is.na(coerced) ||
+            rlang::is_na(coerced) ||
             length(coerced) == 0) stop(paste0("Value '", private$value,"' cannot be coerced into a boolean."))
         # correct value if you can
         private$value = coerced
