@@ -1,7 +1,7 @@
 openeo: Client Interface for openEO Servers
 ====
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions)
+[![R-CMD-check](https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/openeo)](https://CRAN.R-project.org/package=openeo)
 <!-- badges: end -->
 
