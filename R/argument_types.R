@@ -1951,10 +1951,12 @@ VectorCube = R6Class(
 # ProcessGraphArgument ====
 #' ProcessGraphArgument
 #' 
-#' Inheriting from [Argument()] in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
-#' of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
-#' single value. The value of a ProcessGraph is usually a [Graph()] with [ProcessGraphParameter()] as 
-#' added data. Additional information can be found in the openEO API documentation:
+#' Inheriting from [Argument()] in order to represent an argument that contains a process or a derivable value (formerly known 
+#' as callback). The ProcessGraphArgument operates on the reduced data of a data cube. For example reducing or aggregating over 
+#' the temporal dimension results in a time series that has to be reduced into a single value or aggregated into another time 
+#' series. The value of a ProcessGraphArgument is usually a function that will be coerced into [`Process()`]. The function
+#' is required to use the same amount of parameters as `ProcessGraphParameter` objects are defined, because during the coercion
+#' those `ProcessGraphParameter` are passed to function. Additional information can be found in the openEO API documentation:
 #' \itemize{
 #'   \item <https://api.openeo.org/#section/Processes/Process-Graphs>
 #' }
