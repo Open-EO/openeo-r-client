@@ -195,8 +195,7 @@ setOldClass(c("Graph","R6"))
 #'    \item{$getId()}{returns the id of a process which was defined on the back-end}
 #'    \item{$getParameters()}{returns a named list of arguments}
 #'    \item{$getReturns()}{returns the schema for the return type as list}
-#'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
-#'    corresponds to the parameter name}
+#'    \item{$getFormals()}{returns the function formals for this process - usually a named vector of the specified default values, but NA where no default value was specified}
 #'    \item{$setId(id)}{sets the id of a process}
 #'    \item{$setSummary(summary)}{sets the summary text}
 #'    \item{$setDescription(description)}{sets the description text}
@@ -985,11 +984,8 @@ remove_variable = function(graph, variable) {
   # if value is a function -> then make a call with the function and a suitable ProcessGraphParameter
   
   # make call
-  call_env = new.env()
-  
   # we need the assignment since we might have basic mathematical operation that are overloaded
-  assign(x = ".__process_collection__",value = process_collection,envir = call_env)
-  final_node = do.call(value,args = process_graph_parameter,envir = call_env)
+  final_node = do.call(value,args = process_graph_parameter)
   
   # assign new graph as value
   value = Graph$new(final_node = final_node)

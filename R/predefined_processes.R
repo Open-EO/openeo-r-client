@@ -123,11 +123,7 @@ ProcessCollection = R6Class(
         # public ====
         initialize = function(con=NULL) {
             tryCatch({
-                process_list = list_processes(con=con)
-                private$processes = lapply(process_list, function(process_description) {
-                    process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
-                    return(processFromJson(process_description))
-                })
+                private$createListOfProcesses(con=con)
                 
                 if (!is.list(private$processes)) stop("Processes are not provided as list")
                 
@@ -149,6 +145,7 @@ ProcessCollection = R6Class(
                     # of the list will be used as process all the time -> solution: serialize index, gsub on quote, make "{" as.name
                     # and then as.call
                     body(f) = quote({
+                        # we can access "private" because the function will be added to the public section of this object
                         exec_process = private$processes[[index]]$clone(deep=TRUE)
                         # find new node id:
                         node_id = .randomNodeId(exec_process$getId(),sep="_")
@@ -180,7 +177,9 @@ ProcessCollection = R6Class(
                         
                         return(node)
                     })
-                    # replace index with the actual number!
+                    # replace index with the actual number! After creation the index will be gone, so we need to replace the
+                    # index variable with the actually used value of the variable. Only this will enable the correct access
+                    # to the process in the process list once the function is called.
                     tmp = gsub(body(f),pattern="index",replacement = eval(index))
                     body(f) = as.call(c(as.name(tmp[1]),parse(text=tmp[2:length(tmp)])))
                     
@@ -194,6 +193,15 @@ ProcessCollection = R6Class(
       # private ====
         node_ids = character(),
         processes = list(),
+        createListOfProcesses = function(con) {
+          
+          process_list = list_processes(con=con)
+          private$processes = lapply(process_list, function(process_description) {
+            process_description$process_graph = NULL #remove the optional process_graph part as it is confusing here
+            return(processFromJson(process_description))
+          })
+          
+        },
         getNodeIds = function() {private$node_ids}
     )
 )

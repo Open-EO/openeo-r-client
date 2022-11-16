@@ -28,8 +28,7 @@ into \code{\link[=Argument]{Argument()}} objects.
 \item{$getId()}{returns the id of a process which was defined on the back-end}
 \item{$getParameters()}{returns a named list of arguments}
 \item{$getReturns()}{returns the schema for the return type as list}
-\item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name
-corresponds to the parameter name}
+\item{$getFormals()}{returns the function formals for this process - usually a named vector of the specified default values, but NA where no default value was specified}
 \item{$setId(id)}{sets the id of a process}
 \item{$setSummary(summary)}{sets the summary text}
 \item{$setDescription(description)}{sets the description text}

@@ -473,6 +473,10 @@ print.Graph = function(x, ...) {
 print.ProcessNode = function(x, ...) {
     node_validation = x$validate()
     
+    if (length(node_validation) > 1) {
+      node_validation = paste(node_validation,collapse="\n")
+    }
+    
     if (is.null(node_validation)) {
         print(jsonlite::toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE, digits = NA))
     } else {

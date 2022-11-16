@@ -9,6 +9,7 @@ ongoing development
 * vignette about the software and package architecture and design choices based on API requirements
 
 ## Changed
+* added line breaks if there are multiple validation messages of ProcessNodes
 * `describe_process()` also works now with `Process` and `ProcessNode` objects
 * use the active process list when looking up the description of an openEO process
 * package now depends on R > 3.5.0, because of RDS object de-/serialization (openEO test processes)
