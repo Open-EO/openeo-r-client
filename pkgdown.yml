@@ -1,8 +1,12 @@
-pandoc: '2.5'
+pandoc: 2.7.3
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
-  getting_started: getting_started.html
-  sample_data: sample_data.html
-last_built: 2022-10-06T14:12Z
+  openeo-01-getting_started: openeo-01-getting_started.html
+  openeo-02-sample_data: openeo-02-sample_data.html
+  openeo-03-package-software-architecture: openeo-03-package-software-architecture.html
+  openeo-04-process_graph_concepts: openeo-04-process_graph_concepts.html
+  openeo-05-process_graph_building_application: openeo-05-process_graph_building_application.html
+  openeo-06-developer_implementation_details: openeo-06-developer_implementation_details.html
+last_built: 2022-11-17T09:23Z
 

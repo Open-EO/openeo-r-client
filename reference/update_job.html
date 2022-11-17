@@ -18,7 +18,7 @@ that will be replaced or removed. The return shows a message of result or failur
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -33,10 +33,22 @@ that will be replaced or removed. The return shows a message of result or failur
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -95,8 +107,8 @@ that will be replaced or removed. The return shows a message of result or failur
 
 
 <dt>process</dt>
-<dd><p>A <code><a href="Graph.html">Graph</a></code>, a function returning a <code><a href="ProcessNode.html">ProcessNode</a></code> as an endpoint, the <code><a href="ProcessNode.html">ProcessNode</a></code> 
-will return the results or a self defined <code><a href="Process.html">Process</a></code></p></dd>
+<dd><p>A <code><a href="Graph.html">Graph()</a></code>, a function returning a <code><a href="ProcessNode.html">ProcessNode()</a></code> as an endpoint, the <code><a href="ProcessNode.html">ProcessNode()</a></code>
+will return the results or a self defined <code><a href="Process.html">Process()</a></code></p></dd>
 
 
 <dt>plan</dt>
@@ -108,7 +120,7 @@ will return the results or a self defined <code><a href="Process.html">Process</
 
 
 <dt>con</dt>
-<dd><p>connected and authenticated openEO client (optional) otherwise <code><a href="active_connection.html">active_connection</a></code>
+<dd><p>connected and authenticated openEO client (optional) otherwise <code><a href="active_connection.html">active_connection()</a></code>
 is used.</p></dd>
 
 
@@ -119,11 +131,11 @@ is used.</p></dd>
     <div id="details">
     <h2>Details</h2>
     <p>The '...' operator shall contain all the values that are to be replaced in the job. There are some reserved
-keys. 
+keys.
 The 'process_graph' option will replace the process graph with a newly defined one, therefore the process graph needs to be a Graph object.
 The 'format' option will change the desired output format.
 All other parameter will be assumed to be special output parameter. Remember, you don't need to specify a process graph or graph_id,
-e.g. if you just want to update the output format. 
+e.g. if you just want to update the output format.
 To leave parameter unchanged, then don't mention it. If you want to delete some, then set them to NA.</p>
     </div>
 

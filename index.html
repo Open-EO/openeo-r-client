@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -57,10 +57,22 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/getting_started.html">Getting Started</a>
+      <a href="articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul>
 </li>
@@ -118,7 +130,7 @@
 <pre><code><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"openeo"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span></code></pre>
 <p>If you want use a different package version we recommend to use the parameter <code>ref</code>. Define this parameter as “master”, “develop” or another version specified in <a href="https://github.com/Open-EO/openeo-r-client/releases" class="external-link">releases</a>.</p>
-<p>Currently, the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won’t support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.</p>
+<p>Currently, the package complies to the major openEO API version 1.1.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won’t support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.</p>
 <table class="table">
 <thead><tr class="header">
 <th>openeo R client version</th>
@@ -127,7 +139,17 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>&gt;= v1.1.x</td>
+<td>v1.3.x</td>
+<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">v1.1.x</a></td>
+<td>stable</td>
+</tr>
+<tr class="even">
+<td>v1.2.x</td>
+<td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">v1.1.x</a></td>
+<td>stable</td>
+</tr>
+<tr class="odd">
+<td>v1.1.x</td>
 <td><a href="https://openeo.org/documentation/1.0/developers/api/reference.html" class="external-link">v1.1.x</a></td>
 <td>stable</td>
 </tr>
@@ -287,7 +309,7 @@ result = p$save_result(data=apply_linear_transform,format="PNG")</code></pre>
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Open-EO/openeo-r-client/actions" class="external-link"><img src="https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://CRAN.R-project.org/package=openeo" class="external-link"><img src="https://www.r-pkg.org/badges/version/openeo" alt="CRAN status"></a></li>
 </ul>
 </div>

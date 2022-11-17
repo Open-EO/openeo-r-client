@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -32,10 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -61,7 +73,55 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="1.2.2" id="version-122">Version 1.2.2<a class="anchor" aria-label="anchor" href="#version-122"></a></h2>
+<h2 class="page-header" data-toc-text="1.3.0" id="version-130">Version 1.3.0<a class="anchor" aria-label="anchor" href="#version-130"></a></h2>
+<div class="section level3">
+<h3 id="added-1-3-0">Added<a class="anchor" aria-label="anchor" href="#added-1-3-0"></a></h3>
+<ul><li>new vignettes:<ul><li>Package Software Architecture</li>
+<li>Process Graph Building Concepts</li>
+<li>Process Graph Building Application</li>
+<li>Developer Implementation Details</li>
+</ul></li>
+<li>added the default openEO processes v1.2.0 as test data to the package in the RDS file format (<code>system.file("openeo_processes/openeo_process_1.2.0.rds")</code>) and added a test case for process parsing</li>
+<li>
+<code>active_process_list()</code> and <code><a href="../reference/processes.html">active_process_collection()</a></code> which refer to the currently connected back-ends process list as well as the package interpretation of those process descriptions. See environment variables <code>process_list</code> and <code>process_collection</code>
+</li>
+<li>
+<code><a href="../reference/list_collections.html">active_data_collection()</a></code> to fetch the data collection of the currently active back-end, which refers to the package variable <code>data_collection</code>
+</li>
+<li>vignette about the software and package architecture and design choices based on API requirements</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed-1-3-0">Changed<a class="anchor" aria-label="anchor" href="#changed-1-3-0"></a></h3>
+<ul><li>added line breaks if there are multiple validation messages of ProcessNodes</li>
+<li>
+<code><a href="../reference/describe_process.html">describe_process()</a></code> also works now with <code>Process</code> and <code>ProcessNode</code> objects</li>
+<li>use the active process list when looking up the description of an openEO process</li>
+<li>package now depends on R &gt; 3.5.0, because of RDS object de-/serialization (openEO test processes)</li>
+<li>added a warning and a note for <code><a href="../reference/compute_result.html">compute_result()</a></code> if neither parameter ‘format’ of the function was set nor process ‘save_result’ was used in the process graph</li>
+<li>refresh data collections after separate login as part of <a href="https://github.com/Open-EO/openeo-r-client/issues/83" class="external-link">#83</a>
+</li>
+<li>improved disconnection behavior by adding a <code><a href="../reference/disconnect.html">disconnect()</a></code> function and a logout and disconnect on package unload</li>
+<li>decoupled processes and data collection from the OpenEO connection</li>
+<li>moved the setup of the RStudio connection observer into a separate helper function</li>
+<li>naming of the vignettes to achieve an order in the vignette index entries</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-1-3-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-3-0"></a></h3>
+<ul><li>
+<code><a href="../reference/variables.html">variables()</a></code> function now returns the extracted variables correctly</li>
+<li>coercion problems from checking with is.na on values with length &gt; 1 have been fixed by using rlang::is_na <a href="https://github.com/Open-EO/openeo-r-client/issues/130" class="external-link">#130</a>, <a href="https://github.com/Open-EO/openeo-r-client/issues/123" class="external-link">#123</a>
+</li>
+<li>an issue when calling the JSON serialization of class Process</li>
+</ul></div>
+<div class="section level3">
+<h3 id="removed-1-3-0">Removed<a class="anchor" aria-label="anchor" href="#removed-1-3-0"></a></h3>
+<ul><li>removed utility functions <code>.getProcessCollection()</code> and <code>.find_var_in_stack()</code> which are replaced by the <code><a href="../reference/processes.html">active_process_collection()</a></code> function</li>
+<li>functions to call data collection (<code>$getCollectionNames()</code>, <code>$getDataCollection()</code>) from connection as well as the fields (<code>private$data_collection</code>)</li>
+<li>functions (<code>$getProcessCollection()</code>) and fields (<code>private$process_collection</code>, <code>$processes</code>) to store the process list and process collection</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.2.2" id="version-122">Version 1.2.2<small>2022-10-17</small><a class="anchor" aria-label="anchor" href="#version-122"></a></h2>
 <div class="section level3">
 <h3 id="changed-1-2-2">Changed<a class="anchor" aria-label="anchor" href="#changed-1-2-2"></a></h3>
 <ul><li>allowed objects as values for argument BoundingBox where <code><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox()</a></code> can be applied</li>
@@ -74,6 +134,7 @@
 <ul><li>OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (<a href="https://github.com/m-mohr" class="external-link">@m-mohr</a>, <a href="https://github.com/flahn" class="external-link">@flahn</a>, <a href="https://github.com/Open-EO/openeo-r-client/pull/131" class="external-link">#131</a>, <a href="https://github.com/Open-EO/openeo-r-client/pull/119" class="external-link">#119</a>)</li>
 <li>remote environments now login with <code>rlang::is_interactive() == FALSE</code> so that for example Jupyter environments print the device code URL and the code instead of trying to open the systems internet browser <a href="https://github.com/Open-EO/openeo-r-client/issues/128" class="external-link">#128</a>
 </li>
+<li>capabilities request no longer appends an additional “/” to the host, which caused problems with some back-ends (<a href="https://github.com/m-mohr" class="external-link">@m-mohr</a> <a href="https://github.com/Open-EO/openeo-r-client/pull/133" class="external-link">#133</a>, <a href="https://github.com/Open-EO/openeo-r-client/issues/134" class="external-link">#134</a>)</li>
 <li>
 <code>download_results</code> could not interprete a Job object due to the <code>length(job) != 1</code> restriction</li>
 <li>added a Job to Process coercion to match the messages instruction, when printing a Job <a href="https://github.com/Open-EO/openeo-r-client/issues/115" class="external-link">#115</a>

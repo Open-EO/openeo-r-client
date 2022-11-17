@@ -18,7 +18,7 @@ specific versions you should provide the version parameter."><meta property="og:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -33,10 +33,22 @@ specific versions you should provide the version parameter."><meta property="og:
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -78,7 +90,7 @@ specific versions you should provide the version parameter.</p>
 
 
 <dt>version</dt>
-<dd><p>the openEO API version number as string (optional), see also <code><a href="api_versions.html">api_versions</a></code></p></dd>
+<dd><p>the openEO API version number as string (optional), see also <code><a href="api_versions.html">api_versions()</a></code></p></dd>
 
 
 <dt>exchange_token</dt>
@@ -86,28 +98,28 @@ specific versions you should provide the version parameter.</p>
 
 
 <dt>...</dt>
-<dd><p>parameters that are passed on to <code><a href="login.html">login</a></code></p></dd>
+<dd><p>parameters that are passed on to <code><a href="login.html">login()</a></code></p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>You can explore several already available openEO web services by using the openEO hub (<a href="https://hub.openeo.org/" class="external-link">https://hub.openeo.org/</a>). There you 
+    <p>You can explore several already available openEO web services by using the openEO hub (<a href="https://hub.openeo.org/" class="external-link">https://hub.openeo.org/</a>). There you
 have an overview about their status and connection details like the URL and supported features. You can explore the
 service for free through the access to publicly available metadata of data collections as well as the offered
 processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 your choice. There you will get further information on credentials and the log in procedure.</p>
-<p>The <code>...</code> parameter allows you to pass on arguments directly for <code><a href="login.html">login</a></code>. If they are omitted the 
-client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards. 
+<p>The <code>...</code> parameter allows you to pass on arguments directly for <code><a href="login.html">login()</a></code>. If they are omitted the
+client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards.
 Based on the provided login parameters user / password or OIDC provider the appropriate login procedure for basic authentication
 or OIDC authentication will be chosen.</p>
 <p>The parameter <code>version</code> is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).</p>
-<p>When calling this function the <code><a href="OpenEOClient.html">OpenEOClient</a></code> is also stored in a variable in the package
+<p>When calling this function the <code><a href="OpenEOClient.html">OpenEOClient()</a></code> is also stored in a variable in the package
 which marks the latest service that was connected to.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="active_connection.html">active_connection</a></code></p></div>
+    <div class="dont-index"><p><code><a href="active_connection.html">active_connection()</a></code></p></div>
     </div>
 
     <div id="ref-examples">

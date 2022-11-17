@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -32,10 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -100,23 +112,23 @@
 
 
 <dt>con</dt>
-<dd><p>connected and authenticated openEO client (optional) otherwise <code><a href="active_connection.html">active_connection</a></code>
+<dd><p>connected and authenticated openEO client (optional) otherwise <code><a href="active_connection.html">active_connection()</a></code>
 is used.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>additional parameters that are passed to <code><a href="compute_result.html">compute_result</a></code> or <code><a href="create_job.html">create_job</a></code></p></dd>
+<dd><p>additional parameters that are passed to <code><a href="compute_result.html">compute_result()</a></code> or <code><a href="create_job.html">create_job()</a></code></p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>In order to get a better understanding about the processing mechanisms and the data structures used in the openEO back-end, 
-it helps to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial 
-extents of the derived process graph with a new spatial extent which is calculated by the first spatial extent of the 
+    <p>In order to get a better understanding about the processing mechanisms and the data structures used in the openEO back-end,
+it helps to check the actual data from time to time. This function aids the user in doing to. It replaces all spatial
+extents of the derived process graph with a new spatial extent which is calculated by the first spatial extent of the
 mandatory openEO process 'load_collection'. We take the center of the extent and add 0.0003 degrees to it. In case the
 coordinate reference system is not in WGS84, then the bounding box will be transformed into geodetic WGS84 beforehand, if
 the package 'sf' is present.</p>
-<p>If the spatial extent was explicitly set to a small custom extent, then you can disable the replacement of the area of 
+<p>If the spatial extent was explicitly set to a small custom extent, then you can disable the replacement of the area of
 interest with <code>replace_aoi = FALSE</code>.</p>
     </div>
 

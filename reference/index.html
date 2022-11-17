@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -32,10 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -344,6 +356,10 @@
         </td>
         <td><p>Returns dimension</p></td>
       </tr><tr><td>
+          <p><code><a href="disconnect.html">disconnect()</a></code> </p>
+        </td>
+        <td><p>disconnect</p></td>
+      </tr><tr><td>
           <p><code><a href="download_file.html">download_file()</a></code> </p>
         </td>
         <td><p>Download a file from the user workspace</p></td>
@@ -364,7 +380,7 @@
         </td>
         <td><p>Group operator wrappers</p></td>
       </tr><tr><td>
-          <p><code><a href="list_collections.html">list_collections()</a></code> </p>
+          <p><code><a href="list_collections.html">list_collections()</a></code> <code><a href="list_collections.html">active_data_collection()</a></code> </p>
         </td>
         <td><p>List data on connected server</p></td>
       </tr><tr><td>
@@ -456,7 +472,7 @@
         </td>
         <td><p>Viewer panel for provided openEO processes</p></td>
       </tr><tr><td>
-          <p><code><a href="processes.html">processes()</a></code> </p>
+          <p><code><a href="processes.html">processes()</a></code> <code><a href="processes.html">active_process_collection()</a></code> </p>
         </td>
         <td><p>Get a process graph builder / process collection from the connection</p></td>
       </tr><tr><td>

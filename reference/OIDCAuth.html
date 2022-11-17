@@ -18,7 +18,7 @@ fashion by inheriting functions from IAuth and AbstractOIDCAuthentication."><met
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -33,10 +33,22 @@ fashion by inheriting functions from IAuth and AbstractOIDCAuthentication."><met
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -70,12 +82,12 @@ fashion by inheriting functions from <code>IAuth</code> and <code>AbstractOIDCAu
 
     <div id="details">
     <h2>Details</h2>
-    <p>The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID 
+    <p>The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID
 Connect (OIDC) authentication. The first is covered at <a href="BasicAuth.html">BasicAuth</a>. And since OIDC is based
-on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the 
-back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google, 
+on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the
+back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google,
 etc, by pointing to the respective endpoints during the service discovery of the back-end. Normally
-users would not create those classes manually, but state the general login type (oidc or basic) and some 
+users would not create those classes manually, but state the general login type (oidc or basic) and some
 additional information (see <a href="login.html">login</a>).</p>
 <p>This client supports the following interaction mechanisms (grant types):</p><ul><li><p>authorization_code</p></li>
 <li><p>authorization_code+pkce</p></li>
@@ -83,16 +95,16 @@ additional information (see <a href="login.html">login</a>).</p>
 </ul><div class="section">
 <h3 id="authorization-code">authorization_code<a class="anchor" aria-label="anchor" href="#authorization-code"></a></h3>
 <p>During the login process an internet browser window will be opened and you will be asked to enter your credentials.
-The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in 
-the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with 
-the openEO service provider and ask them for a configuration file that will contain information about the <code>client_id</code> and 
+The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in
+the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with
+the openEO service provider and ask them for a configuration file that will contain information about the <code>client_id</code> and
 <code>secret</code>. The redirect URL requested from the provider is <code>http://localhost:1410/</code></p>
 </div>
 
 <div class="section">
 <h3 id="authorization-code-pkce">authorization_code+pkce<a class="anchor" aria-label="anchor" href="#authorization-code-pkce"></a></h3>
-<p>This procedure also spawns a temporary web server to capture the redirect URL from the OIDC provider. The benefit of this 
-mechanism is that it does not require a client secret issued from the OIDC provider anymore. However, it will still open 
+<p>This procedure also spawns a temporary web server to capture the redirect URL from the OIDC provider. The benefit of this
+mechanism is that it does not require a client secret issued from the OIDC provider anymore. However, it will still open
 the internet browser and asks the user for credentials and authorization.</p>
 </div>
 
@@ -105,7 +117,7 @@ the console or if R runs in the interactive mode the internet browser will be op
 
 <div class="section">
 <h3 id="device-code">device_code<a class="anchor" aria-label="anchor" href="#device-code"></a></h3>
-<p>This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow, 
+<p>This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow,
 but without the additional PKCE negotiation.</p>
 </div>
 
@@ -130,16 +142,16 @@ but without the additional PKCE negotiation.</p>
 <dl><dt><code>$new(provider, config=NULL, ...)</code></dt>
 <dd><p>the constructor for the authentication</p></dd>
 
-  <dt><code>$login()</code></dt>
+<dt><code>$login()</code></dt>
 <dd><p>Initiates the authentication / login in order to obtain the access_token</p></dd>
 
-  <dt><code>$logout()</code></dt>
+<dt><code>$logout()</code></dt>
 <dd><p>Terminates the access_token session and logs out the user on the openEO back-end</p></dd>
 
-  <dt><code>$getUserData()</code></dt>
+<dt><code>$getUserData()</code></dt>
 <dd><p>queries the OIDC provider for the user data like the 'user_id'</p></dd>
 
-  <dt><code>$getAuth()</code></dt>
+<dt><code>$getAuth()</code></dt>
 <dd><p>returns the internal authentication client as created from package 'httr2'</p></dd>
 
 
@@ -151,14 +163,14 @@ but without the additional PKCE negotiation.</p>
 <dl><dt><code>provider</code></dt>
 <dd><p>the name of an OIDC provider registered on the back-end or a provider object as returned by <code><a href="list_oidc_providers.html">list_oidc_providers()</a></code></p></dd>
 
-  <dt><code>config</code></dt>
-<dd><p>either a JSON file containing information about 'client_id' and 
-  'secret' or a named list. Experienced user and developer can also add 'scopes' to 
-  overwrite the default settings of the OIDC provider</p></dd>
+<dt><code>config</code></dt>
+<dd><p>either a JSON file containing information about 'client_id' and
+'secret' or a named list. Experienced user and developer can also add 'scopes' to
+overwrite the default settings of the OIDC provider</p></dd>
 
-  <dt><code>...</code></dt>
-<dd><p>additional parameter might contain <code>force=TRUE</code> specifying to force the use 
-  of a specific authentication flow</p></dd>
+<dt><code>...</code></dt>
+<dd><p>additional parameter might contain <code>force=TRUE</code> specifying to force the use
+of a specific authentication flow</p></dd>
 
 
 </dl></div>

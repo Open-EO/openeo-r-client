@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -32,10 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -78,10 +90,6 @@
 <dd><p>The mapping of the API endpoints and the back-end published ones</p></dd>
 
 
-<dt><code>processes</code></dt>
-<dd><p>a list of <code><a href="Process.html">Process</a></code> objects offered by the back-end</p></dd>
-
-
 </dl></div>
     <div id="methods">
     <h2>Methods</h2>
@@ -90,56 +98,53 @@
 <dl><dt><code>$new(host=NULL)</code></dt>
 <dd><p>the constructor with an optional host URL to connect to</p></dd>
 
-  <dt><code>$getBackendEndpoint(endpoint_name)</code></dt>
+<dt><code>$getBackendEndpoint(endpoint_name)</code></dt>
 <dd><p>returns the URL for the requested endpoint tag</p></dd>
 
-  <dt><code>$request(tag,parameters=NULL,authorized=FALSE, ...)</code></dt>
-<dd><p>performs the desired HTTP request by endpoint tag with 
-  path parameters and whether or not authorization (access_token) is necessary</p></dd>
+<dt><code>$request(tag,parameters=NULL,authorized=FALSE, ...)</code></dt>
+<dd><p>performs the desired HTTP request by endpoint tag with
+path parameters and whether or not authorization (access_token) is necessary</p></dd>
 
-  <dt><code>$isConnected()</code></dt>
+<dt><code>$isConnected()</code></dt>
 <dd><p>whether or not the client has a host set</p></dd>
 
-  <dt><code>$isLoggedIn()</code></dt>
+<dt><code>$isLoggedIn()</code></dt>
 <dd><p>returns a logical describing whether the user is logged in</p></dd>
 
-  <dt><code>$getHost()</code></dt>
+<dt><code>$getHost()</code></dt>
 <dd><p>returns the host URL</p></dd>
 
-  <dt><code>$stopIfNotConnected()</code></dt>
+<dt><code>$stopIfNotConnected()</code></dt>
 <dd><p>throws an error if called and the client is not connected</p></dd>
 
-  <dt><code>$connect(url=NULL,version=NULL)</code></dt>
+<dt><code>$connect(url=NULL,version=NULL)</code></dt>
 <dd><p>connects to a specific version of a back-end</p></dd>
 
-  <dt><code>$api_version()</code></dt>
+<dt><code>$disconnect()</code></dt>
+<dd><p>disconnects from the back-end by logout and clearing of active back-end package variables</p></dd>
+
+<dt><code>$api_version()</code></dt>
 <dd><p>returns the openEO API version this client is compliant to</p></dd>
 
-  <dt><code>$login(user=NULL, password=NULL,provider=NULL,config=NULL)</code></dt>
-<dd><p>creates an <code><a href="IAuth.html">IAuth</a></code> object</p></dd>
+<dt><code>$login(user=NULL, password=NULL,provider=NULL,config=NULL)</code></dt>
+<dd><p>creates an <code><a href="IAuth.html">IAuth()</a></code> object</p></dd>
 
-  <dt><code>$logout()</code></dt>
+<dt><code>$logout()</code></dt>
 <dd><p>invalidates the access_token and terminates the current session</p></dd>
 
-  <dt><code>$getAuthClient()</code></dt>
+<dt><code>$getAuthClient()</code></dt>
 <dd><p>returns the authentication client</p></dd>
 
-  <dt><code>$setAuthClient(value)</code></dt>
+<dt><code>$setAuthClient(value)</code></dt>
 <dd><p>sets the authentication client if it was configured and set externally</p></dd>
 
-  <dt><code>$getCapabilities()</code></dt>
+<dt><code>$getCapabilities()</code></dt>
 <dd><p>service exploration to retrieve the supported openEO endpoints</p></dd>
 
-  <dt><code>$getDataCollection()</code></dt>
-<dd><p>returns the list of collections as obtainable at 'list_collections()'</p></dd>
-
-  <dt><code>$getProcessCollection()</code></dt>
-<dd><p>returns the evaluated process list as obtainable at 'processes()'</p></dd>
-
-  <dt><code>$getId()</code></dt>
+<dt><code>$getId()</code></dt>
 <dd><p>returns the ID of the Connection as stated in the getCapabilities document</p></dd>
 
-  <dt><code>$getTitle()</code></dt>
+<dt><code>$getTitle()</code></dt>
 <dd><p>returns the title of the connection as stated in the getCapabilities document</p></dd>
 
 
@@ -151,31 +156,31 @@
 <dl><dt><code>host</code></dt>
 <dd><p>the openEO host URL</p></dd>
 
-  <dt><code>endpoint_name</code></dt>
+<dt><code>endpoint_name</code></dt>
 <dd><p>the endpoint tag the client uses for the endpoints</p></dd>
 
-  <dt><code>tag</code></dt>
+<dt><code>tag</code></dt>
 <dd><p>endpoint tag</p></dd>
 
-  <dt><code>parameters</code></dt>
+<dt><code>parameters</code></dt>
 <dd><p>named list of values to be replaced in the endpoint</p></dd>
 
-  <dt><code>authorized</code></dt>
+<dt><code>authorized</code></dt>
 <dd><p>whether or not the endpoint requires authentication via access_token</p></dd>
 
-  <dt><code>url</code></dt>
+<dt><code>url</code></dt>
 <dd><p>url of an openEO back-end either directly versioned or with the separate version statement</p></dd>
 
-  <dt><code>version</code></dt>
+<dt><code>version</code></dt>
 <dd><p>the openEO API version to be used, or a list of available API versions if set to NULL</p></dd>
 
-  <dt><code>user</code></dt>
+<dt><code>user</code></dt>
 <dd><p>the user name</p></dd>
 
-  <dt><code>password</code></dt>
+<dt><code>password</code></dt>
 <dd><p>the user password</p></dd>
 
-  <dt><code>value</code></dt>
+<dt><code>value</code></dt>
 <dd><p>an authentication object</p></dd>
 
 

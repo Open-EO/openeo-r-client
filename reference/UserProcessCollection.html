@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
       </span>
     </div>
 
@@ -32,10 +32,22 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/getting_started.html">Getting Started</a>
+      <a href="../articles/openeo-01-getting_started.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/sample_data.html">Sample Data Retrieval</a>
+      <a href="../articles/openeo-02-sample_data.html">Sample Data Retrieval</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-03-package-software-architecture.html">Software and Package Architecture</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-04-process_graph_concepts.html">Process Graph Building</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-05-process_graph_building_application.html">Process Graph Building Application</a>
+    </li>
+    <li>
+      <a href="../articles/openeo-06-developer_implementation_details.html">Developer Implementation Details</a>
     </li>
   </ul></li>
 <li>
@@ -68,9 +80,9 @@
 
     <div id="details">
     <h2>Details</h2>
-    <p>This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way 
-as the <code><a href="ProcessCollection.html">ProcessCollection</a></code> for predefined processes by the openEO back-end. A <code>UserProcessCollection</code> is usually created at 
-<code><a href="user_processes.html">user_processes</a></code>. If you have submitted new user defined processes to the back-end, make sure to call <code><a href="user_processes.html">user_processes</a></code> again
+    <p>This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way
+as the <code><a href="ProcessCollection.html">ProcessCollection()</a></code> for predefined processes by the openEO back-end. A <code>UserProcessCollection()</code> is usually created at
+<code><a href="user_processes.html">user_processes()</a></code>. If you have submitted new user defined processes to the back-end, make sure to call <code><a href="user_processes.html">user_processes()</a></code> again
 to fetch the latest status.</p>
     </div>
     <div id="methods">
@@ -79,7 +91,7 @@ to fetch the latest status.</p>
 
 <dl><dt><code>$new(con = NULL)</code></dt>
 <dd><p>The object creator created an openEO connection.</p></dd>
- 
+
 
 </dl></div>
     <div id="arguments">
@@ -87,7 +99,7 @@ to fetch the latest status.</p>
     
 
 <dl><dt>con</dt>
-<dd><p>optional - an active and authenticated Connection (optional) otherwise <code><a href="active_connection.html">active_connection</a></code>
+<dd><p>optional - an active and authenticated Connection (optional) otherwise <code><a href="active_connection.html">active_connection()</a></code>
 is used.</p></dd>
 
 
