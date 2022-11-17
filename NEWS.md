@@ -1,5 +1,4 @@
-# Version 1.2.2.9000
-ongoing development
+# Version 1.3.0
 
 ## Added
 * new vignettes:
