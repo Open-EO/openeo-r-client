@@ -38,7 +38,7 @@ So, there are several package dependencies from this package, which will be disc
 * sf
 * R6
 
-Apart from the major packages, we use also other packages like IRdisplay and htmltools. Those are imported for visualization purposes for a seamless integration of the openEO Vue components [?](link) for a general look and feel in interactive R reporting environments like R markdown / notebook as well, as Jupyter notebooks with an R Kernel. 
+Apart from the major packages, we use also other packages like IRdisplay and htmltools. Those are imported for visualization purposes for a seamless integration of the [openEO Vue components](https://www.npmjs.com/package/@openeo/vue-components) for a general look and feel in interactive R reporting environments like R markdown / notebook as well, as Jupyter notebooks with an R Kernel. 
 
 ## httr2
 
