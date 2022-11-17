@@ -7,12 +7,12 @@
 download_results(job, folder, con = NULL)
 }
 \arguments{
-\item{job}{job object or the job_id for which the results are fetched. Also the return value of 
-\code{\link{list_results}} or its 'assets' field is also accepted.}
+\item{job}{job object or the job_id for which the results are fetched. Also the return value of
+\code{\link[=list_results]{list_results()}} or its 'assets' field is also accepted.}
 
 \item{folder}{a character string that is the target path on the local computer}
 
-\item{con}{a connected and authenticated openEO connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected and authenticated openEO connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

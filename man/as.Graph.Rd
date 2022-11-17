@@ -20,14 +20,14 @@ as.Graph.Process(from)
 \item{from}{the source from which to coerce (\code{ProcessNode}, \code{function} or \code{ProcessInfo})}
 }
 \value{
-\code{\link{Graph}}
+\code{\link[=Graph]{Graph()}}
 }
 \description{
-Creates a \code{Graph} object from a \code{\link{ProcessNode}}, \code{function} or \code{ProcessInfo} (Exchange object for 
+Creates a \code{Graph} object from a \code{\link[=ProcessNode]{ProcessNode()}}, \code{function} or \code{ProcessInfo} (Exchange object for
 predefined and stored user-defined processes).
 }
 \details{
-Those pure \code{Graph} objects shall only be used internally. If you want to use this 
-information to directly interact with the back-end via JSON please use 
-\code{\link{as.Process}}. This function might be removed from the package function export in the future.
+Those pure \code{Graph} objects shall only be used internally. If you want to use this
+information to directly interact with the back-end via JSON please use
+\code{\link[=as.Process]{as.Process()}}. This function might be removed from the package function export in the future.
 }

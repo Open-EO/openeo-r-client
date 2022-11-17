@@ -9,7 +9,7 @@ describe_job(job, con = NULL)
 \arguments{
 \item{job}{the job object or the id of the job}
 
-\item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

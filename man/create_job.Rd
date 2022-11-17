@@ -15,7 +15,7 @@ create_job(
 )
 }
 \arguments{
-\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+\item{graph}{A \code{\link[=Graph]{Graph()}}, a function returning a \code{\link[=ProcessNode]{ProcessNode()}} as an endpoint or the \code{\link[=ProcessNode]{ProcessNode()}}
 will return the results}
 
 \item{title}{Optional title of a job}
@@ -26,7 +26,7 @@ will return the results}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
 
-\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}

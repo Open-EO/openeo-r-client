@@ -31,7 +31,7 @@ NULL
 
 #' *toJSON functions
 #' 
-#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use \code{toJSON} instead.
+#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use `toJSON` instead.
 #' 
 #' @name graphToJSON-deprecated
 #' @rdname toJSON-deprecated
@@ -210,6 +210,21 @@ is_rstudio_nb = function() {
 # Is this in a RMarkdown / knitr context?
 is_rmd = function() {
   return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
+}
+
+is_connected = function() {
+  con = active_connection()
+  
+  if (is.null(con)) return(FALSE)
+  
+  return(con$isConnected())
+}
+
+is_logged_in = function() {
+  if (!is_connected()) return(FALSE)
+  
+  con = active_connection()
+  return(con$isLoggedIn())
 }
 
 # from r-spatial/stars @ github /R/tidyverse

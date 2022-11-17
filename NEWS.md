@@ -1,3 +1,39 @@
+# Version 1.3.0
+
+## Added
+* new vignettes:
+  - Package Software Architecture
+  - Process Graph Building Concepts
+  - Process Graph Building Application
+  - Developer Implementation Details
+* added the default openEO processes v1.2.0 as test data to the package in the RDS file  format (`system.file("openeo_processes/openeo_process_1.2.0.rds")`) and added a test case for process parsing
+* `active_process_list()` and `active_process_collection()` which refer to the currently connected back-ends process list as well as the package interpretation of those process descriptions. See environment variables `process_list` and `process_collection`
+* `active_data_collection()` to fetch the data collection of the currently active back-end, which refers to the package variable `data_collection`
+* vignette about the software and package architecture and design choices based on API requirements
+
+## Changed
+* added line breaks if there are multiple validation messages of ProcessNodes
+* `describe_process()` also works now with `Process` and `ProcessNode` objects
+* use the active process list when looking up the description of an openEO process
+* package now depends on R > 3.5.0, because of RDS object de-/serialization (openEO test processes)
+* added a warning and a note for `compute_result()` if neither parameter 'format' of the function was set nor process 'save_result' was used in the process graph
+* refresh data collections after separate login as part of [#83](https://github.com/Open-EO/openeo-r-client/issues/83)
+* improved disconnection behavior by adding a `disconnect()` function and a logout and disconnect on package unload
+* decoupled processes and data collection from the OpenEO connection
+* moved the setup of the RStudio connection observer into a separate helper function
+* naming of the vignettes to achieve an order in the vignette index entries
+
+## Fixes
+* `variables()` function now returns the extracted variables correctly
+* coercion problems from checking with is.na on values with length > 1 have been fixed by using rlang::is_na [#130](https://github.com/Open-EO/openeo-r-client/issues/130), [#123](https://github.com/Open-EO/openeo-r-client/issues/123)
+* an issue when calling the JSON serialization of class Process
+
+## Removed
+* removed utility functions `.getProcessCollection()` and `.find_var_in_stack()` which are replaced by the `active_process_collection()` function
+* functions to call data collection (`$getCollectionNames()`, `$getDataCollection()`) from connection as well as the fields (`private$data_collection`)
+* functions (`$getProcessCollection()`) and fields (`private$process_collection`, `$processes`) to store the process list and process collection
+  
+
 # Version 1.2.2
 
 ## Changed
@@ -8,6 +44,7 @@
 ## Fixes
 * OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, [#131](https://github.com/Open-EO/openeo-r-client/pull/131), [#119](https://github.com/Open-EO/openeo-r-client/pull/119))
 * remote environments now login with `rlang::is_interactive() == FALSE` so that for example Jupyter environments print the device code URL and the code instead of trying to open the systems internet browser [#128](https://github.com/Open-EO/openeo-r-client/issues/128)
+* capabilities request no longer appends an additional "/" to the host, which caused problems with some back-ends (@m-mohr [#133](https://github.com/Open-EO/openeo-r-client/pull/133), [#134](https://github.com/Open-EO/openeo-r-client/issues/134))
 * `download_results` could not interprete a Job object due to the `length(job) != 1` restriction
 * added a Job to Process coercion to match the messages instruction, when printing a Job [#115](https://github.com/Open-EO/openeo-r-client/issues/115)
 * during JSON serialization numbers were truncated to a certain amount of digits. Setting `digits=NA` during serialization removes the default value for the digits [#64](https://github.com/Open-EO/openeo-r-client/issues/64)

@@ -4,17 +4,17 @@
 \alias{UdfRuntimeVersionArgument}
 \title{UdfRuntimeVersionArgument class}
 \value{
-Object of \code{\link{R6Class}} is an argument that expects a UDF runtime version or character as value.
+Object of \code{\link[=R6Class]{R6Class()}} is an argument that expects a UDF runtime version or character as value.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent the id of a UDF runtime object as obtainable by \code{\link{list_udf_runtimes}}.
+Inheriting from \code{\link[=Argument]{Argument()}} in order to represent the id of a UDF runtime object as obtainable by \code{\link[=list_udf_runtimes]{list_udf_runtimes()}}.
 }
 \seealso{
-\code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
-\code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-\code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-\code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-\code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-\code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
+\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
+\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
+\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
+\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
+\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
+\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
+\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
 }

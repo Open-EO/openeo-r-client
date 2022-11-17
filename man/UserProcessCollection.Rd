@@ -7,22 +7,22 @@
 This object contains template functions from the users stored user defined processes (UDP), which can be reused in other process graphs.
 }
 \details{
-This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way 
-as the \code{\link{ProcessCollection}} for predefined processes by the openEO back-end. A \code{\link{UserProcessCollection}} is usually created at 
-\code{\link{user_processes}}. If you have submitted new user defined processes to the back-end, make sure to call \code{\link{user_processes}} again
+This object is an unlocked R6 object, that allows us to add new functions to this object at runtime. It is structured in the same way
+as the \code{\link[=ProcessCollection]{ProcessCollection()}} for predefined processes by the openEO back-end. A \code{\link[=UserProcessCollection]{UserProcessCollection()}} is usually created at
+\code{\link[=user_processes]{user_processes()}}. If you have submitted new user defined processes to the back-end, make sure to call \code{\link[=user_processes]{user_processes()}} again
 to fetch the latest status.
 }
 \section{Methods}{
 
 \describe{
-   \item{\code{$new(con = NULL)}}{The object creator created an openEO connection.} 
+\item{\verb{$new(con = NULL)}}{The object creator created an openEO connection.}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-   \item{con}{optional - an active and authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{optional - an active and authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 }

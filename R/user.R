@@ -4,10 +4,10 @@
 #' 
 #' Lists all files in the workspaces of the authenticated user.
 #' 
-#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authorized connection (optional) otherwise [active_connection()]
 #' is used.
 #' 
-#' @return a \code{data.frame} or \code{tibble} with file names and storage sizes
+#' @return a `data.frame` or `tibble` with file names and storage sizes
 #' 
 #' @export
 list_files = function(con=NULL) {
@@ -31,7 +31,7 @@ list_files = function(con=NULL) {
 #' This function sends the file retrieved by the 'content' parameter to the specified target location (relative file path in the
 #' user workspace) on the back-end.
 #'
-#' @param con authorized Connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authorized Connection (optional) otherwise [active_connection()]
 #' is used.
 #' @param content the file path of the file to be uploaded
 #' @param target the relative server path location for the file, e.g. where to find the file in the users workspace
@@ -74,7 +74,7 @@ upload_file = function(content, target, encode = "raw", mime = "application/octe
 #' 
 #' Sends a request to an openEO back-end to access the users files and downloads them to a given location.
 #' 
-#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authorized connection (optional) otherwise [active_connection()]
 #' is used.
 #' @param src the relative file path of the source file on the openEO back-end
 #' @param dst the destination file path on the local file system
@@ -111,7 +111,7 @@ download_file = function(src, dst = NULL, con=NULL) {
 #' Sends a request to an openEO back-end in order to remove a specific file from the users workspaces.
 #' 
 #' @param src the relative file path of the source file on the openEO back-end that shall be deleted
-#' @param con authorized connection (optional) otherwise \code{\link{active_connection}}
+#' @param con authorized connection (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @return logical
@@ -133,9 +133,9 @@ delete_file = function(src, con=NULL) {
 
 #' Get the current user account information
 #' 
-#' Calls endpoint \code{/me} to fetch the user account information of the user currently logged in.
+#' Calls endpoint `/me` to fetch the user account information of the user currently logged in.
 #' 
-#' @param con authenticated client object (optional) otherwise \code{\link{active_connection}}
+#' @param con authenticated client object (optional) otherwise [active_connection()]
 #' is used.
 #' @return object of type user
 #' @export
@@ -160,27 +160,27 @@ describe_account = function(con=NULL) {
 #' specific versions you should provide the version parameter.
 #' 
 #' @details 
-#' You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
+#' You can explore several already available openEO web services by using the openEO hub (<https://hub.openeo.org/>). There you 
 #' have an overview about their status and connection details like the URL and supported features. You can explore the
 #' service for free through the access to publicly available metadata of data collections as well as the offered
 #' processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 #' your choice. There you will get further information on credentials and the log in procedure.
 #' 
-#' The \code{...} parameter allows you to pass on arguments directly for \code{\link{login}}. If they are omitted the 
+#' The `...` parameter allows you to pass on arguments directly for [login()]. If they are omitted the 
 #' client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards. 
 #' Based on the provided login parameters user / password or OIDC provider the appropriate login procedure for basic authentication
 #' or OIDC authentication will be chosen.
 #' 
-#' The parameter \code{version} is not required. If the service offers a well-known document of the
+#' The parameter `version` is not required. If the service offers a well-known document of the
 #' service the client will choose an appropriate version (default the most recent production ready version).
 #' 
-#' When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+#' When calling this function the [OpenEOClient()] is also stored in a variable in the package
 #' which marks the latest service that was connected to.
 #' 
 #' @param host URL pointing to the openEO server service host
-#' @param version the openEO API version number as string (optional), see also \code{\link{api_versions}}
+#' @param version the openEO API version number as string (optional), see also [api_versions()]
 #' @param exchange_token 'access_token' or 'id_token' defines in the OIDC case the bearer token use
-#' @param ... parameters that are passed on to \code{\link{login}}
+#' @param ... parameters that are passed on to [login()]
 #'
 #' @examples 
 #' \dontrun{
@@ -204,24 +204,41 @@ describe_account = function(con=NULL) {
 #'               provider='your_named_provider')
 #' }
 #'
-#' @seealso \code{\link{active_connection}}
+#' @seealso [active_connection()]
 #' @export
 connect = function(host, version = NULL, exchange_token="access_token", ...) {
-    con = OpenEOClient$new()
-    
-    con = con$connect(url = host, version = version,exchange_token=exchange_token)
-    
-    if (length(con) == 0) {
-        message("Invalid openEO host stated. Please use an URL pointing to a valid openEO web service implementation.")
-        return(invisible(NULL))
-    }
-    
-    args = list(...)
-    if(length(args) > 0) {
-      do.call(login,args)
-    }
-    
-    return(invisible(con))
+  .initPackageEnvVariables()
+  con = OpenEOClient$new()
+  
+  con = con$connect(url = host, version = version,exchange_token=exchange_token)
+  
+  if (length(con) == 0) {
+      message("Invalid openEO host stated. Please use an URL pointing to a valid openEO web service implementation.")
+      return(invisible(NULL))
+  }
+  
+  args = list(...)
+  if(length(args) > 0) {
+    do.call(login,args)
+  }
+  
+  return(invisible(con))
+}
+
+#' disconnect
+#'
+#' Uses the connections disconnect method to logout and clear all variables in the package for this active back-end. This will also refresh
+#' RStudios connection observer if it can be found.
+#' 
+#' @return invisible NULL
+#' @export
+disconnect = function() {
+  con = active_connection()
+  
+  if (!is.null(con)) {
+    con$disconnect()
+  }
+  invisible(NULL)
 }
 
 #' Log in on a specific back-end
@@ -231,22 +248,22 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
 #' explore the capabilities and want to compute something, then you need to log in afterwards.
 #' 
 #' @details 
-#' Based on the general login type (\link{BasicAuth} or \link{OIDCAuth}) there need to be different configurations. The basic
+#' Based on the general login type ([BasicAuth] or [OIDCAuth]) there need to be different configurations. The basic
 #' authentication (if supported) is the simplest login mechanism for which user need to enter their credentials directly as
-#' \code{user} and \code{password}.
+#' `user` and `password`.
 #' 
 #' For the Open ID connect authentication the user needs to select one of the accepted OIDC providers of 
-#' \code{\link{list_oidc_providers}} as \code{provider}. Alternatively the name of the provider suffices.
-#' For further configuration, you can pass a named list of values as \code{config} or
+#' [list_oidc_providers()] as `provider`. Alternatively the name of the provider suffices.
+#' For further configuration, you can pass a named list of values as `config` or
 #' a file path to a JSON file.
 #' 
 #' There are many different authentication mechanisms for OIDC and OAuth2.0, which OIDC is based on. The 'openeo' package supports
-#' currently the authorization_code, authorization_code+pkce, device_code and device_code+pkce (see \link{OIDCAuth}). For authorization_code
-#' you need to state the \code{client_id} and \code{secret} in the configuration options. In general the most comfortable available login mechanism is chosen
+#' currently the authorization_code, authorization_code+pkce, device_code and device_code+pkce (see [OIDCAuth]). For authorization_code
+#' you need to state the `client_id` and `secret` in the configuration options. In general the most comfortable available login mechanism is chosen
 #' automatically (1. device_code+pkce, 2. device_code 3. authorization_code+pkce, 4. authorization_code). For example, with the device_code 
 #' flow you normally don't even need to specify any additional configuration. 
 #' 
-#' If you really want to choose the authorization flow mechanism manually, you can add \code{grant_type} in the configuration
+#' If you really want to choose the authorization flow mechanism manually, you can add `grant_type` in the configuration
 #' list. You can then use the following values:
 #' 
 #' \itemize{
@@ -258,21 +275,21 @@ connect = function(host, version = NULL, exchange_token="access_token", ...) {
 #' 
 #' @section Configuration options:
 #' \describe{
-#'    \item{\code{client_id}}{The client id to use, when authorization code is selected as grant_type}
-#'    \item{\code{secret}}{The client secret that matches the client_id to identify and validate this local client towards the identity provider}
-#'    \item{\code{grant_type}}{Manually selected authentication method from the ones stated above.}
-#'    \item{\code{scope}}{Manually select the scopes for the authentication method. Note: this is usually filled automatically with the information 
+#'    \item{`client_id`}{The client id to use, when authorization code is selected as grant_type}
+#'    \item{`secret`}{The client secret that matches the client_id to identify and validate this local client towards the identity provider}
+#'    \item{`grant_type`}{Manually selected authentication method from the ones stated above.}
+#'    \item{`scope`}{Manually select the scopes for the authentication method. Note: this is usually filled automatically with the information 
 #'    from the provider object}
 #' }
 #' 
-#' @param con connected back-end connection (optional) otherwise \code{\link{active_connection}}
+#' @param con connected back-end connection (optional) otherwise [active_connection()]
 #' is used.
 #' @param user the user name
 #' @param password the password
 #' @param provider provider object as obtained by 'list_oidc_providers()' or the name of the provider in the provider list. If NULL
-#' and \code{provider_type="oidc"} then the first available provider is chosen from the list.
+#' and `provider_type="oidc"` then the first available provider is chosen from the list.
 #' @param config named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON). If NULL and 
-#' \code{provider_type="oidc"} the configuration parameters are taken from the default authentication client of the OIDC provider.
+#' `provider_type="oidc"` the configuration parameters are taken from the default authentication client of the OIDC provider.
 #' @return a connected and authenticated back-end connection
 #' 
 #' @examples 
@@ -307,7 +324,7 @@ login = function(user = NULL, password = NULL, provider=NULL, config=NULL, con=N
 #' 
 #' Logs out or closes the active connection to an openEO service.
 #' 
-#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @export
@@ -323,18 +340,18 @@ logout = function(con=NULL) {
 #' Active Connection
 #' 
 #' The function gets or sets the currently active connection to an openEO service. Usually, the
-#' active connection is set when calling the \code{\link{connect}} function. Just the last 
+#' active connection is set when calling the [connect()] function. Just the last 
 #' connection is set as active.
 #' An application for the active connection is the optional connection within all the functions
 #' that interact with the openEO service and require a connection. If the connection is omitted 
 #' in the function, this function is called in order to try to fetch a connection. If you 
 #' want to operate on multiple services at once, you should use an explicit connection.
 #' 
-#' @param con optional \code{\link{OpenEOClient}} to set, if omitted or NULL the currently active 
+#' @param con optional [OpenEOClient()] to set, if omitted or NULL the currently active 
 #' connection is returned
-#' @return \code{\link{OpenEOClient}}
+#' @return [OpenEOClient()]
 #' 
-#' @seealso \code{\link{connect}}
+#' @seealso [connect()]
 #' 
 #' @examples \dontrun{
 #' # Note: all URLs and credentials are arbitrary
@@ -367,9 +384,9 @@ active_connection = function(con=NULL) {
 #' In case the openEO service provider supports OpenID connect authentication, this function will return a list
 #' of supported provider that can be used by this specific service.
 #' 
-#' @param con active openEO service connection (\code{\link{OpenEOClient}})
+#' @param con active openEO service connection ([OpenEOClient()])
 #' 
-#' @return a \code{ProviderList} object which is a named list of \code{Provider} objects.
+#' @return a `ProviderList` object which is a named list of `Provider` objects.
 #' 
 #' @export
 list_oidc_providers = function(con = NULL) {

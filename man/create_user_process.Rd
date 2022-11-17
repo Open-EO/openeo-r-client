@@ -25,7 +25,7 @@ create_user_process(
 
 \item{submit}{whether to create a new user process at the openEO service or to create it for local use (default set to submit = TRUE)}
 
-\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}
@@ -39,6 +39,6 @@ Uploads the process graph information to the back-end and stores it. This can be
 \details{
 The parameter \code{submit} will be deprecated in the future. Please use \code{as(obj, "Process")}.
 This function is useful when copying a JSON representation of your process graph to
-another software. In that case use \code{udp = as(obj, "Process")} and simply print or call 
+another software. In that case use \code{udp = as(obj, "Process")} and simply print or call
 object \code{udp} on the console.
 }

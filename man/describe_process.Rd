@@ -7,9 +7,9 @@
 describe_process(process = NA, con = NULL)
 }
 \arguments{
-\item{process}{id of a process to be described or the ProcessInfo object}
+\item{process}{id of a process to be described, the ProcessInfo object or a Process object}
 
-\item{con}{Authentication object (optional) otherwise \code{\link{active_connection}}
+\item{con}{Authentication object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

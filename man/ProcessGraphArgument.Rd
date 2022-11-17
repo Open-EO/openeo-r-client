@@ -4,38 +4,40 @@
 \alias{ProcessGraphArgument}
 \title{ProcessGraphArgument}
 \value{
-Object of \code{\link{R6Class}} representing a ProcessGraph.
+Object of \code{\link[=R6Class]{R6Class()}} representing a ProcessGraph.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent a ProcessGraph (prior known as callback). The ProcessGraph operates on reduced data
-of a data cube. For example reducing the time dimension results in a time series that has to be reduced into a
-single value. The value of a ProcessGraph is usually a \code{\link{Graph}} with \code{\link{ProcessGraphParameter}} as 
-added data. Additional information can be found in the openEO API documentation:
+Inheriting from \code{\link[=Argument]{Argument()}} in order to represent an argument that contains a process or a derivable value (formerly known
+as callback). The ProcessGraphArgument operates on the reduced data of a data cube. For example reducing or aggregating over
+the temporal dimension results in a time series that has to be reduced into a single value or aggregated into another time
+series. The value of a ProcessGraphArgument is usually a function that will be coerced into \code{\link[=Process]{Process()}}. The function
+is required to use the same amount of parameters as \code{ProcessGraphParameter} objects are defined, because during the coercion
+those \code{ProcessGraphParameter} are passed to function. Additional information can be found in the openEO API documentation:
 \itemize{
-  \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
+\item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 }
 }
 \section{Methods}{
 
 \describe{
-  \item{\code{$getProcessGraphParameters()}}{returns the available list \code{\link{ProcessGraphParameter}}}
-  \item{\code{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link{ProcessGraphParameter}} to the ProcessGraph}
+\item{\verb{$getProcessGraphParameters()}}{returns the available list \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}}
+\item{\verb{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} to the ProcessGraph}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{parameters}}{the \code{\link{ProcessGraphParameter}} list}
+\item{\code{parameters}}{the \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} list}
 }
 }
 
 \seealso{
-\code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
-\code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-\code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-\code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-\code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-\code{\link{UdfRuntimeVersionArgument}},\code{\link{TemporalIntervals}}, \code{\link{MetadataFilter}}
+\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
+\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
+\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
+\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
+\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
+\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
+\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
 }

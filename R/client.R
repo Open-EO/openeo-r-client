@@ -10,43 +10,41 @@ NULL
 #' 
 #' @field user_id The user_id obtained after authentication
 #' @field api.mapping The mapping of the API endpoints and the back-end published ones
-#' @field processes a list of \code{\link{Process}} objects offered by the back-end
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$new(host=NULL)}}{the constructor with an optional host URL to connect to}
-#'   \item{\code{$getBackendEndpoint(endpoint_name)}}{returns the URL for the requested endpoint tag}
-#'   \item{\code{$request(tag,parameters=NULL,authorized=FALSE, ...)}}{performs the desired HTTP request by endpoint tag with 
+#'   \item{`$new(host=NULL)`}{the constructor with an optional host URL to connect to}
+#'   \item{`$getBackendEndpoint(endpoint_name)`}{returns the URL for the requested endpoint tag}
+#'   \item{`$request(tag,parameters=NULL,authorized=FALSE, ...)`}{performs the desired HTTP request by endpoint tag with 
 #'   path parameters and whether or not authorization (access_token) is necessary}
-#'   \item{\code{$isConnected()}}{whether or not the client has a host set}
-#'   \item{\code{$isLoggedIn()}}{returns a logical describing whether the user is logged in}
-#'   \item{\code{$getHost()}}{returns the host URL}
-#'   \item{\code{$stopIfNotConnected()}}{throws an error if called and the client is not connected}
-#'   \item{\code{$connect(url=NULL,version=NULL)}}{connects to a specific version of a back-end}
-#'   \item{\code{$api_version()}}{returns the openEO API version this client is compliant to}
-#'   \item{\code{$login(user=NULL, password=NULL,provider=NULL,config=NULL)}}{creates an \code{\link{IAuth}} object}
-#'   \item{\code{$logout()}}{invalidates the access_token and terminates the current session}
-#'   \item{\code{$getAuthClient()}}{returns the authentication client}
-#'   \item{\code{$setAuthClient(value)}}{sets the authentication client if it was configured and set externally}
-#'   \item{\code{$getCapabilities()}}{service exploration to retrieve the supported openEO endpoints}
-#'   \item{\code{$getDataCollection()}}{returns the list of collections as obtainable at 'list_collections()'}
-#'   \item{\code{$getProcessCollection()}}{returns the evaluated process list as obtainable at 'processes()'}
-#'   \item{\code{$getId()}}{returns the ID of the Connection as stated in the getCapabilities document}
-#'   \item{\code{$getTitle()}}{returns the title of the connection as stated in the getCapabilities document}
+#'   \item{`$isConnected()`}{whether or not the client has a host set}
+#'   \item{`$isLoggedIn()`}{returns a logical describing whether the user is logged in}
+#'   \item{`$getHost()`}{returns the host URL}
+#'   \item{`$stopIfNotConnected()`}{throws an error if called and the client is not connected}
+#'   \item{`$connect(url=NULL,version=NULL)`}{connects to a specific version of a back-end}
+#'   \item{`$disconnect()`}{disconnects from the back-end by logout and clearing of active back-end package variables}
+#'   \item{`$api_version()`}{returns the openEO API version this client is compliant to}
+#'   \item{`$login(user=NULL, password=NULL,provider=NULL,config=NULL)`}{creates an [IAuth()] object}
+#'   \item{`$logout()`}{invalidates the access_token and terminates the current session}
+#'   \item{`$getAuthClient()`}{returns the authentication client}
+#'   \item{`$setAuthClient(value)`}{sets the authentication client if it was configured and set externally}
+#'   \item{`$getCapabilities()`}{service exploration to retrieve the supported openEO endpoints}
+#'   \item{`$getId()`}{returns the ID of the Connection as stated in the getCapabilities document}
+#'   \item{`$getTitle()`}{returns the title of the connection as stated in the getCapabilities document}
 #' }
 #' 
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{host}}{the openEO host URL}
-#'   \item{\code{endpoint_name}}{the endpoint tag the client uses for the endpoints}
-#'   \item{\code{tag}}{endpoint tag}
-#'   \item{\code{parameters}}{named list of values to be replaced in the endpoint}
-#'   \item{\code{authorized}}{whether or not the endpoint requires authentication via access_token}
-#'   \item{\code{url}}{url of an openEO back-end either directly versioned or with the separate version statement}
-#'   \item{\code{version}}{the openEO API version to be used, or a list of available API versions if set to NULL}
-#'   \item{\code{user}}{the user name}
-#'   \item{\code{password}}{the user password}
-#'   \item{\code{value}}{an authentication object}
+#'   \item{`host`}{the openEO host URL}
+#'   \item{`endpoint_name`}{the endpoint tag the client uses for the endpoints}
+#'   \item{`tag`}{endpoint tag}
+#'   \item{`parameters`}{named list of values to be replaced in the endpoint}
+#'   \item{`authorized`}{whether or not the endpoint requires authentication via access_token}
+#'   \item{`url`}{url of an openEO back-end either directly versioned or with the separate version statement}
+#'   \item{`version`}{the openEO API version to be used, or a list of available API versions if set to NULL}
+#'   \item{`user`}{the user name}
+#'   \item{`password`}{the user password}
+#'   \item{`value`}{an authentication object}
 #' }
 NULL
 
@@ -63,7 +61,6 @@ OpenEOClient <- R6Class(
     user_id = NULL,
     
     api.mapping = NULL,
-    processes = NULL,
 
     # functions ====
     initialize = function(host=NULL) {
@@ -135,7 +132,17 @@ OpenEOClient <- R6Class(
         stop("Not connected to a back-end. Please connect to one before proceeding")
       }
     },
-    
+    disconnect = function() {
+      observer = getOption("connectionObserver")
+      
+      if (is_logged_in()) logout()
+      
+      if (!is.null(observer)) observer$connectionClosed(type="OpenEO Service",host=private$host)
+      .remove_connection(con = self)
+      
+      .initPackageEnvVariables()
+      
+    },
     connect = function(url=NULL,version=NULL,exchange_token="access_token") {
       tryCatch({
         if (is.null(url) && length(self$getHost()) == 0) {
@@ -176,8 +183,6 @@ OpenEOClient <- R6Class(
         } else {
           
           if ("versions" %in% names(private$backendVersions())) {
-            # hostInfo=private$backendVersions()$versions
-            # hostInfo = as.data.frame(do.call(rbind,hostInfo),stringsAsFactors=FALSE)
             hostInfo=as.data.frame(private$backendVersions())
             
             
@@ -201,101 +206,27 @@ OpenEOClient <- R6Class(
           }
         }
         
-        # connections contract for RStudio
-        observer = getOption("connectionObserver")
-        
-        if (!is.null(observer)) {
-          observer$connectionOpened(type="OpenEO Service",
-                                    displayName= self$getTitle(), 
-                                    host=self$getHost(), 
-                                    listObjectTypes = function() {
-                                      list(
-                                        resource = list(
-                                          contains = list(
-                                            collection = list(
-                                              contains="data"
-                                            )
-                                          )
-                                        )
-                                      )
-                                      
-                                    },
-                                    connectCode = paste0("library(openeo)\n\nconnect(host=\"",self$getHost(),"\")"),
-                                    disconnect = function() {
-                                      logout()
-                                      .remove_connection(con = self)
-                                      observer <- getOption("connectionObserver")
-                                      
-                                      if (!is.null(observer))
-                                        observer$connectionClosed("OpenEO Service", self$getHost())
-                                    },
-                                    listObjects = function() {
-                                      active_connection(con = self)
-                                      
-                                      if (!is.null(active_connection())) {
-                                          cids = self$getCollectionNames()
-                                          types = rep("collection",times=length(cids))
-                                          
-                                          df = data.frame(name=cids,type=types,stringsAsFactors = FALSE)
-                                          return(df)
-                                      } else {
-                                        return(list())
-                                      }
-                                    },
-                                    listColumns = function(collection=NULL) {
-                                      if (!is.null(collection)) {
-                                        coll = describe_collection(collection=collection)
-                                        dim_names = names(dimensions(coll))
-                                        
-                                        types = sapply(dimensions(coll), function(dim) {
-                                          type = dim$type
-                                          
-                                          if ("axis" %in% names(dim)) {
-                                            type = paste0(type,", axis: ",dim$axis)
-                                          }
-                                          
-                                          if ("extent" %in% names(dim)) {
-                                            type = paste0(type,", extent: [",dim$extent[1],",",dim$extent[2],"]")
-                                          }
-                                          
-                                          if ("values" %in% names(dim)) {
-                                            type = paste0(type,", enum: [",paste(dim$values,collapse=","),"]")
-                                          }
-                                          
-                                          return(type)
-                                        })
-                                        
-                                        df = data.frame(name=dim_names, type=types, stringsAsFactors = FALSE)
-                                        
-                                        df = rbind(df,list(name="value",type="numeric"))
-                                        return(df)
-                                      }
-                                    },
-                                    previewObject = function(rowLimit=1,collection=NULL) {
-                                      return(data.frame())
-                                    },
-                                    connectionObject = self)
-        }
+        # set active connection
+        active_connection(con = self)
         
         self$api.mapping = endpoint_mapping(self)
         cat("Connected to service: ",private$host,"\n")
+        
+        void = list_collections()
+        
+        # connections contract for RStudio
+        .fill_rstudio_connection_observer()
+        
+        
+        
         cat("Please check the terms of service (terms_of_service()) and the privacy policy (privacy_policy()). By further usage of this service, you acknowledge and agree to those terms and policies.\n")
 
         if (!hostInfo[hostInfo$url == private$host,]$production) {
           message("Warning: Connected host is not production-ready. Unexpected errors might occur.")
         }
         
-        tryCatch({
-          if (is.null(self$processes)) {
-            processes = list_processes(self)
-            pids = sapply(processes, function(x)x$id)
-            names(processes) = pids
-            self$processes = processes
-          }
-          
-        }, error = function(e){
-          self$processes = NULL
-        })
+        void = list_processes(self)
+        
         return(invisible(self))
         
       }, 
@@ -334,11 +265,15 @@ OpenEOClient <- R6Class(
         invisible(self)
       },
       error=.capturedErrorToMessage)
+      
+      .refresh_rstudio_connection_observer()
     },
     logout = function() {
       if (!is.null(private$auth_client)){
         private$auth_client$logout()
       }
+      
+      
       
       assign(x = "active_connection", value = NULL, envir = pkgEnvironment)
       
@@ -376,54 +311,6 @@ OpenEOClient <- R6Class(
       
       return(private$capabilities)
     },
-    getDataCollection=function() {
-      if (is.null(private$data_collection)) {
-        
-        tryCatch({
-          tag = "data_overview"
-          
-          collection_list = self$request(tag = tag, authorized = self$isLoggedIn(), type = "application/json")
-          collection_list = collection_list$collections
-          
-          collection_list = lapply(collection_list, function(coll) {
-            coll$extent$spatial = unlist(coll$extent$spatial$bbox)
-            coll$extent$temporal = lapply(coll$extent$temporal$interval, function(t) {
-              # t is list
-              return(lapply(t,function(elem) {
-                if (is.null(elem)) return(NA)
-                else return(elem)
-              }))
-              
-            })
-              
-            class(coll) = "Collection"
-            return(coll)
-          })
-          
-          class(collection_list) = "CollectionList"
-          
-          collection_names = sapply(collection_list, function(coll) {
-            return(coll$id)
-          })
-          
-          names(collection_list) = collection_names
-          
-          private$data_collection = collection_list
-        }, error = .capturedErrorToMessage)
-      }
-      
-      return(private$data_collection)
-    },
-    getCollectionNames = function() {
-      return(names(self$getDataCollection()))
-    },
-    getProcessCollection=function() {
-      if (is.null(private$process_collection)) {
-        private$process_collection = ProcessCollection$new(con = self)
-      }
-      
-      return(private$process_collection)
-    },
     
     getId =function() {
       cap = self$getCapabilities()
@@ -451,8 +338,6 @@ OpenEOClient <- R6Class(
     general_auth_type = "bearer",
     exchange_token="access_token",
     capabilities=NULL,
-    process_collection=NULL,
-    data_collection=NULL,
     
     # functions ====
     setHost = function(host) {
@@ -748,7 +633,6 @@ OpenEOClient <- R6Class(
       }
     },
     PUT = function(endpoint, authorized=FALSE, data=list(),encodeType = "json",query = list(), raw=FALSE,parsed=TRUE,...) {
-      # TODO remove raw as parameter?
       url = paste(private$host,endpoint,sep="/")
       
       req = request(url)
@@ -762,7 +646,6 @@ OpenEOClient <- R6Class(
       req = do.call(req_headers,header)
       query[[".req"]] = req
       req = do.call(req_url_query,args = query)
-      # response = req_perform(req)
       if (isTRUE(raw)) {
         if (file.exists(data)) {
           if (length(data) > 0) req = req_body_file(req,data, type = "application/octet-stream")
@@ -931,4 +814,95 @@ client_version = function() {
   sel = which(sel)
   
   rm(list = names(sel), envir=globalenv())
+}
+
+.refresh_rstudio_connection_observer = function() {
+  con = active_connection()
+  
+  if (is.null(con)) stop("openEO cannot refresh the connectionObserver panel, because there is no active connection")
+  
+  # refresh is usually triggered after a separate login, authorized user might explore more data and processes
+  assign(x = "data_collection", value = NULL, envir = pkgEnvironment)
+  void = list_collections()
+  
+  assign(x = "process_collection", value = NULL, envir = pkgEnvironment)
+  assign(x = "process_list", value = NULL, envir = pkgEnvironment)
+  # force refreshing of processes
+  
+  observer <- getOption("connectionObserver")
+  if (!is.null(observer))
+    observer$connectionUpdated(type="OpenEO Service", host=con$getHost(),hint="collections")
+}
+
+.fill_rstudio_connection_observer = function() {
+  observer = getOption("connectionObserver")
+  
+  if (!is.null(observer)) {
+    con = active_connection()
+    observer$connectionOpened(type="OpenEO Service",
+                              displayName= con$getTitle(), 
+                              host=con$getHost(), 
+                              listObjectTypes = function() {
+                                list(
+                                  collection = list(
+                                    contains="data"
+                                  )
+                                )
+                              },
+                              connectCode = paste0("library(openeo)\n\nconnect(host=\"",con$getHost(),"\")"),
+                              disconnect = function() {
+                                if (is_logged_in()) logout()
+                                
+                                con = active_connection()
+                                if (!is.null(con)) {
+                                  con$disconnect()
+                                }
+                              },
+                              listObjects = function(type="collection") {
+                                con = active_connection()
+                                if (!is.null(con)) {
+                                  colls = list_collections(con = con)
+                                  cids = names(colls)
+                                  types = rep(type,times=length(cids))
+                                  
+                                  df = data.frame(name=cids,type=types,stringsAsFactors = FALSE)
+                                  return(df)
+                                } else {
+                                  return(list())
+                                }
+                              },
+                              listColumns = function(collection) {
+                                if (!is.null(collection)) {
+                                  coll = describe_collection(collection=collection)
+                                  dim_names = names(dimensions(coll))
+                                  
+                                  types = sapply(dimensions(coll), function(dim) {
+                                    type = dim$type
+                                    
+                                    if ("axis" %in% names(dim)) {
+                                      type = paste0(type,", axis: ",dim$axis)
+                                    }
+                                    
+                                    if ("extent" %in% names(dim)) {
+                                      type = paste0(type,", extent: [",dim$extent[1],",",dim$extent[2],"]")
+                                    }
+                                    
+                                    if ("values" %in% names(dim)) {
+                                      type = paste0(type,", enum: [",paste(dim$values,collapse=","),"]")
+                                    }
+                                    
+                                    return(type)
+                                  })
+                                  
+                                  df = data.frame(name=dim_names, type=types, stringsAsFactors = FALSE)
+                                  
+                                  df = rbind(df,list(name="value",type="numeric"))
+                                  return(df)
+                                }
+                              },
+                              previewObject = function(collection, ...) {
+                                return(data.frame())
+                              },
+                              connectionObject = con)
+  }
 }

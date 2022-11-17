@@ -181,17 +181,17 @@ as.data.frame.ResultList = function(x, ...) {
 
 #' Coercion into Graph
 #' 
-#' Creates a \code{Graph} object from a \code{\link{ProcessNode}}, \code{function} or \code{ProcessInfo} (Exchange object for 
+#' Creates a `Graph` object from a [ProcessNode()], `function` or `ProcessInfo` (Exchange object for 
 #' predefined and stored user-defined processes).
 #' 
-#' Those pure \code{Graph} objects shall only be used internally. If you want to use this 
+#' Those pure `Graph` objects shall only be used internally. If you want to use this 
 #' information to directly interact with the back-end via JSON please use 
-#' \code{\link{as.Process}}. This function might be removed from the package function export in the future.
+#' [as.Process()]. This function might be removed from the package function export in the future.
 #' 
 #' @name as.Graph
 #' 
-#' @param from the source from which to coerce (\code{ProcessNode}, \code{function} or \code{ProcessInfo})
-#' @return \code{\link{Graph}}
+#' @param from the source from which to coerce (`ProcessNode`, `function` or `ProcessInfo`)
+#' @return [Graph()]
 #' 
 #' @export
 as.Graph.ProcessNode = function(from) {
@@ -243,8 +243,8 @@ as.character.FileFormat = function(x, ...) {
 #' 
 #' @name as.Process
 #' 
-#' @param from the source from which to coerce (\code{ProcessInfo}, \code{\link{Graph}} or \code{\link{ProcessNode}})
-#' @return \code{\link{Process}}
+#' @param from the source from which to coerce (`ProcessInfo`, [Graph()] or [ProcessNode()])
+#' @return [Process()]
 #'    
 #' @export
 as.Process.ProcessInfo = function(from) {

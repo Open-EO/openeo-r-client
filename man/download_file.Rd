@@ -11,7 +11,7 @@ download_file(src, dst = NULL, con = NULL)
 
 \item{dst}{the destination file path on the local file system}
 
-\item{con}{authorized connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authorized connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

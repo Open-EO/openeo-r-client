@@ -7,7 +7,7 @@
 remove_variable(graph, variable)
 }
 \arguments{
-\item{graph}{a \code{\link{Graph}} object}
+\item{graph}{a \code{\link[=Graph]{Graph()}} object}
 
 \item{variable}{a variable id or a variable object}
 }
@@ -15,7 +15,7 @@ remove_variable(graph, variable)
 TRUE
 }
 \description{
-The function that removes a selected variable from the graph. It is removed from the list of defined 
-variables that are obtainable with \code{\link{variables}}. The variables already placed in the graph 
+The function that removes a selected variable from the graph. It is removed from the list of defined
+variables that are obtainable with \code{\link[=variables]{variables()}}. The variables already placed in the graph
 won't be deleted, only in the defined variables list.
 }

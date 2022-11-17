@@ -7,14 +7,14 @@
 list_services(con = NULL)
 }
 \arguments{
-\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
 named list of Services (class \code{ServiceList})
 }
 \description{
-Queries the back-end to retrieve a list of services that the current user owns. Services are 
-web services like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
+Queries the back-end to retrieve a list of services that the current user owns. Services are
+web services like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The
 indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 }

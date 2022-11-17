@@ -9,13 +9,13 @@ estimate_job(job, con = NULL)
 \arguments{
 \item{job}{the job or the id of the job}
 
-\item{con}{authenticated Connection (optional) otherwise \code{\link{active_connection}}
+\item{con}{authenticated Connection (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
 JobCostsEstimation containing information how much money and time will be spent
 }
 \description{
-Calls the back-end and asks for an approximation about the monetary costs, the required time, 
+Calls the back-end and asks for an approximation about the monetary costs, the required time,
 and whether or not the job owners data download is already included in the monetary costs.
 }

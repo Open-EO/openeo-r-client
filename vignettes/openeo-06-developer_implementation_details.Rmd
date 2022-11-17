@@ -1,0 +1,96 @@
+---
+title: "Developer Implementation Details"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Developer Implementation Details}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+In this guide selected core mechanisms of the openEO package are described. It is targeted towards interested developers and it is highly recommended to dive into the source code, while reading through this guide. The explanations here are abstracted from the code and shall guide new developers on the concepts and routines of this package.
+
+## Process Graph Building
+
+The `ProcessCollection` class represents the toolbox for creating a process graph in openEO. In contrast to the S3 class `ProcessList` which is created in `list_processes()` from the returned metadata of the back-end, this `ProcessCollection` interprets the meta data of the processes, e.g. the name and the available parameter with their types and names and creates builder functions upon this information like `p$load_collection()`. The builder functions themselves create the `ProcessNode` objects based on the used processes and the passed values for the arguments.
+
+Note: we might reuse the `ProcessCollection` at some points, therefore it needed to be an R6 class, otherwise we copy the potentially list based object multiple times, which might resolves into memory issues at some point.
+
+The classes related to the process graph like `ProcessNode` and `Process` are contained in *process_graph_building.R*. The argument and parameter related classes are in *argument_types.R*. And lastly the `ProcessCollection` is located in *predefined_processes.R*.
+
+### `ProcessCollection`
+
+The first important detail is that the R6 object is unlocked, this means that R6 object can be changed at runtime. This is required because the builder functions are added dynamically during the initialization of the R6 object.
+
+```{r, eval=FALSE}
+ProcessCollection = R6Class(
+    "ProcessCollection",
+    lock_objects = FALSE,
+    ...)
+```
+
+Now, during the initialization (`ProcessCollection$initialize()`) of the `ProcessCollection`, the `ProcessList` is translated into a list of `Process` objects (1) and based on that the builder functions are derived (2).
+
+1.  This operation is done within the private function `private$createListOfProcesses()` where the main work is done by the utility function `processFromJson()`
+2.  In R a function is composed of its formals and the function body. The function formals can be accessed by `Process$getFormals()`. This will retrieve the parameter names and the default values from the meta data. For the function body we create a `ProcessNode` from the respective `Process` via a deep copy. Deep copy means that a new object is created, but all the fields are copied, especially nested `Argument` objects also need to be copied, otherwise two instances of the same process would share their arguments. Finally this process node will receive the values of the builder function as arguments, once the function is invoked. During the creation of those builder function `index` was used in the for-loop. To work properly we need to replace the variable with its real value, otherwise we cannot access the correct process, because either `index` is unknown or it is the wrong variable.
+
+### `processFromJson` and `parameterFromJson`
+
+`processFromJson` was used to create a `Process` object from the JSON meta data - actually, the JSON meta data is already transformed into an R list object but this will always be referred as the JSON meta data as it always will be the response of the back-end. The function itself is won't do much, but feeding the correct bits of the JSON meta data to the `Process` constructor. As part of the constructor parameter, a list of `Argument` objects need to be passed on. In the conceptual vision of the package *parameter* is the descriptive part and *argument* is essentially a parameter for which can hold a *value*. `parameterFromJson` will perform the translation from the JSON parameter meta data into a `Argument` object. The translation is done by comparing the type and schema of the meta data with the implemented `Argument` representation. Therefore each implemented `Argument` gets its unique schema and type assigned upon creation.
+
+```{r, eval=FALSE}
+URI = R6Class(
+  "uri",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "string"
+      private$schema$subtype = "uri"
+    }
+  ), ...)
+```
+
+The parameter meta data matching is handled in `findParameterGenerator()` and after a suitable `Argument` was found additional restrictive information are transferred from the meta data to the `Argument`, e.g. not-null constraints, patterns or enumerations, default values etc.
+
+To complete this section `findParameterGenerator()` creates a single instance of all registered `Argument` objects and invokes `Parameter$matchesSchema()` on each object with the given schema. If none matches then a ominous `Argument` object will be created which has not many constraints by itself. If more than one match is found, then the first one in the list is chosen, otherwise the one match is selected as suitable `Argument`.
+
+### Inheritance
+
+During the development of this package several functions were called again and again, especially `validate()` and `serialize()` on the `Argument` object. In general those functions work very similar, so R6 inheritance was used to unify this behavior, but for each type `private$typeCheck()` and `private$typeSerialization()` is implemented according to the specific needs of the argument and respectively called by their public counter part.
+
+Similar considerations were made between `Process` and `ProcessNode`. Essentially the node is a process, but carries a unique id that is used in a process graph.
+
+### Package environment variables
+
+At some point it appeared tedious to pass the active `OpenEOConnection` always to each function which interacts with the back-end. So the currently active components of an openeo session are stored in an internal package environment (`openeo:::pkgEnvironment`). This environment shall not be accessed by user, but `active_connection()`, `active_data_collection()` or `active_process_collection()` were implemented to access or set those environment variables.
+
+### function coercion
+
+Another interesting and somewhat complex aspect is the coercion from an R function into an openEO process graph. This job is done by `.function_to_graph()` (in *process_graph_building.R*) and it is called in the respective coerce function `as.Graph.function()`. The routine would look like this.
+
+1.  extract the functions formals which are the variables to be used
+2.  create variables with `create_variable()` for each parameter of the function
+3.  run `do.call()` with the function and the parameters (which are all of type `ProcessGraphParameter`)
+4.  the function evaluation will return a `ProcessNode` which will be the final node
+5.  create a graph from the final node
+
+When a function is passed as *reducer* or *aggregation* function it is basically the same procedure. But `ProcessGraphArgument` in this case offers already a set of process graph parameters which will be used instead of `create_variable()`. If the formals from the function and the amount of parameters from the `ProcessGraphArgument` do not match, the coercion will fail.
+
+### HTML widgets
+
+In some contexts objects are rendered as HTML documents. For example in a Jupyter notebook environment, a RMarkdown or a RNotebook the meta data objects of collections, processes and their graphs are rendered in HTML. The rendering in HTML needs an internet connection, because java script files and styles are accessed from a content delivery system. The openEO ecosystem already provides those components because the [openEO Webeditor](https://editor.openeo.org/) already uses them. They are distributed at [npm vue-components](https://www.npmjs.com/package/@openeo/vue-components).
+
+The visualization is controlled via the `print` function (*print-functions.R*), which checks if the current session is in an HTML environment and if so the internal `print_html()` is invoked instead of printing to console.
+
+### Authentication
+
+The authentication changed over the years a lot. *Basic Authentication* was the initial mechanism, then there were various *Open ID Connect* mechanisms, which are all based on the *OAuth2.0* authentication method. For legacy reasons all the different approaches are kept and are available in *authentication.R*. For the authentication classes inheritance is used again to provide the same function calls from `OpenEOConnection`. The main points are that an *access_token* needs to be provided for authentication and that a `login()` and a `logout()` is provided. Depending on the access token grants offered by the back-ends identity provider different procedures have to be performed, which might require user interaction. For example the `OIDCAuthCodeFlow` spawns a local webservice and waits for a call from the local internet browser based on a redirect that has to be stated at the Authentication Provider. Other flows like `OIDCAuthDeviceCodeFlow` poll a certain endpoint at the Authentication Provider with a device code until the user has entered the code and gave the consent to the personal data. The different flows have been implemented by the `httr2` package, which is used to retrieve the `access_token` which is required for authorized services at the back-end.
+
+### RStudio Connection Contract
+
+When using RStudio an additional feature was implemented that allows to inspect the available data sources of a connected back-end by using the RStudio's [Connection Contract](https://solutions.rstudio.com/db/advanced/contract/) to populate the `Connections` Pane. The connection contract is implemented in `.fill_rstudio_connection_observer()` in *client.R*. After connecting the contracts `listObjects` function is called which lists all the available data sets. On extending the view of a specific collection the contracts `listColumns` is invoked. This interacts with the back-end to describe the collection (`describe_collection()`) and the result is parsed into the stated table structure.
+
+    + <Collection>
+      - <dimension>: <description>

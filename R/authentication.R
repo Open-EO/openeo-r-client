@@ -10,11 +10,11 @@
 #'
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
-#'   \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
+#'   \item{`$login()`}{Initiates the authentication / login in order to obtain the access_token}
+#'   \item{`$logout()`}{Terminates the access_token session and logs out the user on the openEO back-end}
 #' }
 #'
-#' @seealso \code{\link{BasicAuth}}, \code{\link{OIDCAuth}}
+#' @seealso [BasicAuth()], [OIDCAuth()]
 NULL
 
 # IAuth ----
@@ -43,27 +43,27 @@ IAuth <- R6Class(
 #'
 #' This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
 #' of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
-#' The authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
-#' is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token are obtained and 
+#' The authentication will be done once via [login()] or multiple times when the lease time runs out. This class
+#' is created and registered in the [OpenEOClient()]. After the login the user_id and the access_token are obtained and 
 #' used as "bearer token" for the password restricted  web services.
 #'
-#' The class inherits all fields and function from \code{\link{IAuth}}
+#' The class inherits all fields and function from [IAuth()]
 #'
 #' @name BasicAuth
 #'
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$new(endpoint,user,password)}}{the constructor with the login endpoint and the credentials}
+#'   \item{`$new(endpoint,user,password)`}{the constructor with the login endpoint and the credentials}
 #' }
 #'
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{endpoint}}{the basic authentication endpoint as absolute URL}
-#'   \item{\code{user}}{the user name}
-#'   \item{\code{password}}{the user password}
+#'   \item{`endpoint`}{the basic authentication endpoint as absolute URL}
+#'   \item{`user`}{the user name}
+#'   \item{`password`}{the user password}
 #' }
 #'
-#' @return an object of type \code{\link{R6Class}} representing basic authentication
+#' @return an object of type [R6Class()] representing basic authentication
 #' @importFrom R6 R6Class
 NULL
 
@@ -131,38 +131,38 @@ BasicAuth <- R6Class(
 #' OIDC Authentication
 #' 
 #' defines classes for different OpenID connect interaction mechanisms. The classes are modeled in generalized
-#' fashion by inheriting functions from \code{IAuth} and \code{AbstractOIDCAuthentication}.
+#' fashion by inheriting functions from `IAuth` and `AbstractOIDCAuthentication`.
 #' 
 #' @field access_token The access_token to query password restricted  webservices of an openEO back-end
 #' @field id_token The id_token retrieved when exchanging the access_token at the identity provider
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{\code{$new(provider, config=NULL, ...)}}{the constructor for the authentication}
-#'   \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
-#'   \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
-#'   \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
-#'   \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr2'}
+#'   \item{`$new(provider, config=NULL, ...)`}{the constructor for the authentication}
+#'   \item{`$login()`}{Initiates the authentication / login in order to obtain the access_token}
+#'   \item{`$logout()`}{Terminates the access_token session and logs out the user on the openEO back-end}
+#'   \item{`$getUserData()`}{queries the OIDC provider for the user data like the 'user_id'}
+#'   \item{`$getAuth()`}{returns the internal authentication client as created from package 'httr2'}
 #' }
 #'
 #' @section Arguments:
 #' \describe{
-#'   \item{\code{provider}}{the name of an OIDC provider registered on the back-end or a provider object as returned by \code{list_oidc_providers()}}
-#'   \item{\code{config}}{either a JSON file containing information about 'client_id' and 
+#'   \item{`provider`}{the name of an OIDC provider registered on the back-end or a provider object as returned by `list_oidc_providers()`}
+#'   \item{`config`}{either a JSON file containing information about 'client_id' and 
 #'   'secret' or a named list. Experienced user and developer can also add 'scopes' to 
 #'   overwrite the default settings of the OIDC provider}
-#'   \item{\code{...}}{additional parameter might contain \code{force=TRUE} specifying to force the use 
+#'   \item{`...`}{additional parameter might contain `force=TRUE` specifying to force the use 
 #'   of a specific authentication flow}
 #' }
 #' 
 #' @details 
 #' The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID 
-#' Connect (OIDC) authentication. The first is covered at \link{BasicAuth}. And since OIDC is based
+#' Connect (OIDC) authentication. The first is covered at [BasicAuth]. And since OIDC is based
 #' on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the 
 #' back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google, 
 #' etc, by pointing to the respective endpoints during the service discovery of the back-end. Normally
 #' users would not create those classes manually, but state the general login type (oidc or basic) and some 
-#' additional information (see \link{login}).
+#' additional information (see [login]).
 #' 
 #' This client supports the following interaction mechanisms (grant types):
 #' \itemize{
@@ -175,8 +175,8 @@ BasicAuth <- R6Class(
 #' During the login process an internet browser window will be opened and you will be asked to enter your credentials.
 #' The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in 
 #' the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with 
-#' the openEO service provider and ask them for a configuration file that will contain information about the \code{client_id} and 
-#' \code{secret}. The redirect URL requested from the provider is \code{http://localhost:1410/}
+#' the openEO service provider and ask them for a configuration file that will contain information about the `client_id` and 
+#' `secret`. The redirect URL requested from the provider is `http://localhost:1410/`
 #' }
 #' 
 #' \subsection{authorization_code+pkce}{
@@ -198,10 +198,10 @@ BasicAuth <- R6Class(
 #' 
 #' @seealso 
 #' \describe{
-#' \item{openEO definition on Open ID connect}{\url{https://openeo.org/documentation/1.0/authentication.html#openid-connect}}
-#' \item{Open ID Connect (OIDC)}{\url{https://openid.net/connect/}}
-#' \item{OAuth 2.0 Device Authorization Grant}{\url{https://datatracker.ietf.org/doc/html/rfc8628}}
-#' \item{Proof Key for Code Exchange by OAuth Public Clients}{\url{https://datatracker.ietf.org/doc/html/rfc7636}}
+#' \item{openEO definition on Open ID connect}{<https://openeo.org/documentation/1.0/authentication.html#openid-connect>}
+#' \item{Open ID Connect (OIDC)}{<https://openid.net/connect/>}
+#' \item{OAuth 2.0 Device Authorization Grant}{<https://datatracker.ietf.org/doc/html/rfc8628>}
+#' \item{Proof Key for Code Exchange by OAuth Public Clients}{<https://datatracker.ietf.org/doc/html/rfc7636>}
 #' }
 #' 
 #' @name OIDCAuth

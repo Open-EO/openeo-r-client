@@ -24,7 +24,7 @@ create_variable(
 \item{default}{the default value for this variable}
 }
 \value{
-a \code{\link{ProcessGraphParameter}} object
+a \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} object
 }
 \description{
 This function creates a variable to be used in the designated process graph with additional optional information.

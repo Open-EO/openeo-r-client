@@ -23,10 +23,10 @@ as.Process.function(from)
 as.Process.Job(from)
 }
 \arguments{
-\item{from}{the source from which to coerce (\code{ProcessInfo}, \code{\link{Graph}} or \code{\link{ProcessNode}})}
+\item{from}{the source from which to coerce (\code{ProcessInfo}, \code{\link[=Graph]{Graph()}} or \code{\link[=ProcessNode]{ProcessNode()}})}
 }
 \value{
-\code{\link{Process}}
+\code{\link[=Process]{Process()}}
 }
 \description{
 This function converts objects into a process. If no meta data is provided it will return a valid user defined process, not yet storable in the back-end.

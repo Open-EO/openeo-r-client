@@ -14,6 +14,6 @@ is.debugging()
 }
 \description{
 The debugging mode is created to investigate the communication between server and client. The mode can be
-turned on or off, depending on the selected function (debug, debug.off). It is stored as an package internal environment 
+turned on or off, depending on the selected function (debug, debug.off). It is stored as an package internal environment
 and other package functions can access it naturally. By using the environment object, entries can be changed.
 }
