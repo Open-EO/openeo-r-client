@@ -5,7 +5,7 @@
 #' The function queries the back-end for its supported UDF runtimes and returns detailed information about each
 #' runtime.
 #' 
-#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @return list of UDF runtimes with supported UDF types, versions and installed packages
 #' @export
@@ -51,7 +51,7 @@ list_udf_runtimes = function(con=NULL) {
 #' exposes their UDF service endpoint or if you have setup a local UDF service (see notes). The openEO UDF API v0.1.0 had foreseen to ship
 #' data and code in a single message and to be interpretable by a computing service a specific format was designed. Usually this whole operation
 #' is neatly hidden within the back-end, but if you want to test and debug the code, you need to create such data first. Some examples are available
-#' at \url{https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data}.
+#' at <https://github.com/Open-EO/openeo-r-udf/tree/master/examples/data>.
 #' 
 #' Hint: If you use a local R UDF service you might want to debug using the 'browser()' function.
 #' 
@@ -72,7 +72,7 @@ list_udf_runtimes = function(con=NULL) {
 #' 
 #' @note  
 #' The debug options are only available for the R-UDF service. The R UDF-API version has to be of version 0.1.0 (not the old alpha 
-#' version). You might want to check \url{https://github.com/Open-EO/openeo-r-udf#running-the-api-locally} for setting up a local 
+#' version). You might want to check <https://github.com/Open-EO/openeo-r-udf#running-the-api-locally> for setting up a local 
 #' service for debugging.
 #' 
 #' @examples 
@@ -138,11 +138,15 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
   
   options(digits.secs=3)
   start = Sys.time()
-  res = httr::POST(url = url,
-                   config=add_headers(Date=start),
-                   content_type_json(),
-                   body=toJSON(payload,auto_unbox = T),
-                   encode="raw")
+  
+  req = request(url)
+  req = req_method(req,"POST")
+  
+  req = req_headers(req, Date=start, `Content-Type`="application/json")
+  
+  req = req_body_json(payload,auto_unbox = TRUE)
+  
+  res = req_perform(req)
   
   end = Sys.time()
   if (debug) {
@@ -154,10 +158,12 @@ send_udf = function(data, code, host="http://localhost", port=NULL, language="R"
     print(end-as_datetime(res$date,tz=Sys.timezone()))
   }
   
+  val = resp_body_json(res)
+  
   if (res$status_code >= 400) {
-    return(content(res,as = "parsed",type="application/json", ...))
+    return(val)
   } else {
-    return(content(res,as = "parsed",type="application/json",...))
+    return(val)
   }
   
 }

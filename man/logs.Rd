@@ -4,7 +4,7 @@
 \alias{logs}
 \title{Access logs of a Service or Job}
 \usage{
-logs(obj = NULL, job_id = NULL, service_id = NULL, con = NULL, timeout = 10)
+logs(obj = NULL, job_id = NULL, service_id = NULL, con = NULL, timeout = NULL)
 }
 \arguments{
 \item{obj}{Service or Job object}
@@ -13,12 +13,20 @@ logs(obj = NULL, job_id = NULL, service_id = NULL, con = NULL, timeout = 10)
 
 \item{service_id}{character - the services ID}
 
-\item{con}{a connected openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
-\item{timeout}{integer the timeout for the logging after no update in seconds, default is 10}
+\item{timeout}{integer the timeout for the logging of active jobs or services after no update in seconds, if omitted it is determined internally (running / queued / enabled -> 60s)}
 }
 \description{
-Prints contents of the log file of a Job or Service to the console. Requests the log every second. If the log response always empty 
-for a given timeout, the logging stops.
+Prints contents of the log file of a Job or Service to the console. Requests the log every second if the service is enabled or the batch job is
+active. If the log response always empty for a given timeout, the logging stops. Also if the job or service is not active at the moment timeout
+is ignored and the log is just printed once. To call the different logs \code{\link[=log_job]{log_job()}} or \code{\link[=log_service]{log_service()}} are used internally.
+}
+\details{
+In Jupyter, RMarkdown and knitr HTML environments the timeout parameter does not apply and this function only returns the
+logs that are available at the time of the request. To refresh the logs, you have to re-execute the function again.
+}
+\seealso{
+\code{\link[=log_job]{log_job()}} or \code{\link[=log_service]{log_service()}}
 }

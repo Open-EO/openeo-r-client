@@ -4,37 +4,37 @@
 \alias{Array}
 \title{Array}
 \value{
-Object of \code{\link{R6Class}} representing a single valued array.
+Object of \code{\link[=R6Class]{R6Class()}} representing a single valued array.
 }
 \description{
-Inheriting from \code{\link{Argument}} in order to represent an array of a single data type.
+Inheriting from \code{\link[=Argument]{Argument()}} in order to represent an array of a single data type.
 }
 \section{Methods}{
 
 \describe{
-  \item{\code{$getMinItems}}{returns the minimum number of items}
-  \item{\code{$getMaxItems}}{returns the maximum number of items}
-  \item{\code{$setMinItems(value)}}{sets the minimum number of items}
-  \item{\code{$setMaxItems(value)}}{sets the maximum number of items}
-  \item{\code{$getItemSchema}}{returns the item schema of the items in the array}
-  \item{\code{$setItemSchema(value)}}{sets the schema for the items in the array}
+\item{\verb{$getMinItems}}{returns the minimum number of items}
+\item{\verb{$getMaxItems}}{returns the maximum number of items}
+\item{\verb{$setMinItems(value)}}{sets the minimum number of items}
+\item{\verb{$setMaxItems(value)}}{sets the maximum number of items}
+\item{\verb{$getItemSchema}}{returns the item schema of the items in the array}
+\item{\verb{$setItemSchema(value)}}{sets the schema for the items in the array}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{value}}{either a number describing the minimum and maximum number of elements in an array or the
-  parsed JSON schema of a single item in the array}
+\item{\code{value}}{either a number describing the minimum and maximum number of elements in an array or the
+parsed JSON schema of a single item in the array}
 }
 }
 
 \seealso{
-\code{\link{Array}}, \code{\link{Integer}}, \code{\link{EPSGCode}}, \code{\link{String}}, \code{\link{Number}}, 
-\code{\link{Date}}, \code{\link{RasterCube}}, \code{\link{VectorCube}}, \code{\link{ProcessGraphArgument}}, 
-\code{\link{ProcessGraphParameter}}, \code{\link{OutputFormatOptions}}, \code{\link{GeoJson}},
-\code{\link{Boolean}}, \code{\link{DateTime}}, \code{\link{Time}}, \code{\link{BoundingBox}}, \code{\link{Kernel}}, 
-\code{\link{TemporalInterval}}, \code{\link{TemporalIntervals}}, \code{\link{CollectionId}}, \code{\link{OutputFormat}},
-\code{\link{AnyOf}}, \code{\link{ProjDefinition}}, \code{\link{UdfCodeArgument}}, \code{\link{UdfRuntimeArgument}} and 
-\code{\link{UdfRuntimeVersionArgument}}
+\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
+\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
+\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
+\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
+\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
+\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
+\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
 }

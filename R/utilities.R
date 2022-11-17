@@ -1,3 +1,7 @@
+#' @include process_graph_building.R
+#' @importFrom jsonlite toJSON
+NULL
+
 # utility functions ----
 .not_implemented_yet = function() {
     message("Not implemented yet.")
@@ -15,27 +19,71 @@
     message(paste0("There are no information about ",what," available at the service."))
 }
 
+
+.toJSON = function(x, ...) {
+  if (any(c("Graph","Process") %in% class(x))) {
+    return(jsonlite::toJSON(x$serialize(), auto_unbox = TRUE, pretty = TRUE, force = TRUE, digits = NA))
+  } else {
+    stop("Parameter is no Graph or Process object.")
+    invisible(NULL)
+  }
+}
+
+#' *toJSON functions
+#' 
+#' Those functions serialized a Graph or Process object into JSON text. They are deprecated. Use `toJSON` instead.
+#' 
+#' @name graphToJSON-deprecated
+#' @rdname toJSON-deprecated
+#' @param x Graph or Process object
+#' @param ... arguments for jsonlite::toJSON
+#' @export
+graphToJSON = function(x,...) {
+  .Deprecated(new="toJSON",package = "openeo")
+  do.call("toJSON",args=c(x=x,list(...)))
+}
+
+#' @name processToJSON-deprecated
+#' @rdname toJSON-deprecated
+#' @export
+processToJSON = function(x, ...) {
+  .Deprecated(new="toJSON",package = "openeo")
+  do.call("toJSON",args=c(x=x,list(...)))
+}
+
 #' Wrapper for toJSON
 #' 
 #' This function is intended to have a preconfigured toJSON function
-#' to allow a user to visualize the process graph in JSON (like it will
-#' be sent to the back-end)
+#' to allow a user to visualize a process or graph in JSON. The JSON representation
+#' of a process is the same as it will be sent to the back-end.
 #' 
-#' @param graph a list / nested list representing the process graph
-#' @return JSON string of the process graph as a character string 
+#' @param x a Process or Graph object
+#' @param ... additional parameters that are passed to jsonlite::toJSON
+#' @return JSON string of the process as a character string 
 #' 
+#' @name toJSON
+#' @rdname toJSON
+#' 
+#' @examples
+#' \dontrun{
+#' # node is a defined process node
+#' process = as(node, "Process")
+#' toJSON(process)
+#' 
+#' graph = process$getProcessGraph()
+#' toJSON(graph)
+#' }
+#' @importFrom jsonlite toJSON
+#' @inheritParams jsonlite::toJSON 
+NULL
+
+#' @rdname toJSON
 #' @export
-graphToJSON = function(graph) {
-    # task is a Graph object
-    
-    if ("Graph" %in% class(graph)) {
-        return(toJSON(graph$serialize(), auto_unbox = T, pretty = T, force = TRUE))
-    } else {
-        stop("Parameter is no Graph object.")
-        invisible(NULL)
-    }
-    
-}
+setMethod(f="toJSON", signature = "Process",definition = .toJSON)
+
+#' @rdname toJSON
+#' @export
+setMethod(f="toJSON", signature = "Graph",definition = .toJSON)
 
 .capturedErrorToMessage = function(e) {
     message(e)
@@ -129,4 +177,77 @@ status = function(x, ...) {
         }
     }
     return(l)
+}
+
+.find_process_by_name = function(graph, process_id) {
+  
+  if ("Graph" != class(graph)[1]) {
+    graph = parse_graph(graph$serialize())
+  }
+  
+  ns=graph$getNodes()
+  subset = which(sapply(ns, function(x) {
+    id = x$getId()
+    !is.null(id) && id == process_id
+  }))
+  if (length(subset) == 0) {
+    return(list())
+  } else {
+    return(ns[subset])
+  }
+}
+
+# Is this in a Jupyter notebook?
+is_jupyter = function() {
+  return (isTRUE(getOption('jupyter.in_kernel')))
+}
+
+# Is this in a RStudio notebook?
+is_rstudio_nb = function() {
+  return (isTRUE(getOption('rstudio.notebook.executing')))
+}
+
+# Is this in a RMarkdown / knitr context?
+is_rmd = function() {
+  return (isTRUE(getOption('knitr.in.progress')) && knitr::is_html_output() == TRUE)
+}
+
+is_connected = function() {
+  con = active_connection()
+  
+  if (is.null(con)) return(FALSE)
+  
+  return(con$isConnected())
+}
+
+is_logged_in = function() {
+  if (!is_connected()) return(FALSE)
+  
+  con = active_connection()
+  return(con$isLoggedIn())
+}
+
+# from r-spatial/stars @ github /R/tidyverse
+register_s3_method <- function(pkg, generic, class, fun = NULL) {
+  stopifnot(is.character(pkg), length(pkg) == 1)
+  stopifnot(is.character(generic), length(generic) == 1)
+  stopifnot(is.character(class), length(class) == 1)
+  
+  if (is.null(fun)) {
+    fun <- get(paste0(generic, ".", class), envir = parent.frame())
+  } else {
+    stopifnot(is.function(fun))
+  }
+  
+  if (pkg %in% loadedNamespaces()) {
+    registerS3method(generic, class, fun, envir = asNamespace(pkg))
+  }
+  
+  # Always register hook in case package is later unloaded & reloaded
+  setHook(
+    packageEvent(pkg, "onLoad"),
+    function(...) {
+      registerS3method(generic, class, fun, envir = asNamespace(pkg))
+    }
+  )
 }

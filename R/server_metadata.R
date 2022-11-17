@@ -1,12 +1,12 @@
 # server endpoint ----
 #' Returns the supported openEO API versions
 #' 
-#' The function queries the back-end for its supported versions. The endpoint \href{https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect}{/.well-known/openeo} 
-#' is called on the given host URL and the JSON result is coerced into a \code{tibble}.
+#' The function queries the back-end for its supported versions. The endpoint [/.well-known/openeo](https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect) 
+#' is called on the given host URL and the JSON result is coerced into a `tibble`.
 #' 
 #' @param url the URL as string pointing to the base host of the back-end
 #' 
-#' @return a \code{data.frame} or a \code{tibble} containing all supported API versions of the back-end
+#' @return a `data.frame` or a `tibble` containing all supported API versions of the back-end
 #' @export
 api_versions = function(url) {
     tryCatch({
@@ -14,9 +14,12 @@ api_versions = function(url) {
             url = substr(url, 1, nchar(url) - 1)
         endpoint = "/.well-known/openeo"
         
-        info = GET(url = paste0(url, endpoint),config=content_type_json())
+        info = request(paste0(url, endpoint))
+        info = req_headers(info,`Content-Type` = "application/json")
+        info = req_perform(info)
+        
         if (info$status == 200) {
-            vlist = content(info)
+            vlist = resp_body_json(info)
             
             if (is.raw(vlist)) {
                 vlist=jsonlite::fromJSON(rawToChar(vlist),simplifyDataFrame = FALSE)
@@ -38,7 +41,7 @@ api_versions = function(url) {
 #' 
 #' The function queries the connected openEO service for general information about the service. 
 #' 
-#' @param con A connected OpenEO client (optional), if omitted \code{\link{active_connection}} is used
+#' @param con A connected OpenEO client (optional), if omitted [active_connection()] is used
 #' 
 #' @return capabilities object
 #' 
@@ -61,10 +64,10 @@ capabilities = function(con=NULL) {
 #' The client queries the version resolved back-end for its endpoint capabilities and returns it as
 #' a tibble.
 #' 
-#' @param con A connected openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con A connected openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' 
-#' @return \code{data.frame} or \code{tibble} (if available)
+#' @return `data.frame` or `tibble` (if available)
 #' 
 #' @export
 list_features = function(con=NULL) {
@@ -76,12 +79,12 @@ list_features = function(con=NULL) {
 
 #' Supported Input/Output formats
 #' 
-#' The function queries the openEO service for supported I/O formats as a \code{FileFormatList} object.
+#' The function queries the openEO service for supported I/O formats as a `FileFormatList` object.
 #' 
-#' @details The \code{FileFormatList} object is a named list, which is organized into 'input' and 'output'. For each category a different 
-#' named list with the \code{FileFormat} is indexed by its format ID.
+#' @details The `FileFormatList` object is a named list, which is organized into 'input' and 'output'. For each category a different 
+#' named list with the `FileFormat` is indexed by its format ID.
 #' 
-#' @param con openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @return a FileFormatList object
 #' @export
@@ -100,6 +103,7 @@ list_file_formats = function(con=NULL) {
             input_formats = names(formats$input)
             modified_input_formats = lapply(input_formats, function(format_name) {
                 f = formats$input[[format_name]]
+                f$type = "input"
                 f$name = format_name
                 class(f) = "FileFormat"
                 return(f)
@@ -111,6 +115,7 @@ list_file_formats = function(con=NULL) {
             output_formats = names(formats$output)
             modified_output_formats = lapply(output_formats, function(format_name) {
                 f = formats$output[[format_name]]
+                f$type = "output"
                 f$name = format_name
                 class(f) = "FileFormat"
                 return(f)
@@ -126,12 +131,12 @@ list_file_formats = function(con=NULL) {
 #' Returns the web service types of the back-end
 #' 
 #' The function queries the back-end for the supported web service types usable by the client and returns a named list of
-#' \code{ServiceType} indexed by the service type ID. ServiceTypes can be used when creating a supported web service
+#' `ServiceType` indexed by the service type ID. ServiceTypes can be used when creating a supported web service
 #' from the user defined process (process graph).
 #' 
-#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise [active_connection()]
 #' is used.
-#' @return a \code{ServiceTypeList}
+#' @return a `ServiceTypeList`
 #' @export
 list_service_types = function(con=NULL) {
     tryCatch({
@@ -142,7 +147,6 @@ list_service_types = function(con=NULL) {
         tag = "ogc_services"
         
         services = con$request(tag = tag, authorized = con$isLoggedIn())
-        class(services) = "ServiceTypeList"
         
         services_type_names = names(services)
         
@@ -155,10 +159,11 @@ list_service_types = function(con=NULL) {
         })
         
         names(services) = services_type_names
+        class(services) = "ServiceTypeList"
         return(services)
     }, error = .capturedErrorToMessage)
     
-    return(con$list_service_types())
+    return(services)
 }
 
 #' Visualize the terms of service
@@ -166,7 +171,7 @@ list_service_types = function(con=NULL) {
 #' If the service provides information about their terms of service in the capabilities, the function opens a new RStudio 
 #' viewer panel and visualizes the HTML content of the link.
 #' 
-#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @return a list of the link identifying the terms of service from the service capabilities or NULL
 #' @export
@@ -189,7 +194,13 @@ terms_of_service = function(con = NULL) {
             .no_information_by_backend("terms of service")
             return(invisible(NULL))
         } else {
-            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            req = request(sel$href)
+            req = req_headers(req,`Content-Type`="text/html")
+            res = req_perform(req)
+
+            # the viewer does not render it nicely so redirecting to the internet browser
+            utils::browseURL(sel$href)
+            
             return(invisible(sel))
         }
         
@@ -198,10 +209,10 @@ terms_of_service = function(con = NULL) {
 
 #' Visualize the privacy policy
 #' 
-#' If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
-#' viewer panel and visualizes the HTML content of the link.
+#' If the service provides information about their privacy policy in their capabilities, the function opens a browser window
+#' to visualize the web page.
 #' 
-#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @return a list of the link identifying the privacy policy from the service capabilities or NULL
 #' @export
@@ -224,7 +235,12 @@ privacy_policy = function(con = NULL) {
             .no_information_by_backend("privacy policy")
             return(invisible(NULL))
         } else {
-            htmlViewer(content(GET(sel$href),as = "text",type = "text/html",encoding = "UTF-8"))
+            req = request(sel$href)
+            req = req_headers(req,`Content-Type`="text/html")
+            res = req_perform(req)
+            
+            # the viewer does not render it nicely so redirecting to the internet browser
+            utils::browseURL(sel$href)
             return(invisible(sel))
         }
         
@@ -237,7 +253,7 @@ privacy_policy = function(con = NULL) {
 #' wants to achieve full compatibility with OGC API clients. This function queries the /conformance endpoint and returns it results
 #' as a list object translated from JSON using the jsonlite package.
 #' 
-#' @param con a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @export
 conformance = function(con=NULL) {

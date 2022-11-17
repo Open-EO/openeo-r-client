@@ -92,7 +92,7 @@ replace_endpoint_parameter = function(endpoint, ...) {
 #' Finds the client tag for a particular endpoint on the back-end and returns whether it is available
 #' or not.
 #' 
-#' @param con backend connection (optional) otherwise \code{\link{active_connection}}
+#' @param con backend connection (optional) otherwise [active_connection()]
 #' is used.
 #' @param tag_name the endpoints 'tag' name as character
 #' @return logical - whether the back-end supports the endpoint or not

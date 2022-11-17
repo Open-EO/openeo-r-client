@@ -4,49 +4,49 @@
 \alias{Parameter}
 \title{Parameter class}
 \value{
-Object of \code{\link{R6Class}} which represents a parameter.
+Object of \code{\link[=R6Class]{R6Class()}} which represents a parameter.
 }
 \description{
-This class defines parameters of \code{\link{Process}}. They store information about the type, format and 
-pattern. A parameter class is designed to not carry any value, as opposed to an 
-\code{\link{Argument}}.
+This class defines parameters of \code{\link[=Process]{Process()}}. They store information about the type, format and
+pattern. A parameter class is designed to not carry any value, as opposed to an
+\code{\link[=Argument]{Argument()}}.
 }
 \details{
 The parameters are parsed from the specific description and format of the JSON
-objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
-\url{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}
+objects returned for the parameters in processes. Find a list of openEO-specific formats here:
+\href{https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json}{RFC7946}
 }
 \section{Methods}{
 
 \describe{
- \item{\code{$new(name, description, required=FALSE)}}{}
- \item{\code{$getName}}{returns the name of a parameter as string}
- \item{\code{$setName(name)}}{sets the name of a parameter}
- \item{\code{$getDescription()}}{returns the description of a parameter}
- \item{\code{$setDescription(description)}}{sets the description of a parameter}
- \item{\code{$getPattern()}}{returns a string with the pattern of a parameter description}
- \item{\code{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
- \item{\code{$getDefault()}}{returns the parameter's default value}
- \item{\code{$setDefault(default)}}{sets the default value of a parameter}
- \item{\code{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO 
- API schema object - matches the parameter's schema, which is used for finding the corresponding parameter}
- \item{\code{$getSchema()}}{returns the schema definition}
- \item{\code{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
- \item{\code{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
- \item{\code{$isRequired()}}{returns whether a parameter is mandatory or not}
- \item{\code{$isAny()}}{returns TRUE if this parameter describes a choice of parameters}
+\item{\verb{$new(name, description, required=FALSE)}}{}
+\item{\verb{$getName}}{returns the name of a parameter as string}
+\item{\verb{$setName(name)}}{sets the name of a parameter}
+\item{\verb{$getDescription()}}{returns the description of a parameter}
+\item{\verb{$setDescription(description)}}{sets the description of a parameter}
+\item{\verb{$getPattern()}}{returns a string with the pattern of a parameter description}
+\item{\verb{$setPattern(pattern)}}{sets the pattern (string) for a parameter}
+\item{\verb{$getDefault()}}{returns the parameter's default value}
+\item{\verb{$setDefault(default)}}{sets the default value of a parameter}
+\item{\verb{$matchesSchema(schema)}}{returns TRUE if the given schema - a list of the parsed openEO
+API schema object - matches the parameter's schema, which is used for finding the corresponding parameter}
+\item{\verb{$getSchema()}}{returns the schema definition}
+\item{\verb{$asParameterInfo()}}{returns a list representation of this parameter for being sent in a JSON to the openEO service}
+\item{\verb{$isNullable()}}{returns TRUE if the parameter is allowed to be nullable, FALSE otherwise}
+\item{\verb{$isRequired()}}{returns whether a parameter is mandatory or not}
+\item{\verb{$isAny()}}{returns TRUE if this parameter describes a choice of parameters}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{name}}{character - The name of a parameter}
-  \item{\code{description}}{character - The description of a parameter}
-  \item{\code{required}}{logical - whether it is required or not }
-  \item{\code{pattern}}{the regexp as a string indicating how to formulate the value}
-  \item{\code{default}}{the regexp as a string indicating how to formulate the value}   
-  \item{\code{schema}}{the parsed schema object of a process parameter as a list}
+\item{\code{name}}{character - The name of a parameter}
+\item{\code{description}}{character - The description of a parameter}
+\item{\code{required}}{logical - whether it is required or not }
+\item{\code{pattern}}{the regexp as a string indicating how to formulate the value}
+\item{\code{default}}{the regexp as a string indicating how to formulate the value}
+\item{\code{schema}}{the parsed schema object of a process parameter as a list}
 }
 }
 

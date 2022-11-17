@@ -7,12 +7,12 @@
 describe_account(con = NULL)
 }
 \arguments{
-\item{con}{authenticated client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{authenticated client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
 object of type user
 }
 \description{
-Calls endpoint \code{/me} to fetch the user account information of the user currently logged in.
+Calls endpoint \verb{/me} to fetch the user account information of the user currently logged in.
 }

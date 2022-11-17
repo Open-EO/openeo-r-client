@@ -7,13 +7,13 @@
 privacy_policy(con = NULL)
 }
 \arguments{
-\item{con}{a connected openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
 a list of the link identifying the privacy policy from the service capabilities or NULL
 }
 \description{
-If the service provides information about their privacy policy in their capabilities, the function opens a new RStudio 
-viewer panel and visualizes the HTML content of the link.
+If the service provides information about their privacy policy in their capabilities, the function opens a browser window
+to visualize the web page.
 }

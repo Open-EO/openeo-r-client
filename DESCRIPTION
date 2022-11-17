@@ -1,29 +1,37 @@
 Package: openeo
 Type: Package
 Title: Client Interface for 'openEO' Servers
-Version: 1.1.0
+Version: 1.3.0
 Authors@R: c(
         person(given="Florian", family="Lahn", email = "florian.lahn@eftas.com", role = c("aut", "cre")),
-        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb"))
+        person(given=c("Peter","James"),family = "Zellner", email="peterjames.zellner@eurac.edu",role=c("ctb")),
+        person(given="Matthias",family = "Mohr", email="matthias.mohr@uni-muenster.de",role=c("ctb"))
     )
 Description: Access data and processing functionalities of 'openEO' compliant back-ends in R.
 Depends:
-    R (>= 3.3)
+    R (>= 3.5.0)
 Suggests:
     tibble,
     testthat,
     knitr,
-    sf,
-    geojsonsf,
+    stars,
     pkgdown,
-    rmarkdown
+    rmarkdown,
+    kableExtra,
+    DT,
+    terra,
+    magrittr
 Imports:
     jsonlite,
-    httr,
+    httr2 (>= 0.2.2),
     methods,
     R6,
     lubridate,
-    base64enc
+    base64enc,
+    sf,
+    IRdisplay,
+    htmltools,
+    rlang
 Encoding: UTF-8
 LazyData: false
 BugReports: https://github.com/Open-EO/openeo-r-client/issues
@@ -36,20 +44,23 @@ Collate:
     'authentication.R'
     'zzz.R'
     'capabilities-mapping.R'
+    'process_graph_building.R'
     'utilities.R'
     'client.R'
+    'debugging.R'
+    'jobs.R'
     'services.R'
-    'process_graph_building.R'
     'user_defined_processes.R'
     'coerce-functions.R'
     'collection-functions.R'
     'collections.R'
-    'debugging.R'
-    'jobs.R'
     'ops.R'
     'predefined_processes.R'
     'print-functions.R'
+    'sample_data.R'
     'server_metadata.R'
+    'spatial.R'
     'udf.R'
     'user.R'
     'viewer.R'
+Roxygen: list(markdown = TRUE)

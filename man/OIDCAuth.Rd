@@ -4,44 +4,78 @@
 \alias{OIDCAuth}
 \title{OIDC Authentication}
 \description{
-A class that handles the authentication via \href{https://openid.net/connect/}{Open ID Connect (OIDC)}. The \code{httr} package is used to handle OIDCs underlying
-OAuth2.0 mechanism. In order to align authentication between the two supported authentication methods this class inherits and implements
-all fields and functions from \code{\link{IAuth}}.
+defines classes for different OpenID connect interaction mechanisms. The classes are modeled in generalized
+fashion by inheriting functions from \code{IAuth} and \code{AbstractOIDCAuthentication}.
 }
 \details{
-The OIDC login interacts with the OIDC provider via the \code{Authorization Code Flow}. The OIDC provider can be the 
-back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google, 
-etc, by pointing to the respective endpoints during the service discovery of the back-end.
+The openEO conformant back-ends shall offer either a basic authentication and / or an OpenID
+Connect (OIDC) authentication. The first is covered at \link{BasicAuth}. And since OIDC is based
+on the OAuth2.0 protocol there are several mechanisms defined to interact with an OIDC provider. The OIDC provider can be the
+back-end provider themselves, but they can also delegate the user management to other platforms like EGI, Github, Google,
+etc, by pointing to the respective endpoints during the service discovery of the back-end. Normally
+users would not create those classes manually, but state the general login type (oidc or basic) and some
+additional information (see \link{login}).
 
-During the login process an internet browser window will be opened and you will be asked to enter your credentials.
-The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in 
-the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with 
-the openEO service provider and ask them for a configuration file that will contain information about the \code{client_id} and 
-\code{secret}. The redirect URL requested from the provider is \code{http://localhost:1410/} (\code{\link[httr]{oauth_listener}}).
-
-The \code{access_token} will be returned when queried. As the \code{access_token} is only valid for a certain time period,
-it needs to be refreshed once the lease time has run out. This refreshing will be hidden from the user and will be taken 
-care of automatically.
-
-Since the OIDC workflow is mainly based on \href{https://oauth.net/2/}{OAuth2.0} we use httr to deal with this authentication by creating an 
-\code{\link[httr]{oauth_app}}.
+This client supports the following interaction mechanisms (grant types):
+\itemize{
+\item{authorization_code}
+\item{authorization_code+pkce}
+\item{urn:ietf:params:oauth:grant-type:device_code+pkce}
 }
+
+\subsection{authorization_code}{
+During the login process an internet browser window will be opened and you will be asked to enter your credentials.
+The website belongs to the OIDC provider of the chosen openEO back-end. Meanwhile, the client will start a server daemon in
+the background that listens to the callback from the OIDC provider. For this to work the user needs to get in contact with
+the openEO service provider and ask them for a configuration file that will contain information about the \code{client_id} and
+\code{secret}. The redirect URL requested from the provider is \verb{http://localhost:1410/}
+}
+
+\subsection{authorization_code+pkce}{
+This procedure also spawns a temporary web server to capture the redirect URL from the OIDC provider. The benefit of this
+mechanism is that it does not require a client secret issued from the OIDC provider anymore. However, it will still open
+the internet browser and asks the user for credentials and authorization.
+}
+
+\subsection{device_code+pkce}{
+This mechanism does not need to spawn a web server anymore. It will poll the endpoint of the OIDC provider until the user
+enters a specific device code that will be printed onto the R console. To enter the code either the URL is printed also to
+the console or if R runs in the interactive mode the internet browser will be opened automatically.
+}
+
+\subsection{device_code}{
+This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow,
+but without the additional PKCE negotiation.
+}
+}
+\section{Fields}{
+
+\describe{
+\item{\code{access_token}}{The access_token to query password restricted  webservices of an openEO back-end}
+
+\item{\code{id_token}}{The id_token retrieved when exchanging the access_token at the identity provider}
+}}
+
 \section{Methods}{
 
 \describe{
-  \item{\code{$new(provider, config=NULL)}}{the constructor for the authentication}
-  \item{\code{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
-  \item{\code{$getAuth()}}{returns the internal authentication client as created from package 'httr'}
+\item{\verb{$new(provider, config=NULL, ...)}}{the constructor for the authentication}
+\item{\verb{$login()}}{Initiates the authentication / login in order to obtain the access_token}
+\item{\verb{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
+\item{\verb{$getUserData()}}{queries the OIDC provider for the user data like the 'user_id'}
+\item{\verb{$getAuth()}}{returns the internal authentication client as created from package 'httr2'}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{provider}}{the name of an OIDC provider registered on the back-end or a provider object as returned by \code{list_oidc_providers()}}
-  \item{\code{config}}{either a JSON file containing information about 'client_id' and 
-  'secret' or a named list. Experienced user and developer can also add 'scopes' to 
-  overwrite the default settings of the OIDC provider}
+\item{\code{provider}}{the name of an OIDC provider registered on the back-end or a provider object as returned by \code{list_oidc_providers()}}
+\item{\code{config}}{either a JSON file containing information about 'client_id' and
+'secret' or a named list. Experienced user and developer can also add 'scopes' to
+overwrite the default settings of the OIDC provider}
+\item{\code{...}}{additional parameter might contain \code{force=TRUE} specifying to force the use
+of a specific authentication flow}
 }
 }
 
@@ -49,5 +83,7 @@ Since the OIDC workflow is mainly based on \href{https://oauth.net/2/}{OAuth2.0}
 \describe{
 \item{openEO definition on Open ID connect}{\url{https://openeo.org/documentation/1.0/authentication.html#openid-connect}}
 \item{Open ID Connect (OIDC)}{\url{https://openid.net/connect/}}
+\item{OAuth 2.0 Device Authorization Grant}{\url{https://datatracker.ietf.org/doc/html/rfc8628}}
+\item{Proof Key for Code Exchange by OAuth Public Clients}{\url{https://datatracker.ietf.org/doc/html/rfc7636}}
 }
 }

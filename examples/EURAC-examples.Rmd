@@ -19,7 +19,7 @@ password = ""
 
 api_versions(url=euracHost)
 
-eurac = connect(host = euracHost, version="0.4.2", user = user,password = password, login_type = "basic")
+eurac = connect(host = euracHost, version="0.4.2", user = user,password = password)
 ```
 
 Explorative calls as described in the Use Case 1.
@@ -149,7 +149,7 @@ pwd = ""
 
 host_url = "https://openeo.eurac.edu"
 
-eurac = connect(host = host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+eurac = connect(host = host_url, version="0.4.2", user = user, password = pwd)
 ```
 
 ```{r}

@@ -13,6 +13,6 @@ api_versions(url)
 a \code{data.frame} or a \code{tibble} containing all supported API versions of the back-end
 }
 \description{
-The function queries the back-end for its supported versions. The endpoint \href{https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect}{/.well-known/openeo} 
+The function queries the back-end for its supported versions. The endpoint \href{https://openeo.org/documentation/1.0/developers/api/reference.html#operation/connect}{/.well-known/openeo}
 is called on the given host URL and the JSON result is coerced into a \code{tibble}.
 }

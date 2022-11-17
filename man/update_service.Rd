@@ -23,7 +23,7 @@ update_service(
 
 \item{type}{character - the OGC web service type name to be created}
 
-\item{graph}{A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+\item{graph}{A \code{\link[=Graph]{Graph()}}, a function returning a \code{\link[=ProcessNode]{ProcessNode()}} as an endpoint or the \code{\link[=ProcessNode]{ProcessNode()}}
 will return the results}
 
 \item{title}{character (optional) - the title of for the service}
@@ -38,7 +38,7 @@ will return the results}
 
 \item{budget}{numeric - the amount of credits that can be spent for this service}
 
-\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authorized openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 
 \item{...}{additional parameters passed to jsonlite::toJSON() (like 'digits')}

@@ -18,7 +18,7 @@ api_versions(gee_host_url)
 ```
 
 ```{r}
-gee = connect(host = gee_host_url, version="1.0.1",user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.1",user = user,password = pwd)
 ```
 
 `gee` is a connection to an openEO service. Starting with openeo (v0.6.0) it is no longer required to use the connection on most of the client functions, due to the use of `active_connection`. However, if you use multiple services at once you should pass the intended connection, because `active_connection` will only hold the latest connected services.
@@ -313,7 +313,7 @@ pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-gee = connect(host = gee_host_url, version="1.0.0",user = user,password = pwd)
+gee = connect(host = gee_host_url, version="1.0.1",user = user,password = pwd)
 ```
 
 Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
@@ -618,7 +618,7 @@ pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd,login_type = "basic")
+gee = connect(host = gee_host_url, version="1.0.0-rc.2",user = user,password = pwd)
 
 
 # Then we obtain the tools to work with the provided openEO processes. We do this via `processes()`.
@@ -710,7 +710,7 @@ pwd = "test123"
 gee_host_url = "https://earthengine.openeo.org"
 api_versions(url = gee_host_url)
 
-gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd, login_type = "basic")
+gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd)
 # also inserting the direct link is possible gee = connect(host = 'https://earthengine.openeo.org/v0.4',user = user,password = pwd)
 
 
@@ -813,7 +813,7 @@ gee_host_url = "https://earthengine.openeo.org"
 user = "group8"
 pwd = "test123"
 
-gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd, login_type = "basic")
+gee = connect(host = gee_host_url, version = "0.4.2", user = user, password = pwd)
 
 # 1. Create a batch job Part 1: create the process graph
 
@@ -876,7 +876,7 @@ pwd = "test123"
 
 gee_host_url = "https://earthengine.openeo.org"
 
-con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd, login_type = "basic")
+con = connect(host = gee_host_url, version="0.4.2", user = user, password = pwd)
 
 graph = con %>% process_graph_builder()
 

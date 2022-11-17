@@ -2,19 +2,25 @@
 % Please edit documentation in R/collections.R
 \name{list_collections}
 \alias{list_collections}
+\alias{active_data_collection}
 \title{List data on connected server}
 \usage{
 list_collections(con = NULL)
+
+active_data_collection(collection = NULL)
 }
 \arguments{
-\item{con}{Connection object (optional) otherwise \code{\link{active_connection}}
+\item{con}{Connection object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
+
+\item{collection}{the 'CollectionList' object of list_collections to be set as the active data collection in the package environment or left empty or NULL to return the package environment variable.}
 }
 \value{
 object of class 'CollectionList'
 }
 \description{
-List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects. 
-The names are the collection IDs. Although the result at \code{\link{describe_collection}} is also a Collection, the Collection object of returned
-from \code{list_collections()} is considered a list entry with less detailed information.
+List available collections stored on an openEO server and return them as a \code{CollectionList} - a named list of \code{Collection} objects.
+The names are the collection IDs. Although the result at \code{\link[=describe_collection]{describe_collection()}} is also a Collection, the Collection object of returned
+from \code{list_collections()} is considered a list entry with less detailed information. The collection list is stored internally as the package
+environment variable \code{data_collection}, which can be accessed and set with \code{active_data_collection()}.
 }

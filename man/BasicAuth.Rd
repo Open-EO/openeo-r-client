@@ -4,31 +4,31 @@
 \alias{BasicAuth}
 \title{Basic Authentication class}
 \value{
-an object of type \code{\link{R6Class}} representing basic authentication
+an object of type \code{\link[=R6Class]{R6Class()}} representing basic authentication
 }
 \description{
 This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval
-of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'. 
-The authentication will be done once via \code{\link{login}} or multiple times when the lease time runs out. This class
-is created and registered in the \code{\link{OpenEOClient}}. After the login the user_id and the access_token are obtained and 
+of an access token by sending the encoded token consisting of user name and the password via HTTP header 'Authorization'.
+The authentication will be done once via \code{\link[=login]{login()}} or multiple times when the lease time runs out. This class
+is created and registered in the \code{\link[=OpenEOClient]{OpenEOClient()}}. After the login the user_id and the access_token are obtained and
 used as "bearer token" for the password restricted  web services.
 }
 \details{
-The class inherits all fields and function from \code{\link{IAuth}}
+The class inherits all fields and function from \code{\link[=IAuth]{IAuth()}}
 }
 \section{Methods}{
 
 \describe{
-  \item{\code{$new(endpoint,user,password)}}{the constructor with the login endpoint and the credentials}
+\item{\verb{$new(endpoint,user,password)}}{the constructor with the login endpoint and the credentials}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-  \item{\code{endpoint}}{the basic authentication endpoint as absolute URL}
-  \item{\code{user}}{the user name}
-  \item{\code{password}}{the user password}
+\item{\code{endpoint}}{the basic authentication endpoint as absolute URL}
+\item{\code{user}}{the user name}
+\item{\code{password}}{the user password}
 }
 }
 

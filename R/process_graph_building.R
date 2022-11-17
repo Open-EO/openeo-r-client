@@ -3,48 +3,47 @@
 # Graph ====
 #' Graph object
 #' 
-#' This class represents an openEO process graph - which is generally denoted as field \code{process_graph} 
-#' in the exchange objects of the API. The graph consists of \code{\link{ProcessNode}}s and optional 
-#' \code{\link{ProcessGraphParameter}} (former variables). The explicit creation of a Graph is usually not 
+#' This class represents an openEO process graph - which is generally denoted as field `process_graph` 
+#' in the exchange objects of the API. The graph consists of [ProcessNode()]s and optional 
+#' [ProcessGraphParameter()] (former variables). The explicit creation of a Graph is usually not 
 #' required and discouraged, because this will be handled automatically. 
 #' 
 #' In terms of the openEO API the process graph is the technical description of a process. To create a
 #' user-defined process it requires a process graph and additional meta data. The process graph is not
-#' accepted at any openEO endpoint directly. Therefore, it has to be wrapped in a \code{\link{Process}} 
-#' object. Use \code{\link{as.Process}} in those cases. It is similarly handled in other functions of 
+#' accepted at any openEO endpoint directly. Therefore, it has to be wrapped in a [Process()] 
+#' object. Use [as.Process()] in those cases. It is similarly handled in other functions of 
 #' this package.
 #' 
 #' 
 #' @name Graph
-#' @return Object of \code{\link{R6Class}} with methods for building an openEO process graph
+#' @return Object of [R6Class()] with methods for building an openEO process graph
 #' 
 #' @field data a named list of collection ids or process graph parameters depending on the context
 #' @section Methods:
 #' \describe{
-#'    \item{\code{$new(con = NULL, final_node=NULL)}}{The object creator created from processes and available data.}
-#'    \item{$getNodes()}{a function to return a list of created \code{\link{ProcessNode}}s for this graph}
-#'    \item{$serialize()}{creates a list representation of the graph by recursively calling \code{$serialize}} 
-#'    \item{$validate()}{runs through the nodes and checks the validity of its argument values}
-#'    \item{$getNode(node_id)}{searches and returns a node from within the graph referenced by its node id}
-#'    \item{$addNode(node)}{adds a \code{\link{ProcessNode}} to the graph}
-#'    \item{$removeNode(node_id)}{removes a process node from the graph}
-#'    \item{$getFinalNode()}{gets the result process node of a process graph}
-#'    \item{$setFinalNode(node)}{sets the result process node by node id or a ProcessNode}
-#'    \item{$getVariables()}{creates a named list of the defined variables of a process graph}
-#'    \item{$setVariables(list_of_vars)}{sets the \code{\link{ProcessGraphParameter}} ( former variables) of graph}
+#'    \item{`$new(final_node=NULL)`}{The object creator created from processes and available data.}
+#'    \item{`$getNodes()`}{a function to return a list of created [ProcessNode()]s for this graph}
+#'    \item{`$serialize()`}{creates a list representation of the graph by recursively calling `$serialize`} 
+#'    \item{`$validate()`}{runs through the nodes and checks the validity of its argument values}
+#'    \item{`$getNode(node_id)`}{searches and returns a node from within the graph referenced by its node id}
+#'    \item{`$addNode(node)`}{adds a [ProcessNode()] to the graph}
+#'    \item{`$removeNode(node_id)`}{removes a process node from the graph}
+#'    \item{`$getFinalNode()`}{gets the result process node of a process graph}
+#'    \item{`$setFinalNode(node)`}{sets the result process node by node id or a ProcessNode}
+#'    \item{`$getVariables()`}{creates a named list of the defined variables of a process graph}
+#'    \item{`$setVariables(list_of_vars)`}{sets the [ProcessGraphParameter()] ( former variables) of graph}
 #' }
 #' @section Arguments:
 #' \describe{
-#'    \item{con}{openEO connection (optional) otherwise \code{\link{active_connection}} is used}
-#'    \item{final_node}{optional, the final node (end node) that was used to create a graph}
-#'    \item{node_id}{the id of a process node}
-#'    \item{node}{process node or  its node id}
-#'    \item{parameter}{the name of a parameter in a process}
-#'    \item{value}{the value to be set for a parameter of a particular process}
-#'    \item{id or variable_id}{the variable id}
-#'    \item{description}{a description field for a variable}
-#'    \item{type}{the type of variable, default 'string'}
-#'    \item{default}{optional default value to be set for a variable}
+#'    \item{`final_node`}{optional, the final node (end node) that was used to create a graph}
+#'    \item{`node_id`}{the id of a process node}
+#'    \item{`node`}{process node or  its node id}
+#'    \item{`parameter`}{the name of a parameter in a process}
+#'    \item{`value`}{the value to be set for a parameter of a particular process}
+#'    \item{`id` or `variable_id`}{the variable id}
+#'    \item{`description`}{a description field for a variable}
+#'    \item{`type`}{the type of variable, default 'string'}
+#'    \item{`default`}{optional default value to be set for a variable}
 #' }
 NULL
 
@@ -52,9 +51,8 @@ Graph = R6Class(
   "Graph",
   public = list(
 
-    initialize = function(con=NULL,final_node=NULL) {
+    initialize = function(final_node=NULL) {
       tryCatch({
-        con = .assure_connection(con)
         
         if (is.null(final_node)) {
           stop("The final node (endpoint of the graph) has to be set.")
@@ -73,8 +71,6 @@ Graph = R6Class(
         } else {
           stop("The final node has to be a ProcessNode.")
         }
-        
-        
         
         invisible(self)
       }, error = .capturedErrorToMessage)
@@ -184,11 +180,11 @@ setOldClass(c("Graph","R6"))
 #' 
 #' This object reflects a process offered by an openEO service in order to load and manipulate data collections. It will be created 
 #' with the information of a received JSON object for a single process, after the arguments of the process have been translated 
-#' into \code{\link{Argument}} objects.
+#' into [Argument()] objects.
 #' 
 #' @name Process
 #' 
-#' @return Object of \code{\link{R6Class}} with methods for storing meta data of back-end processes and user assigned data
+#' @return Object of [R6Class()] with methods for storing meta data of back-end processes and user assigned data
 #' 
 #' @field parameters - a named list of Argument objects
 #' @field isUserDefined logical - depending if the process is offered by the openEO service or if it was user defined
@@ -199,8 +195,7 @@ setOldClass(c("Graph","R6"))
 #'    \item{$getId()}{returns the id of a process which was defined on the back-end}
 #'    \item{$getParameters()}{returns a named list of arguments}
 #'    \item{$getReturns()}{returns the schema for the return type as list}
-#'    \item{$getFormals()}{returns the function formals for this process - usually a name vector of NAs where the name 
-#'    corresponds to the parameter name}
+#'    \item{$getFormals()}{returns the function formals for this process - usually a named vector of the specified default values, but NA where no default value was specified}
 #'    \item{$setId(id)}{sets the id of a process}
 #'    \item{$setSummary(summary)}{sets the summary text}
 #'    \item{$setDescription(description)}{sets the description text}
@@ -208,7 +203,7 @@ setOldClass(c("Graph","R6"))
 #'    \item{$getProcessGraph()}{returns the ProcessGraph to which this Process belongs}
 #'    \item{$setProcessGraph(process_graph)}{sets the ProcessGraph to which this Process belongs}
 #'    \item{$validate()}{validates the processes argument values}
-#'    \item{$serialize()}{serializes the process - mainly used as primary serialization for a \code{\link{ProcessNode}}}
+#'    \item{$serialize()}{serializes the process - mainly used as primary serialization for a [ProcessNode()]}
 #'    \item{$getCharacteristics()}{select all non functions of the private area, to be used when copying process 
 #'    information into a process node}
 #' }
@@ -325,7 +320,7 @@ Process = R6Class(
           private$process_graph = as(process_graph,"Graph")
         } else if ("Graph" %in% class(process_graph)) {
           private$process_graph = process_graph
-        } else if (is.list(process_graph) || class(process_graph) == "Json_Graph"){
+        } else if (is.list(process_graph) || "Json_Graph" %in% class(process_graph)){
           # when we read it from JSON basically 
           private$process_graph = parse_graph(json=process_graph)
         }
@@ -376,7 +371,11 @@ Process = R6Class(
         results$parameters = list()
       }
       
-      results$returns = self$getReturns()$asParameterInfo()
+      if (length(self$getReturns()) > 0) {
+        results$returns = self$getReturns()$asParameterInfo()
+      } else {
+        results$returns = NULL
+      }
       
       # clean the optional flag in the result
       if ("optional" %in% names(results$returns)) {
@@ -463,19 +462,22 @@ Process = R6Class(
   )
 )
 
+#' @export
+setOldClass(c("Process","R6"))
+
 setClass("ArgumentList")
 
 # ProcessNode ====
 #' Process Node object
 #' 
-#' This class inherits all functions and fields from \code{\link{Process}} and extends it with a node id and a 
-#' special serialization function. The ProcessNode is an essential building block of the \code{\link{Graph}}.
+#' This class inherits all functions and fields from [Process()] and extends it with a node id and a 
+#' special serialization function. The ProcessNode is an essential building block of the [Graph()].
 #' 
 #' @name ProcessNode
 #' @section Methods:
 #' \describe{
 #'    \item{$getNodeId()}{returns the node id}
-#'    \item{$setNodeId(id)}{set the node id, which is of interest when \code{\link{parse_graph}} is executed}
+#'    \item{$setNodeId(id)}{set the node id, which is of interest when [parse_graph()] is executed}
 #'    \item{$serializeAsReference()}{during the serialization the process node might be used as a 
 #'    reference and this function serializes the process node accordingly}
 #' }
@@ -483,6 +485,8 @@ setClass("ArgumentList")
 #' \describe{
 #'    \item{id}{the node id}
 #' }
+#' 
+#' @importFrom rlang is_na
 NULL
 
 ProcessNode = R6Class(
@@ -560,7 +564,7 @@ ProcessNode = R6Class(
       if (missing(value)) {
         return(private$.namespace)
       } else {
-        if (!is.na(value) || (!is.character(value) && !tolower(value) %in% c("user","backend"))) {
+        if (!rlang::is_na(value) || (!is.character(value) && !tolower(value) %in% c("user","backend"))) {
           warning("Cannot assign namespace to the process. It has to be NA, 'user' or 'backend'")
         } else {
           private$.namespace = value
@@ -602,7 +606,7 @@ setOldClass(c("ProcessNode","Process","R6"))
 #' 
 #' The function reads and parses a json text and creates a Graph object.
 #' 
-#' @param con a connected openEO client (optional) otherwise \code{\link{active_connection}}
+#' @param con a connected openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param json the json graph in a textual representation or an already parsed list object
 #' @param parameters optional parameters
@@ -611,7 +615,9 @@ setOldClass(c("ProcessNode","Process","R6"))
 parse_graph = function(json, parameters = NULL, con=NULL) {
   tryCatch({
     con = .assure_connection(con)
-    processes = con$getProcessCollection()
+    processes = processes()
+    
+    # TODO what to do with "json" being a process node which need to be readded to the node id list?
     
     if (is.list(json)) {
       parsed_json = json
@@ -679,7 +685,21 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
         argument = p$parameters[[name]]
         value = pdef$arguments[[name]]
         
-        if ("process_graph" %in% names(value)) {
+        # if the list is named and contains process graphs treat it as intended for load_collection for example... a process for each entry
+        list_of_process_graphs = sapply(value, function(p) {
+          "process_graph" %in% names(p)
+        })
+        if (length(names(value)) > 0 && all(list_of_process_graphs)) {
+          params = argument$getProcessGraphParameters()
+          names(params) = sapply(params, function(p)p$getName())
+          
+          property_names = names(value)
+          value = lapply(1:length(value), function(index) {
+            parse_graph(con=con,json = value[[index]], parameters = params)
+          })
+          
+          names(value) = property_names
+        } else if ("process_graph" %in% names(value)) {
           # do subgraph
           if (!"ProcessGraphArgument" %in% class(argument)) stop("Found a process graph in JSON, but parameter is no ProcessGraph.")
           
@@ -743,7 +763,7 @@ parse_graph = function(json, parameters = NULL, con=NULL) {
 #' @param type the type of the value that is replaced on runtime, default 'string'
 #' @param subtype the subtype of the type (as specified by openEO types)
 #' @param default the default value for this variable
-#' @return a \code{\link{ProcessGraphParameter}} object
+#' @return a [ProcessGraphParameter()] object
 #' 
 #' @export
 create_variable = function(name,description=NULL,type=NULL,subtype=NULL,default=NULL) {
@@ -761,6 +781,7 @@ create_variable = function(name,description=NULL,type=NULL,subtype=NULL,default=
 #' @param x a process graph object or a process node
 #' @return a named list of Variables
 #' 
+#' @importFrom rlang is_na
 #' @export
 variables = function(x) {
   if ("Graph" %in% class(x)) {
@@ -773,17 +794,15 @@ variables = function(x) {
   if (length(x) == 0 || 
       !"ProcessNode" %in% class(x)) stop("No final node defined. Please either set a final node in the graph or pass it into this function.")
   
-  
   # get all the available process nodes of that graph
   used_nodes = .final_node_serializer(x)
   
   variables = lapply(used_nodes,function(node){
     # check all parameter
     node_variables = lapply(node$parameters,function(param) {
-      
       value = param$getValue()
       
-      if (length(value) > 0 && (is.environment(value) || !is.na(value))) {
+      if (length(value) > 0 && (is.environment(value) || !rlang::is_na(value))) {
         if ("Graph" %in% class(value)) {
           return(value$getVariables())
         # } else if ("variable" %in% class(value)) {
@@ -806,7 +825,7 @@ variables = function(x) {
       return(NULL)
     })
     
-    
+    return(node_variables)
   })
   variables = unname(unlist(unique(variables)))
   
@@ -888,18 +907,16 @@ variables = function(x) {
     
     return(variables)
   }
-  
-  
 }
   
   
 #' Removes a variable from the Graph
 #' 
 #' The function that removes a selected variable from the graph. It is removed from the list of defined 
-#' variables that are obtainable with \code{\link{variables}}. The variables already placed in the graph 
+#' variables that are obtainable with [variables()]. The variables already placed in the graph 
 #' won't be deleted, only in the defined variables list.
 #' 
-#' @param graph a \code{\link{Graph}} object
+#' @param graph a [Graph()] object
 #' @param variable a variable id or a variable object
 #' @return TRUE
 #' @export
@@ -967,11 +984,8 @@ remove_variable = function(graph, variable) {
   # if value is a function -> then make a call with the function and a suitable ProcessGraphParameter
   
   # make call
-  call_env = new.env()
-  
   # we need the assignment since we might have basic mathematical operation that are overloaded
-  assign(x = ".__process_collection__",value = process_collection,envir = call_env)
-  final_node = do.call(value,args = process_graph_parameter,envir = call_env)
+  final_node = do.call(value,args = process_graph_parameter)
   
   # assign new graph as value
   value = Graph$new(final_node = final_node)
@@ -981,16 +995,23 @@ remove_variable = function(graph, variable) {
 }
 
 #' @export
+`$.ArgumentList` = function(x, name) {
+  val = unclass(x)[[name]]$getValue()
+  if ("Argument" %in% class(val)) return(val$getValue())
+  else return(val)
+}
+
+#' @export
 `$<-.ArgumentList` = function(x, name, value) {
-  x[[name]]$setValue(value)
+  unclass(x)[[name]]$setValue(value)
 }
 
 #' @export
 `[<-.ArgumentList` = function(x, i, value) {
-  x[[i]]$setValue(value)
+  unclass(x)[[i]]$setValue(value)
 }
 
 #' @export
 `[[<-.ArgumentList` = function(x, i, value) {
-  x[[i]]$setValue(value)
+  unclass(x)[[i]]$setValue(value)
 }

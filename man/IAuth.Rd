@@ -17,11 +17,11 @@ An interface that states the intended behavior for the authentication.
 \section{Methods}{
 
 \describe{
-  \item{\code{$login()}}{Initiates the authentication / login in order to obtain the access_token}
-  \item{\code{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
+\item{\verb{$login()}}{Initiates the authentication / login in order to obtain the access_token}
+\item{\verb{$logout()}}{Terminates the access_token session and logs out the user on the openEO back-end}
 }
 }
 
 \seealso{
-\code{\link{BasicAuth}} or \code{\link{OIDCAuth}}
+\code{\link[=BasicAuth]{BasicAuth()}}, \code{\link[=OIDCAuth]{OIDCAuth()}}
 }

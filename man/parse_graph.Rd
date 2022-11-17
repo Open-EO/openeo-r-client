@@ -11,7 +11,7 @@ parse_graph(json, parameters = NULL, con = NULL)
 
 \item{parameters}{optional parameters}
 
-\item{con}{a connected openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{a connected openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

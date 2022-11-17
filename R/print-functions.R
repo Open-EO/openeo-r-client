@@ -2,7 +2,7 @@
 #' 
 #' A visualization for the user account information obtained by /me
 #' 
-#' @param x an User object that can be retrieved at \link{describe_account}
+#' @param x an User object that can be retrieved at [describe_account]
 #' @param ... additional parameters (not used)
 #' 
 #' @export
@@ -29,11 +29,15 @@ print.User = function(x, ...) {
 #' 
 #' Print function to visualize relevant information about an openEO process
 #' 
-#' @param x process info that is received on \link{list_processes} and \link{describe_process}
+#' @param x process info that is received on [list_processes] and [describe_process]
 #' @param ... additional parameters (not used)
 #' 
 #' @export
 print.ProcessInfo <- function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("process", x, props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+
     title = paste("Process:\t", x$id, sep = "")
     summary = paste("Summary:\t", x$summary, sep = "")
     description = paste("Description:\t", x$description, sep = "")
@@ -81,12 +85,17 @@ print.ProcessInfo <- function(x, ...) {
 
 #' @export
 print.FileFormat = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("file-format", x, props = list(id = x$name, type = x$type)))
+    }
+
     if (length(x$title) == 0) {
         cat("Format: \t\t\t",x$name,"\n",sep="")
     } else {
         cat("Format: \t\t\t",x$title,"\n",sep="")   
     }
-    cat("Format ID: \t\t\t",x$name,"\n",sep="")
+    cat("ID: \t\t\t",x$name,"\n",sep="")
+    cat("Type: \t\t\t",x$type,"\n",sep="")
     
     if (length(x$description) > 0) {
         cat("\n",x$description,"\n\n")
@@ -108,6 +117,10 @@ print.FileFormat = function(x, ...) {
 
 #' @export
 print.ServiceType = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service-type", x, props = list(id = x$name))) # todo handle type prop
+    }
+
     # name is set in list_service_types not in specification
     if (length(x$title) > 0) {
         cat("Service: \t\t",x$title,"\n",sep="")
@@ -142,6 +155,10 @@ print.ServiceType = function(x, ...) {
 
 #' @export
 print.Collection = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("collection", x))
+    }
+
     id = paste(x$id)
     if (is.null(x$title)) 
         x$title = "---"
@@ -217,6 +234,12 @@ print.Collection = function(x, ...) {
 print.JobList = function(x, ...) {
     showed_columns = c("id", "title", "status", "created", "updated", "costs", "budget", "plan")
     x = unname(x)
+    
+    if (is_jupyter()) {
+        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+        return(print_html("data-table", x, props = list(columns = "jobs")))
+    }
+
     # list to tibble
     if (length(x) > 0) {
         df = as.data.frame(x)
@@ -240,15 +263,49 @@ print.JobList = function(x, ...) {
         invisible(df)
     }
     
-    if (isNamespaceLoaded("tibble")) {
+    if (isNamespaceLoaded("tibble") && !is_rmd()) {
         df = tibble::as_tibble(df)
+        print(df)
+    } else if (.is_package_installed("kableExtra")) {
+      # print()
+      print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df))))
+    } else {
+      print(df)
     }
     
-    print(df)
+    
+}
+
+#' @export
+print.UserFileList = function(x, ...) {
+  x = as.data.frame(x)
+  
+  if (is_jupyter()) {
+    # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+    return(print_html("data-table", x, props = list(columns = "files")))
+  }
+  
+  if (nrow(x) == 0 || ncol(x) == 0) {
+    message("No files stored in the workspace.")
+    invisible(x)
+  }
+  
+  if (isNamespaceLoaded("tibble") && !is_rmd()) {
+    x = tibble::as_tibble(x)
+    print(x)
+  } else if (.is_package_installed("kableExtra")) {
+    print_html(data = x,props=list(html=kableExtra::kable_styling(kableExtra::kable(x))))
+  } else {
+    print(x)
+  }
 }
 
 #' @export
 print.Job = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("job", x, props = list(currency = x$currency)))
+    }
+
     id = paste("Job ID:\t\t", x$id, "\n", sep = "")
     if (is.null(x$title)) 
         x$title = "---"
@@ -288,14 +345,26 @@ print.Job = function(x, ...) {
 
 #' @export
 print.ServiceList = function(x, ...) {
+    if (is_jupyter()) {
+        # All envs show nice tables directly, but Jupyter does not so fall back to HTML tables
+        return(print_html("data-table", unname(x), props = list(columns = "services")))
+    }
+
     if (length(x) > 0) {
         df = as.data.frame(x,extract=c("id","title","description","url","type","enabled","created"))
         row.names(df) = NULL
         
-        if (isNamespaceLoaded("tibble"))
+        if (isNamespaceLoaded("tibble") && !is_rmd()) {
             df = tibble::as_tibble(df)
+            print(df) 
+        } else if (.is_package_installed("kableExtra")) {
+          # print()
+          print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df))))
+        } else {
+          print(df)
+        }
         
-        print(df) 
+        
     } else {
         message("No secondary services published.")
     }
@@ -306,6 +375,9 @@ print.ServiceList = function(x, ...) {
 
 #' @export
 print.Service = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service", x, props = list(currency = x$currency)))
+    }
     
     id = paste("ID:\t\t", x$id, "\n", sep = "")
     
@@ -342,12 +414,12 @@ print.Service = function(x, ...) {
         x$configuration = "---"
         cat(paste("Configuration:\t", x$configuration, "\n", sep = ""))
     } else {
-        x$configuration = toJSON(x$configuration, pretty = TRUE, auto_unbox = TRUE)
+        x$configuration = jsonlite::toJSON(x$configuration, pretty = TRUE, auto_unbox = TRUE, digits = NA)
         cat(paste("Configuration:\n", x$configuration, "\n", sep = ""))
     }
     
     if (length(x$attributes) > 0) {
-        x$attributes = toJSON(x$attributes, pretty = TRUE, auto_unbox = TRUE)
+        x$attributes = jsonlite::toJSON(x$attributes, pretty = TRUE, auto_unbox = TRUE, digits = NA)
         cat(paste("Attributes:\n", x$attributes, "\n", sep = ""))
     }
     
@@ -358,6 +430,10 @@ print.Service = function(x, ...) {
 
 #' @export
 print.JobCostsEstimation = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("job-estimate", x, props = list(currency = x$currency)))
+    }
+
     header = "Job costs estimation\n"
     line = "====================\n"
     costs = paste("Costs: \t\t\t\t", x$costs, "\n", sep = "")
@@ -371,37 +447,64 @@ print.JobCostsEstimation = function(x, ...) {
 
 #' @export
 print.CollectionList = function(x, ...) {
-    df = as.data.frame(x, extract = c("id", "title", "description","deprecated"))
-    if (isNamespaceLoaded("tibble")) 
-        print(tibble::as_tibble(df)[, c("id", "title", "description","deprecated")]) else print(df)
+    if (is_html_context()) {
+        return(print_html("collections", x))
+    }
+
+    cols = c("id", "title", "description","deprecated")
+    df = as.data.frame(x, extract = cols)
+    if (isNamespaceLoaded("tibble")) {
+        print(tibble::as_tibble(df)[, cols]) 
+    } else if (.is_package_installed("kableExtra")) {
+      # print()
+      print_html(data = df,props=list(html=kableExtra::kable_styling(kableExtra::kable(df[, cols]))))
+    } else {
+      print(df[, cols])
+    }
 }
 
 #' @export
 print.Graph = function(x, ...) {
-    print(graphToJSON(x))
+  # use internal toJSON function
+  print(.toJSON(x, ...))
 }
 
 #' @export
 print.ProcessNode = function(x, ...) {
     node_validation = x$validate()
     
+    if (length(node_validation) > 1) {
+      node_validation = paste(node_validation,collapse="\n")
+    }
+    
     if (is.null(node_validation)) {
-        print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+        print(jsonlite::toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE, digits = NA))
+    } else {
+      message(node_validation)
     }
 }
 
 #' @export
 print.Process = function(x, ...) {
-    print(toJSON(x$serialize(),auto_unbox = TRUE,pretty = TRUE,force=TRUE))
+    if (is_html_context()) {
+        return(print_html("process", x$serialize(), props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+    
+    # use internal toJSON function
+    print(.toJSON(x,...)) 
 }
 
 #' @export
 print.Json_Graph = function(x, ...) {
-    print(toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE))
+    print(jsonlite::toJSON(x, auto_unbox = TRUE, force = TRUE, pretty = TRUE, digits = NA))
 }
 
 #' @export
 print.OpenEOCapabilities = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("capabilities", x))
+    }
+
     capabilities = x
     
     title = capabilities$title
@@ -432,21 +535,35 @@ print.OpenEOCapabilities = function(x, ...) {
 
 #' @export
 print.ResultList = function(x, ...) {
-    cat("Results for job: ",x$id,"\n")
-    if (length(x$properties$expires) > 0) {
-        cat("Links expire on: ",x$properties$expires,"\n")
+    if (is_html_context()) {
+        unclass(x$assets)
+        return(print_html("batch-job-result", x))
+    }
+
+    if (!is_html_context()) {
+      cat("Results for job: ",x$id,"\n")
+      if (length(x$properties$expires) > 0) {
+          cat("Links expire on: ",x$properties$expires,"\n")
+      }
+      cat("\n")
     }
     
     # assets overview
     if (length(x$assets) > 0) {
-        cat("\n")
+        
         assets = as.data.frame(x$assets)
         
-        if (isNamespaceLoaded("tibble")) {
+        if (isNamespaceLoaded("tibble") && !is_rmd()) {
             assets = tibble::as_tibble(assets)
+            print(assets)
+        } else if (.is_package_installed("kableExtra")) {
+          # print()
+          print_html(data = assets,props=list(html=kableExtra::kable_styling(kableExtra::kable(assets))))
+        } else {
+          print(assets)
         }
         
-        print(assets)
+        
     } else {
         cat("\n")
         cat("No assests found.\n")
@@ -483,7 +600,56 @@ print.CubeDimension = function(x,...) {
 
 #' @export
 print.Log = function(x,...) {
+    if (is_html_context()) {
+        return(print_html("logs", x$logs))
+    }
+    
     void = sapply(x$logs,function(log_entry) {
         cat(paste0("[",toupper(log_entry$level),"] ",log_entry$message,"\n"))
     })
+}
+
+#' @export
+print.ProcessList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("processes", x, props = list('show-graph' = TRUE, 'provide-download' = FALSE)))
+    }
+ 
+    print.default(x)
+}
+
+#' @export
+print.ServiceTypeList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("service-types", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.FileFormatList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("file-formats", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.UdfRuntimeList = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("udf-runtimes", x)) # todo handle ID param correctly
+    }
+    
+    print.default(x)
+}
+
+#' @export
+print.UdfRuntime = function(x, ...) {
+    if (is_html_context()) {
+        return(print_html("udf-runtime", x, props = list(id = x$id)))
+    }
+    
+    print.default(x)
 }

@@ -1,3 +1,120 @@
+# Version 1.3.0
+
+## Added
+* new vignettes:
+  - Package Software Architecture
+  - Process Graph Building Concepts
+  - Process Graph Building Application
+  - Developer Implementation Details
+* added the default openEO processes v1.2.0 as test data to the package in the RDS file  format (`system.file("openeo_processes/openeo_process_1.2.0.rds")`) and added a test case for process parsing
+* `active_process_list()` and `active_process_collection()` which refer to the currently connected back-ends process list as well as the package interpretation of those process descriptions. See environment variables `process_list` and `process_collection`
+* `active_data_collection()` to fetch the data collection of the currently active back-end, which refers to the package variable `data_collection`
+* vignette about the software and package architecture and design choices based on API requirements
+
+## Changed
+* added line breaks if there are multiple validation messages of ProcessNodes
+* `describe_process()` also works now with `Process` and `ProcessNode` objects
+* use the active process list when looking up the description of an openEO process
+* package now depends on R > 3.5.0, because of RDS object de-/serialization (openEO test processes)
+* added a warning and a note for `compute_result()` if neither parameter 'format' of the function was set nor process 'save_result' was used in the process graph
+* refresh data collections after separate login as part of [#83](https://github.com/Open-EO/openeo-r-client/issues/83)
+* improved disconnection behavior by adding a `disconnect()` function and a logout and disconnect on package unload
+* decoupled processes and data collection from the OpenEO connection
+* moved the setup of the RStudio connection observer into a separate helper function
+* naming of the vignettes to achieve an order in the vignette index entries
+
+## Fixes
+* `variables()` function now returns the extracted variables correctly
+* coercion problems from checking with is.na on values with length > 1 have been fixed by using rlang::is_na [#130](https://github.com/Open-EO/openeo-r-client/issues/130), [#123](https://github.com/Open-EO/openeo-r-client/issues/123)
+* an issue when calling the JSON serialization of class Process
+
+## Removed
+* removed utility functions `.getProcessCollection()` and `.find_var_in_stack()` which are replaced by the `active_process_collection()` function
+* functions to call data collection (`$getCollectionNames()`, `$getDataCollection()`) from connection as well as the fields (`private$data_collection`)
+* functions (`$getProcessCollection()`) and fields (`private$process_collection`, `$processes`) to store the process list and process collection
+  
+
+# Version 1.2.2
+
+## Changed
+* allowed objects as values for argument BoundingBox where `st_bbox()` can be applied
+* very minor refinement in argument UdfCode and added test case [#132](https://github.com/Open-EO/openeo-r-client/issues/132)
+* now throws a more readable error when the authentication provider is missing in the wellknown document
+
+## Fixes
+* OIDC authentication on remote machines prints now correctly URL and device code after fixes in httr2 package, now version 0.2.2 or higher is required (@m-mohr, @flahn, [#131](https://github.com/Open-EO/openeo-r-client/pull/131), [#119](https://github.com/Open-EO/openeo-r-client/pull/119))
+* remote environments now login with `rlang::is_interactive() == FALSE` so that for example Jupyter environments print the device code URL and the code instead of trying to open the systems internet browser [#128](https://github.com/Open-EO/openeo-r-client/issues/128)
+* capabilities request no longer appends an additional "/" to the host, which caused problems with some back-ends (@m-mohr [#133](https://github.com/Open-EO/openeo-r-client/pull/133), [#134](https://github.com/Open-EO/openeo-r-client/issues/134))
+* `download_results` could not interprete a Job object due to the `length(job) != 1` restriction
+* added a Job to Process coercion to match the messages instruction, when printing a Job [#115](https://github.com/Open-EO/openeo-r-client/issues/115)
+* during JSON serialization numbers were truncated to a certain amount of digits. Setting `digits=NA` during serialization removes the default value for the digits [#64](https://github.com/Open-EO/openeo-r-client/issues/64)
+* fixed parameter in logout query (req -> .req)
+
+# version 1.2.1
+
+## Added
+* allowed a Process object to be passed to `validate_process`
+
+## Changed
+* not serializing basic `Argument` if not required, which affects mostly the "context" parameter of reducer functions
+* skip local validation of `Array` type if there is more than one sub type allowed
+* adapted GeoJSON coordinate order, now urn:ogc:def:crs:OGC::CRS84 is used as CRS, which means longitude / latitude order
+
+## Fixes
+* compute_result now correctly swaps the file format from save_result, if it was already used in the process graph [#124](https://github.com/Open-EO/openeo-r-client/issues/124)
+* fixed messages thrown when validating arrays with multiple different allowed element types
+* fixed missing NA / NULL setting in GeoJSON argument
+* fixed missing brackets in coercion from Process to Graph
+
+
+
+# version 1.2.0
+
+## Added
+* implemented a method for sample data retrieval (`get_sample()`), which will modify a process graph by replacing the original spatial extent of the request with a smaller subset of 0.0003 degrees extent [#94](https://github.com/Open-EO/openeo-r-client/issues/94)
+* added a vignette explaining sample data retrieval
+* rendering of classes as HTML widgets using the openEO Vue components, which can be used in Jupyter Notebook, Rmarkdown, RStudio and knitr
+* implemented the argument type `metadata-filter` in order to filter collections based on a list of functions mostly applied in `load_collection` [#102](https://github.com/Open-EO/openeo-r-client/issues/102)
+* implemented an abstract OIDC authentication
+* implemented OIDC authentications for the following grant types:
+  - authorization_code
+  - authorization_code+pkce
+  - urn:ietf:params:oauth:grant-type:device_code+pkce
+  - urn:ietf:params:oauth:grant-type:device_code [#116](https://github.com/Open-EO/openeo-r-client/issues/116)
+* temporarily added changed code to realize device_code+pkce from the `httr2` package until the `httr2` package changes are made available on CRAN
+  - PR at httr2 [r-lib/httr2#109](https://github.com/r-lib/httr2/pull/109)
+* overloaded function `toJSON` for `Process` and `Graph`
+  - `processToJSON` to easily convert a process to JSON
+  - `processToJSON` and `graphToJSON` are marked as deprecated
+
+## Fixes
+* `process_viewer` for user defined processes [#110](https://github.com/Open-EO/openeo-r-client/issues/110)
+
+## Changed
+* `compute_result()` will set or override existing `save_result` node entries when parameter `format` is provided [#62](https://github.com/Open-EO/openeo-r-client/issues/62)
+* `compute_result()` will return a `stars` object if the parameter `as_stars` is set TRUE [#39](https://github.com/Open-EO/openeo-r-client/issues/39)
+* `download_results()` uses httr2 functions instead of `download.file()` [#108](https://github.com/Open-EO/openeo-r-client/issues/108), also parameter `job` is allowed to be a ResultList or AssetList
+* `timeout` parameter in `logs()` is now optional. If omitted 60s timeout is used for active batch processes and enabled services [#109](https://github.com/Open-EO/openeo-r-client/issues/109)
+* replaced package `httr` by `httr2` to include the device_code and PKCE authentication methods
+* `connect` no longer carries the login parameters separately, but uses `...` to pass on those information
+* added 'kableExtra' as suggest to render the tables prettier in knitr
+
+## Removed
+* login parameter `login_type` removed. type will be deduced based on the other parameters.
+
+# version 1.1.1
+
+## Added
+* in addition to integer it is now allowed to state text as input for argument `EPSGCode` like *EPSG:4326* [#99](https://github.com/Open-EO/openeo-r-client/issues/99) and wrote a test case for that
+* Started test case for `OpenEOClient`
+* Test case for `Boolean` argument validation
+
+## Fixes
+* fixed an issue with token refreshment, where the expiry time was not set correctly [#101](https://github.com/Open-EO/openeo-r-client/issues/101)
+* fixed an issue where the host URL was not recognized and treated missing [#100](https://github.com/Open-EO/openeo-r-client/issues/100)
+* fixed a validation problem of the Boolean argument when a `ProcessNode` was passed as a value
+* fixed a problem with the overloaded R operators for `|`, `&` and `xor` where an old signature of the corresponding openEO process was used
+
 # version 1.1.0
 Bugfixes and preparation for CRAN release, 'openEO API' version 1.1.0
 

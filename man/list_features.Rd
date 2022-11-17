@@ -7,7 +7,7 @@
 list_features(con = NULL)
 }
 \arguments{
-\item{con}{A connected openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{A connected openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{

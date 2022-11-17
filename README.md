@@ -1,7 +1,7 @@
 openeo: Client Interface for openEO Servers
 ====
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/Open-EO/openeo-r-client/workflows/R-CMD-check/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions)
+[![R-CMD-check](https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Open-EO/openeo-r-client/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/openeo)](https://CRAN.R-project.org/package=openeo)
 <!-- badges: end -->
 
@@ -41,11 +41,13 @@ library(openeo)
 
 If you want use a different package version we recommend to use the parameter `ref`. Define this parameter as "master", "develop" or another version specified in [releases](https://github.com/Open-EO/openeo-r-client/releases).
 
-Currently, the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won't support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.
+Currently, the package complies to the major openEO API version 1.1.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won't support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.
 
 | openeo R client version | openEO API version | openEO API status |
 | --- | --- | --- |
-| not yet | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.3.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.2.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.1.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v1.0.x | [v1.0.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |
@@ -64,7 +66,7 @@ Exemplary back-end providers are:
 * https://openeo.vito.be
 * https://openeo.cloud
 
-The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the [openEO GEE Github repository](https://github.com/Open-EO/openeo-earthengine-driver). Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. "openeo.cloud" is the link to ESAs ["openEO Platform" project](https://openeo.cloud/), for which you have to be [signed up via EGI and openEO platform](https://docs.openeo.cloud/authentication/#join-openeo-platform).
+The Google Earth Engine (GEE) interface for openEO is not actively maintained. The credentials for accessing and testing are included in the demo section at the [openEO GEE Github repository](https://github.com/Open-EO/openeo-earthengine-driver). Please bear in mind that the access is free, but Google might revoke the rights if the processing load is too high. Use it only for playing around with the different openEO clients and not for productive purposes. "openeo.cloud" is the link to ESAs ["openEO Platform" project](https://openeo.cloud/), for which you have to be [signed up via EGI and openEO platform](https://openeo.cloud/#plans).
 
 # Examples
 The following code sample shows how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file. 

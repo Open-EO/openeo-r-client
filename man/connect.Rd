@@ -4,54 +4,37 @@
 \alias{connect}
 \title{Connect to a openEO service}
 \usage{
-connect(
-  host,
-  version = NULL,
-  user = NULL,
-  password = NULL,
-  login_type = NULL,
-  exchange_token = "access_token",
-  provider = NULL,
-  config = NULL
-)
+connect(host, version = NULL, exchange_token = "access_token", ...)
 }
 \arguments{
 \item{host}{URL pointing to the openEO server service host}
 
-\item{version}{the openEO API version number as string (optional), see also \code{\link{api_versions}}}
-
-\item{user}{the user name (optional)}
-
-\item{password}{the password (optional)}
-
-\item{login_type}{either NULL, 'basic' or 'oidc'. This refers to the log in mechanism that shall be used. NULL disables authentication.}
+\item{version}{the openEO API version number as string (optional), see also \code{\link[=api_versions]{api_versions()}}}
 
 \item{exchange_token}{'access_token' or 'id_token' defines in the OIDC case the bearer token use}
 
-\item{provider}{provider object as obtained by 'list_oidc_providers()'}
-
-\item{config}{named list containing 'client_id' and 'secret' or a path to the configuration file (type JSON)}
+\item{...}{parameters that are passed on to \code{\link[=login]{login()}}}
 }
 \description{
 Connects to openEO service. If the back-end provides a well-known endpoint that allows redirecting to
 specific versions you should provide the version parameter.
 }
 \details{
-You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you 
+You can explore several already available openEO web services by using the openEO hub (\url{https://hub.openeo.org/}). There you
 have an overview about their status and connection details like the URL and supported features. You can explore the
 service for free through the access to publicly available metadata of data collections as well as the offered
 processing functions. For any computation and the creation of web services, you need to register the openEO partner of
 your choice. There you will get further information on credentials and the log in procedure.
 
-Especially the \code{login_type} and the \code{authType} suggested by the client development guidelines are confusing. Here the login_type deals 
-with considered log in. 'Basic' allows you to use user name and password directly in the call, whereas 'oidc' will
-open a browser window, where you enter you credentials. The authentication on all protected endpoints will later
-use the bearer token that the client has obtained after the log in, unless the authentication was dropped with NULL.
+The \code{...} parameter allows you to pass on arguments directly for \code{\link[=login]{login()}}. If they are omitted the
+client will only connect to the back-end, but does not do authentication. The user must do that manually afterwards.
+Based on the provided login parameters user / password or OIDC provider the appropriate login procedure for basic authentication
+or OIDC authentication will be chosen.
 
 The parameter \code{version} is not required. If the service offers a well-known document of the
 service the client will choose an appropriate version (default the most recent production ready version).
 
-When calling this function the \code{\link{OpenEOClient}} is also stored in a variable in the package
+When calling this function the \code{\link[=OpenEOClient]{OpenEOClient()}} is also stored in a variable in the package
 which marks the latest service that was connected to.
 }
 \examples{
@@ -66,15 +49,17 @@ con = connect(host='http://example.openeo.org')
 # connect to a host by direct URL and basic log in
 con = connect(host='http://example.openeo.org/v1.0',
               user='user',
-             password='password',
-             login_type='basic')
+             password='password')
 
 # connect to a host with open id connect authentication
+con = connect(host='http://example.openeo.org')
+
+# connect and login with a named and valid oidc provider
 con = connect(host='http://example.openeo.org',
-              login_type='oidc')
+              provider='your_named_provider')
 }
 
 }
 \seealso{
-\code{\link{active_connection}}
+\code{\link[=active_connection]{active_connection()}}
 }

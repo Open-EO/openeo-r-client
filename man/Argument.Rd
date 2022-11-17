@@ -4,32 +4,32 @@
 \alias{Argument}
 \title{Argument class}
 \value{
-Object of \code{\link{R6Class}} representing an argument.
+Object of \code{\link[=R6Class]{R6Class()}} representing an argument.
 }
 \description{
-This class inherits all fields and functions from \code{\link{Parameter}} adds the functionality to
+This class inherits all fields and functions from \code{\link[=Parameter]{Parameter()}} adds the functionality to
 manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
 for the type specific argument classes, the inheriting classes implement their own version of the private
-functions \code{$typeCheck()} and \code{$typeSerialization()}.
+functions \verb{$typeCheck()} and \verb{$typeSerialization()}.
 }
 \section{Methods}{
 
 \describe{
-  \item{\code{$setValue(value)}}{Assigns a value to this argument}
-  \item{\code{$getValue()}}{Returns the value of this argument}
-  \item{\code{$serialize()}}{returns a list representation of a openEO argument}
-  \item{\code{$validate()}}{return TRUE if the parameter is validated positively by the type check}
-  \item{\code{$isEmpty()}}{returns TRUE if the value is set}
-  \item{\code{$getProcess()}}{returns the process this parameter belongs to}
-  \item{\code{$setProcess(p)}}{sets the owning process for this parameter}
+\item{\verb{$setValue(value)}}{Assigns a value to this argument}
+\item{\verb{$getValue()}}{Returns the value of this argument}
+\item{\verb{$serialize()}}{returns a list representation of a openEO argument}
+\item{\verb{$validate()}}{return TRUE if the parameter is validated positively by the type check}
+\item{\verb{$isEmpty()}}{returns TRUE if the value is set}
+\item{\verb{$getProcess()}}{returns the process this parameter belongs to}
+\item{\verb{$setProcess(p)}}{sets the owning process for this parameter}
 }
 }
 
 \section{Arguments}{
- 
+
 \describe{
-  \item{\code{value}}{The value for this argument.}
-  \item{\code{p}}{An object of class 'Process' or inheriting like 'ProcessNode'}
+\item{\code{value}}{The value for this argument.}
+\item{\code{p}}{An object of class 'Process' or inheriting like 'ProcessNode'}
 }
 }
 

@@ -3,13 +3,13 @@
 #' Lists the current users services
 #' 
 #' Queries the back-end to retrieve a list of services that the current user owns. Services are 
-#' web services like WCS, WFS, etc. The result is an object of type \code{ServiceList}, which is a named list of \code{Service}. The 
+#' web services like WCS, WFS, etc. The result is an object of type `ServiceList`, which is a named list of `Service`. The 
 #' indices are the service IDs, the service object that is indexed by its ID and may use other functions instead of its service ID.
 #' 
-#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' 
-#' @return named list of Services (class \code{ServiceList})
+#' @return named list of Services (class `ServiceList`)
 #' @export
 list_services = function(con=NULL) {
     tryCatch(suppressWarnings({
@@ -38,7 +38,7 @@ list_services = function(con=NULL) {
 #' The function will create a web service of a process graph / workflow on the connected openEO service.
 #' 
 #' @param type character - the OGC web service type name to be created or an object of type ServiceType obtainable through list_service_types()
-#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' @param graph A [Graph()], a function returning a [ProcessNode()] as an endpoint or the [ProcessNode()] 
 #' will return the results
 #' @param title character (optional) - a title for the service intended for visualization purposes in clients
 #' @param description character (optional) - a short description of the service
@@ -46,7 +46,7 @@ list_services = function(con=NULL) {
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent on this service
-#' @param con connected and authenticated openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authenticated openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #'  
@@ -89,10 +89,11 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
         }
         
         tag = "service_publish"
-        response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE, ...)
+        # response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", raw = TRUE, ...)
+        response = con$request(tag = tag, authorized = TRUE, data = service_request_object, encodeType = "json", parsed=FALSE, ...)
         
         message("Service was successfully created.")
-        locationHeader = headers(response)$location
+        locationHeader = resp_headers(response)$location
         split = unlist(strsplit(locationHeader, "/"))
         
         id = trimws(split[length(split)])
@@ -109,7 +110,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' 
 #' @param service the Service or its ID
 #' @param type character - the OGC web service type name to be created
-#' @param graph A \code{\link{Graph}}, a function returning a \code{\link{ProcessNode}} as an endpoint or the \code{\link{ProcessNode}} 
+#' @param graph A [Graph()], a function returning a [ProcessNode()] as an endpoint or the [ProcessNode()] 
 #' will return the results
 #' @param title character (optional) - the title of for the service
 #' @param description character (optional) - the description for the service
@@ -117,7 +118,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' @param configuration a list of service creation configuration
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent for this service
-#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
@@ -235,7 +236,7 @@ update_service = function(service, type = NULL, graph = NULL, title = NULL, desc
 #' Queries the server and returns information about a particular service
 #' 
 #' @param service the Service object or its id
-#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' 
 #' @return Service object
@@ -259,6 +260,7 @@ describe_service = function(service, con=NULL) {
         
         tag = "services_details"
         service = con$request(tag = tag, parameters = list(id), authorized = TRUE)
+        service$currency = con$getCapabilities()$billing$currency
         class(service) = "Service"
         return(service)
     }, error = .capturedErrorToMessage)
@@ -269,7 +271,7 @@ describe_service = function(service, con=NULL) {
 #' Queries the back-end and removes the current set service function of job.
 #' 
 #' @param service the Service or its id
-#' @param con connected and authorized openEO client object (optional) otherwise \code{\link{active_connection}}
+#' @param con connected and authorized openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @export
 delete_service = function(service, con=NULL) {
@@ -299,7 +301,7 @@ delete_service = function(service, con=NULL) {
 #' @param limit the limit of lines to be shown
 #' @param con an optional connection if you want to address a specific service
 #' 
-#' @return a \code{Log} object
+#' @return a `Log` object
 #' @export
 log_service = function(service, offset=NULL,limit=NULL, con=NULL) {
     tryCatch({

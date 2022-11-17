@@ -11,11 +11,11 @@ start_job(job, log = FALSE, con = NULL)
 
 \item{log}{logical - whether to enable automatic logging after starting the job}
 
-\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link{active_connection}}
+\item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}
 }
 \value{
-the job_id of the defined job
+the job object of the now started job
 }
 \description{
 The function sends a start signal to the back-end triggering a defined job.

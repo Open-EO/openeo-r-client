@@ -4,15 +4,16 @@
 \alias{process_viewer}
 \title{Viewer panel for provided openEO processes}
 \usage{
-process_viewer(x, con = NULL)
+process_viewer(x = NULL, con = NULL)
 }
 \arguments{
-\item{x}{a function from the \code{\link{ProcessCollection}}, a \code{\link{ProcessNode}},
-\code{\link{Process}} or a character containing the process id.}
+\item{x}{(optional) a function from the \code{\link[=ProcessCollection]{ProcessCollection()}}, a \code{\link[=ProcessNode]{ProcessNode()}},
+\code{\link[=Process]{Process()}} or a character containing the process id.
+If NULL is provided (default), the list of processes is shown.}
 
 \item{con}{a specific connection (optional), last connected service if omitted.}
 }
 \description{
-Opens up a viewer panel in RStudio and renders one or more processes of the connected 
-openEO service in HTML. The components of openeo-js-commons / openEO webeditor are reused.
+Opens up a viewer panel in RStudio and renders one or more processes of the connected
+openEO service in HTML. The components of openeo-vue-components are reused.
 }
