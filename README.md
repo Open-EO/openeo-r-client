@@ -41,11 +41,13 @@ library(openeo)
 
 If you want use a different package version we recommend to use the parameter `ref`. Define this parameter as "master", "develop" or another version specified in [releases](https://github.com/Open-EO/openeo-r-client/releases).
 
-Currently, the package complies to the major openEO API version 1.0.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won't support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.
+Currently, the package complies to the major openEO API version 1.1.x. It is also possible to manually install older versions that comply to the API version 0.4.2. This is not recommended since most - if not all - back-ends won't support this version anymore. The old versions are stated here for historic reasons. Starting with the stable API version 1.0.0 the package will be backward compatible within the semantic versioning.
 
 | openeo R client version | openEO API version | openEO API status |
 | --- | --- | --- |
-| >= v1.1.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.3.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.2.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
+| v1.1.x | [v1.1.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v1.0.x | [v1.0.x](https://openeo.org/documentation/1.0/developers/api/reference.html) | stable |
 | v0.6.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |
 | v0.5.x | [v0.4.2](https://openeo.org/documentation/0.4/developers/api/reference.html) | deprecated |
