@@ -180,8 +180,9 @@ status = function(x, ...) {
 }
 
 .find_process_by_name = function(graph, process_id) {
-  
-  if ("Graph" != class(graph)[1]) {
+  if ("Process" %in% class(graph)) {
+    graph = graph$getProcessGraph()
+  } else if ("Graph" != class(graph)[1]) {
     graph = parse_graph(graph$serialize())
   }
   

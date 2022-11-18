@@ -3,6 +3,9 @@
 ## Added
 * internal functions to serialize and load the session information like connection, process collection, etc.
 
+## Fixes
+* .find_process_by_name is no longer giving a false message when a process is passed to it
+
 # Version 1.3.0
 
 ## Added
