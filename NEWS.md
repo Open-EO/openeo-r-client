@@ -1,5 +1,8 @@
 # Version 1.3.0.9000
 
+## Added
+* internal functions to serialize and load the session information like connection, process collection, etc.
+
 # Version 1.3.0
 
 ## Added

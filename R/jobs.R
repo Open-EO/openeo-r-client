@@ -649,3 +649,29 @@ status.Job = function(x, ...) {
         print(e$message)
     })
 }
+
+serialize_session = function(file=NULL) {
+  
+  if (length(file) == 0) {
+    file = tempfile(fileext = ".RData")
+  }
+  
+  serialize_connection = active_connection()
+  serialize_process_list = openeo:::active_process_list()
+  serialize_process_collection = active_process_collection()
+  serialize_data_collection = active_data_collection()
+  
+  save(serialize_connection,serialize_process_list,serialize_process_collection,serialize_data_collection,file = file)
+  
+  return(file)
+}
+
+load_serialized_session = function(file) {
+  load(file = file)
+  
+  active_connection(con = serialize_connection)
+  openeo:::active_process_list(process_list = serialize_process_list)
+  active_process_collection(processes = serialize_process_collection)
+  active_data_collection(collection = serialize_data_collection)
+}
+
