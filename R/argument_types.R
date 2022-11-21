@@ -641,21 +641,7 @@ String = R6Class(
       if (is.call(private$value)) {
         return(paste(deparse(private$value),collapse = "\n"))
       } else if (is.character(private$value)) {
-        if (file.exists(private$value)) {
-          # if valid file path open file and attach
-          tryCatch({
-            suppressWarnings({
-              content = readChar(private$value, file.info(private$value)$size)
-              return(content)
-            })
-            
-          }, error = function(e) {
-            return(private$value)
-          })
-          
-        } else {
-          return(private$value)
-        } 
+        return(private$value)
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
       } else if (!is.environment(private$value) && is.na(private$value)) {
