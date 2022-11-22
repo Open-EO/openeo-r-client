@@ -156,6 +156,9 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
         tag = "execute_sync"
         res = con$request(tag = tag, authorized = TRUE, data = job, encodeType = "json", parsed=FALSE, ...)
         
+        if (length(format) == 0 && length(save_node) > 0) {
+          format=save_node[[1]]$parameters$format
+        }
         
         # find a suitable file suffix if it is just a tempfile
         if (length(format) > 0 && length(output_file) == 0) {
@@ -168,7 +171,7 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
             driver = ""
           }
           
-          suffix = switch(driver, netCDF=".nc",GTiff=".tif",JSON=".json",default="")
+          suffix = switch(tolower(driver), netcdf=".nc",gtiff=".tif",json=".json",default="")
           output_file = tempfile(fileext = suffix)
         }
         
@@ -650,7 +653,7 @@ status.Job = function(x, ...) {
     })
 }
 
-serialize_session = function(file=NULL) {
+serialize_session = function(file=NULL, ...) {
   
   if (length(file) == 0) {
     file = tempfile(fileext = ".RData")
@@ -661,7 +664,7 @@ serialize_session = function(file=NULL) {
   serialize_process_collection = active_process_collection()
   serialize_data_collection = active_data_collection()
   
-  save(serialize_connection,serialize_process_list,serialize_process_collection,serialize_data_collection,file = file)
+  save(serialize_connection,serialize_process_list,serialize_process_collection,serialize_data_collection, ... , file = file)
   
   return(file)
 }
