@@ -141,6 +141,8 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
       arg_names = names(formals(compute_result))
       compute_config = dots[which(names(dots) %in% arg_names)]
       
+      # TODO if empty add at least tmp file for output?
+      
       if ("options" %in% names(dots)) { # currently this is the only additional parameter for save_result
         compute_config$options = dots$options 
       }
@@ -157,8 +159,18 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
 
 # make it optional to pass the deltas in lon and lat
 .create_sample_bbox = function(e, dlon = 0.0003, dlat = 0.0003) {
+  # interprete e: bbox -> getValue -> list, geojson -> getValue -> sf, list -> getValue -> list
+  center=NULL
   if ("bounding-box" %in% class(e)) {
-    v = e$getValue()
+    e = e$getValue()
+  }
+  
+  if ("geojson" %in% class(e)) {
+    e = e$getValue()
+  }
+  
+  if (is.list(e) && !any(c("sf","sfc") %in% class(e)) && all(c("west","south","east","north") %in% names(e))) {
+    v = e
     
     if ("crs" %in% names(v) && v[["crs"]] != 4326) {
       # check if sf is installed, if not, its not supported
@@ -177,25 +189,23 @@ get_sample = function(graph, replace_aoi = TRUE, spatial_extent=NULL,execution="
       center = c(lon=mean(c(v[["west"]],v[["east"]])),
                  lat=mean(c(v[["south"]],v[["north"]])))
     }
-  } else if ("geojson" %in% class(e)) {
-    #TODO implement
-    obj = e$getValue()
-    if (any(c("sf","sfc") %in% class(obj))) {
+  } else if (any(c("sf","sfc") %in% class(e))) {
       if (!.is_package_installed("sf")) stop("Package 'sf' ist not installed to handle spatial vector data.")
       suppressWarnings({
         # take the first polygon object of the potential collection, get the center and create wgs84 coordinates  
         
-        obj = sf::st_transform(obj,4326)
+        obj = sf::st_transform(e,4326)
         center = as.numeric(unlist(sf::st_centroid(obj[[1]])))
         # always treat coordinates in lon/lat like the default in sf
         names(center) = c("lon", "lat")
       })
       
-    }
-    # create a bbox of it? only problem is filter_spatial
-  } else {
-    # TODO AnyOf? maybe not set?
   }
+  
+  if (is.null(center)) {
+    stop("Cannot extract spatial extent.")
+  }
+  
   
   # returns always a WGS84 lon/lat bbox
   sample_extent = list(west = center[["lon"]]-dlon, 
