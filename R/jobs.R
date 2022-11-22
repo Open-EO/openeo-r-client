@@ -673,5 +673,9 @@ load_serialized_session = function(file) {
   openeo:::active_process_list(process_list = serialize_process_list)
   active_process_collection(processes = serialize_process_collection)
   active_data_collection(collection = serialize_data_collection)
+  
+  if (!rlang::is_null(serialize_connection)) {
+    .fill_rstudio_connection_observer()
+  }
 }
 
