@@ -3,7 +3,11 @@
 ## Added
 * internal functions to serialize and load the session information like connection, process collection, etc.
 
+## Changed
+* compute_result now looks for a format in "save_result" if it was not stated in the call
+
 ## Fixes
+* .create_sample_bbox interpretes now correctly a serialized extent object
 * .find_process_by_name is no longer giving a false message when a process is passed to it
 
 # Version 1.3.0
