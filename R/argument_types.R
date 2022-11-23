@@ -1394,10 +1394,27 @@ BoundingBox = R6Class(
           
           
           if (crs != sf::st_crs(4326)) {
+            
             if (grepl(tolower(crs$input),pattern="^epsg:")) {
               result$crs = crs$input
             } else {
-              result$crs = crs$wkt
+              # result$crs = crs$wkt
+              wkt2 = gsub(gsub(crs$wkt,
+                                     pattern = "\\n",
+                                     replacement = ""),
+                                pattern="\\s{2,}",
+                                replacement = " ")
+              
+              # check if the projection id can be extracted, if not use wkt2
+              m = regexec(pattern="PROJCRS\\[.*ID\\[\"EPSG\",(\\d+)\\].*\\]",text=wkt2)
+              
+              if (any(m[[1]] < 0)) {
+                result$crs = wkt2
+              } else {
+                match = regmatches(wkt2,m)[[1]]
+                result$crs = as.numeric(match[length(match)])
+              }
+              
             }
           }
 
