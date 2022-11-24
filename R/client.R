@@ -184,27 +184,6 @@ OpenEOClient <- R6Class(
             }
           })
           
-          # tryCatch({
-          #   req = request(base_url = url) 
-          #   req = req_method(req=req,method="GET")
-          #   req = req_headers(.req = req,accept="application/json")
-          #   resp = req_perform(req = req)
-          #   
-          #   if (resp_status(resp) < 400) {
-          #     endpointInfo = resp_body_json(resp)
-          #     
-          #     if (all(c("api_version","production") %in% names(endpointInfo))) {
-          #       hostInfo = data.frame(api_version = endpointInfo[["api_version"]],
-          #                             production = endpointInfo[["production"]],
-          #                             url = paste0(private$host,"/")) 
-          #       
-          #       private$setHost(hostInfo$url[1])
-          #     } else {
-          #       stop("URL is not a valid endpoint. Neither wellknown-endpoint nor capabilities can be derived.")
-          #     }
-          #   }
-          # })
-          
         } else {
           # Goal: resolve the back-ends .well-known/openeo endpoint and check if the default version or 
           # specified version is suitable
@@ -383,7 +362,7 @@ OpenEOClient <- R6Class(
     user = NULL,
     password = NULL,
     host = NULL,
-    version = "1.0.0", # implemented api version
+    version = "1.1.0", # implemented api version
     general_auth_type = "bearer",
     exchange_token="access_token",
     capabilities=NULL,
