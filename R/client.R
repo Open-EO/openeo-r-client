@@ -144,6 +144,7 @@ OpenEOClient <- R6Class(
       
     },
     connect = function(url=NULL,version=NULL,exchange_token="access_token") {
+      
       tryCatch({
         if (is.null(url) && length(self$getHost()) == 0) {
           message("Note: Host-URL is missing")
@@ -154,57 +155,105 @@ OpenEOClient <- R6Class(
           private$setHost(url)
         }
         response = NULL
+        is_wellknown_endpoint = TRUE
         tryCatch({
           response = api_versions(url = self$getHost())
+        }, error = function(e) {
+          # just maybe we have a direct link, then skip all the version resolve
+          is_wellknown_endpoint = FALSE
         })
         
-        if (length(response) == 0) return(invisible(NULL))
+        if (length(response) == 0) {
+          is_wellknown_endpoint = FALSE
+        }
         
         private$exchange_token = exchange_token
-        if (!is.null(version)) {
-          # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
-          hostInfo = private$backendVersions()$versions
+        
+        if (!is_wellknown_endpoint) {
+          #TODO build the hostInfo!
+          # hostInfo -> data.frame with api_version, production, url
+          # try to resolve url directly
+          tryCatch({
+            capabilities = self$getCapabilities()
+            if (all(c("api_version","production") %in% names(capabilities))) {
+              hostInfo = data.frame(api_version = capabilities[["api_version"]],
+                                       production = capabilities[["production"]],
+                                       url = paste0(private$host,"/"))
+            } else {
+              stop("URL is not a valid endpoint. Neither wellknown-endpoint nor capabilities can be derived.")
+            }
+          })
           
-          versionLabels = sapply(hostInfo,function(x)x$api_version)
-          names(hostInfo) = versionLabels
+          # tryCatch({
+          #   req = request(base_url = url) 
+          #   req = req_method(req=req,method="GET")
+          #   req = req_headers(.req = req,accept="application/json")
+          #   resp = req_perform(req = req)
+          #   
+          #   if (resp_status(resp) < 400) {
+          #     endpointInfo = resp_body_json(resp)
+          #     
+          #     if (all(c("api_version","production") %in% names(endpointInfo))) {
+          #       hostInfo = data.frame(api_version = endpointInfo[["api_version"]],
+          #                             production = endpointInfo[["production"]],
+          #                             url = paste0(private$host,"/")) 
+          #       
+          #       private$setHost(hostInfo$url[1])
+          #     } else {
+          #       stop("URL is not a valid endpoint. Neither wellknown-endpoint nor capabilities can be derived.")
+          #     }
+          #   }
+          # })
           
-          if (!version %in% versionLabels) {
-            # print the available versions
-            message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
-                          paste(versionLabels,collapse=",")))
-            return(invisible(self))
-          } else {
-            url = hostInfo[[version]]$url
-            
-            private$setHost(url)
-          }
-          
-          hostInfo = as.data.frame(unname(hostInfo),stringsAsFactors = FALSE) # transform the list explicitly into a data.frame
         } else {
-          
-          if ("versions" %in% names(private$backendVersions())) {
-            hostInfo=as.data.frame(private$backendVersions())
+          # Goal: resolve the back-ends .well-known/openeo endpoint and check if the default version or 
+          # specified version is suitable
+          if (!is.null(version)) {
+            # url is not specific, then resolve /.well-known/openeo and check if the version is allowed
+            hostInfo = private$backendVersions()$versions
             
+            versionLabels = sapply(hostInfo,function(x)x$api_version)
+            names(hostInfo) = versionLabels
             
-            for (i in 1:ncol(hostInfo)) {
-              hostInfo[,i] = unlist(hostInfo[,i])
+            if (!version %in% versionLabels) {
+              # print the available versions
+              message(paste("Version",version,"is not provided by the back-end. Please choose one of the following",
+                            paste(versionLabels,collapse=",")))
+              return(invisible(self))
+            } else {
+              url = hostInfo[[version]]$url
+              
+              private$setHost(url)
             }
             
-            hostInfo$url = sapply(hostInfo$url, function(url) {
-              #modify url (strip trailing slashes)
-              if (endsWith(url,"/")) {
-                return(substr(url,1,nchar(url)-1))
+            hostInfo = as.data.frame(unname(hostInfo),stringsAsFactors = FALSE) # transform the list explicitly into a data.frame
+          } else {
+            
+            if ("versions" %in% names(private$backendVersions())) {
+              hostInfo=as.data.frame(private$backendVersions())
+              
+              
+              for (i in 1:ncol(hostInfo)) {
+                hostInfo[,i] = unlist(hostInfo[,i])
               }
               
-              return(url)
-            })
-            
-            # select highest API version that is production ready. if none is production
-            # ready, then select highest version
-            hostInfo = .version_sort(hostInfo)
-            private$setHost(hostInfo[1,"url"])
+              # select highest API version that is production ready. if none is production
+              # ready, then select highest version
+              hostInfo = .version_sort(hostInfo)
+              private$setHost(hostInfo[1,"url"])
+            }
           }
         }
+        
+        hostInfo$url = sapply(hostInfo$url, function(url) {
+          #modify url (strip trailing slashes) to ensure a match for productivity check
+          if (endsWith(url,"/")) {
+            return(substr(url,1,nchar(url)-1))
+          }
+          
+          return(url)
+        })
+        
         
         # set active connection
         active_connection(con = self)
@@ -849,7 +898,7 @@ client_version = function() {
                                   )
                                 )
                               },
-                              connectCode = paste0("library(openeo)\n\nconnect(host=\"",con$getHost(),"\")"),
+                              connectCode = paste0("library(openeo)\n\nconnect(host=\"",paste0(con$getHost(),"/"),"\")"),
                               disconnect = function() {
                                 if (is_logged_in()) logout()
                                 
