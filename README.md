@@ -145,10 +145,14 @@ library(help="openeo")
 If you are interested in more information, you can have a look at some [example scripts](https://github.com/Open-EO/openeo-r-client/tree/master/examples) that were created during the Proof-of-Concept phase to get a feeling on how to use the package. Some of the scripts are outdated and will be replaced in the future.
 
 
-# Funding
+# Contributions
 The authors acknowledge the financial support for the development of this package during the H2020 project "openEO" (Oct 2017 to Sept 2020) by the European Union, funded by call EO-2-2017: EO Big Data Shift, under grant number 776242. We also acknowledge the financial support received from ESA for the project "R4openEO" (Sept 2021 to Sept 2022). 
 
-Furthermore, openEO was improved and operationalized by ESA funding in the project "openEO Platform" (Sept 2020 to Sept 2022).
+This package received major contributions from the following organizations:
+
+[<img src="https://www.eftas.de/images/branding.png" alt="EFTAS logo" title="EFTAS" height="50">](https://www.eftas.de) &nbsp;
+[<img src="https://www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg" alt="WWU Münster logo" title="WWU Münster" height="50">](https://www.uni-muenster.de/) &nbsp;
+[<img src="https://www.wur.nl/upload/588ff8ef-9c0d-4c68-a5d3-5a4c5a9cde6b_WUR_RGB_standard_2021-site.svg" alt="Wageningen University logo" title="Wageningen University" height="50">](https://www.wur.nl)
 
 # Links
 * [openEO.org](https://openeo.org/)
