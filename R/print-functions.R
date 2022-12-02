@@ -653,3 +653,25 @@ print.UdfRuntime = function(x, ...) {
     
     print.default(x)
 }
+
+#' @export
+print.ProviderList = function(x, ...) {
+  cat("OIDC Provider:\n")
+  cat(paste("-",names(x)),sep="\n")
+}
+
+#' @export
+print.Provider = function(x, ...) {
+  cat(x$id,"\n")
+  cat("Title:",x$title,"\n")
+  cat("Description:",x$description,"\n")
+  cat("Issuer:",x$issuer,"\n")
+  cat("Scope:",paste(x$scopes,collapse=" "),"\n")
+  
+  if ("default_clients" %in% names(x) && length(x$default_clients) > 0) {
+    cat("\n")
+    cat("Default client configurations provided.")
+  } else {
+    message("The back-end provider did not specify default clients. Use a back-end specific configuration on login! For more information contact the openEO back-end provider.")
+  }
+}

@@ -277,16 +277,7 @@ OpenEOClient <- R6Class(
           private$loginBasic(user=user, password = password)
         }
         else {
-          if (is.null(provider)) {
-            providers = list_oidc_providers()
-            
-            # if it happens to be that the oidc provider list is empty then use a more meaningful error message
-            if (length(providers) == 0) {
-              stop("OIDC provider list from 'list_oidc_providers()' is empty. Please contact the back-end provider.")
-              # 
-            }
-            provider = providers[[1]]
-          }
+          # select a default provider during login for OIDC
           private$loginOIDC(provider = provider, config = config)
         }
         
@@ -378,6 +369,8 @@ OpenEOClient <- R6Class(
     loginOIDC = function(provider = NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
+          
+          
             # old implementation
             # probably fetch resolve the potential string into a provider here
             provider = .get_oidc_provider(provider)
@@ -388,6 +381,8 @@ OpenEOClient <- R6Class(
             
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
+            
+            browser()
             
             if (length(config) > 0)  {
               if (!is.list(config))  {

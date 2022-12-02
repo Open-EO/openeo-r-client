@@ -4,9 +4,12 @@
 * internal functions to serialize and load the session information like connection, process collection, etc.
 
 ## Changed
+* argument bounding box tries to extract the EPSG code it EPSGCode was provided as WKT2
 * compute_result now looks for a format in "save_result" if it was not stated in the call
 
 ## Fixes
+* fixed automated selection of a suitable OIDC provider on login [#142](https://github.com/Open-EO/openeo-r-client/issues/142), where the first OIDC in the list was chosen. Now it checks for the first OIDC provider with `default_clients` defined.
+* fixed tan issue where it was not possible to connect to an openEO back-end with a dedicated link (also for reconnect in the connection contract)
 * .create_sample_bbox interpretes now correctly a serialized extent object
 * .find_process_by_name is no longer giving a false message when a process is passed to it
 
