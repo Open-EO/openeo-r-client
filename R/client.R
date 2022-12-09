@@ -382,8 +382,6 @@ OpenEOClient <- R6Class(
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
             
-            browser()
-            
             if (length(config) > 0)  {
               if (!is.list(config))  {
                 stop("parameter 'config' is not a named list")

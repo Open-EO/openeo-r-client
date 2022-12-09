@@ -736,13 +736,12 @@ OutputFormat = R6Class(
   ),
   private = list(
     typeCheck = function() {
-      if (length(private$value) > 1 && !is.environment(private$value) && !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
-      
-      if (!is.na(private$value) && !is.character(private$value)) {
-        
-        if ("FileFormat" %in% class(private$value)) {
-          # what to do?
-        } else {
+      if (length(private$value) > 1 && 
+          !is.environment(private$value) && 
+          !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
+    
+      if (!"FileFormat" %in% class(private$value)) {
+        if (!is.na(private$value) && !is.character(private$value)) {
           suppressWarnings({
             coerced = as.character(private$value)
           })
@@ -826,7 +825,10 @@ CollectionId = R6Class(
               length(coerced) == 0) stop(paste0("CollectionId obtained from service is not valid, please contact the openEO service support."))
         }
       } else {
-        if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) stop(paste0("The provided value does not match the required pattern: ",private$value))
+        if (length(private$schema$pattern) > 0) {
+          if (!grepl(pattern=private$schema$pattern,x=private$value,perl=TRUE)) 
+            stop(paste0("The provided value does not match the required pattern: ",private$value))
+        }
       }
       
       return(invisible(NULL))
