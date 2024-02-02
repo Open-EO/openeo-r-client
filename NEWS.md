@@ -11,7 +11,8 @@
 * CollectionId argument now checks if a string pattern is available
 * OutputFormat argument checks the "FileFormat" class separately to avoid warnings
 * fixed automated selection of a suitable OIDC provider on login [#142](https://github.com/Open-EO/openeo-r-client/issues/142), where the first OIDC in the list was chosen. Now it checks for the first OIDC provider with `default_clients` defined.
-* fixed tan issue where it was not possible to connect to an openEO back-end with a dedicated link (also for reconnect in the connection contract)
+* fixed an issue where it was not possible to connect to an openEO back-end with a dedicated link (also for reconnect in the connection contract)
+* fixed warning messages shown on `describe_collection()` using an object of class `Collection` from `list_collection()` [#145](https://github.com/Open-EO/openeo-r-client/issues/145)
 * .create_sample_bbox interpretes now correctly a serialized extent object
 * .find_process_by_name is no longer giving a false message when a process is passed to it
 
