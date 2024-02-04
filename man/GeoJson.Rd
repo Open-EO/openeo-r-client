@@ -13,7 +13,7 @@ from package 'sf'. The current implementation follows the data representation of
 XY (e.g. if CRS84 is used then lon/lat is the default order).
 }
 \details{
-As GeoJSON is defined in \url{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
+As GeoJSON is defined in \href{https://datatracker.ietf.org/doc/html/rfc7946}{RFC7946} the coordinate reference system is
 \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 }
 \seealso{
