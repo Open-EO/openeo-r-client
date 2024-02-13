@@ -2,6 +2,7 @@
 
 ## Added
 * internal functions to serialize and load the session information like connection, process collection, etc.
+* Support for the OpenID Connect Client Credentials flow
 
 ## Changed
 * changed OIDC provider and default client selection

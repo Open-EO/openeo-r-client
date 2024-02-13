@@ -168,6 +168,7 @@ BasicAuth <- R6Class(
 #' \itemize{
 #'   \item{authorization_code}
 #'   \item{authorization_code+pkce}
+#'   \item{urn:ietf:params:oauth:grant-type:device_code}
 #'   \item{urn:ietf:params:oauth:grant-type:device_code+pkce}
 #' }
 #' 
@@ -610,6 +611,45 @@ OIDCAuthCodeFlow <- R6Class(
       
       if (!any(c("authorization_code") %in% grant_types)) {
         stop("Authorization code flow is not supported by the authentication provider")
+      }
+      invisible(TRUE)
+    }
+  )
+)
+
+# [OIDCClientCredentialsFlow] ----
+OIDCClientCredentialsFlow <- R6Class(
+  "OIDCClientCredentialsFlow",
+  inherit = AbstractOIDCAuthentication,
+  # public ====
+  public = list(
+    # functions ####
+    login = function() {
+      
+      client <- oauth_client(
+        id = private$client_id,
+        secret = private$secret,
+        token_url = private$endpoints$token_endpoint,
+        name = "openeo-r-oidc-auth"
+      )
+
+      private$auth = oauth_flow_client_credentials(
+                        client = client,
+                        scope = paste0(private$scopes, collapse = " ")
+                      )
+
+      invisible(self)
+    }
+  ),
+  # private ====
+  private = list(
+    # attributes ####
+    grant_type = "client_credentials", # not used internally by httr2, but maybe useful in openeo
+    
+    # functions ####
+    isGrantTypeSupported = function(grant_types) {
+      if (!"client_credentials" %in% grant_types) {
+        stop("Client Credentials flow is not supported by the authentication provider")
       }
       invisible(TRUE)
     }
