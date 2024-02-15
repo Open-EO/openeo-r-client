@@ -528,7 +528,7 @@ OpenEOClient <- R6Class(
       response = req_perform(req)
       
       if (is.debugging()) {
-        print(response)
+        print_response(response)
       }
 
       if (response$status_code < 400) {
@@ -575,7 +575,7 @@ OpenEOClient <- R6Class(
       # response = DELETE(url=url, config = header, ...)
       
       if (is.debugging()) {
-        print(response)
+        print_response(response)
       }
       
       # message = content(response)
@@ -629,7 +629,7 @@ OpenEOClient <- R6Class(
       response = req_perform(req)      
 
       if (is.debugging()) {
-        print(response)
+        print_response(response)
       }
       
       if (response$status_code < 400) {
@@ -687,7 +687,7 @@ OpenEOClient <- R6Class(
       response = req_perform(req)  
       
       if (is.debugging()) {
-        print(response)
+        print_response(response)
       }
       
       if (response$status_code < 400) {
@@ -732,7 +732,7 @@ OpenEOClient <- R6Class(
       response = req_perform(req)
       
       if (is.debugging()) {
-        print(response)
+        print_response(response)
       }
       
       if (response$status_code < 400) {

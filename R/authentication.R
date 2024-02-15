@@ -89,7 +89,7 @@ BasicAuth <- R6Class(
       res = req_perform(req)
 
       if (is.debugging()) {
-        print(res)
+        print_response(res)
       }
 
       if (res$status_code == 200) {
@@ -662,13 +662,31 @@ OIDCAuthCodeFlow <- R6Class(
 }
 
 .get_client = function(clients, grant, config) {
+  if (length(clients) == 0) return(NULL)
+  
   supported = which(sapply(clients, function(p) grant %in% p$grant_types))
-  if (length(supported) > 0) {
-    config$client_id = clients[[supported[[1]]]]$id
-    config$grant_type = grant
-    return(config)
+  
+  if (length(supported) == 0) return(NULL)
+  
+  if (length(supported) > 1) {
+    # screen the ids for containment of something with openeo before selecting the first
+    client_ids = sapply(clients[supported], function(c)c$id)
+    openeo_named = which(grepl(x = tolower(client_ids),pattern = "openeo"))
+    
+    if (length(openeo_named) == 1) {
+      supported = supported[openeo_named]
+    }
   }
-  else {
-    return (NULL)
+  
+  if (length(supported) > 1) {
+    message("Multiple default clients detected for this authentication provider. You might need to login with a custom configuration for `client_id`.")
   }
+  
+  config$client_id = clients[[supported[[1]]]]$id
+  config$grant_type = grant
+  return(config)
+}
+
+.get_default_client_ids = function(provider) {
+  client_ids = sapply(provider$default_clients, function(x) x$id)
 }

@@ -670,7 +670,11 @@ print.Provider = function(x, ...) {
   
   if ("default_clients" %in% names(x) && length(x$default_clients) > 0) {
     cat("\n")
-    cat("Default client configurations provided.")
+    cat("Default client configurations provided.\n")
+    client_id = .get_default_client_ids(x)
+    if (length(client_id > 1)) {
+      message(paste0("Multiple default clients detected for this authentication provider. You might need to login with a custom configuration for `client_id` with one of the following ids: ",paste0(client_id,collapse=", ")))
+    }
   } else {
     message("The back-end provider did not specify default clients. Use a back-end specific configuration on login! For more information contact the openEO back-end provider.")
   }

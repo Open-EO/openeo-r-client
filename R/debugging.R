@@ -23,33 +23,33 @@ is.debugging = function() {
     return(get(x = "DEBUG_MODE", envir = pkgEnvironment))
 }
 
-print.response = function(x) {
+print_response = function(x) {
     print(x$request)
-    
+
     cat("\n*** Response ***", paste("Status:", x$status_code), "Headers:", sep = "\n")
-    
+
     headers = as.data.frame(cbind(resp_headers(x)))
     names(headers) = NULL
-    
+
     print(headers)
-    
+
     if (!is.null(headers["content-length", ]) && unlist(headers["content-length", ]) != "0") {
         cat("\nBody:", sep = "\n")
-        
+
         if ("content-disposition" %in% rownames(headers)) {
             cat(paste("File attachment:", unlist(strsplit(x = unlist(headers["content-disposition", ]), split = "filename=")))[2], sep = "\n")
         }
-        
+
         if ("content-type" %in% rownames(headers) && unlist(headers["content-type", ]) == "application/json") {
             print(jsonlite::toJSON(resp_body_json(x), auto_unbox = TRUE, pretty = TRUE, digits = NA))
         } else {
             print("Other formats not yet implemented.")
         }
-        
+
     }
 }
 
-print.request = function(x) {
+print_request = function(x) {
     call = paste(x$method, x$url)
     headers = x$headers
     if (!is.null(x$options$httpauth) && x$options$httpauth == 1 && !is.null(x$options$userpwd)) {
@@ -57,10 +57,10 @@ print.request = function(x) {
     }
     headers = as.data.frame(headers)
     names(headers) = NULL
-    
+
     cat("*** Request ***", call, "Headers:", sep = "\n")
     print(headers)
-    
+
     if (!is.null(x$options$postfields)) {
         cat("Body:", sep = "\n")
         print(prettify(rawToChar(x$options$postfields)))
