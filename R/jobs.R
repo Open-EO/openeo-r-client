@@ -660,24 +660,19 @@ serialize_session = function(file=NULL, ...) {
   }
   
   serialize_connection = active_connection()
-  serialize_process_list = openeo:::active_process_list()
+  serialize_process_list = active_process_list()
   serialize_process_collection = active_process_collection()
   serialize_data_collection = active_data_collection()
   
-  save(serialize_connection,serialize_process_list,serialize_process_collection,serialize_data_collection, ... , file = file)
+  save(list=names(pkgEnvironment),envir=pkgEnvironment,file = file)
   
   return(file)
 }
 
 load_serialized_session = function(file) {
-  load(file = file)
+  load(file = file, envir = pkgEnvironment)
   
-  active_connection(con = serialize_connection)
-  openeo:::active_process_list(process_list = serialize_process_list)
-  active_process_collection(processes = serialize_process_collection)
-  active_data_collection(collection = serialize_data_collection)
-  
-  if (!rlang::is_null(serialize_connection)) {
+  if (!rlang::is_null(active_connection())) {
     .fill_rstudio_connection_observer()
   }
 }
