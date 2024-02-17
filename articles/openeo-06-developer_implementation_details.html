@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
 
       
 
-      </header><script src="openeo-06-developer_implementation_details_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Developer Implementation Details</h1>
@@ -110,35 +110,95 @@
 
     
     
-<p>In this guide selected core mechanisms of the openEO package are described. It is targeted towards interested developers and it is highly recommended to dive into the source code, while reading through this guide. The explanations here are abstracted from the code and shall guide new developers on the concepts and routines of this package.</p>
+<p>In this guide selected core mechanisms of the openEO package are
+described. It is targeted towards interested developers and it is highly
+recommended to dive into the source code, while reading through this
+guide. The explanations here are abstracted from the code and shall
+guide new developers on the concepts and routines of this package.</p>
 <div class="section level2">
 <h2 id="process-graph-building">Process Graph Building<a class="anchor" aria-label="anchor" href="#process-graph-building"></a>
 </h2>
-<p>The <code>ProcessCollection</code> class represents the toolbox for creating a process graph in openEO. In contrast to the S3 class <code>ProcessList</code> which is created in <code><a href="../reference/list_processes.html">list_processes()</a></code> from the returned metadata of the back-end, this <code>ProcessCollection</code> interprets the meta data of the processes, e.g. the name and the available parameter with their types and names and creates builder functions upon this information like <code>p$load_collection()</code>. The builder functions themselves create the <code>ProcessNode</code> objects based on the used processes and the passed values for the arguments.</p>
-<p>Note: we might reuse the <code>ProcessCollection</code> at some points, therefore it needed to be an R6 class, otherwise we copy the potentially list based object multiple times, which might resolves into memory issues at some point.</p>
-<p>The classes related to the process graph like <code>ProcessNode</code> and <code>Process</code> are contained in <em>process_graph_building.R</em>. The argument and parameter related classes are in <em>argument_types.R</em>. And lastly the <code>ProcessCollection</code> is located in <em>predefined_processes.R</em>.</p>
+<p>The <code>ProcessCollection</code> class represents the toolbox for
+creating a process graph in openEO. In contrast to the S3 class
+<code>ProcessList</code> which is created in
+<code><a href="../reference/list_processes.html">list_processes()</a></code> from the returned metadata of the
+back-end, this <code>ProcessCollection</code> interprets the meta data
+of the processes, e.g. the name and the available parameter with their
+types and names and creates builder functions upon this information like
+<code>p$load_collection()</code>. The builder functions themselves
+create the <code>ProcessNode</code> objects based on the used processes
+and the passed values for the arguments.</p>
+<p>Note: we might reuse the <code>ProcessCollection</code> at some
+points, therefore it needed to be an R6 class, otherwise we copy the
+potentially list based object multiple times, which might resolves into
+memory issues at some point.</p>
+<p>The classes related to the process graph like
+<code>ProcessNode</code> and <code>Process</code> are contained in
+<em>process_graph_building.R</em>. The argument and parameter related
+classes are in <em>argument_types.R</em>. And lastly the
+<code>ProcessCollection</code> is located in
+<em>predefined_processes.R</em>.</p>
 <div class="section level3">
 <h3 id="processcollection">
 <code>ProcessCollection</code><a class="anchor" aria-label="anchor" href="#processcollection"></a>
 </h3>
-<p>The first important detail is that the R6 object is unlocked, this means that R6 object can be changed at runtime. This is required because the builder functions are added dynamically during the initialization of the R6 object.</p>
+<p>The first important detail is that the R6 object is unlocked, this
+means that R6 object can be changed at runtime. This is required because
+the builder functions are added dynamically during the initialization of
+the R6 object.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ProcessCollection</span> <span class="op">=</span> <span class="kw">R6Class</span><span class="op">(</span></span>
 <span>    <span class="st">"ProcessCollection"</span>,</span>
 <span>    lock_objects <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    <span class="va">...</span><span class="op">)</span></span></code></pre></div>
-<p>Now, during the initialization (<code>ProcessCollection$initialize()</code>) of the <code>ProcessCollection</code>, the <code>ProcessList</code> is translated into a list of <code>Process</code> objects (1) and based on that the builder functions are derived (2).</p>
+<p>Now, during the initialization
+(<code>ProcessCollection$initialize()</code>) of the
+<code>ProcessCollection</code>, the <code>ProcessList</code> is
+translated into a list of <code>Process</code> objects (1) and based on
+that the builder functions are derived (2).</p>
 <ol style="list-style-type: decimal">
-<li>This operation is done within the private function <code>private$createListOfProcesses()</code> where the main work is done by the utility function <code>processFromJson()</code>
+<li>This operation is done within the private function
+<code>private$createListOfProcesses()</code> where the main work is done
+by the utility function <code>processFromJson()</code>
 </li>
-<li>In R a function is composed of its formals and the function body. The function formals can be accessed by <code>Process$getFormals()</code>. This will retrieve the parameter names and the default values from the meta data. For the function body we create a <code>ProcessNode</code> from the respective <code>Process</code> via a deep copy. Deep copy means that a new object is created, but all the fields are copied, especially nested <code>Argument</code> objects also need to be copied, otherwise two instances of the same process would share their arguments. Finally this process node will receive the values of the builder function as arguments, once the function is invoked. During the creation of those builder function <code>index</code> was used in the for-loop. To work properly we need to replace the variable with its real value, otherwise we cannot access the correct process, because either <code>index</code> is unknown or it is the wrong variable.</li>
+<li>In R a function is composed of its formals and the function body.
+The function formals can be accessed by
+<code>Process$getFormals()</code>. This will retrieve the parameter
+names and the default values from the meta data. For the function body
+we create a <code>ProcessNode</code> from the respective
+<code>Process</code> via a deep copy. Deep copy means that a new object
+is created, but all the fields are copied, especially nested
+<code>Argument</code> objects also need to be copied, otherwise two
+instances of the same process would share their arguments. Finally this
+process node will receive the values of the builder function as
+arguments, once the function is invoked. During the creation of those
+builder function <code>index</code> was used in the for-loop. To work
+properly we need to replace the variable with its real value, otherwise
+we cannot access the correct process, because either <code>index</code>
+is unknown or it is the wrong variable.</li>
 </ol>
 </div>
 <div class="section level3">
 <h3 id="processfromjson-and-parameterfromjson">
 <code>processFromJson</code> and <code>parameterFromJson</code><a class="anchor" aria-label="anchor" href="#processfromjson-and-parameterfromjson"></a>
 </h3>
-<p><code>processFromJson</code> was used to create a <code>Process</code> object from the JSON meta data - actually, the JSON meta data is already transformed into an R list object but this will always be referred as the JSON meta data as it always will be the response of the back-end. The function itself is won’t do much, but feeding the correct bits of the JSON meta data to the <code>Process</code> constructor. As part of the constructor parameter, a list of <code>Argument</code> objects need to be passed on. In the conceptual vision of the package <em>parameter</em> is the descriptive part and <em>argument</em> is essentially a parameter for which can hold a <em>value</em>. <code>parameterFromJson</code> will perform the translation from the JSON parameter meta data into a <code>Argument</code> object. The translation is done by comparing the type and schema of the meta data with the implemented <code>Argument</code> representation. Therefore each implemented <code>Argument</code> gets its unique schema and type assigned upon creation.</p>
+<p><code>processFromJson</code> was used to create a
+<code>Process</code> object from the JSON meta data - actually, the JSON
+meta data is already transformed into an R list object but this will
+always be referred as the JSON meta data as it always will be the
+response of the back-end. The function itself is won’t do much, but
+feeding the correct bits of the JSON meta data to the
+<code>Process</code> constructor. As part of the constructor parameter,
+a list of <code>Argument</code> objects need to be passed on. In the
+conceptual vision of the package <em>parameter</em> is the descriptive
+part and <em>argument</em> is essentially a parameter for which can hold
+a <em>value</em>. <code>parameterFromJson</code> will perform the
+translation from the JSON parameter meta data into a
+<code>Argument</code> object. The translation is done by comparing the
+type and schema of the meta data with the implemented
+<code>Argument</code> representation. Therefore each implemented
+<code>Argument</code> gets its unique schema and type assigned upon
+creation.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">URI</span> <span class="op">=</span> <span class="kw">R6Class</span><span class="op">(</span></span>
 <span>  <span class="st">"uri"</span>,</span>
@@ -152,48 +212,132 @@
 <span>      <span class="va">private</span><span class="op">$</span><span class="va">schema</span><span class="op">$</span><span class="va">subtype</span> <span class="op">=</span> <span class="st">"uri"</span></span>
 <span>    <span class="op">}</span></span>
 <span>  <span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
-<p>The parameter meta data matching is handled in <code>findParameterGenerator()</code> and after a suitable <code>Argument</code> was found additional restrictive information are transferred from the meta data to the <code>Argument</code>, e.g. not-null constraints, patterns or enumerations, default values etc.</p>
-<p>To complete this section <code>findParameterGenerator()</code> creates a single instance of all registered <code>Argument</code> objects and invokes <code>Parameter$matchesSchema()</code> on each object with the given schema. If none matches then a ominous <code>Argument</code> object will be created which has not many constraints by itself. If more than one match is found, then the first one in the list is chosen, otherwise the one match is selected as suitable <code>Argument</code>.</p>
+<p>The parameter meta data matching is handled in
+<code>findParameterGenerator()</code> and after a suitable
+<code>Argument</code> was found additional restrictive information are
+transferred from the meta data to the <code>Argument</code>,
+e.g. not-null constraints, patterns or enumerations, default values
+etc.</p>
+<p>To complete this section <code>findParameterGenerator()</code>
+creates a single instance of all registered <code>Argument</code>
+objects and invokes <code>Parameter$matchesSchema()</code> on each
+object with the given schema. If none matches then a ominous
+<code>Argument</code> object will be created which has not many
+constraints by itself. If more than one match is found, then the first
+one in the list is chosen, otherwise the one match is selected as
+suitable <code>Argument</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="inheritance">Inheritance<a class="anchor" aria-label="anchor" href="#inheritance"></a>
 </h3>
-<p>During the development of this package several functions were called again and again, especially <code>validate()</code> and <code><a href="https://rdrr.io/r/base/serialize.html" class="external-link">serialize()</a></code> on the <code>Argument</code> object. In general those functions work very similar, so R6 inheritance was used to unify this behavior, but for each type <code>private$typeCheck()</code> and <code>private$typeSerialization()</code> is implemented according to the specific needs of the argument and respectively called by their public counter part.</p>
-<p>Similar considerations were made between <code>Process</code> and <code>ProcessNode</code>. Essentially the node is a process, but carries a unique id that is used in a process graph.</p>
+<p>During the development of this package several functions were called
+again and again, especially <code>validate()</code> and
+<code><a href="https://rdrr.io/r/base/serialize.html" class="external-link">serialize()</a></code> on the <code>Argument</code> object. In general
+those functions work very similar, so R6 inheritance was used to unify
+this behavior, but for each type <code>private$typeCheck()</code> and
+<code>private$typeSerialization()</code> is implemented according to the
+specific needs of the argument and respectively called by their public
+counter part.</p>
+<p>Similar considerations were made between <code>Process</code> and
+<code>ProcessNode</code>. Essentially the node is a process, but carries
+a unique id that is used in a process graph.</p>
 </div>
 <div class="section level3">
 <h3 id="package-environment-variables">Package environment variables<a class="anchor" aria-label="anchor" href="#package-environment-variables"></a>
 </h3>
-<p>At some point it appeared tedious to pass the active <code>OpenEOConnection</code> always to each function which interacts with the back-end. So the currently active components of an openeo session are stored in an internal package environment (<code>openeo:::pkgEnvironment</code>). This environment shall not be accessed by user, but <code><a href="../reference/active_connection.html">active_connection()</a></code>, <code><a href="../reference/list_collections.html">active_data_collection()</a></code> or <code><a href="../reference/processes.html">active_process_collection()</a></code> were implemented to access or set those environment variables.</p>
+<p>At some point it appeared tedious to pass the active
+<code>OpenEOConnection</code> always to each function which interacts
+with the back-end. So the currently active components of an openeo
+session are stored in an internal package environment
+(<code>openeo:::pkgEnvironment</code>). This environment shall not be
+accessed by user, but <code><a href="../reference/active_connection.html">active_connection()</a></code>,
+<code><a href="../reference/list_collections.html">active_data_collection()</a></code> or
+<code><a href="../reference/processes.html">active_process_collection()</a></code> were implemented to access or
+set those environment variables.</p>
 </div>
 <div class="section level3">
 <h3 id="function-coercion">function coercion<a class="anchor" aria-label="anchor" href="#function-coercion"></a>
 </h3>
-<p>Another interesting and somewhat complex aspect is the coercion from an R function into an openEO process graph. This job is done by <code>.function_to_graph()</code> (in <em>process_graph_building.R</em>) and it is called in the respective coerce function <code><a href="../reference/as.Graph.html">as.Graph.function()</a></code>. The routine would look like this.</p>
+<p>Another interesting and somewhat complex aspect is the coercion from
+an R function into an openEO process graph. This job is done by
+<code>.function_to_graph()</code> (in <em>process_graph_building.R</em>)
+and it is called in the respective coerce function
+<code><a href="../reference/as.Graph.html">as.Graph.function()</a></code>. The routine would look like this.</p>
 <ol style="list-style-type: decimal">
-<li>extract the functions formals which are the variables to be used</li>
-<li>create variables with <code><a href="../reference/create_variable.html">create_variable()</a></code> for each parameter of the function</li>
-<li>run <code><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call()</a></code> with the function and the parameters (which are all of type <code>ProcessGraphParameter</code>)</li>
-<li>the function evaluation will return a <code>ProcessNode</code> which will be the final node</li>
+<li>extract the functions formals which are the variables to be
+used</li>
+<li>create variables with <code><a href="../reference/create_variable.html">create_variable()</a></code> for each
+parameter of the function</li>
+<li>run <code><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call()</a></code> with the function and the parameters
+(which are all of type <code>ProcessGraphParameter</code>)</li>
+<li>the function evaluation will return a <code>ProcessNode</code> which
+will be the final node</li>
 <li>create a graph from the final node</li>
 </ol>
-<p>When a function is passed as <em>reducer</em> or <em>aggregation</em> function it is basically the same procedure. But <code>ProcessGraphArgument</code> in this case offers already a set of process graph parameters which will be used instead of <code><a href="../reference/create_variable.html">create_variable()</a></code>. If the formals from the function and the amount of parameters from the <code>ProcessGraphArgument</code> do not match, the coercion will fail.</p>
+<p>When a function is passed as <em>reducer</em> or <em>aggregation</em>
+function it is basically the same procedure. But
+<code>ProcessGraphArgument</code> in this case offers already a set of
+process graph parameters which will be used instead of
+<code><a href="../reference/create_variable.html">create_variable()</a></code>. If the formals from the function and the
+amount of parameters from the <code>ProcessGraphArgument</code> do not
+match, the coercion will fail.</p>
 </div>
 <div class="section level3">
 <h3 id="html-widgets">HTML widgets<a class="anchor" aria-label="anchor" href="#html-widgets"></a>
 </h3>
-<p>In some contexts objects are rendered as HTML documents. For example in a Jupyter notebook environment, a RMarkdown or a RNotebook the meta data objects of collections, processes and their graphs are rendered in HTML. The rendering in HTML needs an internet connection, because java script files and styles are accessed from a content delivery system. The openEO ecosystem already provides those components because the <a href="https://editor.openeo.org/" class="external-link">openEO Webeditor</a> already uses them. They are distributed at <a href="https://www.npmjs.com/package/@openeo/vue-components" class="external-link">npm vue-components</a>.</p>
-<p>The visualization is controlled via the <code>print</code> function (<em>print-functions.R</em>), which checks if the current session is in an HTML environment and if so the internal <code>print_html()</code> is invoked instead of printing to console.</p>
+<p>In some contexts objects are rendered as HTML documents. For example
+in a Jupyter notebook environment, a RMarkdown or a RNotebook the meta
+data objects of collections, processes and their graphs are rendered in
+HTML. The rendering in HTML needs an internet connection, because java
+script files and styles are accessed from a content delivery system. The
+openEO ecosystem already provides those components because the <a href="https://editor.openeo.org/" class="external-link">openEO Webeditor</a> already uses
+them. They are distributed at <a href="https://www.npmjs.com/package/@openeo/vue-components" class="external-link">npm
+vue-components</a>.</p>
+<p>The visualization is controlled via the <code>print</code> function
+(<em>print-functions.R</em>), which checks if the current session is in
+an HTML environment and if so the internal <code>print_html()</code> is
+invoked instead of printing to console.</p>
 </div>
 <div class="section level3">
 <h3 id="authentication">Authentication<a class="anchor" aria-label="anchor" href="#authentication"></a>
 </h3>
-<p>The authentication changed over the years a lot. <em>Basic Authentication</em> was the initial mechanism, then there were various <em>Open ID Connect</em> mechanisms, which are all based on the <em>OAuth2.0</em> authentication method. For legacy reasons all the different approaches are kept and are available in <em>authentication.R</em>. For the authentication classes inheritance is used again to provide the same function calls from <code>OpenEOConnection</code>. The main points are that an <em>access_token</em> needs to be provided for authentication and that a <code><a href="../reference/login.html">login()</a></code> and a <code><a href="../reference/logout.html">logout()</a></code> is provided. Depending on the access token grants offered by the back-ends identity provider different procedures have to be performed, which might require user interaction. For example the <code>OIDCAuthCodeFlow</code> spawns a local webservice and waits for a call from the local internet browser based on a redirect that has to be stated at the Authentication Provider. Other flows like <code>OIDCAuthDeviceCodeFlow</code> poll a certain endpoint at the Authentication Provider with a device code until the user has entered the code and gave the consent to the personal data. The different flows have been implemented by the <code>httr2</code> package, which is used to retrieve the <code>access_token</code> which is required for authorized services at the back-end.</p>
+<p>The authentication changed over the years a lot. <em>Basic
+Authentication</em> was the initial mechanism, then there were various
+<em>Open ID Connect</em> mechanisms, which are all based on the
+<em>OAuth2.0</em> authentication method. For legacy reasons all the
+different approaches are kept and are available in
+<em>authentication.R</em>. For the authentication classes inheritance is
+used again to provide the same function calls from
+<code>OpenEOConnection</code>. The main points are that an
+<em>access_token</em> needs to be provided for authentication and that a
+<code><a href="../reference/login.html">login()</a></code> and a <code><a href="../reference/logout.html">logout()</a></code> is provided. Depending
+on the access token grants offered by the back-ends identity provider
+different procedures have to be performed, which might require user
+interaction. For example the <code>OIDCAuthCodeFlow</code> spawns a
+local webservice and waits for a call from the local internet browser
+based on a redirect that has to be stated at the Authentication
+Provider. Other flows like <code>OIDCAuthDeviceCodeFlow</code> poll a
+certain endpoint at the Authentication Provider with a device code until
+the user has entered the code and gave the consent to the personal data.
+The different flows have been implemented by the <code>httr2</code>
+package, which is used to retrieve the <code>access_token</code> which
+is required for authorized services at the back-end.</p>
 </div>
 <div class="section level3">
 <h3 id="rstudio-connection-contract">RStudio Connection Contract<a class="anchor" aria-label="anchor" href="#rstudio-connection-contract"></a>
 </h3>
-<p>When using RStudio an additional feature was implemented that allows to inspect the available data sources of a connected back-end by using the RStudio’s <a href="https://solutions.rstudio.com/db/advanced/contract/" class="external-link">Connection Contract</a> to populate the <code>Connections</code> Pane. The connection contract is implemented in <code>.fill_rstudio_connection_observer()</code> in <em>client.R</em>. After connecting the contracts <code>listObjects</code> function is called which lists all the available data sets. On extending the view of a specific collection the contracts <code>listColumns</code> is invoked. This interacts with the back-end to describe the collection (<code><a href="../reference/describe_collection.html">describe_collection()</a></code>) and the result is parsed into the stated table structure.</p>
+<p>When using RStudio an additional feature was implemented that allows
+to inspect the available data sources of a connected back-end by using
+the RStudio’s <a href="https://solutions.rstudio.com/db/advanced/contract/" class="external-link">Connection
+Contract</a> to populate the <code>Connections</code> Pane. The
+connection contract is implemented in
+<code>.fill_rstudio_connection_observer()</code> in <em>client.R</em>.
+After connecting the contracts <code>listObjects</code> function is
+called which lists all the available data sets. On extending the view of
+a specific collection the contracts <code>listColumns</code> is invoked.
+This interacts with the back-end to describe the collection
+(<code><a href="../reference/describe_collection.html">describe_collection()</a></code>) and the result is parsed into the
+stated table structure.</p>
 <pre><code>+ &lt;Collection&gt;
   - &lt;dimension&gt;: &lt;description&gt;</code></pre>
 </div>
@@ -217,7 +361,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

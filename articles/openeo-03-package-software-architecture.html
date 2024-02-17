@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
 
       
 
-      </header><script src="openeo-03-package-software-architecture_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Software and Package Architecture</h1>
@@ -110,71 +110,190 @@
 
     
     
-<p>This R package is a client in terms of the <a href="https://openeo.org/documentation/1.0/developers/arch.html" class="external-link">openEO architecture</a>. This sets the aim of the package to make openEO back-ends with their Earth Observation data collections (EO collections) and functions available to the R community. As described in the <a href="https://api.openeo.org" class="external-link">openEO API</a> the clients communicate with the back-end via RESTful HTTP calls in order to exchange JSON objects which mostly contains meta data about collections, processes, jobs or process graphs.</p>
-<p>You can only obtain actual data by downloading processed results as files. But for development and testing purposes subsets of immediate results can be directly imported into R as stars objects. Other than that, the processing is done remotely on the back-end and the developed functions in R will aid to visualize and manage the data and service exploration and the creation of processing workflows.</p>
-<p>This means that ultimately each call in R will be translated into a corresponding JSON representation and/or HTTP call and vice versa.</p>
-<p>In the following topics we will briefly state what requirements can be derived by using the openEO API and how those requirements influenced the design choices of the package.</p>
+<p>This R package is a client in terms of the <a href="https://openeo.org/documentation/1.0/developers/arch.html" class="external-link">openEO
+architecture</a>. This sets the aim of the package to make openEO
+back-ends with their Earth Observation data collections (EO collections)
+and functions available to the R community. As described in the <a href="https://api.openeo.org" class="external-link">openEO API</a> the clients communicate
+with the back-end via RESTful HTTP calls in order to exchange JSON
+objects which mostly contains meta data about collections, processes,
+jobs or process graphs.</p>
+<p>You can only obtain actual data by downloading processed results as
+files. But for development and testing purposes subsets of immediate
+results can be directly imported into R as stars objects. Other than
+that, the processing is done remotely on the back-end and the developed
+functions in R will aid to visualize and manage the data and service
+exploration and the creation of processing workflows.</p>
+<p>This means that ultimately each call in R will be translated into a
+corresponding JSON representation and/or HTTP call and vice versa.</p>
+<p>In the following topics we will briefly state what requirements can
+be derived by using the openEO API and how those requirements influenced
+the design choices of the package.</p>
 <div class="section level2">
 <h2 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
 </h2>
-<p>We will not dive to deep into this topic, because the openEO API is very well-documented and covers every aspect about the intended communication between clients and openEO back-ends.</p>
-<p>Those well-defined endpoints with their parameters are templated and stored as internal CSV files of this package (see /inst/extdata/api_xxx.csv). This files are loaded during the “connection” to an openEO back-end and used as a lookup table to map the static functions of the “openeo” package like list_collections(), create_job() or compute_results() to their HTTP counterparts including the naming of the parameters.</p>
-<p>When I speak about static functions in this context, I mean those functions that interact with the openEO back-end via the endpoints defined in the openEO API. The reason for this is that those functions are binding to an openEO conformant back-end and need to be implemented in order to allow successful communication and data processing from any openEO client.</p>
-<p>In two ways there are dynamic aspects to this. First, the back-end provider can choose which components are implemented and made available for a user, which needs to be checked during the connection phase. The second dynamic aspect is the whole topic about process graph building. With <a href="https://processes.openeo.org/" class="external-link">openEO processes</a> there is a set of processes published that aim to processes EO data where the data is abstracted into an n-dimensional data cube (see <a href="https://openeo.org/documentation/1.0/datacubes.html" class="external-link">openEO data cubes</a> or <a href="https://r-spatial.github.io/stars/" class="external-link"><code>stars</code> vignettes</a> for relateable context). The openEO API defines an endpoint that lists all actually supported processes by the back-end for process graph building. The processes come also as JSON objects that contain descriptive meta data about the processes itself as well as the name and types of arguments for those processes. Those self-describing processes allow the openEO back-end to use the predefined openEO processes, but they can change the naming, the allowed types or invent completely new processes.</p>
-<p>This flexibility requires from this R package that the processes for process graph building cannot be provided as static R function of this package, but have to be read and interpreted dynamically at runtime in order to make it compatible between different openEO back-ends.</p>
+<p>We will not dive to deep into this topic, because the openEO API is
+very well-documented and covers every aspect about the intended
+communication between clients and openEO back-ends.</p>
+<p>Those well-defined endpoints with their parameters are templated and
+stored as internal CSV files of this package (see
+/inst/extdata/api_xxx.csv). This files are loaded during the
+“connection” to an openEO back-end and used as a lookup table to map the
+static functions of the “openeo” package like list_collections(),
+create_job() or compute_results() to their HTTP counterparts including
+the naming of the parameters.</p>
+<p>When I speak about static functions in this context, I mean those
+functions that interact with the openEO back-end via the endpoints
+defined in the openEO API. The reason for this is that those functions
+are binding to an openEO conformant back-end and need to be implemented
+in order to allow successful communication and data processing from any
+openEO client.</p>
+<p>In two ways there are dynamic aspects to this. First, the back-end
+provider can choose which components are implemented and made available
+for a user, which needs to be checked during the connection phase. The
+second dynamic aspect is the whole topic about process graph building.
+With <a href="https://processes.openeo.org/" class="external-link">openEO processes</a> there
+is a set of processes published that aim to processes EO data where the
+data is abstracted into an n-dimensional data cube (see <a href="https://openeo.org/documentation/1.0/datacubes.html" class="external-link">openEO data
+cubes</a> or <a href="https://r-spatial.github.io/stars/" class="external-link"><code>stars</code>
+vignettes</a> for relateable context). The openEO API defines an
+endpoint that lists all actually supported processes by the back-end for
+process graph building. The processes come also as JSON objects that
+contain descriptive meta data about the processes itself as well as the
+name and types of arguments for those processes. Those self-describing
+processes allow the openEO back-end to use the predefined openEO
+processes, but they can change the naming, the allowed types or invent
+completely new processes.</p>
+<p>This flexibility requires from this R package that the processes for
+process graph building cannot be provided as static R function of this
+package, but have to be read and interpreted dynamically at runtime in
+order to make it compatible between different openEO back-ends.</p>
 </div>
 <div class="section level2">
 <h2 id="r-package-dependencies">R package dependencies<a class="anchor" aria-label="anchor" href="#r-package-dependencies"></a>
 </h2>
-<p>So, there are several package dependencies from this package, which will be discussed briefly:</p>
+<p>So, there are several package dependencies from this package, which
+will be discussed briefly:</p>
 <ul>
 <li>httr2</li>
 <li>jsonlite</li>
 <li>sf</li>
 <li>R6</li>
 </ul>
-<p>Apart from the major packages, we use also other packages like IRdisplay and htmltools. Those are imported for visualization purposes for a seamless integration of the <a href="https://www.npmjs.com/package/@openeo/vue-components" class="external-link">openEO Vue components</a> for a general look and feel in interactive R reporting environments like R markdown / notebook as well, as Jupyter notebooks with an R Kernel.</p>
+<p>Apart from the major packages, we use also other packages like
+IRdisplay and htmltools. Those are imported for visualization purposes
+for a seamless integration of the <a href="https://www.npmjs.com/package/@openeo/vue-components" class="external-link">openEO Vue
+components</a> for a general look and feel in interactive R reporting
+environments like R markdown / notebook as well, as Jupyter notebooks
+with an R Kernel.</p>
 <div class="section level3">
 <h3 id="httr2">httr2<a class="anchor" aria-label="anchor" href="#httr2"></a>
 </h3>
-<p>As stated in the beginning the openEO architecture requires back-ends to expose their functionalities via RESTful HTTP endpoints. So the client needs tools for that purpose which are provided by the httr2 package. Earlier versions used the package httr, but httr2 was chosen over the latter, because it offered more authentication methods (for example the “OAuth2 device code flow”).</p>
+<p>As stated in the beginning the openEO architecture requires back-ends
+to expose their functionalities via RESTful HTTP endpoints. So the
+client needs tools for that purpose which are provided by the httr2
+package. Earlier versions used the package httr, but httr2 was chosen
+over the latter, because it offered more authentication methods (for
+example the “OAuth2 device code flow”).</p>
 </div>
 <div class="section level3">
 <h3 id="jsonlite">jsonlite<a class="anchor" aria-label="anchor" href="#jsonlite"></a>
 </h3>
-<p>Also for communication purpose jsonlite was chosen to serialize the objects into JSON.</p>
+<p>Also for communication purpose jsonlite was chosen to serialize the
+objects into JSON.</p>
 </div>
 <div class="section level3">
 <h3 id="sf">sf<a class="anchor" aria-label="anchor" href="#sf"></a>
 </h3>
-<p>For geospatial reasons we use sf as main package for spatial vector data. It is established, widely used and well-known by users. Inside the package it handles the translation between geospatial objects in R and GeoJSON.</p>
+<p>For geospatial reasons we use sf as main package for spatial vector
+data. It is established, widely used and well-known by users. Inside the
+package it handles the translation between geospatial objects in R and
+GeoJSON.</p>
 </div>
 <div class="section level3">
 <h3 id="r6">R6<a class="anchor" aria-label="anchor" href="#r6"></a>
 </h3>
-<p>R6 is an object oriented programming style like S3 or S4 in R that is based on <a href="http://adv-r.had.co.nz/Environments.html" class="external-link">R environments</a>, which can be referenced by an address pointer. This makes them reusable and a solid choice when it comes to realize configurable graphs in R, which we will want to achieve in “openeo” in order to create the process workflows for the openEO back-end in order to manipulate EO data. During the creation of those graphs we might reuse the result of a prior process in multiple following processes. Objects in S3 and S4 create hard copies of itself, if passed to other functions, whereas an R6 object will always reference to the same entity. Just this feature will allow process parameter to be easily changed after it is created. This means, we will use R6 objects when it comes to dynamic data, e.g. process graph building and connection handling. Mere meta data representation as obtained from the JSON objects will be handled as S3 objects.</p>
+<p>R6 is an object oriented programming style like S3 or S4 in R that is
+based on <a href="http://adv-r.had.co.nz/Environments.html" class="external-link">R
+environments</a>, which can be referenced by an address pointer. This
+makes them reusable and a solid choice when it comes to realize
+configurable graphs in R, which we will want to achieve in “openeo” in
+order to create the process workflows for the openEO back-end in order
+to manipulate EO data. During the creation of those graphs we might
+reuse the result of a prior process in multiple following processes.
+Objects in S3 and S4 create hard copies of itself, if passed to other
+functions, whereas an R6 object will always reference to the same
+entity. Just this feature will allow process parameter to be easily
+changed after it is created. This means, we will use R6 objects when it
+comes to dynamic data, e.g. process graph building and connection
+handling. Mere meta data representation as obtained from the JSON
+objects will be handled as S3 objects.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="authentication">Authentication<a class="anchor" aria-label="anchor" href="#authentication"></a>
 </h2>
-<p>To get access to the computation capabilities and user stored data openEO you need to be a registered user at the openEO back-end, where you want to carry out your analysis. In order to proof that to the system you need to be authenticated. The openEO API offers Open ID Connect (OIDC) and Basic Authentication as authentication methods. In this package the we use primarily OIDC, but also offer Basic Authentication for legacy support. As OIDC is based on OAuth2 there are several different sub mechanisms, e.g. Authcode Flow or Device Code Flow with or without PKCE. The mechanisms are covered by the httr2 package <code><a href="https://httr2.r-lib.org/reference/oauth_flow_device.html" class="external-link">httr2::oauth_flow_device()</a></code>, which is used to negotiate the authentication and to obtain the required access token. In the code the different authentication methods are realized by the different R6 classes that share a common interface <code>IAuth</code>. Inheriting classes implement and overload those functions so that by using the function <code>..$login()</code> or the active field access_token all objects behave in the same manor and ultimately provide the access token.</p>
+<p>To get access to the computation capabilities and user stored data
+openEO you need to be a registered user at the openEO back-end, where
+you want to carry out your analysis. In order to proof that to the
+system you need to be authenticated. The openEO API offers Open ID
+Connect (OIDC) and Basic Authentication as authentication methods. In
+this package the we use primarily OIDC, but also offer Basic
+Authentication for legacy support. As OIDC is based on OAuth2 there are
+several different sub mechanisms, e.g. Authcode Flow or Device Code Flow
+with or without PKCE. The mechanisms are covered by the httr2 package
+<code><a href="https://httr2.r-lib.org/reference/req_oauth_device.html" class="external-link">httr2::oauth_flow_device()</a></code>, which is used to negotiate the
+authentication and to obtain the required access token. In the code the
+different authentication methods are realized by the different R6
+classes that share a common interface <code>IAuth</code>. Inheriting
+classes implement and overload those functions so that by using the
+function <code>..$login()</code> or the active field access_token all
+objects behave in the same manor and ultimately provide the access
+token.</p>
 </div>
 <div class="section level2">
 <h2 id="visual-components">Visual Components<a class="anchor" aria-label="anchor" href="#visual-components"></a>
 </h2>
-<p>The openEO Team has released <a href="https://www.npmjs.com/package/@openeo/vue-components/v/2.0.0" class="external-link">Vue components for openEO</a> which is a JavaScript library combined with some CSS files. Those components visualize static objects like collections, processes and jobs in a unified way. This generates a general Look and Feel throughout different openEO clients as the <a href="https://editor.openeo.org/" class="external-link">openEO Web Editor</a> and the <a href="https://pypi.org/project/openeo/" class="external-link">openEO Python client</a> uses those components too. In this package the <code><a href="../reference/collection_viewer.html">collection_viewer()</a></code> or <code><a href="../reference/process_viewer.html">process_viewer()</a></code> can be used to open those HTML templates spiked with the actual data to be visualized. Further more, the Vue components are rendered when the respective objects are printed in R managed HTML environments like R-Markdown or R-Notebook (even Jupyter Notebook with an R Kernel).</p>
+<p>The openEO Team has released <a href="https://www.npmjs.com/package/@openeo/vue-components/v/2.0.0" class="external-link">Vue
+components for openEO</a> which is a JavaScript library combined with
+some CSS files. Those components visualize static objects like
+collections, processes and jobs in a unified way. This generates a
+general Look and Feel throughout different openEO clients as the <a href="https://editor.openeo.org/" class="external-link">openEO Web Editor</a> and the <a href="https://pypi.org/project/openeo/" class="external-link">openEO Python client</a> uses
+those components too. In this package the
+<code><a href="../reference/collection_viewer.html">collection_viewer()</a></code> or <code><a href="../reference/process_viewer.html">process_viewer()</a></code> can be
+used to open those HTML templates spiked with the actual data to be
+visualized. Further more, the Vue components are rendered when the
+respective objects are printed in R managed HTML environments like
+R-Markdown or R-Notebook (even Jupyter Notebook with an R Kernel).</p>
 </div>
 <div class="section level2">
 <h2 id="print-behavior-coercion-and-s3">Print Behavior, Coercion and S3<a class="anchor" aria-label="anchor" href="#print-behavior-coercion-and-s3"></a>
 </h2>
-<p>The JSON objects that are returned at various openEO API endpoints are internally tagged as S3 objects like <code>class(object) = "SomeClass"</code>, where object is a list object that was translated from JSON with jsonlite functions and “SomeClass” being a used S3 class of the “openeo” package. For those classes we have defined a different print behavior for the prior list objects. This is especially the case for the table like objects on the static <code>list_xxx()</code> functions. Before printing those R lists are coerced with <code><a href="../reference/as.data.frame.html">as.data.frame()</a></code> functions before printing to console. But the original object is not changed. If tables shall be created for those lists, then they need to be coerced manually.</p>
-<p>See <code><a href="../reference/as.data.frame.html">openeo::as.data.frame()</a></code> and <code>/R/print-functions.R</code> for further information.</p>
+<p>The JSON objects that are returned at various openEO API endpoints
+are internally tagged as S3 objects like
+<code>class(object) = "SomeClass"</code>, where object is a list object
+that was translated from JSON with jsonlite functions and “SomeClass”
+being a used S3 class of the “openeo” package. For those classes we have
+defined a different print behavior for the prior list objects. This is
+especially the case for the table like objects on the static
+<code>list_xxx()</code> functions. Before printing those R lists are
+coerced with <code><a href="../reference/as.data.frame.html">as.data.frame()</a></code> functions before printing to
+console. But the original object is not changed. If tables shall be
+created for those lists, then they need to be coerced manually.</p>
+<p>See <code><a href="../reference/as.data.frame.html">openeo::as.data.frame()</a></code> and
+<code>/R/print-functions.R</code> for further information.</p>
 </div>
 <div class="section level2">
 <h2 id="process-graph-building">Process Graph Building<a class="anchor" aria-label="anchor" href="#process-graph-building"></a>
 </h2>
-<p>We will dedicate a separate vignette on this topic, where we will explain the concepts involved on parsing the process definitions and creating typed input parameters for validation. For now, the openEO API defines how processes are defined as JSON object. Conceptually those processes consist of general metadata like description and examples and parameters, which are used to control the process. All those parameters allow different types of data, so we need to somehow circumvent R’s type free assignment of variables by defining mechanisms to type checking and validation.</p>
+<p>We will dedicate a separate vignette on this topic, where we will
+explain the concepts involved on parsing the process definitions and
+creating typed input parameters for validation. For now, the openEO API
+defines how processes are defined as JSON object. Conceptually those
+processes consist of general metadata like description and examples and
+parameters, which are used to control the process. All those parameters
+allow different types of data, so we need to somehow circumvent R’s type
+free assignment of variables by defining mechanisms to type checking and
+validation.</p>
 </div>
   </div>
 
@@ -195,7 +314,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

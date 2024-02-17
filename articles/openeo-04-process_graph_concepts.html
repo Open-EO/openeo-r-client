@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
 
       
 
-      </header><script src="openeo-04-process_graph_concepts_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Process Graph Building</h1>
@@ -110,18 +110,59 @@
 
     
     
-<p>In this guide you will familiarize yourself with the concepts of the process graph building in the <code>openeo</code> package with respect to the <a href="https://api.openeo.org/#section/Processes" class="external-link">openEO API</a> and <a href="https://processes.openeo.org/" class="external-link">openEO processes</a> from a user perspective. In the following we will briefly state the logical structure of an openEO process description and how process graphs are created from processes. Afterwards we dive into some detail about the parameters and arguments of processes, especially how this relates to R where function parameters are usually type free.</p>
-<p>Note: For demonstration purposes we will use the general definitions of the <em>openEO processes</em> and their descriptions in order to make them easier to understand.</p>
+<p>In this guide you will familiarize yourself with the concepts of the
+process graph building in the <code>openeo</code> package with respect
+to the <a href="https://api.openeo.org/#section/Processes" class="external-link">openEO
+API</a> and <a href="https://processes.openeo.org/" class="external-link">openEO processes</a>
+from a user perspective. In the following we will briefly state the
+logical structure of an openEO process description and how process
+graphs are created from processes. Afterwards we dive into some detail
+about the parameters and arguments of processes, especially how this
+relates to R where function parameters are usually type free.</p>
+<p>Note: For demonstration purposes we will use the general definitions
+of the <em>openEO processes</em> and their descriptions in order to make
+them easier to understand.</p>
 <div class="section level2">
 <h2 id="concepts">Concepts<a class="anchor" aria-label="anchor" href="#concepts"></a>
 </h2>
-<p>The main idea in openEO is that back-ends provide spatio-temporal data collections, a set of processes specifying how the data shall be manipulated as well as the computing power to process the data accordingly. The data in general is abstracted to be an n-dimensional data cube, more often the used dimensions are spatial (x,y), temporal (t) and there are different bands which denote sensory properties in a categorical way, e.g. a specific wavelength interval for optical measurements or the kind of polarization used in SAR measurements.</p>
+<p>The main idea in openEO is that back-ends provide spatio-temporal
+data collections, a set of processes specifying how the data shall be
+manipulated as well as the computing power to process the data
+accordingly. The data in general is abstracted to be an n-dimensional
+data cube, more often the used dimensions are spatial (x,y), temporal
+(t) and there are different bands which denote sensory properties in a
+categorical way, e.g. a specific wavelength interval for optical
+measurements or the kind of polarization used in SAR measurements.</p>
 <div class="section level3">
 <h3 id="processes">Processes<a class="anchor" aria-label="anchor" href="#processes"></a>
 </h3>
-<p>The openEO API defines processes in a general way, meaning that to be conformant to the API back-ends do not need to implement the whole set of openEO processes, which can be considered to be a set of Good-Practice functions that cover almost all relevant operations on n-dimensional spatio-temporal data. As for this package it means that the “tools” are dependent on the connected back-end and they have to be interpreted dynamically after the connection has been established. The openEO API defines how processes information has to be structured to be interpreted by this package and the openEO processes suggest a set of processes with descriptions and parameters, but the back-end is not obliged to implement or provide any of them. They might even change parameter types or the naming all together.</p>
-<p>What remains of it is that all the openEO processes are described in the way the openEO API defines processes.</p>
-<p>Now we also need to distinguish between predefined and user-defined processes. The predefined processes are those that are already provided by the back-end and which are implanted ready to be used for processing. The user-defined processes are those process graphs a user can create out of the predefined processes. There we can also define variables to allow for a parametrization, which more or less works like placeholders in the graph that will be filled upon use. This user defined processes can be stored on the back-end <code><a href="../reference/create_user_process.html">create_user_process()</a></code>, which are then only available for the user that have created that processes. Similarly to the initialization of the predefined processes with <code><a href="../reference/processes.html">processes()</a></code>, the users own processes can be loaded by <code><a href="../reference/user_processes.html">user_processes()</a></code>. The user defined processes can then also be used as building blocks, hiding more complex functions.</p>
+<p>The openEO API defines processes in a general way, meaning that to be
+conformant to the API back-ends do not need to implement the whole set
+of openEO processes, which can be considered to be a set of
+Good-Practice functions that cover almost all relevant operations on
+n-dimensional spatio-temporal data. As for this package it means that
+the “tools” are dependent on the connected back-end and they have to be
+interpreted dynamically after the connection has been established. The
+openEO API defines how processes information has to be structured to be
+interpreted by this package and the openEO processes suggest a set of
+processes with descriptions and parameters, but the back-end is not
+obliged to implement or provide any of them. They might even change
+parameter types or the naming all together.</p>
+<p>What remains of it is that all the openEO processes are described in
+the way the openEO API defines processes.</p>
+<p>Now we also need to distinguish between predefined and user-defined
+processes. The predefined processes are those that are already provided
+by the back-end and which are implanted ready to be used for processing.
+The user-defined processes are those process graphs a user can create
+out of the predefined processes. There we can also define variables to
+allow for a parametrization, which more or less works like placeholders
+in the graph that will be filled upon use. This user defined processes
+can be stored on the back-end <code><a href="../reference/create_user_process.html">create_user_process()</a></code>, which
+are then only available for the user that have created that processes.
+Similarly to the initialization of the predefined processes with
+<code><a href="../reference/processes.html">processes()</a></code>, the users own processes can be loaded by
+<code><a href="../reference/user_processes.html">user_processes()</a></code>. The user defined processes can then also
+be used as building blocks, hiding more complex functions.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span>
 <span><span class="co"># EVI example to create a user-defined processes</span></span>
@@ -145,7 +186,13 @@
 <div class="section level3">
 <h3 id="process-graph-and-process-node">Process Graph and Process Node<a class="anchor" aria-label="anchor" href="#process-graph-and-process-node"></a>
 </h3>
-<p>We have established that user-defined processes and process graphs are the same. By combining the processes, we will create a graph structure. And as graphs consist of nodes, we refer to a process that has been used in a process graph as Process Node. With “used” we mean that the processes parameters have been bound with values. By using a Process Node as input parameter, we create the relations between the Process Nodes and hence the process graph.</p>
+<p>We have established that user-defined processes and process graphs
+are the same. By combining the processes, we will create a graph
+structure. And as graphs consist of nodes, we refer to a process that
+has been used in a process graph as Process Node. With “used” we mean
+that the processes parameters have been bound with values. By using a
+Process Node as input parameter, we create the relations between the
+Process Nodes and hence the process graph.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span>
 <span><span class="va">con</span> <span class="op">=</span> <span class="fu"><a href="../reference/connect.html">connect</a></span><span class="op">(</span><span class="st">"openeo.cloud"</span><span class="op">)</span></span>
@@ -154,8 +201,20 @@
 <span></span>
 <span><span class="va">data</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">load_collection</span><span class="op">(</span>id <span class="op">=</span> <span class="va">coll</span><span class="op">$</span><span class="va">SENTINEL2_L2A_SENTINELHUB</span>, bands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B02"</span>,<span class="st">"B04"</span>,<span class="st">"B08"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
-<p>The return value is a <code>ProcessNode</code> that is create from the <code>Process</code> as a template during the call of the respective function. Conceptually the <code>ProcessNode</code> is a <code>Process</code> that is extended with the field “nodeId”, which is used to reference this particular step in the graph. Other then that the creation of a <code>ProcessNode</code> via the respective function at the <code>ProcessCollection</code> creates a new R6 object with its own [<code>Argument</code>]. T</p>
-<p>Usually, the return values of processes that can be used for relation building is again a n-dimensional data cube (either raster or vector cubes). But there are also processes that either return arrays or single values. Those processes can by itself create also a process graph. They are used in process graph definitions for subroutines like band arithmetic operations, mask creation or aggregation functions.</p>
+<p>The return value is a <code>ProcessNode</code> that is create from
+the <code>Process</code> as a template during the call of the respective
+function. Conceptually the <code>ProcessNode</code> is a
+<code>Process</code> that is extended with the field “nodeId”, which is
+used to reference this particular step in the graph. Other then that the
+creation of a <code>ProcessNode</code> via the respective function at
+the <code>ProcessCollection</code> creates a new R6 object with its own
+[<code>Argument</code>]. T</p>
+<p>Usually, the return values of processes that can be used for relation
+building is again a n-dimensional data cube (either raster or vector
+cubes). But there are also processes that either return arrays or single
+values. Those processes can by itself create also a process graph. They
+are used in process graph definitions for subroutines like band
+arithmetic operations, mask creation or aggregation functions.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span>
 <span><span class="va">con</span> <span class="op">=</span> <span class="fu"><a href="../reference/connect.html">connect</a></span><span class="op">(</span><span class="st">"openeo.cloud"</span><span class="op">)</span></span>
@@ -181,9 +240,48 @@
 <span></span>
 <span><span class="co"># as save / serializer: process(data, argument[s]) --&gt; void</span></span>
 <span><span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span>data<span class="op">=</span><span class="va">ndvi_data</span>, format <span class="op">=</span> <span class="st">"GTiff"</span><span class="op">)</span></span></code></pre></div>
-<p>The openEO processes define some data loading functions, like <code>load_collection</code>, which define starting points in a process graph that is going to be executed to create a result. For the processing at the backend those processes denote points where actual data is loaded into the processing chain. On the other side <code>save_result</code> marks point where data is serialized, which is usually the end of the process graph and contains the data a user wants to obtain as an end result. The following examples shows a process graph that will calculate the minimum value of Enhanced Vegetation Index (EVI) for a data subset. First a data collection was chosen with <code>load_collection</code> and a spatial, temporal and band constraint was applied, which limits the data collection to a specific spatial subset for the given time interval and it also selects the three bands B02, B04 and B08. Then two reduce_dimension operations are performed. The first enables a band arithmetic operation by reducing the bands, which will mean that a reducer function will be applied on each of the remaining cells in x, y and t. This means that the data input of this reducer function will be an array of the measurement values for each band, e.g. [7000,4000,5000] with the order specified in the <code>load_collection</code> function for parameter “band”. The used EVI function was ideally created beforehand and was stored as a user-defined process on the back-end. Then we reduced over the time dimension t, be selecting the minimum in this time period. The input for the minimum aggregation will be again a vector, but this time it already contains the EVI values from the previous step, e.g. [0.3246, 0.3021, 0.2345, 0.1231, 0.3456, 0.4367, 0.6753] where the value corresponds to the recording time of the scene and a natural time order is assumed. The final step stores the result as a GTiff file, which marks also the end of processing.</p>
+<p>The openEO processes define some data loading functions, like
+<code>load_collection</code>, which define starting points in a process
+graph that is going to be executed to create a result. For the
+processing at the backend those processes denote points where actual
+data is loaded into the processing chain. On the other side
+<code>save_result</code> marks point where data is serialized, which is
+usually the end of the process graph and contains the data a user wants
+to obtain as an end result. The following examples shows a process graph
+that will calculate the minimum value of Enhanced Vegetation Index (EVI)
+for a data subset. First a data collection was chosen with
+<code>load_collection</code> and a spatial, temporal and band constraint
+was applied, which limits the data collection to a specific spatial
+subset for the given time interval and it also selects the three bands
+B02, B04 and B08. Then two reduce_dimension operations are performed.
+The first enables a band arithmetic operation by reducing the bands,
+which will mean that a reducer function will be applied on each of the
+remaining cells in x, y and t. This means that the data input of this
+reducer function will be an array of the measurement values for each
+band, e.g. [7000,4000,5000] with the order specified in the
+<code>load_collection</code> function for parameter “band”. The used EVI
+function was ideally created beforehand and was stored as a user-defined
+process on the back-end. Then we reduced over the time dimension t, be
+selecting the minimum in this time period. The input for the minimum
+aggregation will be again a vector, but this time it already contains
+the EVI values from the previous step, e.g. [0.3246, 0.3021, 0.2345,
+0.1231, 0.3456, 0.4367, 0.6753] where the value corresponds to the
+recording time of the scene and a natural time order is assumed. The
+final step stores the result as a GTiff file, which marks also the end
+of processing.</p>
 <p><img src="images/evi-processing.png"></p>
-<p>The seed of the graph structure is a single <code>ProcessNode</code> that is not used by another <code>ProcessNode</code> of the graph, this is called the final node. A <code>ProcessNode</code> consists of the id of an openEO process, user-defined values for its parameters, as well as a unique id of the <code>ProcessNode</code> itself. The graph is simply a set of <code>ProcessNode</code>s which are connected to at least one other <code>ProcessNode</code>. We distinguish between the nodes definition and its use by reference. This affects how it is represented (serialized) in the JSON representation of the graph. A reference is serialized as a reference object in JSON like <code>{"from_node":"some_node_id"}</code>. Otherwise the <code>ProcessNode</code> is defined in a schematic way like:</p>
+<p>The seed of the graph structure is a single <code>ProcessNode</code>
+that is not used by another <code>ProcessNode</code> of the graph, this
+is called the final node. A <code>ProcessNode</code> consists of the id
+of an openEO process, user-defined values for its parameters, as well as
+a unique id of the <code>ProcessNode</code> itself. The graph is simply
+a set of <code>ProcessNode</code>s which are connected to at least one
+other <code>ProcessNode</code>. We distinguish between the nodes
+definition and its use by reference. This affects how it is represented
+(serialized) in the JSON representation of the graph. A reference is
+serialized as a reference object in JSON like
+<code>{"from_node":"some_node_id"}</code>. Otherwise the
+<code>ProcessNode</code> is defined in a schematic way like:</p>
 <pre><code>Graph := {
   "nodeId1": &lt;Process&gt;,
   "nodeId2": &lt;Process&gt;
@@ -202,8 +300,17 @@ Argument := Value|NodeReference
 NodeReference := {
   "from_node":"nodeId2"
 }</code></pre>
-<p>The transformation of the <code>ProcessNode</code> into a JSON graph is called serialization. This is done by traversing bottom-up through the graph starting at the final node. Each user-defined parameter of the visited <code>ProcessNode</code> is checked if it is a simple value or another <code>ProcessNode</code>. Each of the newly found <code>ProcessNode</code>s is visited in the next step and its arguments are scanned also until there are no new <code>ProcessNode</code>s left. Where a process node was found a reference object will be created, other arguments reflect their value.</p>
-<p>The user defined process, which we have defined before (EVI) would look like this:</p>
+<p>The transformation of the <code>ProcessNode</code> into a JSON graph
+is called serialization. This is done by traversing bottom-up through
+the graph starting at the final node. Each user-defined parameter of the
+visited <code>ProcessNode</code> is checked if it is a simple value or
+another <code>ProcessNode</code>. Each of the newly found
+<code>ProcessNode</code>s is visited in the next step and its arguments
+are scanned also until there are no new <code>ProcessNode</code>s left.
+Where a process node was found a reference object will be created, other
+arguments reflect their value.</p>
+<p>The user defined process, which we have defined before (EVI) would
+look like this:</p>
 <pre><code>{
   "array_element_CRUBQ5502B": {
     "process_id": "array_element",
@@ -350,9 +457,24 @@ NodeReference := {
 <div class="section level3">
 <h3 id="arguments-and-parameters">Arguments and Parameters<a class="anchor" aria-label="anchor" href="#arguments-and-parameters"></a>
 </h3>
-<p>All the processes offer various kinds of parameters so the user can control the process. One parameter, usually “data”, transports the input data that will be manipulated. If the parameter type is a raster or vector cube the whole n-dimensional data cube will be manipulated. But it is also possible to manipulate arrays or scalars of data. This kind of input is often times transferred to the process, when a process graph is allowed as value for the parameter. The user-defined process that is passed to that parameter needs to accept the parameters provided “process graph parameters” as input.</p>
-<p>The other controlling parameters can have a <a href="https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json" class="external-link">variety of types</a>.</p>
-<p>To clarify, the parameter type matching is completely hidden from the user. A user simply tries to pass a value to a process parameter and the most suitable allowed parameter type is chosen automatically. If the value cannot be matched to the allowed types for the parameter, then at some point a warning or an error will be raised. To inform yourself about the allowed parameter types, please look up the process descriptions.</p>
+<p>All the processes offer various kinds of parameters so the user can
+control the process. One parameter, usually “data”, transports the input
+data that will be manipulated. If the parameter type is a raster or
+vector cube the whole n-dimensional data cube will be manipulated. But
+it is also possible to manipulate arrays or scalars of data. This kind
+of input is often times transferred to the process, when a process graph
+is allowed as value for the parameter. The user-defined process that is
+passed to that parameter needs to accept the parameters provided
+“process graph parameters” as input.</p>
+<p>The other controlling parameters can have a <a href="https://github.com/Open-EO/openeo-processes/blob/master/meta/subtype-schemas.json" class="external-link">variety
+of types</a>.</p>
+<p>To clarify, the parameter type matching is completely hidden from the
+user. A user simply tries to pass a value to a process parameter and the
+most suitable allowed parameter type is chosen automatically. If the
+value cannot be matched to the allowed types for the parameter, then at
+some point a warning or an error will be raised. To inform yourself
+about the allowed parameter types, please look up the process
+descriptions.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/describe_process.html">describe_process</a></span><span class="op">(</span><span class="st">"load_collection"</span><span class="op">)</span></span></code></pre></div>
 `
@@ -383,10 +505,12 @@ if(!document.getElementById('openeo-vue-components-fa')){
 <div class="section level4">
 <h4 id="parameter-manipulation">Parameter manipulation<a class="anchor" aria-label="anchor" href="#parameter-manipulation"></a>
 </h4>
-<p>In order to set the values for the parameters of the processes you can use the builder functions of the <code>ProcessCollection</code>, where you can pass arguments as the function parameters.</p>
+<p>In order to set the values for the parameters of the processes you
+can use the builder functions of the <code>ProcessCollection</code>,
+where you can pass arguments as the function parameters.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1; sf_use_s2() is TRUE</span></span></code></pre>
+<pre><code><span><span class="co">## Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span></code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -411,7 +535,9 @@ if(!document.getElementById('openeo-vue-components-fa')){
 <span><span class="co">##     ]</span></span>
 <span><span class="co">##   }</span></span>
 <span><span class="co">## }</span></span></code></pre>
-<p>As a second option you can manipulate the parameters of the process node by interacting with the field <code>parameters</code> of <code>ProcessNode</code>.</p>
+<p>As a second option you can manipulate the parameters of the process
+node by interacting with the field <code>parameters</code> of
+<code>ProcessNode</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dc</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">bands</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B04"</span>,<span class="st">"B08"</span><span class="op">)</span></span>
 <span><span class="va">dc</span></span></code></pre></div>
@@ -459,7 +585,8 @@ if(!document.getElementById('openeo-vue-components-fa')){
 <span><span class="co">##     ]</span></span>
 <span><span class="co">##   }</span></span>
 <span><span class="co">## }</span></span></code></pre>
-<p>Of course, you can simply return the current value for a parameter as well.</p>
+<p>Of course, you can simply return the current value for a parameter as
+well.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dc</span><span class="op">$</span><span class="va">parameters</span><span class="op">$</span><span class="va">spatial_extent</span></span></code></pre></div>
 <pre><code><span><span class="co">## xmin ymin xmax ymax </span></span>
@@ -468,7 +595,8 @@ if(!document.getElementById('openeo-vue-components-fa')){
 <div class="section level4">
 <h4 id="variables">Variables<a class="anchor" aria-label="anchor" href="#variables"></a>
 </h4>
-<p>Another useful function is the concept of variables. Those are considered to be placeholder for certain arguments.</p>
+<p>Another useful function is the concept of variables. Those are
+considered to be placeholder for certain arguments.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bbox_var</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_variable.html">create_variable</a></span><span class="op">(</span>name<span class="op">=</span><span class="st">"bbox"</span>,description <span class="op">=</span> <span class="st">"The bounding box of the process graph"</span><span class="op">)</span></span>
 <span></span>
@@ -491,7 +619,8 @@ if(!document.getElementById('openeo-vue-components-fa')){
 <span><span class="co">##     ]</span></span>
 <span><span class="co">##   }</span></span>
 <span><span class="co">## }</span></span></code></pre>
-<p>When creating parameterized user-defined processes the variables are used as the functions input parameter.</p>
+<p>When creating parameterized user-defined processes the variables are
+used as the functions input parameter.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ndvi_prep_loader</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">dc</span>,<span class="st">"Process"</span><span class="op">)</span></span>
 <span><span class="va">ndvi_prep_loader</span></span></code></pre></div>
@@ -519,7 +648,7 @@ if(!document.getElementById('openeo-vue-components-fa')){
   margin: 1em 0;
 }
 </style>
-<openeo-process style="font-family: sans-serif;" class="rmd"><script type="application/json">{"show-graph":true,"provide-download":false,"process":{"process_graph":{"load_collection_ECYQX5728M":{"process_id":"load_collection","arguments":{"id":"S2","spatial_extent":{"from_parameter":"bbox"},"temporal_extent":["2022-05-01",null],"bands":["B04","B08"]},"result":true}},"parameters":[],"returns":{"schema":{"type":"object","subtype":"raster-cube"}}}}</script><p></p></openeo-process>`{=html}
+<openeo-process style="font-family: sans-serif;" class="rmd"><script type="application/json">{"show-graph":true,"provide-download":false,"process":{"process_graph":{"load_collection_NUKYN9428F":{"process_id":"load_collection","arguments":{"id":"S2","spatial_extent":{"from_parameter":"bbox"},"temporal_extent":["2022-05-01",null],"bands":["B04","B08"]},"result":true}},"parameters":[],"returns":{"schema":{"type":"object","subtype":"raster-cube"}}}}</script><p></p></openeo-process>`{=html}
 </div>
 </div>
 </div>
@@ -542,7 +671,7 @@ if(!document.getElementById('openeo-vue-components-fa')){
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

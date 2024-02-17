@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
 
       
 
-      </header><script src="openeo-05-process_graph_building_application_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Process Graph Building Application</h1>
@@ -110,13 +110,32 @@
 
     
     
-<p>As the title suggests, we will describe in more detail how to create process graphs and respectively “User Defined Processes” (UDP). Those processes can be seen as the analysis workflows you want to run at the openEO back-end of your choice. You might call them later directly or you might add some variables to the UDP to customize the processes at runtime, e.g. set the temporal interval or the area of interest. This vignette focuses the user point of view.</p>
+<p>As the title suggests, we will describe in more detail how to create
+process graphs and respectively “User Defined Processes” (UDP). Those
+processes can be seen as the analysis workflows you want to run at the
+openEO back-end of your choice. You might call them later directly or
+you might add some variables to the UDP to customize the processes at
+runtime, e.g. set the temporal interval or the area of interest. This
+vignette focuses the user point of view.</p>
 <div class="section level2">
 <h2 id="evi-calculation-from-function">EVI calculation from function<a class="anchor" aria-label="anchor" href="#evi-calculation-from-function"></a>
 </h2>
-<p>In the following we will create the <a href="https://www.usgs.gov/landsat-missions/landsat-enhanced-vegetation-index" class="external-link">EVI calculation</a> and store it as a process graph on the openEO service.</p>
-<p>Most of the processes offered by openEO services are standardized, this means that it will be possible to use mathematical operators like <code>+</code>, <code>-</code> and alike coherently between different services. That also allowed us to overload the primitive mathematical operators in R so that it becomes easy to use.</p>
-<p>The EVI calculation is an function that is going to be applied on specific bands in an optical image collection. It involves the bands “red”, “blue” and the near infrared. This means that those 3 bands are computed into a single band, which will be referred to as reducing the band dimension. This calculation is a simple band arithmetic, which is usually done in R by passing a function to a raster calculation function like <code>raster::calc</code>. Similarly we use this mechanism in the openeo package.</p>
+<p>In the following we will create the <a href="https://www.usgs.gov/landsat-missions/landsat-enhanced-vegetation-index" class="external-link">EVI
+calculation</a> and store it as a process graph on the openEO
+service.</p>
+<p>Most of the processes offered by openEO services are standardized,
+this means that it will be possible to use mathematical operators like
+<code>+</code>, <code>-</code> and alike coherently between different
+services. That also allowed us to overload the primitive mathematical
+operators in R so that it becomes easy to use.</p>
+<p>The EVI calculation is an function that is going to be applied on
+specific bands in an optical image collection. It involves the bands
+“red”, “blue” and the near infrared. This means that those 3 bands are
+computed into a single band, which will be referred to as reducing the
+band dimension. This calculation is a simple band arithmetic, which is
+usually done in R by passing a function to a raster calculation function
+like <code>raster::calc</code>. Similarly we use this mechanism in the
+openeo package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
@@ -133,12 +152,18 @@
 <span>  <span class="va">B02</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">(</span><span class="fl">2.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">B08</span> <span class="op">-</span> <span class="va">B04</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">B08</span>, <span class="fl">6</span> <span class="op">*</span> <span class="va">B04</span>, <span class="op">-</span><span class="fl">7.5</span> <span class="op">*</span> <span class="va">B02</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Just to get an impression what happens behind the scenes, we will now have a look at the JSON graph of this quite simple looking arithmetic function. Under normal circumstances you would not need to deal with creating the JSON representation by yourself, this will be handled internally by the package.</p>
-<p>The following coerce function will create an internal <code>Graph</code> object and using its <code>print</code> function the object is automatically serialized into the JSON graph.</p>
+<p>Just to get an impression what happens behind the scenes, we will now
+have a look at the JSON graph of this quite simple looking arithmetic
+function. Under normal circumstances you would not need to deal with
+creating the JSON representation by yourself, this will be handled
+internally by the package.</p>
+<p>The following coerce function will create an internal
+<code>Graph</code> object and using its <code>print</code> function the
+object is automatically serialized into the JSON graph.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">evi</span>,<span class="st">"Graph"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## {</span></span>
-<span><span class="co">##   "array_element_WFLTI7569G": {</span></span>
+<span><span class="co">##   "array_element_OABQJ7412Y": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -148,7 +173,7 @@
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "array_element_BNMSB3263O": {</span></span>
+<span><span class="co">##   "array_element_LNFYE3857V": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -158,36 +183,36 @@
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "subtract_LWXVG0129X": {</span></span>
+<span><span class="co">##   "subtract_WJSHZ8533W": {</span></span>
 <span><span class="co">##     "process_id": "subtract",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": {</span></span>
-<span><span class="co">##         "from_node": "array_element_WFLTI7569G"</span></span>
+<span><span class="co">##         "from_node": "array_element_OABQJ7412Y"</span></span>
 <span><span class="co">##       },</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_BNMSB3263O"</span></span>
+<span><span class="co">##         "from_node": "array_element_LNFYE3857V"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_XPGSX3884W": {</span></span>
+<span><span class="co">##   "multiply_XEJNA2903G": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": 2.5,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "subtract_LWXVG0129X"</span></span>
+<span><span class="co">##         "from_node": "subtract_WJSHZ8533W"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_YUFMG7454B": {</span></span>
+<span><span class="co">##   "multiply_XHFQF6234D": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": 6,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_BNMSB3263O"</span></span>
+<span><span class="co">##         "from_node": "array_element_LNFYE3857V"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "array_element_BBQLJ8307S": {</span></span>
+<span><span class="co">##   "array_element_OECUT9835K": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -197,52 +222,57 @@
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_GNPLZ9177Y": {</span></span>
+<span><span class="co">##   "multiply_IIXFJ8213R": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": -7.5,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_BBQLJ8307S"</span></span>
+<span><span class="co">##         "from_node": "array_element_OECUT9835K"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "sum_TASJB7894M": {</span></span>
+<span><span class="co">##   "sum_UWJQK4205N": {</span></span>
 <span><span class="co">##     "process_id": "sum",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": [</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "array_element_WFLTI7569G"</span></span>
+<span><span class="co">##           "from_node": "array_element_OABQJ7412Y"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "multiply_YUFMG7454B"</span></span>
+<span><span class="co">##           "from_node": "multiply_XHFQF6234D"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "multiply_GNPLZ9177Y"</span></span>
+<span><span class="co">##           "from_node": "multiply_IIXFJ8213R"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         1</span></span>
 <span><span class="co">##       ],</span></span>
 <span><span class="co">##       "ignore_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "divide_PPJVJ5307T": {</span></span>
+<span><span class="co">##   "divide_GWACA9776Q": {</span></span>
 <span><span class="co">##     "process_id": "divide",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": {</span></span>
-<span><span class="co">##         "from_node": "multiply_XPGSX3884W"</span></span>
+<span><span class="co">##         "from_node": "multiply_XEJNA2903G"</span></span>
 <span><span class="co">##       },</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "sum_TASJB7894M"</span></span>
+<span><span class="co">##         "from_node": "sum_UWJQK4205N"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     },</span></span>
 <span><span class="co">##     "result": true</span></span>
 <span><span class="co">##   }</span></span>
 <span><span class="co">## }</span></span></code></pre>
-<p>The coercion was just an excursion in order to get a glimpse at the data structure that will be sent to the back-end. We now continue with the user-defined process creation.</p>
+<p>The coercion was just an excursion in order to get a glimpse at the
+data structure that will be sent to the back-end. We now continue with
+the user-defined process creation.</p>
 </div>
 <div class="section level2">
 <h2 id="building-the-graph-for-data-manipulation">Building the graph for data manipulation<a class="anchor" aria-label="anchor" href="#building-the-graph-for-data-manipulation"></a>
 </h2>
-<p>The prior use case covered a sub process graph. Now, we are going to create an analysis ready process graph that selects data, and makes multiple dimension modification. It will use the EVI band arithmetic as an inbound function.</p>
+<p>The prior use case covered a sub process graph. Now, we are going to
+create an analysis ready process graph that selects data, and makes
+multiple dimension modification. It will use the EVI band arithmetic as
+an inbound function.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
 <span></span>
@@ -259,14 +289,21 @@
 <span>                           <span class="st">"2018-04-01"</span>, <span class="st">"2018-05-01"</span></span>
 <span>                         <span class="op">)</span>,</span>
 <span>                         bands<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"B08"</span>,<span class="st">"B04"</span>,<span class="st">"B02"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Here we are using the EVI calculation at the variable <code>evi</code> from example in the beginning.</p>
+<p>Here we are using the EVI calculation at the variable
+<code>evi</code> from example in the beginning.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spectral_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>, dimension <span class="op">=</span> <span class="st">"bands"</span>,reducer <span class="op">=</span> <span class="va">evi</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">temporal_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data<span class="op">=</span><span class="va">spectral_reduce</span>,dimension <span class="op">=</span> <span class="st">"t"</span>, reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p>As a “reducer” or “aggregator” function you will have to always create an anonymous function or use a predefined one, with the same amount of process graph parameters. The naming of parameters does not matter, because simply the order matters. To know how to formulate the function, you need to check the back-end processes documentation, e.g. <code>process_viewer(p$reduce_dimension)</code> or <code>describe_process(p$reduce_dimension)</code>.</p>
+<p>As a “reducer” or “aggregator” function you will have to always
+create an anonymous function or use a predefined one, with the same
+amount of process graph parameters. The naming of parameters does not
+matter, because simply the order matters. To know how to formulate the
+function, you need to check the back-end processes documentation,
+e.g. <code>process_viewer(p$reduce_dimension)</code> or
+<code>describe_process(p$reduce_dimension)</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">apply_linear_transform</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">apply</span><span class="op">(</span>data<span class="op">=</span><span class="va">temporal_reduce</span>,process <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span>,<span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">p</span><span class="op">$</span><span class="fu">linear_scale_range</span><span class="op">(</span>x <span class="op">=</span> <span class="va">value</span>, </span>
@@ -275,11 +312,21 @@
 <span>                           outputMin <span class="op">=</span> <span class="fl">0</span>, </span>
 <span>                           outputMax <span class="op">=</span> <span class="fl">255</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
-<p>As a last step we will store the results as a PNG file. The <code>ProcessNode</code> returned from that function will be our end node in the graph and so we will pass it on towards openEO service functions.</p>
+<p>As a last step we will store the results as a PNG file. The
+<code>ProcessNode</code> returned from that function will be our end
+node in the graph and so we will pass it on towards openEO service
+functions.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span>data<span class="op">=</span><span class="va">apply_linear_transform</span>,format<span class="op">=</span><span class="st">"PNG"</span><span class="op">)</span></span></code></pre></div>
-<p>The result might be considered as the final node in this graph. This node we can pass to a processing function like <code><a href="../reference/compute_result.html">compute_result()</a></code> or <code><a href="../reference/create_job.html">create_job()</a></code>. Or we store the process at the back-end in order to be reused (Note: it depends on whether a particular back-end supports the user-defined processes).</p>
-<p>You don’t necessarily need to store each intermediate step in a separate variable, but it might speed things up, when you want to edit some parameters. This means you can write this graph also little tidy’er like this:</p>
+<p>The result might be considered as the final node in this graph. This
+node we can pass to a processing function like
+<code><a href="../reference/compute_result.html">compute_result()</a></code> or <code><a href="../reference/create_job.html">create_job()</a></code>. Or we store
+the process at the back-end in order to be reused (Note: it depends on
+whether a particular back-end supports the user-defined processes).</p>
+<p>You don’t necessarily need to store each intermediate step in a
+separate variable, but it might speed things up, when you want to edit
+some parameters. This means you can write this graph also little tidy’er
+like this:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span></span>
@@ -307,10 +354,21 @@
 <div class="section level2">
 <h2 id="user-defined-processes">User-defined processes<a class="anchor" aria-label="anchor" href="#user-defined-processes"></a>
 </h2>
-<p>So, now we have created a small evi graph and one carrying out the whole processing on the data. In the next steps we store it for later use at the openEO service. The next section depends on the features supported by the connected back-end and might not be present. In any case the next functions showcase the intended use of the user-defined processes. In short, user-defined processes allow you to store your process graphs as reuseable processes on the back-end in the same way predefined-processes exists as the basic graph building blocks. However, the same functionality you already have with the fact, that you can write R scripts and let the code run again, this is the reasoning for back-end provider that don’t support user-defined processes.</p>
+<p>So, now we have created a small evi graph and one carrying out the
+whole processing on the data. In the next steps we store it for later
+use at the openEO service. The next section depends on the features
+supported by the connected back-end and might not be present. In any
+case the next functions showcase the intended use of the user-defined
+processes. In short, user-defined processes allow you to store your
+process graphs as reuseable processes on the back-end in the same way
+predefined-processes exists as the basic graph building blocks. However,
+the same functionality you already have with the fact, that you can
+write R scripts and let the code run again, this is the reasoning for
+back-end provider that don’t support user-defined processes.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_user_processes.html">list_user_processes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>With the next command you can check your process graph locally for potential problems, before even sending it to the back-end.</p>
+<p>With the next command you can check your process graph locally for
+potential problems, before even sending it to the back-end.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/validate_process.html">validate_process</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">evi</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
@@ -320,32 +378,48 @@
 <code class="sourceCode R"><span><span class="va">graph_id</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_user_process.html">create_user_process</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">evi</span>, id <span class="op">=</span> <span class="st">"evi"</span>, summary <span class="op">=</span> <span class="st">"EVI calculation on an array with 3 bands"</span>, description <span class="op">=</span> <span class="st">"The EVI calculation is based on an array of 3 band values: blue, red, nir. In that order."</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_user_processes.html">list_user_processes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>Fetch the process graph definition as a user define openEO process and print it.</p>
+<p>Fetch the process graph definition as a user define openEO process
+and print it.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">evi_process</span> <span class="op">=</span> <span class="fu"><a href="../reference/describe_user_process.html">describe_user_process</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"evi"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">evi_process</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">evi_process</span></span></code></pre></div>
-<p>If you want the graph representation reimported into R, you can use <code>parse_graph</code> on this received <code>ProcessInfo</code> object or you can use the coerce function.</p>
+<p>If you want the graph representation reimported into R, you can use
+<code>parse_graph</code> on this received <code>ProcessInfo</code>
+object or you can use the coerce function.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">evi_graph</span> <span class="op">=</span> <span class="fu"><a href="../reference/parse_graph.html">parse_graph</a></span><span class="op">(</span>json <span class="op">=</span> <span class="va">evi_process</span><span class="op">)</span> <span class="co"># or use as(evi_process,"Graph")</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="udp-minimum-evi">UDP: Minimum EVI<a class="anchor" aria-label="anchor" href="#udp-minimum-evi"></a>
 </h3>
-<p>Note: depending on the supported back-end functionalities storing user-defined processes might not be implemented. But the following code sample shows, how you would create a user-defined processes on the back-end.</p>
+<p>Note: depending on the supported back-end functionalities storing
+user-defined processes might not be implemented. But the following code
+sample shows, how you would create a user-defined processes on the
+back-end.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">min_evi_graph_id</span> <span class="op">=</span> <span class="fu"><a href="../reference/create_user_process.html">create_user_process</a></span><span class="op">(</span> graph <span class="op">=</span> <span class="va">result</span>, id <span class="op">=</span> <span class="st">"min_evi"</span>,summary<span class="op">=</span><span class="st">"Minimum EVI calculation on Sentinel-2"</span>, description <span class="op">=</span> <span class="st">"A preset process graph that will calculate the minimum NDVI on Sentinel-2 data, performs a linear scale into the value interval 0 to 255 in order to store the results as PNG."</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_user_processes.html">list_user_processes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>As this graph has no parameters and will simply run like a pre-configured job, feel free to delete the example process again.</p>
+<p>As this graph has no parameters and will simply run like a
+pre-configured job, feel free to delete the example process again.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/delete_user_process.html">delete_user_process</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">min_evi_graph_id</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="integration-of-user-defined-processes">Integration of user defined processes<a class="anchor" aria-label="anchor" href="#integration-of-user-defined-processes"></a>
 </h3>
-<p>As we have eventually created a user-defined process for the <code>evi</code> function. The openeo package allows you to reuse this processes in a similar way as predefined processes. Instead of <code><a href="../reference/processes.html">processes()</a></code>, you can also use <code><a href="../reference/user_processes.html">user_processes()</a></code> to create a process node builder object. We named the process also <code>evi</code> which helps to reference to the correct processes. We will now use the the complete workflow, where we have stored the intermediate nodes in individual variables. We will then edit the parameter that holds the <code>evi</code> function and replace the function with the user-defined process <code>evi</code>.</p>
+<p>As we have eventually created a user-defined process for the
+<code>evi</code> function. The openeo package allows you to reuse this
+processes in a similar way as predefined processes. Instead of
+<code><a href="../reference/processes.html">processes()</a></code>, you can also use <code><a href="../reference/user_processes.html">user_processes()</a></code>
+to create a process node builder object. We named the process also
+<code>evi</code> which helps to reference to the correct processes. We
+will now use the the complete workflow, where we have stored the
+intermediate nodes in individual variables. We will then edit the
+parameter that holds the <code>evi</code> function and replace the
+function with the user-defined process <code>evi</code>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="../reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">udps</span> <span class="op">=</span> <span class="fu"><a href="../reference/user_processes.html">user_processes</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -355,7 +429,9 @@
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">min_evi_graph</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">result</span>,<span class="st">"Process"</span><span class="op">)</span></span></code></pre></div>
-<p>As all the process nodes and arguments are R6 classes, the value is replaced at object level. The R6 object is uniquely referable which means that the value is updated wherever the process node was used.</p>
+<p>As all the process nodes and arguments are R6 classes, the value is
+replaced at object level. The R6 object is uniquely referable which
+means that the value is updated wherever the process node was used.</p>
 </div>
 </div>
   </div>
@@ -377,7 +453,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>
