@@ -151,7 +151,7 @@ The authors acknowledge the financial support for the development of this packag
 This package received major contributions from the following organizations:
 
 [<img src="https://www.eftas.de/images/branding.png" alt="EFTAS logo" title="EFTAS" height="50">](https://www.eftas.de) &nbsp;
-[<img src="https://www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg" alt="WWU Münster logo" title="WWU Münster" height="50">](https://www.uni-muenster.de/) &nbsp;
+[<img src="https://www.uni-muenster.de/imperia/md/images/allgemein/farbunabhaengig/wwu.svg" alt="WWU Münster logo" title="WWU Münster" height="50">](https://www.uni-muenster.de/de/) &nbsp;
 [<img src="https://www.wur.nl/upload/588ff8ef-9c0d-4c68-a5d3-5a4c5a9cde6b_WUR_RGB_standard_2021-site.svg" alt="Wageningen University logo" title="Wageningen University" height="50">](https://www.wur.nl)
 
 # Links

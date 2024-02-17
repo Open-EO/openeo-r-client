@@ -90,7 +90,9 @@ The authentication changed over the years a lot. *Basic Authentication* was the 
 
 ### RStudio Connection Contract
 
-When using RStudio an additional feature was implemented that allows to inspect the available data sources of a connected back-end by using the RStudio's [Connection Contract](https://solutions.rstudio.com/db/advanced/contract/) to populate the `Connections` Pane. The connection contract is implemented in `.fill_rstudio_connection_observer()` in *client.R*. After connecting the contracts `listObjects` function is called which lists all the available data sets. On extending the view of a specific collection the contracts `listColumns` is invoked. This interacts with the back-end to describe the collection (`describe_collection()`) and the result is parsed into the stated table structure.
+When using RStudio an additional feature was implemented that allows to inspect the available data sources of a connected back-end by using the RStudio's [Connection Contract](https://solutions.posit.co/connections/db/advanced/contract/) to populate the `Connections` Pane. The connection contract is implemented in `.fill_rstudio_connection_observer()` in *client.R*. After connecting the contracts `listObjects` function is called which lists all the available data sets. On extending the view of a specific collection the contracts `listColumns` is invoked. This interacts with the back-end to describe the collection (`describe_collection()`) and the result is parsed into the stated table structure.
 
-    + <Collection>
-      - <dimension>: <description>
+```         
++ <Collection>
+  - <dimension>: <description>
+```
