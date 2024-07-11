@@ -6,27 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Process Graph Building Application • openeo</title>
-<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
-<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
-<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Process Graph Building Application">
-<meta property="og:description" content="openeo">
-<meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -52,7 +44,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -84,7 +76,7 @@
 <li>
   <a href="https://github.com/Open-EO/openeo-r-client/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -95,7 +87,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -103,7 +95,7 @@
       <h1 data-toc-skip>Process Graph Building Application</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Open-EO/openeo-r-client/blob/HEAD/vignettes/openeo-05-process_graph_building_application.Rmd" class="external-link"><code>vignettes/openeo-05-process_graph_building_application.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Open-EO/openeo-r-client/blob/master/vignettes/openeo-05-process_graph_building_application.Rmd" class="external-link"><code>vignettes/openeo-05-process_graph_building_application.Rmd</code></a></small>
       <div class="hidden name"><code>openeo-05-process_graph_building_application.Rmd</code></div>
 
     </div>
@@ -137,7 +129,7 @@ usually done in R by passing a function to a raster calculation function
 like <code>raster::calc</code>. Similarly we use this mechanism in the
 openeo package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client" class="external-link">openeo</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://open-eo.github.io/openeo-r-client/" class="external-link">openeo</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## </span></span>
 <span><span class="co">## Attaching package: 'openeo'</span></span></code></pre>
 <pre><code><span><span class="co">## The following objects are masked from 'package:base':</span></span>
@@ -163,7 +155,7 @@ object is automatically serialized into the JSON graph.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/methods/as.html" class="external-link">as</a></span><span class="op">(</span><span class="va">evi</span>,<span class="st">"Graph"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## {</span></span>
-<span><span class="co">##   "array_element_RLDXZ1357X": {</span></span>
+<span><span class="co">##   "array_element_MWLEF2607D": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -173,7 +165,7 @@ object is automatically serialized into the JSON graph.</p>
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "array_element_XYONM3264G": {</span></span>
+<span><span class="co">##   "array_element_FIEEX4173B": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -183,36 +175,36 @@ object is automatically serialized into the JSON graph.</p>
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "subtract_LTSJW5808V": {</span></span>
+<span><span class="co">##   "subtract_FDPBC9286I": {</span></span>
 <span><span class="co">##     "process_id": "subtract",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": {</span></span>
-<span><span class="co">##         "from_node": "array_element_RLDXZ1357X"</span></span>
+<span><span class="co">##         "from_node": "array_element_MWLEF2607D"</span></span>
 <span><span class="co">##       },</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_XYONM3264G"</span></span>
+<span><span class="co">##         "from_node": "array_element_FIEEX4173B"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_KJSVJ4053Q": {</span></span>
+<span><span class="co">##   "multiply_VJUBQ4276X": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": 2.5,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "subtract_LTSJW5808V"</span></span>
+<span><span class="co">##         "from_node": "subtract_FDPBC9286I"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_PEFDT5978E": {</span></span>
+<span><span class="co">##   "multiply_VAFBS6830A": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": 6,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_XYONM3264G"</span></span>
+<span><span class="co">##         "from_node": "array_element_FIEEX4173B"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "array_element_SHXJL9688U": {</span></span>
+<span><span class="co">##   "array_element_WKKEU3372B": {</span></span>
 <span><span class="co">##     "process_id": "array_element",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": {</span></span>
@@ -222,41 +214,41 @@ object is automatically serialized into the JSON graph.</p>
 <span><span class="co">##       "return_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "multiply_EKYQY8141Q": {</span></span>
+<span><span class="co">##   "multiply_YOREH2784L": {</span></span>
 <span><span class="co">##     "process_id": "multiply",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": -7.5,</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "array_element_SHXJL9688U"</span></span>
+<span><span class="co">##         "from_node": "array_element_WKKEU3372B"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "sum_CMJDR0759C": {</span></span>
+<span><span class="co">##   "sum_SPKZC8322W": {</span></span>
 <span><span class="co">##     "process_id": "sum",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "data": [</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "array_element_RLDXZ1357X"</span></span>
+<span><span class="co">##           "from_node": "array_element_MWLEF2607D"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "multiply_PEFDT5978E"</span></span>
+<span><span class="co">##           "from_node": "multiply_VAFBS6830A"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         {</span></span>
-<span><span class="co">##           "from_node": "multiply_EKYQY8141Q"</span></span>
+<span><span class="co">##           "from_node": "multiply_YOREH2784L"</span></span>
 <span><span class="co">##         },</span></span>
 <span><span class="co">##         1</span></span>
 <span><span class="co">##       ],</span></span>
 <span><span class="co">##       "ignore_nodata": false</span></span>
 <span><span class="co">##     }</span></span>
 <span><span class="co">##   },</span></span>
-<span><span class="co">##   "divide_CZZBI5223M": {</span></span>
+<span><span class="co">##   "divide_JCFDJ2625G": {</span></span>
 <span><span class="co">##     "process_id": "divide",</span></span>
 <span><span class="co">##     "arguments": {</span></span>
 <span><span class="co">##       "x": {</span></span>
-<span><span class="co">##         "from_node": "multiply_KJSVJ4053Q"</span></span>
+<span><span class="co">##         "from_node": "multiply_VJUBQ4276X"</span></span>
 <span><span class="co">##       },</span></span>
 <span><span class="co">##       "y": {</span></span>
-<span><span class="co">##         "from_node": "sum_CMJDR0759C"</span></span>
+<span><span class="co">##         "from_node": "sum_SPKZC8322W"</span></span>
 <span><span class="co">##       }</span></span>
 <span><span class="co">##     },</span></span>
 <span><span class="co">##     "result": true</span></span>
@@ -438,9 +430,7 @@ means that the value is updated wherever the process node was used.</p>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -453,16 +443,16 @@ means that the value is updated wherever the process node was used.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
