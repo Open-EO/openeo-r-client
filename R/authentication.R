@@ -168,6 +168,7 @@ BasicAuth <- R6Class(
 #' \itemize{
 #'   \item{authorization_code}
 #'   \item{authorization_code+pkce}
+#'   \item{client_credentials}
 #'   \item{urn:ietf:params:oauth:grant-type:device_code}
 #'   \item{urn:ietf:params:oauth:grant-type:device_code+pkce}
 #' }
