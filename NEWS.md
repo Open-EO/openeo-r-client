@@ -1,3 +1,9 @@
+# Version 1.4.0
+
+## Added
+
+* compute_result, create_job, update_job, create_service and update_service have an additional parameter to inject custom properties into the request (e.g., to set memory or CPU limits)
+
 # Version 1.3.1
 
 ## Added

@@ -63,6 +63,7 @@ setClass("Job")
 #' @param as_stars logical to indicate if the data shall be interpreted as a stars object
 #' @param format character or `FileFormat` specifying the File format for the output, if 'save_result' is not
 #' set in the process then it will be added otherwise the value stated here will replace the original value.
+#' @param additional Additional, non-standardized job settings to send to the back-end
 #' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits') or additional arguments that shall 
@@ -72,7 +73,7 @@ setClass("Job")
 #' 
 #' @importFrom methods as
 #' @export
-compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_stars=FALSE, format = NULL, con=NULL, ...) {
+compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_stars=FALSE, format = NULL, additional = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         output = list()
@@ -151,6 +152,10 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
             job$plan = plan
         }
         
+        if (!is.null(additional)) {
+            job = c(job, additional)
+        }
+        
         is_tempfile = ifelse(length(output_file) == 0,TRUE,FALSE)
         
         tag = "execute_sync"
@@ -213,13 +218,14 @@ compute_result = function(graph, output_file = NULL, budget=NULL, plan=NULL, as_
 #' @param description Optional detailed information about a job
 #' @param plan An optional execution plan offered by the back-end, determining how the job will be executed
 #' @param budget An optional budget, which sets the maximum amount of credits to be used by the job
+#' @param additional Additional, non-standardized job settings to send to the back-end
 #' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @return the id of the job
 #' @export
-create_job = function(graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
+create_job = function(graph = NULL, title = NULL, description = NULL, plan = NULL, budget = NULL, additional = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -233,6 +239,8 @@ create_job = function(graph = NULL, title = NULL, description = NULL, plan = NUL
             job$plan = plan
         if (!is.null(budget)) 
             job$budget = budget
+        if (!is.null(additional))
+            job = c(job, additional)
         
         # build an empty process
         if (!is.null(graph)) {
@@ -320,12 +328,13 @@ start_job = function(job, log=FALSE, con=NULL) {
 #' will return the results or a self defined [Process()]
 #' @param plan replaces plan with the set value
 #' @param budget replaces or sets the credits that can be spent at maximum
+#' @param additional Additional, non-standardized job settings to send to the back-end
 #' @param con connected and authenticated openEO client (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #' 
 #' @export
-update_job = function(id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
+update_job = function(id, title = NULL, description = NULL, process = NULL, plan = NULL, budget = NULL, additional = NULL, con=NULL, ...) {
     tryCatch({
         con = .assure_connection(con)
         
@@ -360,6 +369,10 @@ update_job = function(id, title = NULL, description = NULL, process = NULL, plan
         
         if (!is.null(budget)) {
             patch$budget = budget
+        }
+        
+        if (!is.null(additional)) {
+            patch = c(patch, additional)
         }
         
         tag = "jobs_update"
