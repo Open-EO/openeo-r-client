@@ -46,13 +46,14 @@ list_services = function(con=NULL) {
 #' @param configuration a named list specifying the configuration parameter
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent on this service
+#' @param additional Additional, non-standardized service settings to send to the back-end
 #' @param con connected and authenticated openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
 #'  
 #' @return Service object
 #' @export
-create_service = function(type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
+create_service = function(type, graph, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, additional = NULL, con=NULL, ...) {
     tryCatch({
         if (is.null(type)) {
             stop("No type specified.")
@@ -67,6 +68,10 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
                                       configuration = configuration, 
                                       plan = plan, 
                                       budget = budget)
+        
+        if (!is.null(additional)) {
+          service_request_object = c(service_request_object, additional)
+        }
         
         # build an empty process
         if (!is.null(graph)) {
@@ -118,6 +123,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' @param configuration a list of service creation configuration
 #' @param plan character - the billing plan
 #' @param budget numeric - the amount of credits that can be spent for this service
+#' @param additional Additional, non-standardized service settings to send to the back-end
 #' @param con connected and authorized openEO client object (optional) otherwise [active_connection()]
 #' is used.
 #' @param ... additional parameters passed to jsonlite::toJSON() (like 'digits')
@@ -125,7 +131,7 @@ create_service = function(type, graph, title = NULL, description = NULL, enabled
 #' @return Service object
 #' 
 #' @export
-update_service = function(service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, con=NULL, ...) {
+update_service = function(service, type = NULL, graph = NULL, title = NULL, description = NULL, enabled = NULL, configuration = NULL, plan = NULL, budget = NULL, additional = NULL, con=NULL, ...) {
     
     tryCatch({
         patch = list()
@@ -218,6 +224,10 @@ update_service = function(service, type = NULL, graph = NULL, title = NULL, desc
             } else {
                 patch[["budget"]] = NULL
             }
+        }
+        
+        if (!is.null(additional)) {
+          patch = c(patch, additional)
         }
         
         tag = "services_update"
