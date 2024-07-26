@@ -1,8 +1,13 @@
+# Version 1.4.0
+
+## Added
+
+* Support for the OpenID Connect Client Credentials flow
+
 # Version 1.3.1
 
 ## Added
 * internal functions to serialize and load the session information like connection, process collection, etc.
-* Support for the OpenID Connect Client Credentials flow
 
 ## Changed
 * changed OIDC provider and default client selection
