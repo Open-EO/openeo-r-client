@@ -254,11 +254,6 @@ AbstractOIDCAuthentication <- R6Class(
         private$scopes = list("openid")
       } else {
         private$scopes = provider$scopes
-        
-        #TODO remove later, this is used for automatic reconnect
-        if (!"offline_access" %in% private$scopes) {
-          private$scopes = c(private$scopes, "offline_access")
-        }
       }
       
       private$getEndpoints()
@@ -269,8 +264,8 @@ AbstractOIDCAuthentication <- R6Class(
       
       private$client_id = config$client_id
       
-      if (private$grant_type == "authorization_code") {
-        # in this case we need a client_id and secrect, which is basically the old OIDC Auth Code implementation
+      if (private$grant_type == "authorization_code" || private$grant_type == "client_credentials") {
+        # in this case we need a client_id and secrect
         if (!all(c("client_id","secret") %in% names(config))) {
           stop("'client_id' and 'secret' are not present in the configuration.")
         }
@@ -282,7 +277,6 @@ AbstractOIDCAuthentication <- R6Class(
           secret = config$secret
         )
       } else {
-      
         private$oauth_client = oauth_client(
           id = private$client_id,
           token_url = private$endpoints$token_endpoint,
@@ -448,16 +442,9 @@ OIDCDeviceCodeFlow <- R6Class(
   public = list(
     # functions ####
     login = function() {
-      
-      client <- oauth_client(
-        id = private$client_id,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-
       private$auth = rlang::with_interactive(
                       oauth_flow_device(
-                        client = client,
+                        client = private$oauth_client,
                         auth_url = private$endpoints$device_authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " ")
                       ),
@@ -490,16 +477,9 @@ OIDCDeviceCodeFlowPkce <- R6Class(
   public = list(
     # functions ####
     login = function() {
-      
-      client <- oauth_client(
-        id = private$client_id,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-
       private$auth = rlang::with_interactive(
                       oauth_flow_device(
-                        client = client,
+                        client = private$oauth_client,
                         auth_url = private$endpoints$device_authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
                         pkce = TRUE
@@ -535,16 +515,9 @@ OIDCAuthCodeFlowPKCE <- R6Class(
     # attributes ####
     # functions ####
     login = function() {
-
-      client <- oauth_client(
-        id = private$client_id,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-
       private$auth = rlang::with_interactive(
                       oauth_flow_auth_code(
-                        client = client,
+                        client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
                         pkce = TRUE,
@@ -582,15 +555,9 @@ OIDCAuthCodeFlow <- R6Class(
     
     # functions ####
     login = function() {
-      client <- oauth_client(
-        id = private$client_id,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-
       private$auth = rlang::with_interactive(
                       oauth_flow_auth_code(
-                        client = client,
+                        client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
                         pkce = FALSE,
@@ -626,16 +593,8 @@ OIDCClientCredentialsFlow <- R6Class(
   public = list(
     # functions ####
     login = function() {
-      
-      client <- oauth_client(
-        id = private$client_id,
-        secret = private$secret,
-        token_url = private$endpoints$token_endpoint,
-        name = "openeo-r-oidc-auth"
-      )
-
       private$auth = oauth_flow_client_credentials(
-                        client = client,
+                        client = private$oauth_client,
                         scope = paste0(private$scopes, collapse = " ")
                       )
 

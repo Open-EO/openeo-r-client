@@ -369,8 +369,6 @@ OpenEOClient <- R6Class(
     loginOIDC = function(provider = NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
-          
-          
             # old implementation
             # probably fetch resolve the potential string into a provider here
             provider = .get_oidc_provider(provider)
@@ -418,7 +416,7 @@ OpenEOClient <- R6Class(
               }
             }
             
-            if (has_default_clients && !client_id_given) {
+            if (is.null(private$auth_client) && has_default_clients && !client_id_given) {
               default_clients = provider[["default_clients"]]
 
               # check whether user has chosen a grant type
@@ -439,24 +437,24 @@ OpenEOClient <- R6Class(
                 }
               } 
               
-              
-              
               if (is.null(config$client_id)) {
                 stop("Please provide a client id or a valid combination of client_id and grant_type.")
               }
             }
             
-            has_grant = "grant_type" %in% names(config)
-            if (has_grant && device_pkce == config$grant_type) {
-              private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
-            } else if (has_grant && device_code == config$grant_type) {
-              private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
-            } else if (has_grant && client_credentials == config$grant_type) {
-              private$auth_client = OIDCClientCredentialsFlow$new(provider=provider, config = config)
-            } else if (is.null(config$grant_type) || (has_grant && auth_pkce == config$grant_type)) {
-              private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
+            if (is.null(private$auth_client)) {
+              has_grant = "grant_type" %in% names(config)
+              if (has_grant && device_pkce == config$grant_type) {
+                private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
+              } else if (has_grant && device_code == config$grant_type) {
+                private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
+              } else if (has_grant && client_credentials == config$grant_type) {
+                private$auth_client = OIDCClientCredentialsFlow$new(provider=provider, config = config)
+              } else if (is.null(config$grant_type) || (has_grant && auth_pkce == config$grant_type)) {
+                private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
+              }
             }
-            
+
             if (is.null(private$auth_client)) {
               stop("The grant_type selected is not supported")
             }
