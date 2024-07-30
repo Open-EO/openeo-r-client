@@ -254,6 +254,11 @@ AbstractOIDCAuthentication <- R6Class(
         private$scopes = list("openid")
       } else {
         private$scopes = provider$scopes
+
+        #TODO remove later, this is used for automatic reconnect
+        if (private$grant_type != "client_credentials" && !"offline_access" %in% private$scopes) {
+          private$scopes = c(private$scopes, "offline_access")
+        }
       }
       
       private$getEndpoints()
