@@ -399,7 +399,7 @@ Argument = R6Class(
 #' @name Integer
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -453,7 +453,7 @@ Integer = R6Class(
 #' @name EPSGCode
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -514,7 +514,7 @@ EPSGCode = R6Class(
 #' @name Number
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -588,7 +588,7 @@ Number = R6Class(
 #' @name String
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -712,7 +712,7 @@ URI = R6Class(
 #' @name OutputFormat
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -775,7 +775,7 @@ OutputFormat = R6Class(
 #' @name CollectionId
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -852,7 +852,7 @@ CollectionId = R6Class(
 #' @name JobId
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -910,7 +910,7 @@ JobId = R6Class(
 #' @name UdfRuntimeArgument
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -965,7 +965,7 @@ UdfRuntimeArgument = R6Class(
 #' @name UdfRuntimeVersionArgument
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1022,7 +1022,7 @@ UdfRuntimeVersionArgument = R6Class(
 #' @name UdfCodeArgument
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1111,7 +1111,7 @@ UdfCodeArgument = R6Class(
 #' @name ProcessGraphId
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1169,7 +1169,7 @@ ProcessGraphId = R6Class(
 #' @name ProjDefinition
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1225,7 +1225,7 @@ ProjDefinition = R6Class(
 #' @name BoundingBox
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1447,7 +1447,7 @@ BoundingBox = R6Class(
 #' @name Boolean
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1507,7 +1507,7 @@ Boolean = R6Class(
 #' @name Date
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1560,7 +1560,7 @@ Date = R6Class(
 #' @name DateTime
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1615,7 +1615,7 @@ DateTime = R6Class(
 #' @name Time
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1686,7 +1686,7 @@ Time = R6Class(
 #' @name GeoJson
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1817,7 +1817,7 @@ GeoJson = R6Class(
 #' @name OutputFormatOptions
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1854,17 +1854,68 @@ OutputFormatOptions = R6Class(
   )
 )
 
+# DataCube ====
+#' DataCube
+#' 
+#' Inheriting from [Argument()] in order to represent a data cube. This is usually the in- and 
+#' output format of a process unless the process operates within a ProcessGraph on reduced data.  
+#' 
+#' @name DataCube
+#' 
+#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
+#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
+#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
+#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
+#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
+#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' 
+#' @return Object of [R6Class()] representing a data cube.
+NULL
+
+DataCube = R6Class(
+  "datacube",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$subtype = "datacube"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      # a data data cube can only be derived by process, e.g. get_collection so this
+      # value should be a ProcessNode
+      if (! "ProcessNode" %in% class(private$value)) stop("DataCube is not retreived by process.")
+      
+      invisible(NULL)
+    },
+    typeSerialization = function() {
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serializeAsReference())
+      }
+      
+      return(as.character(private$value))
+    }
+  )
+)
+
 # RasterCube ====
 #' RasterCube
 #' 
-#' Inheriting from [Argument()] in order to represent a raster cube. This is usually the in- and 
+#' Inheriting from [DataCube()] in order to represent a raster cube. This is usually the in- and 
 #' output format of a process unless the process operates within a ProcessGraph on reduced data.  
 #' The [VectorCube()] behaves comparably, but with underlying spatial feature data.
 #' 
 #' @name RasterCube
+#'
+#' @deprecated
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [VectorCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1876,7 +1927,7 @@ NULL
 
 RasterCube = R6Class(
   "raster-cube",
-  inherit=Argument,
+  inherit=DataCube,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
       private$name = name
@@ -1907,13 +1958,15 @@ RasterCube = R6Class(
 # VectorCube ====
 #' VectorCube
 #' 
-#' Inheriting from [Argument()] in order to represent a vector cube. This is analogous to
+#' Inheriting from [DataCube()] in order to represent a vector cube. This is analogous to
 #' the [RasterCube()].
 #' 
 #' @name VectorCube
+#'
+#' @deprecated
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [RasterCube()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -1925,7 +1978,7 @@ NULL
 
 VectorCube = R6Class(
   "vector-cube",
-  inherit=Argument,
+  inherit=DataCube,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
       private$name = name
@@ -1980,7 +2033,7 @@ VectorCube = R6Class(
 #' @name ProcessGraphArgument
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2099,7 +2152,7 @@ ProcessGraphArgument = R6Class(
 #' @name ProcessGraphParameter
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2193,7 +2246,7 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #' }
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2432,7 +2485,7 @@ Array = R6Class(
 #' @name Kernel
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2497,7 +2550,7 @@ Kernel = R6Class(
 #' @name TemporalInterval
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2540,7 +2593,7 @@ TemporalInterval = R6Class(
 #' @name TemporalIntervals
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2590,7 +2643,7 @@ TemporalIntervals = R6Class(
 #' @name MetadataFilter
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2704,7 +2757,7 @@ MetadataFilter <- R6Class(
 #' @name AnyOf
 #' 
 #' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
+#' [Date()], [DataCube()], [ProcessGraphArgument()], 
 #' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
 #' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
 #' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
@@ -2900,7 +2953,8 @@ findParameterGenerator = function(schema) {
                                Boolean,
                                BoundingBox,
                                GeoJson,
-                               RasterCube, 
+                               DataCube,
+                               RasterCube,
                                VectorCube,
                                String,
                                CollectionId,
