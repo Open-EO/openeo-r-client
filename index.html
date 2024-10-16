@@ -192,51 +192,51 @@
 <h1 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h1>
 <p>The following code sample shows how to create a processing workflow that calculates the minimum NDVI of a spatial and temporal subset on Sentinel-2 data and perform a linear scaling to store the results as PNG file.</p>
-<pre><code>library(openeo)
-connect(host="https://earthengine.openeo.org")
-
-# list collection and processes
-colls = list_collections()
-list_processes()
-
-# get detailed descriptions
-describe_collection("COPERNICUS/S2")
-describe_process("load_collection")
-
-# create a process graph / task
-p = processes()
-
-data = p$load_collection(id = colls$`COPERNICUS/S2`,
-                             spatial_extent = list(
-                               west=16.1,
-                               east=16.6,
-                               north=48.6,
-                               south= 47.2
-                             ),
-                             temporal_extent = list(
-                               "2018-04-01", "2018-05-01"
-                             ),
-                             bands=list("B8","B4")))
-
-spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
-  B08 = data[1]
-  B04 = data[2]
-  return((B08-B04)/(B08+B04))
-})
-
-temporal_reduce = p$reduce_dimension(data=spectral_reduce,dimension = "t", reducer = function(x,y){
-  p$min(x)
-})
-
-apply_linear_transform = p$apply(data=temporal_reduce,process = function(value,...) {
-  p$linear_scale_range(x = value,
-                           inputMin = -1,
-                           inputMax = 1,
-                           outputMin = 0,
-                           outputMax = 255)
-})
-
-result = p$save_result(data=apply_linear_transform,format="PNG")</code></pre>
+<pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://open-eo.github.io/openeo-r-client/" class="external-link">openeo</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/connect.html">connect</a></span><span class="op">(</span>host<span class="op">=</span><span class="st">"https://earthengine.openeo.org"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># list collection and processes</span></span>
+<span><span class="va">colls</span> <span class="op">=</span> <span class="fu"><a href="reference/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/list_processes.html">list_processes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># get detailed descriptions</span></span>
+<span><span class="fu"><a href="reference/describe_collection.html">describe_collection</a></span><span class="op">(</span><span class="st">"COPERNICUS/S2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/describe_process.html">describe_process</a></span><span class="op">(</span><span class="st">"load_collection"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># create a process graph / task</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="reference/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">load_collection</span><span class="op">(</span>id <span class="op">=</span> <span class="va">colls</span><span class="op">$</span><span class="va">`COPERNICUS/S2`</span>,</span>
+<span>                             spatial_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                               west<span class="op">=</span><span class="fl">16.1</span>,</span>
+<span>                               east<span class="op">=</span><span class="fl">16.6</span>,</span>
+<span>                               north<span class="op">=</span><span class="fl">48.6</span>,</span>
+<span>                               south<span class="op">=</span> <span class="fl">47.2</span></span>
+<span>                             <span class="op">)</span>,</span>
+<span>                             temporal_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>                               <span class="st">"2018-04-01"</span>, <span class="st">"2018-05-01"</span></span>
+<span>                             <span class="op">)</span>,</span>
+<span>                             bands<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"B8"</span>,<span class="st">"B4"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">spectral_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">data</span>, dimension <span class="op">=</span> <span class="st">"bands"</span>,reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>,<span class="va">context</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">B08</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="va">B04</span> <span class="op">=</span> <span class="va">data</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">(</span><span class="va">B08</span><span class="op">-</span><span class="va">B04</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">B08</span><span class="op">+</span><span class="va">B04</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">temporal_reduce</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data<span class="op">=</span><span class="va">spectral_reduce</span>,dimension <span class="op">=</span> <span class="st">"t"</span>, reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">p</span><span class="op">$</span><span class="fu">min</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">apply_linear_transform</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">apply</span><span class="op">(</span>data<span class="op">=</span><span class="va">temporal_reduce</span>,process <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">value</span>,<span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">p</span><span class="op">$</span><span class="fu">linear_scale_range</span><span class="op">(</span>x <span class="op">=</span> <span class="va">value</span>,</span>
+<span>                           inputMin <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>                           inputMax <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>                           outputMin <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>                           outputMax <span class="op">=</span> <span class="fl">255</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span>data<span class="op">=</span><span class="va">apply_linear_transform</span>,format<span class="op">=</span><span class="st">"PNG"</span><span class="op">)</span></span></code></pre>
 <p>At this point (latest here) you need to log in with your personal credentials for further computations.</p>
 <pre><code><span><span class="fu"><a href="reference/login.html">login</a></span><span class="op">(</span>user<span class="op">=</span><span class="st">""</span>,password<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="va">job_id</span> <span class="op">=</span> <span class="fu"><a href="reference/create_job.html">create_job</a></span><span class="op">(</span>graph<span class="op">=</span><span class="va">result</span>, title<span class="op">=</span><span class="st">"Example graph"</span>, description<span class="op">=</span><span class="st">"This graph is just a general example"</span>,format<span class="op">=</span><span class="st">"png"</span><span class="op">)</span></span>
@@ -326,7 +326,7 @@ result = p$save_result(data=apply_linear_transform,format="PNG")</code></pre>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
