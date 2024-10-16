@@ -96,7 +96,7 @@ data = p$load_collection(id = colls$`COPERNICUS/S2`,
                              temporal_extent = list(
                                "2018-04-01", "2018-05-01"
                              ),
-                             bands=list("B8","B4")))
+                             bands=list("B8","B4"))
 
 spectral_reduce = p$reduce_dimension(data = data, dimension = "bands",reducer = function(data,context) {
   B08 = data[1]
