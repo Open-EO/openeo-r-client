@@ -20,6 +20,8 @@ This client supports the following interaction mechanisms (grant types):
 \itemize{
 \item{authorization_code}
 \item{authorization_code+pkce}
+\item{client_credentials}
+\item{urn:ietf:params:oauth:grant-type:device_code}
 \item{urn:ietf:params:oauth:grant-type:device_code+pkce}
 }
 
@@ -47,6 +49,11 @@ the console or if R runs in the interactive mode the internet browser will be op
 This mechanism uses a designated device code for human confirmation. It is closely related to the device_code+pkce code flow,
 but without the additional PKCE negotiation.
 }
+
+\subsection{client_credentials}{
+This mechanism is used to verify a certain client, not a specific user. It requires a client id and secret and is meant for machine-to-machine workflows.
+}
+
 }
 \section{Fields}{
 
