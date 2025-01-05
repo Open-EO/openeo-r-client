@@ -10,6 +10,7 @@ create_job(
   description = NULL,
   plan = NULL,
   budget = NULL,
+  additional = NULL,
   con = NULL,
   ...
 )
@@ -25,6 +26,8 @@ will return the results}
 \item{plan}{An optional execution plan offered by the back-end, determining how the job will be executed}
 
 \item{budget}{An optional budget, which sets the maximum amount of credits to be used by the job}
+
+\item{additional}{Additional, non-standardized job settings to send to the back-end}
 
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}

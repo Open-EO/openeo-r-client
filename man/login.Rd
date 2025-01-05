@@ -52,7 +52,6 @@ list. You can then use the following values:
 \item authorization_code+pkce
 \item urn:ietf:params:oauth:grant-type:device_code
 \item urn:ietf:params:oauth:grant-type:device_code+pkce
-\item client_credentials
 }
 }
 \section{Configuration options}{

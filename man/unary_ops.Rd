@@ -97,9 +97,9 @@
 
 \method{log}{ProcessGraphParameter}(x, base = exp(1))
 
-\method{log10}{ProcessNode}(x)
+log10.ProcessNode(x)
 
-\method{log10}{ProcessGraphParameter}(x)
+log10.ProcessGraphParameter(x)
 
 \method{cos}{ProcessNode}(x)
 

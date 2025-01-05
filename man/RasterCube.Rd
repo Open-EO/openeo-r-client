@@ -7,13 +7,13 @@
 Object of \code{\link[=R6Class]{R6Class()}} representing a raster cube.
 }
 \description{
-Inheriting from \code{\link[=Argument]{Argument()}} in order to represent a raster cube. This is usually the in- and
+Inheriting from \code{\link[=DataCube]{DataCube()}} in order to represent a raster cube. This is usually the in- and
 output format of a process unless the process operates within a ProcessGraph on reduced data.
 The \code{\link[=VectorCube]{VectorCube()}} behaves comparably, but with underlying spatial feature data.
 }
 \seealso{
 \code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
-\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
+\code{\link[=Date]{Date()}}, \code{\link[=DataCube]{DataCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
 \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
 \code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
 \code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
