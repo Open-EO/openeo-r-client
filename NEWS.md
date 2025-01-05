@@ -10,6 +10,10 @@
 
 * OpenID Connect scopes can be provided as lists
 
+## Fixed
+
+* `describe_collection` and `collection_viewer` accept string IDs again
+
 # Version 1.3.1
 
 ## Added
