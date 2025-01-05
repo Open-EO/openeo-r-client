@@ -248,8 +248,12 @@ AbstractOIDCAuthentication <- R6Class(
       }
       
       # user knows best, allow custom scopes...
-      if (length(config$scopes) > 0 && is.character(config$scopes)) {
-        private$scopes = config$scopes
+      if (length(config$scopes) > 0) {
+        if (is.character(config$scopes)) {
+          private$scopes = list(config$scopes)
+        } else {
+          private$scopes = config$scopes
+        }
       } else if (length(provider$scopes) == 0) {
         private$scopes = list("openid")
       } else {
