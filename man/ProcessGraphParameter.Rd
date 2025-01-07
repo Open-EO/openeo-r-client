@@ -4,21 +4,21 @@
 \alias{ProcessGraphParameter}
 \title{ProcessGraphParameter}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} representing a ProcessGraph value.
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} representing a ProcessGraph value.
 }
 \description{
-Inheriting from \code{\link[=Argument]{Argument()}} in order to represent the available data within a ProcessGraph graph.
+Inheriting from \link{Argument} in order to represent the available data within a ProcessGraph graph.
 Additional information can be found in the openEO API documentation:
 \itemize{
 \item \url{https://api.openeo.org/#section/Processes/Process-Graphs}
 }
 }
 \seealso{
-\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
-\code{\link[=Date]{Date()}}, \code{\link[=DataCube]{DataCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
-\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
-\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
-\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
-\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
-\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
+\link{Array}, \link{Integer}, \link{EPSGCode}, \link{String}, \link{Number},
+\link{Date}, \link{DataCube}, \link{ProcessGraphArgument},
+\link{ProcessGraphParameter}, \link{OutputFormatOptions}, \link{GeoJson},
+\link{Boolean}, \link{DateTime}, \link{Time}, \link{BoundingBox}, \link{Kernel},
+\link{TemporalInterval}, \link{TemporalIntervals}, \link{CollectionId}, \link{OutputFormat},
+\link{AnyOf}, \link{ProjDefinition}, \link{UdfCodeArgument}, \link{UdfRuntimeArgument} and
+\link{UdfRuntimeVersionArgument}, \link{MetadataFilter}
 }

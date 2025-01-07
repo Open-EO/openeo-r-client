@@ -4,7 +4,7 @@
 \alias{Graph}
 \title{Graph object}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} with methods for building an openEO process graph
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} with methods for building an openEO process graph
 }
 \description{
 This class represents an openEO process graph - which is generally denoted as field \code{process_graph}

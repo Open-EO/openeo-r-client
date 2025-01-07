@@ -63,7 +63,7 @@ IAuth <- R6Class(
 #'   \item{`password`}{the user password}
 #' }
 #'
-#' @return an object of type [R6Class()] representing basic authentication
+#' @return an object of type [R6::R6Class()] representing basic authentication
 #' @importFrom R6 R6Class
 NULL
 

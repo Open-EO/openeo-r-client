@@ -36,11 +36,12 @@ pkgEnvironment = new.env()
 #' Lists all currently deprecated functions that will be removed in the future.
 #' 
 #' @name openeo-deprecated
-#' @rdname openeo-deprecated
 #' 
 #' @section Deprecated:
 #' \describe{
 #'  \item{graphToJSON(x,...)}{replaced by toJSON}
 #'  \item{processToJSON(x,...)}{replaced by toJSON}
+#'  \item{RasterCube}{superseeded by DataCube}
+#'  \item{VectorCube}{superseeded by DataCube}
 #' }
 NULL

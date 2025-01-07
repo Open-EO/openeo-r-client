@@ -16,7 +16,7 @@
 #' 
 #' 
 #' @name Graph
-#' @return Object of [R6Class()] with methods for building an openEO process graph
+#' @return Object of [R6::R6Class()] with methods for building an openEO process graph
 #' 
 #' @field data a named list of collection ids or process graph parameters depending on the context
 #' @section Methods:
@@ -184,7 +184,7 @@ setOldClass(c("Graph","R6"))
 #' 
 #' @name Process
 #' 
-#' @return Object of [R6Class()] with methods for storing meta data of back-end processes and user assigned data
+#' @return Object of [R6::R6Class()] with methods for storing meta data of back-end processes and user assigned data
 #' 
 #' @field parameters - a named list of Argument objects
 #' @field isUserDefined logical - depending if the process is offered by the openEO service or if it was user defined

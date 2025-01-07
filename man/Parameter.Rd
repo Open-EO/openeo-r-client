@@ -4,12 +4,12 @@
 \alias{Parameter}
 \title{Parameter class}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} which represents a parameter.
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} which represents a parameter.
 }
 \description{
-This class defines parameters of \code{\link[=Process]{Process()}}. They store information about the type, format and
+This class defines parameters of \link{Process}. They store information about the type, format and
 pattern. A parameter class is designed to not carry any value, as opposed to an
-\code{\link[=Argument]{Argument()}}.
+\link{Argument}.
 }
 \details{
 The parameters are parsed from the specific description and format of the JSON
