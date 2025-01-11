@@ -482,8 +482,13 @@ OpenEOClient <- R6Class(
         #endpoint,user,password
         private$auth_client = BasicAuth$new(endpoint,user,password)
 
+        # user_id is probably user in BasicAuth, is this a relict from openeo 0.4?
         self$user_id = private$auth_client$login()
         cat("Login successful.\n")
+        
+        # in case there was no user_id provided in the authentication, set this user as user_id
+        if (length(self$user_id)==0) self$user_id = user
+        
         return(invisible(self))
 
       },

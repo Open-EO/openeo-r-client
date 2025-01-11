@@ -423,7 +423,7 @@ Integer = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Integer cannot be an array.")
-      if (!is.na(private$value) && !is.integer(private$value)) {
+      if (!rlang::is_na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -479,7 +479,7 @@ EPSGCode = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("EPSG code cannot be an array.")
       
-      if (!is.na(private$value) && !is.integer(private$value)) {
+      if (!rlang::is_na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -554,7 +554,7 @@ Number = R6Class(
         
         # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
           
-      } else if (!is.na(private$value) && !is.numeric(private$value)) {
+      } else if (!rlang::is_na(private$value) && !is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -614,7 +614,7 @@ String = R6Class(
       if (length(private$value) > 1 && !is.environment(private$value) && 
           !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -644,7 +644,7 @@ String = R6Class(
         return(private$value)
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (!is.environment(private$value) && is.na(private$value)) {
+      } else if (!is.environment(private$value) && rlang::is_na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -671,7 +671,7 @@ URI = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("URI cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -741,7 +741,7 @@ OutputFormat = R6Class(
           !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
     
       if (!"FileFormat" %in% class(private$value)) {
-        if (!is.na(private$value) && !is.character(private$value)) {
+        if (!rlang::is_na(private$value) && !is.character(private$value)) {
           suppressWarnings({
             coerced = as.character(private$value)
           })
@@ -800,7 +800,7 @@ CollectionId = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value) && ! "Collection" %in% class(private$value)) stop("Collection ID cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
           suppressWarnings({
@@ -879,7 +879,7 @@ JobId = R6Class(
       if (length(private$value) > 1 && 
           !is.environment(private$value) && 
           !"Job" %in% class(private$value)) stop("Job id cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -937,7 +937,7 @@ UdfRuntimeArgument = R6Class(
       if (length(private$value) > 1 && 
           !is.environment(private$value) && 
           !"UdfRuntime" %in% class(private$value)) stop("UDF runtime cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -993,7 +993,7 @@ UdfRuntimeVersionArgument = R6Class(
           !is.environment(private$value) && 
           !"UdfRuntimeVersion" %in% class(private$value)) stop("UDF runtime version cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1094,7 +1094,7 @@ UdfCodeArgument = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (!is.environment(private$value) && is.na(private$value)) {
+      } else if (!is.environment(private$value) && rlang::is_na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1137,7 +1137,7 @@ ProcessGraphId = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Process graph id cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1194,7 +1194,7 @@ ProjDefinition = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("PROJ definition cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1479,7 +1479,7 @@ Boolean = R6Class(
         return(invisible(NULL))
       }
       
-      if (!is.na(private$value) && !is.logical(private$value)) {
+      if (!rlang::is_na(private$value) && !is.logical(private$value)) {
         suppressWarnings({
           coerced = as.logical(private$value)
         })
@@ -1532,7 +1532,7 @@ Date = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Date cannot be an array.")
-      if (!is.na(private$value) && !is.Date(private$value)) {
+      if (!rlang::is_na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
         })
@@ -1587,7 +1587,7 @@ DateTime = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Timestamp cannot be an array.")
-      if (!is.na(private$value) && !is.POSIXct(private$value)) {
+      if (!rlang::is_na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
         })
@@ -1651,7 +1651,7 @@ Time = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Time cannot be an array.")
-      if (!is.na(private$value) && !is.POSIXct(private$value)) {
+      if (!rlang::is_na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
         })
@@ -3021,6 +3021,10 @@ parameterFromJson = function(param_def) {
   if (length(param_def$schema) == 0) {
     # an empty schema means ANY value is allowed
     arg = Argument$new()
+    
+    if (length(param_def$name) > 0) {
+      arg$setName(param_def$name)
+    }
     
     if (length(param_def$description) > 0) {
       arg$setDescription(param_def$description)
