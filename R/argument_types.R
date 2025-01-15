@@ -546,8 +546,8 @@ Number = R6Class(
       
       if ("ProcessNode" %in% class(private$value)) {
         return_value = private$value$getReturns()
-        if (!any(c("number","integer") %in% class(return_value) && 
-                 length(return_value$getSchema()$type)) != 0) {
+        if (!any(c("number","integer") %in% class(return_value)) && 
+                 length(return_value$getSchema()$type) != 0) {
           
           stop(paste0("Value 'ProcessNode' returns neither the ANY object nor a number."))
         }

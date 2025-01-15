@@ -15,6 +15,7 @@
 * `describe_collection` and `collection_viewer` accept string IDs again
 * fixed issues when creating an `Argument` without schema
 * replaced `is.na()` with `rlang::is_na()` in several occurrences in the `$typeCheck()` functions of argument classes, because is.na on lists and objects returns more than one result
+* fixed `Number` validation with Argument `ProcessNode`
 
 # Version 1.3.1
 
