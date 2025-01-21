@@ -227,7 +227,9 @@ AbstractOIDCAuthentication <- R6Class(
       args = list(...)
       if ("force" %in% names(args)) private$force_use = args[["force"]]
       # comfort function select provider by name if one is provided
-      provider = .get_oidc_provider(provider)
+      if (class(provider) != "Provider") {
+        provider = .get_oidc_provider(provider)
+      }
       
       private$setIssuer(provider$issuer)
       
@@ -627,6 +629,10 @@ OIDCClientCredentialsFlow <- R6Class(
 
 # utility functions ----
 .get_oidc_provider = function(provider, oidc_providers=NULL) {
+  if (is.debugging()) {
+    if (class(provider) == "Provider") return(provider)
+  }
+  
   if (is.null(oidc_providers)) {
     oidc_providers = list_oidc_providers()
   }

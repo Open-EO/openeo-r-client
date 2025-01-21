@@ -9,6 +9,7 @@
 ## Changed
 
 * OpenID Connect scopes can be provided as lists
+* changed authentication setup for OIDC to instantiate a workflow object with a preconfigured `Provider` class
 
 ## Fixed
 
