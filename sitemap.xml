@@ -18,6 +18,7 @@
 <url><loc>/reference/Boolean.html</loc></url>
 <url><loc>/reference/BoundingBox.html</loc></url>
 <url><loc>/reference/CollectionId.html</loc></url>
+<url><loc>/reference/DataCube.html</loc></url>
 <url><loc>/reference/Date.html</loc></url>
 <url><loc>/reference/DateTime.html</loc></url>
 <url><loc>/reference/EPSGCode.html</loc></url>
@@ -41,7 +42,7 @@
 <url><loc>/reference/ProcessGraphParameter.html</loc></url>
 <url><loc>/reference/ProcessNode.html</loc></url>
 <url><loc>/reference/ProjDefinition.html</loc></url>
-<url><loc>/reference/RasterCube.html</loc></url>
+<url><loc>/reference/RasterCube-deprecated.html</loc></url>
 <url><loc>/reference/String.html</loc></url>
 <url><loc>/reference/TemporalInterval.html</loc></url>
 <url><loc>/reference/TemporalIntervals.html</loc></url>
@@ -50,7 +51,7 @@
 <url><loc>/reference/UdfRuntimeArgument.html</loc></url>
 <url><loc>/reference/UdfRuntimeVersionArgument.html</loc></url>
 <url><loc>/reference/UserProcessCollection.html</loc></url>
-<url><loc>/reference/VectorCube.html</loc></url>
+<url><loc>/reference/VectorCube-deprecated.html</loc></url>
 <url><loc>/reference/active_connection.html</loc></url>
 <url><loc>/reference/api_versions.html</loc></url>
 <url><loc>/reference/as.Graph.html</loc></url>

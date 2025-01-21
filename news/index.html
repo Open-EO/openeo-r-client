@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
       </span>
     </div>
 
@@ -72,6 +72,29 @@
       <small>Source: <a href="https://github.com/Open-EO/openeo-r-client/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.4.0" id="version-140">Version 1.4.0<a class="anchor" aria-label="anchor" href="#version-140"></a></h2>
+<div class="section level3">
+<h3 id="added-1-4-0">Added<a class="anchor" aria-label="anchor" href="#added-1-4-0"></a></h3>
+<ul><li>Support for the OpenID Connect Client Credentials flow</li>
+<li>compute_result, create_job, update_job, create_service and update_service have an additional parameter to inject custom properties into the request (e.g., to set memory or CPU limits)</li>
+<li>Implement the datacube subtype through the new DataCube class (which RasterCube and VectorCube inherit from now)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changed-1-4-0">Changed<a class="anchor" aria-label="anchor" href="#changed-1-4-0"></a></h3>
+<ul><li>OpenID Connect scopes can be provided as lists</li>
+<li>changed authentication setup for OIDC to instantiate a workflow object with a preconfigured <code>Provider</code> class</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixed-1-4-0">Fixed<a class="anchor" aria-label="anchor" href="#fixed-1-4-0"></a></h3>
+<ul><li>
+<code>describe_collection</code> and <code>collection_viewer</code> accept string IDs again</li>
+<li>fixed issues when creating an <code>Argument</code> without schema</li>
+<li>replaced <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na()</a></code> with <code><a href="https://rlang.r-lib.org/reference/are_na.html" class="external-link">rlang::is_na()</a></code> in several occurrences in the <code>$typeCheck()</code> functions of argument classes, because is.na on lists and objects returns more than one result</li>
+<li>fixed <code>Number</code> validation with Argument <code>ProcessNode</code>
+</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.3.1" id="version-131">Version 1.3.1<small>2024-02-17</small><a class="anchor" aria-label="anchor" href="#version-131"></a></h2>
 <div class="section level3">

@@ -23,7 +23,7 @@ data is opened and interpreted into a stars object."><meta property="og:image" c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
       </span>
     </div>
 
@@ -97,6 +97,7 @@ data is opened and interpreted into a stars object.</p>
 <span>  plan <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  as_stars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  additional <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  con <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -130,6 +131,10 @@ will return the results</p></dd>
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
 <dd><p>character or <code>FileFormat</code> specifying the File format for the output, if 'save_result' is not
 set in the process then it will be added otherwise the value stated here will replace the original value.</p></dd>
+
+
+<dt id="arg-additional">additional<a class="anchor" aria-label="anchor" href="#arg-additional"></a></dt>
+<dd><p>Additional, non-standardized job settings to send to the back-end</p></dd>
 
 
 <dt id="arg-con">con<a class="anchor" aria-label="anchor" href="#arg-con"></a></dt>

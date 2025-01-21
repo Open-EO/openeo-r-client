@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">openeo</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.4.0</span>
       </span>
     </div>
 
@@ -231,16 +231,16 @@ system you need to be authenticated. The openEO API offers Open ID
 Connect (OIDC) and Basic Authentication as authentication methods. In
 this package the we use primarily OIDC, but also offer Basic
 Authentication for legacy support. As OIDC is based on OAuth2 there are
-several different sub mechanisms, e.g. Authcode Flow or Device Code Flow
-with or without PKCE. The mechanisms are covered by the httr2 package
-<code><a href="https://httr2.r-lib.org/reference/req_oauth_device.html" class="external-link">httr2::oauth_flow_device()</a></code>, which is used to negotiate the
-authentication and to obtain the required access token. In the code the
-different authentication methods are realized by the different R6
-classes that share a common interface <code>IAuth</code>. Inheriting
-classes implement and overload those functions so that by using the
-function <code>..$login()</code> or the active field access_token all
-objects behave in the same manor and ultimately provide the access
-token.</p>
+several different sub mechanisms, e.g. Auth Code Flow or Device Code
+Flow with or without PKCE. The mechanisms are covered by the httr2
+package <code><a href="https://httr2.r-lib.org/reference/req_oauth_device.html" class="external-link">httr2::oauth_flow_device()</a></code>, which is used to
+negotiate the authentication and to obtain the required access token. In
+the code the different authentication methods are realized by the
+different R6 classes that share a common interface <code>IAuth</code>.
+Inheriting classes implement and overload those functions so that by
+using the function <code>..$login()</code> or the active field
+access_token all objects behave in the same manor and ultimately provide
+the access token.</p>
 </div>
 <div class="section level2">
 <h2 id="visual-components">Visual Components<a class="anchor" aria-label="anchor" href="#visual-components"></a>
