@@ -11,6 +11,7 @@ update_job(
   process = NULL,
   plan = NULL,
   budget = NULL,
+  additional = NULL,
   con = NULL,
   ...
 )
@@ -28,6 +29,8 @@ will return the results or a self defined \code{\link[=Process]{Process()}}}
 \item{plan}{replaces plan with the set value}
 
 \item{budget}{replaces or sets the credits that can be spent at maximum}
+
+\item{additional}{Additional, non-standardized job settings to send to the back-end}
 
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}

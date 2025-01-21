@@ -11,6 +11,8 @@ Lists all currently deprecated functions that will be removed in the future.
 \describe{
 \item{graphToJSON(x,...)}{replaced by toJSON}
 \item{processToJSON(x,...)}{replaced by toJSON}
+\item{RasterCube}{superseeded by DataCube}
+\item{VectorCube}{superseeded by DataCube}
 }
 }
 

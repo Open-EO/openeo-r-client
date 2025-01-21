@@ -4,7 +4,7 @@
 \alias{BasicAuth}
 \title{Basic Authentication class}
 \value{
-an object of type \code{\link[=R6Class]{R6Class()}} representing basic authentication
+an object of type \code{\link[R6:R6Class]{R6::R6Class()}} representing basic authentication
 }
 \description{
 This class handles the authentication to an openEO back-end that supports "basic" as login type. The class handles the retrieval

@@ -4,10 +4,10 @@
 \alias{Argument}
 \title{Argument class}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} representing an argument.
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} representing an argument.
 }
 \description{
-This class inherits all fields and functions from \code{\link[=Parameter]{Parameter()}} adds the functionality to
+This class inherits all fields and functions from \link{Parameter} adds the functionality to
 manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
 for the type specific argument classes, the inheriting classes implement their own version of the private
 functions \verb{$typeCheck()} and \verb{$typeSerialization()}.

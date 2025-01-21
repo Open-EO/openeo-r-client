@@ -13,6 +13,7 @@ create_service(
   configuration = NULL,
   plan = NULL,
   budget = NULL,
+  additional = NULL,
   con = NULL,
   ...
 )
@@ -34,6 +35,8 @@ will return the results}
 \item{plan}{character - the billing plan}
 
 \item{budget}{numeric - the amount of credits that can be spent on this service}
+
+\item{additional}{Additional, non-standardized service settings to send to the back-end}
 
 \item{con}{connected and authenticated openEO client object (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}

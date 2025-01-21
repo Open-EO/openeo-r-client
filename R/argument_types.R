@@ -3,9 +3,9 @@
 
 #' Parameter class
 #' 
-#' This class defines parameters of [Process()]. They store information about the type, format and 
+#' This class defines parameters of [Process]. They store information about the type, format and 
 #' pattern. A parameter class is designed to not carry any value, as opposed to an 
-#' [Argument()]. 
+#' [Argument]. 
 #' 
 #' The parameters are parsed from the specific description and format of the JSON
 #' objects returned for the parameters in processes. Find a list of openEO-specific formats here: 
@@ -13,7 +13,7 @@
 #' 
 #' @name Parameter
 #' 
-#' @return Object of [R6Class()] which represents a parameter.
+#' @return Object of [R6::R6Class()] which represents a parameter.
 #' 
 #' 
 #' @section Methods:
@@ -206,14 +206,14 @@ Parameter = R6Class(
 # Argument ====
 #' Argument class
 #' 
-#' This class inherits all fields and functions from [Parameter()] adds the functionality to
+#' This class inherits all fields and functions from [Parameter] adds the functionality to
 #' manage a value. This includes getter/setter, validation and serialization. Since this is the parent class
 #' for the type specific argument classes, the inheriting classes implement their own version of the private
 #' functions `$typeCheck()` and `$typeSerialization()`.
 #' 
 #' @name Argument
 #' 
-#' @return Object of [R6Class()] representing an argument.
+#' @return Object of [R6::R6Class()] representing an argument.
 #' 
 #' @section Methods:
 #' \describe{
@@ -394,19 +394,19 @@ Argument = R6Class(
 # Integer ====
 #' Integer class
 #' 
-#' Inheriting from [Argument()] in order to represent a single integer value.
+#' Inheriting from [Argument] in order to represent a single integer value.
 #' 
 #' @name Integer
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing an Integer
+#' @return Object of [R6::R6Class()] representing an Integer
 NULL
 
 Integer = R6Class(
@@ -423,7 +423,7 @@ Integer = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Integer cannot be an array.")
-      if (!is.na(private$value) && !is.integer(private$value)) {
+      if (!rlang::is_na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -448,19 +448,19 @@ Integer = R6Class(
 # EPSG-Code ====
 #' EPSGCode class
 #' 
-#' Inheriting from [Argument()] in order to represent an EPSG Code. Allowed values are single integer values like `4326` or a text containing 'EPSG:' like `EPSG:4326`.
+#' Inheriting from [Argument] in order to represent an EPSG Code. Allowed values are single integer values like `4326` or a text containing 'EPSG:' like `EPSG:4326`.
 #' 
 #' @name EPSGCode
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing an EPSG code as Integer
+#' @return Object of [R6::R6Class()] representing an EPSG code as Integer
 NULL
 
 EPSGCode = R6Class(
@@ -479,7 +479,7 @@ EPSGCode = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("EPSG code cannot be an array.")
       
-      if (!is.na(private$value) && !is.integer(private$value)) {
+      if (!rlang::is_na(private$value) && !is.integer(private$value)) {
         suppressWarnings({
           coerced = as.integer(private$value)
         })
@@ -509,19 +509,19 @@ EPSGCode = R6Class(
 # Number ====
 #' Number class
 #' 
-#' Inheriting from [Argument()] in order to represent a numeric value.
+#' Inheriting from [Argument] in order to represent a numeric value.
 #' 
 #' @name Number
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a number
+#' @return Object of [R6::R6Class()] representing a number
 NULL
 
 Number = R6Class(
@@ -546,15 +546,15 @@ Number = R6Class(
       
       if ("ProcessNode" %in% class(private$value)) {
         return_value = private$value$getReturns()
-        if (!any(c("number","integer") %in% class(return_value) && 
-                 length(return_value$getSchema()$type)) != 0) {
+        if (!any(c("number","integer") %in% class(return_value)) && 
+                 length(return_value$getSchema()$type) != 0) {
           
           stop(paste0("Value 'ProcessNode' returns neither the ANY object nor a number."))
         }
         
         # if (!is.null(return_schema$type) && !"number" %in% unlist(return_schema$type))
           
-      } else if (!is.na(private$value) && !is.numeric(private$value)) {
+      } else if (!rlang::is_na(private$value) && !is.numeric(private$value)) {
         suppressWarnings({
           coerced = as.numeric(private$value)
         })
@@ -583,19 +583,19 @@ Number = R6Class(
 # String ====
 #' String class
 #' 
-#' Inheriting from [Argument()] in order to represent a character string value.
+#' Inheriting from [Argument] in order to represent a character string value.
 #' 
 #' @name String
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a string.
+#' @return Object of [R6::R6Class()] representing a string.
 NULL
 
 String = R6Class(
@@ -614,7 +614,7 @@ String = R6Class(
       if (length(private$value) > 1 && !is.environment(private$value) && 
           !any(c("CubeDimension") %in% class(private$value))) stop("String cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -644,7 +644,7 @@ String = R6Class(
         return(private$value)
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (!is.environment(private$value) && is.na(private$value)) {
+      } else if (!is.environment(private$value) && rlang::is_na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -671,7 +671,7 @@ URI = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("URI cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -706,20 +706,20 @@ URI = R6Class(
 # Output Format ====
 #' OutputFormat class
 #' 
-#' Inheriting from [Argument()] in order to represent an output format of a back-end as a 
+#' Inheriting from [Argument] in order to represent an output format of a back-end as a 
 #' character string value.
 #' 
 #' @name OutputFormat
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing an output format of a back-end.
+#' @return Object of [R6::R6Class()] representing an output format of a back-end.
 NULL
 
 OutputFormat = R6Class(
@@ -741,7 +741,7 @@ OutputFormat = R6Class(
           !"FileFormat" %in% class(private$value)) stop("Output format cannot be an array.")
     
       if (!"FileFormat" %in% class(private$value)) {
-        if (!is.na(private$value) && !is.character(private$value)) {
+        if (!rlang::is_na(private$value) && !is.character(private$value)) {
           suppressWarnings({
             coerced = as.character(private$value)
           })
@@ -770,19 +770,19 @@ OutputFormat = R6Class(
 # CollectionId ====
 #' CollectionId class
 #' 
-#' Inheriting from [Argument()] in order to represent a CollectionId on an openeo back-end.
+#' Inheriting from [Argument] in order to represent a CollectionId on an openeo back-end.
 #' 
 #' @name CollectionId
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a CollectionId.
+#' @return Object of [R6::R6Class()] representing a CollectionId.
 NULL
 
 CollectionId = R6Class(
@@ -800,7 +800,7 @@ CollectionId = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value) && ! "Collection" %in% class(private$value)) stop("Collection ID cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         
         if (!"Collection" %in% class(private$value)) {
           suppressWarnings({
@@ -847,19 +847,19 @@ CollectionId = R6Class(
 # JobId ====
 #' JobId class
 #' 
-#' Inheriting from [Argument()] in order to represent a jobId on an openeo back-end.
+#' Inheriting from [Argument] in order to represent a jobId on an openeo back-end.
 #' 
 #' @name JobId
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing the id of a job.
+#' @return Object of [R6::R6Class()] representing the id of a job.
 NULL
 
 JobId = R6Class(
@@ -879,7 +879,7 @@ JobId = R6Class(
       if (length(private$value) > 1 && 
           !is.environment(private$value) && 
           !"Job" %in% class(private$value)) stop("Job id cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -905,19 +905,19 @@ JobId = R6Class(
 # UdfRuntime argument ====
 #' UdfRuntimeArgument class
 #' 
-#' Inheriting from [Argument()] in order to represent the id of an UDF runtime object as obtainable by [list_udf_runtimes()].
+#' Inheriting from [Argument] in order to represent the id of an UDF runtime object as obtainable by [list_udf_runtimes()].
 #' 
 #' @name UdfRuntimeArgument
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing the UDF runtime in a process argument.
+#' @return Object of [R6::R6Class()] representing the UDF runtime in a process argument.
 NULL
 
 UdfRuntimeArgument = R6Class(
@@ -937,7 +937,7 @@ UdfRuntimeArgument = R6Class(
       if (length(private$value) > 1 && 
           !is.environment(private$value) && 
           !"UdfRuntime" %in% class(private$value)) stop("UDF runtime cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -960,19 +960,19 @@ UdfRuntimeArgument = R6Class(
 # UdfRuntimeVersion argument ====
 #' UdfRuntimeVersionArgument class
 #' 
-#' Inheriting from [Argument()] in order to represent the id of a UDF runtime object as obtainable by [list_udf_runtimes()].
+#' Inheriting from [Argument] in order to represent the id of a UDF runtime object as obtainable by [list_udf_runtimes()].
 #' 
 #' @name UdfRuntimeVersionArgument
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] is an argument that expects a UDF runtime version or character as value.
+#' @return Object of [R6::R6Class()] is an argument that expects a UDF runtime version or character as value.
 NULL
 
 UdfRuntimeVersionArgument = R6Class(
@@ -993,7 +993,7 @@ UdfRuntimeVersionArgument = R6Class(
           !is.environment(private$value) && 
           !"UdfRuntimeVersion" %in% class(private$value)) stop("UDF runtime version cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1016,20 +1016,20 @@ UdfRuntimeVersionArgument = R6Class(
 # UdfCode argument ====
 #' UdfCodeArgument class
 #' 
-#' Inheriting from [Argument()] in order to represent the UDF code that will be executed in a UDF call. The script has to 
+#' Inheriting from [Argument] in order to represent the UDF code that will be executed in a UDF call. The script has to 
 #' be passed as a character string or as a local file path from which the script can be loaded.
 #' 
 #' @name UdfCodeArgument
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] is an argument that expects an UDF code or a file path.
+#' @return Object of [R6::R6Class()] is an argument that expects an UDF code or a file path.
 NULL
 
 UdfCodeArgument = R6Class(
@@ -1094,7 +1094,7 @@ UdfCodeArgument = R6Class(
         } 
       } else if (self$isEmpty() && !self$isRequired) {
         return(NULL)
-      } else if (!is.environment(private$value) && is.na(private$value)) {
+      } else if (!is.environment(private$value) && rlang::is_na(private$value)) {
         return(NA)
       } else {
         return(as.character(private$value))
@@ -1106,19 +1106,19 @@ UdfCodeArgument = R6Class(
 # ProcessGraphId ====
 #' ProcessGraphId
 #' 
-#' Inheriting from [Argument()] in order to represent a process graph Id on an openeo back-end.
+#' Inheriting from [Argument] in order to represent a process graph Id on an openeo back-end.
 #' 
 #' @name ProcessGraphId
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing the id of a process graph.
+#' @return Object of [R6::R6Class()] representing the id of a process graph.
 NULL
 
 ProcessGraphId = R6Class(
@@ -1137,7 +1137,7 @@ ProcessGraphId = R6Class(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Process graph id cannot be an array.")
       
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1164,19 +1164,19 @@ ProcessGraphId = R6Class(
 # Proj-Definition ====
 #' ProjDefinition
 #' 
-#' Inheriting from [Argument()] in order to represent a projection definition as a PROJ string.
+#' Inheriting from [Argument] in order to represent a projection definition as a PROJ string.
 #' 
 #' @name ProjDefinition
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a projection definition based on PROJ.
+#' @return Object of [R6::R6Class()] representing a projection definition based on PROJ.
 NULL
 
 ProjDefinition = R6Class(
@@ -1194,7 +1194,7 @@ ProjDefinition = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("PROJ definition cannot be an array.")
-      if (!is.na(private$value) && !is.character(private$value)) {
+      if (!rlang::is_na(private$value) && !is.character(private$value)) {
         suppressWarnings({
           coerced = as.character(private$value)
         })
@@ -1217,22 +1217,22 @@ ProjDefinition = R6Class(
 # Bounding Box ====
 #' BoundingBox
 #' 
-#' Inheriting from [Argument()] in order to represent a bounding box / extent of an area of 
+#' Inheriting from [Argument] in order to represent a bounding box / extent of an area of 
 #' interest. Its value is usually a named list with "west","south","east" and "north". For this argument
 #' the 'bbox' object of the sf package is also recognized ([sf::st_bbox()]). This holds also true for
 #' classes that support [sf::st_bbox()] and return a valid 'bbox' object.
 #' 
 #' @name BoundingBox
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a bounding box / extent.
+#' @return Object of [R6::R6Class()] representing a bounding box / extent.
 #' 
 #' @examples \dontrun{
 #' # most of the time BoundingBox is a choice as parameter value for 
@@ -1442,19 +1442,19 @@ BoundingBox = R6Class(
 # Boolean ====
 #' Boolean
 #' 
-#' Inheriting from [Argument()] in order to represent a boolean / logical.
+#' Inheriting from [Argument] in order to represent a boolean / logical.
 #' 
 #' @name Boolean
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a boolean / logical.
+#' @return Object of [R6::R6Class()] representing a boolean / logical.
 NULL
 
 Boolean = R6Class(
@@ -1479,7 +1479,7 @@ Boolean = R6Class(
         return(invisible(NULL))
       }
       
-      if (!is.na(private$value) && !is.logical(private$value)) {
+      if (!rlang::is_na(private$value) && !is.logical(private$value)) {
         suppressWarnings({
           coerced = as.logical(private$value)
         })
@@ -1502,19 +1502,19 @@ Boolean = R6Class(
 # Date ====
 #' Date
 #' 
-#' Inheriting from [Argument()] in order to represent a date.
+#' Inheriting from [Argument] in order to represent a date.
 #' 
 #' @name Date
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a date.
+#' @return Object of [R6::R6Class()] representing a date.
 NULL
 
 Date = R6Class(
@@ -1532,7 +1532,7 @@ Date = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Date cannot be an array.")
-      if (!is.na(private$value) && !is.Date(private$value)) {
+      if (!rlang::is_na(private$value) && !is.Date(private$value)) {
         suppressWarnings({
           coerced = as_date(private$value)
         })
@@ -1555,19 +1555,19 @@ Date = R6Class(
 # DateTime ====
 #' DateTime
 #' 
-#' Inheriting from [Argument()] in order to represent a date with time component.
+#' Inheriting from [Argument] in order to represent a date with time component.
 #' 
 #' @name DateTime
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a date with time component.
+#' @return Object of [R6::R6Class()] representing a date with time component.
 #' 
 #' @import lubridate
 NULL
@@ -1587,7 +1587,7 @@ DateTime = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Timestamp cannot be an array.")
-      if (!is.na(private$value) && !is.POSIXct(private$value)) {
+      if (!rlang::is_na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = as_datetime(private$value)
         })
@@ -1610,19 +1610,19 @@ DateTime = R6Class(
 # Time ====
 #' Time
 #' 
-#' Inheriting from [Argument()] in order to represent the time of a day.
+#' Inheriting from [Argument] in order to represent the time of a day.
 #' 
 #' @name Time
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing the time of a day.
+#' @return Object of [R6::R6Class()] representing the time of a day.
 NULL
 
 Time = R6Class(
@@ -1651,7 +1651,7 @@ Time = R6Class(
   private = list(
     typeCheck = function() {
       if (length(private$value) > 1 && !is.environment(private$value)) stop("Time cannot be an array.")
-      if (!is.na(private$value) && !is.POSIXct(private$value)) {
+      if (!rlang::is_na(private$value) && !is.POSIXct(private$value)) {
         suppressWarnings({
           coerced = strptime(value, format="%H:%M:%SZ")
         })
@@ -1674,7 +1674,7 @@ Time = R6Class(
 # GeoJson ====
 #' GeoJson
 #' 
-#' Inheriting from [Argument()] in order to represent a GeoJson object. This class represents geospatial features. 
+#' Inheriting from [Argument] in order to represent a GeoJson object. This class represents geospatial features. 
 #' Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc' 
 #' from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
 #' XY (e.g. if CRS84 is used then lon/lat is the default order).
@@ -1685,15 +1685,15 @@ Time = R6Class(
 #' 
 #' @name GeoJson
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing an object in GeoJson.
+#' @return Object of [R6::R6Class()] representing an object in GeoJson.
 #' 
 #' @importFrom rlang is_na
 NULL
@@ -1812,19 +1812,19 @@ GeoJson = R6Class(
 # OutputFormatOptions ====
 #' OutputFormatOptions
 #' 
-#' Inheriting from [Argument()] in order to represent the additional output format options of a back-end.
+#' Inheriting from [Argument] in order to represent the additional output format options of a back-end.
 #' 
 #' @name OutputFormatOptions
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing output format options.
+#' @return Object of [R6::R6Class()] representing output format options.
 NULL
 
 OutputFormatOptions = R6Class(
@@ -1854,29 +1854,72 @@ OutputFormatOptions = R6Class(
   )
 )
 
+# DataCube ====
+#' DataCube
+#' 
+#' Inheriting from [Argument] in order to represent a data cube. This is usually the in- and 
+#' output format of a process unless the process operates within a ProcessGraph on reduced data.  
+#' 
+#' @name DataCube
+#' 
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
+#' 
+#' @return Object of [R6::R6Class()] representing a data cube.
+NULL
+
+DataCube = R6Class(
+  "datacube",
+  inherit=Argument,
+  public = list(
+    initialize=function(name=character(),description=character(),required=FALSE) {
+      private$name = name
+      private$description = description
+      private$required = required
+      private$schema$type = "object"
+      private$schema$subtype = "datacube"
+    }
+  ),
+  private = list(
+    typeCheck = function() {
+      # a data data cube can only be derived by process, e.g. get_collection so this
+      # value should be a ProcessNode
+      if (! "ProcessNode" %in% class(private$value)) stop("DataCube is not retreived by process.")
+      
+      invisible(NULL)
+    },
+    typeSerialization = function() {
+      if ("ProcessNode" %in% class(private$value)) {
+        return(private$value$serializeAsReference())
+      }
+      
+      return(as.character(private$value))
+    }
+  )
+)
+
 # RasterCube ====
 #' RasterCube
 #' 
-#' Inheriting from [Argument()] in order to represent a raster cube. This is usually the in- and 
+#' Inheriting from [DataCube] in order to represent a raster cube. This is usually the in- and 
 #' output format of a process unless the process operates within a ProcessGraph on reduced data.  
-#' The [VectorCube()] behaves comparably, but with underlying spatial feature data.
+#' The [VectorCube-deprecated()] behaves comparably, but with underlying spatial feature data.
 #' 
-#' @name RasterCube
+#' @name RasterCube-deprecated
+#'
+#' @seealso [openeo-deprecated()]
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
-#' 
-#' @return Object of [R6Class()] representing a raster cube.
+#' @return Object of [R6::R6Class()] representing a raster cube.
 NULL
 
 RasterCube = R6Class(
   "raster-cube",
-  inherit=Argument,
+  inherit=DataCube,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
       private$name = name
@@ -1907,25 +1950,19 @@ RasterCube = R6Class(
 # VectorCube ====
 #' VectorCube
 #' 
-#' Inheriting from [Argument()] in order to represent a vector cube. This is analogous to
-#' the [RasterCube()].
+#' Inheriting from [DataCube] in order to represent a vector cube. This is analogous to
+#' the [RasterCube-deprecated()].
 #' 
-#' @name VectorCube
+#' @name VectorCube-deprecated
+#'
+#' @seealso [openeo-deprecated()]
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
-#' 
-#' @return Object of [R6Class()] representing a vector cube.
+#' @return Object of [R6::R6Class()] representing a vector cube.
 NULL
 
 VectorCube = R6Class(
   "vector-cube",
-  inherit=Argument,
+  inherit=DataCube,
   public = list(
     initialize=function(name=character(),description=character(),required=FALSE) {
       private$name = name
@@ -1956,10 +1993,10 @@ VectorCube = R6Class(
 # ProcessGraphArgument ====
 #' ProcessGraphArgument
 #' 
-#' Inheriting from [Argument()] in order to represent an argument that contains a process or a derivable value (formerly known 
+#' Inheriting from [Argument] in order to represent an argument that contains a process or a derivable value (formerly known 
 #' as callback). The ProcessGraphArgument operates on the reduced data of a data cube. For example reducing or aggregating over 
 #' the temporal dimension results in a time series that has to be reduced into a single value or aggregated into another time 
-#' series. The value of a ProcessGraphArgument is usually a function that will be coerced into [`Process()`]. The function
+#' series. The value of a ProcessGraphArgument is usually a function that will be coerced into [Process()]. The function
 #' is required to use the same amount of parameters as `ProcessGraphParameter` objects are defined, because during the coercion
 #' those `ProcessGraphParameter` are passed to function. Additional information can be found in the openEO API documentation:
 #' \itemize{
@@ -1968,26 +2005,26 @@ VectorCube = R6Class(
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{`$getProcessGraphParameters()`}{returns the available list [ProcessGraphParameter()]}
-#'   \item{`$setProcessGraphParameters(parameters)`}{assigns a list of [ProcessGraphParameter()] to the ProcessGraph}
+#'   \item{`$getProcessGraphParameters()`}{returns the available list [ProcessGraphParameter]}
+#'   \item{`$setProcessGraphParameters(parameters)`}{assigns a list of [ProcessGraphParameter] to the ProcessGraph}
 #' }
 #' 
 #' @section Arguments:
 #' \describe{
-#'   \item{`parameters`}{the [ProcessGraphParameter()] list}
+#'   \item{`parameters`}{the [ProcessGraphParameter] list}
 #' }
 #' 
 #' @name ProcessGraphArgument
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a ProcessGraph.
+#' @return Object of [R6::R6Class()] representing a ProcessGraph.
 NULL
 
 ProcessGraphArgument = R6Class(
@@ -2090,7 +2127,7 @@ ProcessGraphArgument = R6Class(
 # ProcessGraphParameter ====
 #' ProcessGraphParameter
 #' 
-#' Inheriting from [Argument()] in order to represent the available data within a ProcessGraph graph.
+#' Inheriting from [Argument] in order to represent the available data within a ProcessGraph graph.
 #' Additional information can be found in the openEO API documentation:
 #' \itemize{
 #'   \item <https://api.openeo.org/#section/Processes/Process-Graphs>
@@ -2098,15 +2135,15 @@ ProcessGraphArgument = R6Class(
 #' 
 #' @name ProcessGraphParameter
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a ProcessGraph value.
+#' @return Object of [R6::R6Class()] representing a ProcessGraph value.
 NULL
 
 # in case the ProcessGraphParameter is an array - which it will be in most cases - we have to store
@@ -2172,7 +2209,7 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 # Array ====
 #' Array
 #' 
-#' Inheriting from [Argument()] in order to represent an array of a single data type.
+#' Inheriting from [Argument] in order to represent an array of a single data type.
 #' 
 #' @name Array
 #' 
@@ -2192,15 +2229,15 @@ setOldClass(c("ProcessGraphParameter","Argument","Parameter","R6"))
 #'   parsed JSON schema of a single item in the array}
 #' }
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a single valued array.
+#' @return Object of [R6::R6Class()] representing a single valued array.
 #' 
 #' @importFrom rlang is_na
 NULL
@@ -2425,21 +2462,21 @@ Array = R6Class(
 # Kernel ====
 #' Kernel
 #' 
-#' Inheriting from [Argument()] in order to represent a 2-dimensional array of weights applied 
+#' Inheriting from [Argument] in order to represent a 2-dimensional array of weights applied 
 #' to the x and y (spatial) dimensions of the data cube. The inner level of the nested array is aligned to the x-axis and 
 #' the outer level is aligned to the y-axis. Each level of the kernel must have an uneven number of elements.
 #' 
 #' @name Kernel
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a Kernel.
+#' @return Object of [R6::R6Class()] representing a Kernel.
 NULL
 
 Kernel = R6Class(
@@ -2491,20 +2528,20 @@ Kernel = R6Class(
 #TemporalInterval ====
 #' TemporalInterval
 #' 
-#' Inheriting from [Argument()] in order to represent a temporal interval. Open interval borders are
+#' Inheriting from [Argument] in order to represent a temporal interval. Open interval borders are
 #' denoted by NA. Exactly two objects form the temporal interval.
 #' 
 #' @name TemporalInterval
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a temporal interval.
+#' @return Object of [R6::R6Class()] representing a temporal interval.
 NULL
 
 TemporalInterval = R6Class(
@@ -2535,19 +2572,19 @@ TemporalInterval = R6Class(
 #TemporalIntervals ====
 #' TemporalIntervals
 #' 
-#' Inheriting from [Argument()] in order to represent a list of [TemporalInterval()]. 
+#' Inheriting from [Argument] in order to represent a list of [TemporalInterval]. 
 #' 
 #' @name TemporalIntervals
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a list of temporal intervals.
+#' @return Object of [R6::R6Class()] representing a list of temporal intervals.
 NULL
 
 TemporalIntervals = R6Class(
@@ -2573,7 +2610,7 @@ TemporalIntervals = R6Class(
 # MetadataFilter ====
 #' MetadataFilter
 #' 
-#' Inheriting from [ProcessGraphArgument()] in order to represent a list of functions that is internally 
+#' Inheriting from [ProcessGraphArgument] in order to represent a list of functions that is internally 
 #' interpreted into [Process()] objects.
 #' 
 #' @examples 
@@ -2589,15 +2626,15 @@ TemporalIntervals = R6Class(
 #' 
 #' @name MetadataFilter
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing a list of [Process()] in order to filter for collections.
+#' @return Object of [R6::R6Class()] representing a list of [Process()] in order to filter for collections.
 #' 
 #' @importFrom rlang is_na
 NULL
@@ -2690,28 +2727,28 @@ MetadataFilter <- R6Class(
 # AnyOf ====
 #' AnyOf
 #' 
-#' Inheriting from [Argument()] in order to represent an argument choice object. Multiple
+#' Inheriting from [Argument] in order to represent an argument choice object. Multiple
 #' types can be stated, but at least one data type has to be picked. In a JSON-schema this is often used to make
 #' objects nullable - meaning that they allow NULL as value. The AnyOf parameter is resolved into a simple nullable argument
 #' if this applies. 
 #' 
 #' @section Methods:
 #' \describe{
-#'   \item{`$getChoice()`}{returns a list of [Argument()] that are allowed}
+#'   \item{`$getChoice()`}{returns a list of [Argument] that are allowed}
 #'   \item{`$isNullable`}{returns TRUE if only one element is in the choice that is not "null"}
 #' }
 #' 
 #' @name AnyOf
 #' 
-#' @seealso [Array()], [Integer()], [EPSGCode()], [String()], [Number()], 
-#' [Date()], [RasterCube()], [VectorCube()], [ProcessGraphArgument()], 
-#' [ProcessGraphParameter()], [OutputFormatOptions()], [GeoJson()],
-#' [Boolean()], [DateTime()], [Time()], [BoundingBox()], [Kernel()], 
-#' [TemporalInterval()], [TemporalIntervals()], [CollectionId()], [OutputFormat()],
-#' [AnyOf()], [ProjDefinition()], [UdfCodeArgument()], [UdfRuntimeArgument()] and 
-#' [UdfRuntimeVersionArgument()],[TemporalIntervals()], [MetadataFilter()]
+#' @seealso [Array], [Integer], [EPSGCode], [String], [Number], 
+#' [Date], [DataCube], [ProcessGraphArgument], 
+#' [ProcessGraphParameter], [OutputFormatOptions], [GeoJson],
+#' [Boolean], [DateTime], [Time], [BoundingBox], [Kernel], 
+#' [TemporalInterval], [TemporalIntervals], [CollectionId], [OutputFormat],
+#' [AnyOf], [ProjDefinition], [UdfCodeArgument], [UdfRuntimeArgument] and 
+#' [UdfRuntimeVersionArgument], [MetadataFilter]
 #' 
-#' @return Object of [R6Class()] representing an argument choice object.
+#' @return Object of [R6::R6Class()] representing an argument choice object.
 #' @importFrom rlang is_na
 NULL
 
@@ -2900,7 +2937,8 @@ findParameterGenerator = function(schema) {
                                Boolean,
                                BoundingBox,
                                GeoJson,
-                               RasterCube, 
+                               DataCube,
+                               RasterCube,
                                VectorCube,
                                String,
                                CollectionId,
@@ -2983,6 +3021,10 @@ parameterFromJson = function(param_def) {
   if (length(param_def$schema) == 0) {
     # an empty schema means ANY value is allowed
     arg = Argument$new()
+    
+    if (length(param_def$name) > 0) {
+      arg$setName(param_def$name)
+    }
     
     if (length(param_def$description) > 0) {
       arg$setDescription(param_def$description)

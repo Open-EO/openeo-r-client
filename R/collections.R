@@ -95,8 +95,7 @@ describe_collection = function(collection = NA, con=NULL) {
         return(NULL)
     })
     
-    missing_collection = !(length(collection) > 0 && any(!is.na(collection)) && !(is.character(collection) && length(collection) == 1 && nchar(collection) > 0))
-    
+    missing_collection = length(collection) == 0 || any(is.na(collection)) || (is.character(collection) && length(collection) == 1 && nchar(collection) == 0)
     if (missing_collection) {
         message("No or invalid collection id(s)")
         invisible(NULL)

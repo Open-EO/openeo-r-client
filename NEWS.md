@@ -1,3 +1,23 @@
+# Version 1.4.0
+
+## Added
+
+* Support for the OpenID Connect Client Credentials flow
+* compute_result, create_job, update_job, create_service and update_service have an additional parameter to inject custom properties into the request (e.g., to set memory or CPU limits)
+* Implement the datacube subtype through the new DataCube class (which RasterCube and VectorCube inherit from now)
+
+## Changed
+
+* OpenID Connect scopes can be provided as lists
+* changed authentication setup for OIDC to instantiate a workflow object with a preconfigured `Provider` class
+
+## Fixed
+
+* `describe_collection` and `collection_viewer` accept string IDs again
+* fixed issues when creating an `Argument` without schema
+* replaced `is.na()` with `rlang::is_na()` in several occurrences in the `$typeCheck()` functions of argument classes, because is.na on lists and objects returns more than one result
+* fixed `Number` validation with Argument `ProcessNode`
+
 # Version 1.3.1
 
 ## Added

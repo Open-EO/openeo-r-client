@@ -12,8 +12,8 @@ test_that("everything works with reference back-end", {
   expect("OpenEOClient" %in% class(con), failure_message = "Connection is not of class OpenEOClient")
   expect_equal(status(con), "connected")
   
-  con = login(user = user,
-              password = pwd)
+  login(user = user,
+        password = pwd)
   expect_equal(status(con), "authenticated")
   
   c = capabilities()
@@ -74,7 +74,7 @@ test_that("everything works with reference back-end", {
     p$linear_scale_range(x = x, inputMin = -1, inputMax = 1,outputMin = 0,outputMax = 255)
   })
   
-  final = p$save_result(data = apply_linear_transform,format = formats$output$PNG)
+  final = p$save_result(data=apply_linear_transform,format = formats$output$PNG)
   
   expect(length(final) > 0,failure_message = "'final' is NULL")
   expect("ProcessNode" %in% class(final), failure_message = "'final' is not a ProcessNode")

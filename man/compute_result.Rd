@@ -11,6 +11,7 @@ compute_result(
   plan = NULL,
   as_stars = FALSE,
   format = NULL,
+  additional = NULL,
   con = NULL,
   ...
 )
@@ -29,6 +30,8 @@ will return the results}
 
 \item{format}{character or \code{FileFormat} specifying the File format for the output, if 'save_result' is not
 set in the process then it will be added otherwise the value stated here will replace the original value.}
+
+\item{additional}{Additional, non-standardized job settings to send to the back-end}
 
 \item{con}{connected and authenticated openEO client (optional) otherwise \code{\link[=active_connection]{active_connection()}}
 is used.}

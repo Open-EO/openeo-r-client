@@ -4,7 +4,7 @@
 \alias{Process}
 \title{Process object}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} with methods for storing meta data of back-end processes and user assigned data
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} with methods for storing meta data of back-end processes and user assigned data
 }
 \description{
 This object reflects a process offered by an openEO service in order to load and manipulate data collections. It will be created

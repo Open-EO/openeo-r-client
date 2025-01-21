@@ -12,13 +12,11 @@ test_that("setting Collection object as Collection-ID works", {
   cid = openeo:::CollectionId$new()
   
   # very minimal Collection
-  value=list(id = "SENTINEL2_L1C")
+  value=list(id = "SENTINEL2_L1C",description="EO Data")
   class(value) = "Collection"
   
   cid$setValue(value)
-  
-  expect(cid$serialize() == "SENTINEL2_L1C",failure_message = "Value was not set correctly")
-  
-  expect(is.null(cid$validate()),failure_message = "Validation of String as Collection ID did not work")
-})
 
+  expect(cid$serialize() == "SENTINEL2_L1C",failure_message = "Value was not set correctly")
+  expect(is.null(cid$validate()),failure_message = "Validation of Collectio as Collection ID did not work")
+})

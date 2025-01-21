@@ -4,10 +4,10 @@
 \alias{GeoJson}
 \title{GeoJson}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} representing an object in GeoJson.
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} representing an object in GeoJson.
 }
 \description{
-Inheriting from \code{\link[=Argument]{Argument()}} in order to represent a GeoJson object. This class represents geospatial features.
+Inheriting from \link{Argument} in order to represent a GeoJson object. This class represents geospatial features.
 Allowed values are either a list directly convertible into a valid GeoJson or polygon features of type 'sf' or 'sfc'
 from package 'sf'. The current implementation follows the data representation of 'sf' - meaning that coordinate order is
 XY (e.g. if CRS84 is used then lon/lat is the default order).
@@ -17,11 +17,11 @@ As GeoJSON is defined in \href{https://datatracker.ietf.org/doc/html/rfc7946}{RF
 \code{urn:ogc:def:crs:OGC::CRS84}, which uses a longitude, latitude ordering of the coordinates.
 }
 \seealso{
-\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
-\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
-\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
-\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
-\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
-\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
-\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
+\link{Array}, \link{Integer}, \link{EPSGCode}, \link{String}, \link{Number},
+\link{Date}, \link{DataCube}, \link{ProcessGraphArgument},
+\link{ProcessGraphParameter}, \link{OutputFormatOptions}, \link{GeoJson},
+\link{Boolean}, \link{DateTime}, \link{Time}, \link{BoundingBox}, \link{Kernel},
+\link{TemporalInterval}, \link{TemporalIntervals}, \link{CollectionId}, \link{OutputFormat},
+\link{AnyOf}, \link{ProjDefinition}, \link{UdfCodeArgument}, \link{UdfRuntimeArgument} and
+\link{UdfRuntimeVersionArgument}, \link{MetadataFilter}
 }

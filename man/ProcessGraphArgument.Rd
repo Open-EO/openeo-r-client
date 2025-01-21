@@ -4,10 +4,10 @@
 \alias{ProcessGraphArgument}
 \title{ProcessGraphArgument}
 \value{
-Object of \code{\link[=R6Class]{R6Class()}} representing a ProcessGraph.
+Object of \code{\link[R6:R6Class]{R6::R6Class()}} representing a ProcessGraph.
 }
 \description{
-Inheriting from \code{\link[=Argument]{Argument()}} in order to represent an argument that contains a process or a derivable value (formerly known
+Inheriting from \link{Argument} in order to represent an argument that contains a process or a derivable value (formerly known
 as callback). The ProcessGraphArgument operates on the reduced data of a data cube. For example reducing or aggregating over
 the temporal dimension results in a time series that has to be reduced into a single value or aggregated into another time
 series. The value of a ProcessGraphArgument is usually a function that will be coerced into \code{\link[=Process]{Process()}}. The function
@@ -20,24 +20,24 @@ those \code{ProcessGraphParameter} are passed to function. Additional informatio
 \section{Methods}{
 
 \describe{
-\item{\verb{$getProcessGraphParameters()}}{returns the available list \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}}
-\item{\verb{$setProcessGraphParameters(parameters)}}{assigns a list of \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} to the ProcessGraph}
+\item{\verb{$getProcessGraphParameters()}}{returns the available list \link{ProcessGraphParameter}}
+\item{\verb{$setProcessGraphParameters(parameters)}}{assigns a list of \link{ProcessGraphParameter} to the ProcessGraph}
 }
 }
 
 \section{Arguments}{
 
 \describe{
-\item{\code{parameters}}{the \code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}} list}
+\item{\code{parameters}}{the \link{ProcessGraphParameter} list}
 }
 }
 
 \seealso{
-\code{\link[=Array]{Array()}}, \code{\link[=Integer]{Integer()}}, \code{\link[=EPSGCode]{EPSGCode()}}, \code{\link[=String]{String()}}, \code{\link[=Number]{Number()}},
-\code{\link[=Date]{Date()}}, \code{\link[=RasterCube]{RasterCube()}}, \code{\link[=VectorCube]{VectorCube()}}, \code{\link[=ProcessGraphArgument]{ProcessGraphArgument()}},
-\code{\link[=ProcessGraphParameter]{ProcessGraphParameter()}}, \code{\link[=OutputFormatOptions]{OutputFormatOptions()}}, \code{\link[=GeoJson]{GeoJson()}},
-\code{\link[=Boolean]{Boolean()}}, \code{\link[=DateTime]{DateTime()}}, \code{\link[=Time]{Time()}}, \code{\link[=BoundingBox]{BoundingBox()}}, \code{\link[=Kernel]{Kernel()}},
-\code{\link[=TemporalInterval]{TemporalInterval()}}, \code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=CollectionId]{CollectionId()}}, \code{\link[=OutputFormat]{OutputFormat()}},
-\code{\link[=AnyOf]{AnyOf()}}, \code{\link[=ProjDefinition]{ProjDefinition()}}, \code{\link[=UdfCodeArgument]{UdfCodeArgument()}}, \code{\link[=UdfRuntimeArgument]{UdfRuntimeArgument()}} and
-\code{\link[=UdfRuntimeVersionArgument]{UdfRuntimeVersionArgument()}},\code{\link[=TemporalIntervals]{TemporalIntervals()}}, \code{\link[=MetadataFilter]{MetadataFilter()}}
+\link{Array}, \link{Integer}, \link{EPSGCode}, \link{String}, \link{Number},
+\link{Date}, \link{DataCube}, \link{ProcessGraphArgument},
+\link{ProcessGraphParameter}, \link{OutputFormatOptions}, \link{GeoJson},
+\link{Boolean}, \link{DateTime}, \link{Time}, \link{BoundingBox}, \link{Kernel},
+\link{TemporalInterval}, \link{TemporalIntervals}, \link{CollectionId}, \link{OutputFormat},
+\link{AnyOf}, \link{ProjDefinition}, \link{UdfCodeArgument}, \link{UdfRuntimeArgument} and
+\link{UdfRuntimeVersionArgument}, \link{MetadataFilter}
 }

@@ -369,15 +369,15 @@ OpenEOClient <- R6Class(
     loginOIDC = function(provider = NULL, config = NULL) {
       suppressWarnings({
         tryCatch({
-          
-          
             # old implementation
             # probably fetch resolve the potential string into a provider here
             provider = .get_oidc_provider(provider)
             
+            auth_code = "authorization_code"
             auth_pkce = "authorization_code+pkce"
             device_pkce = "urn:ietf:params:oauth:grant-type:device_code+pkce"
             device_code = "urn:ietf:params:oauth:grant-type:device_code"
+            client_credentials = "client_credentials"
             
             has_default_clients = "default_clients" %in% names(provider) && length(provider[["default_clients"]]) > 0
             client_id_given = "client_id" %in% names(config)
@@ -388,14 +388,18 @@ OpenEOClient <- R6Class(
               }
               
               full_credentials = all(c("client_id","secret") %in% names(config))
-              is_auth_code = length(config$grant_type) > 0 && config$grant_type == 'authorization_code'
+              is_auth_code = length(config$grant_type) > 0 && config$grant_type == auth_code
+              is_client_credentials = length(config$grant_type) > 0 && config$grant_type == client_credentials
               
-              # either credentials are set and / or authorization_code as grant_type
-              if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
+              # either credentials are set and / or authorization_code or client_credentials as grant_type
+              if (full_credentials && is_client_credentials) {
+                private$auth_client = OIDCClientCredentialsFlow$new(provider = provider, config = config, force=TRUE)
+              }
+              else if (full_credentials && (is_auth_code || is.null(config$grant_type))) {
                 private$auth_client = OIDCAuthCodeFlow$new(provider = provider, config = config, force=TRUE)
               }
-              else if (is_auth_code) {
-                stop("For grant type 'authorization_code' a client_id and secret must be provided")
+              else if (is_auth_code || is_client_credentials) {
+                stop("For grant type 'authorization_code' and 'client_credentials' a client_id and secret must be provided")
               }
               else if (client_id_given && has_default_clients) {
                 default_clients = provider[["default_clients"]]
@@ -412,7 +416,7 @@ OpenEOClient <- R6Class(
               }
             }
             
-            if (has_default_clients && !client_id_given) {
+            if (is.null(private$auth_client) && has_default_clients && !client_id_given) {
               default_clients = provider[["default_clients"]]
 
               # check whether user has chosen a grant type
@@ -433,21 +437,24 @@ OpenEOClient <- R6Class(
                 }
               } 
               
-              
-              
               if (is.null(config$client_id)) {
                 stop("Please provide a client id or a valid combination of client_id and grant_type.")
               }
             }
-              
-            if (device_pkce == config$grant_type) {
-              private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
-            } else if (device_code == config$grant_type) {
-              private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
-            } else if (is.null(config$grant_type) || auth_pkce == config$grant_type) {
-              private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
-            }
             
+            if (is.null(private$auth_client)) {
+              has_grant = "grant_type" %in% names(config)
+              if (has_grant && device_pkce == config$grant_type) {
+                private$auth_client = OIDCDeviceCodeFlowPkce$new(provider=provider, config = config)
+              } else if (has_grant && device_code == config$grant_type) {
+                private$auth_client = OIDCDeviceCodeFlow$new(provider=provider, config = config)
+              } else if (has_grant && client_credentials == config$grant_type) {
+                private$auth_client = OIDCClientCredentialsFlow$new(provider=provider, config = config)
+              } else if (is.null(config$grant_type) || (has_grant && auth_pkce == config$grant_type)) {
+                private$auth_client = OIDCAuthCodeFlowPKCE$new(provider=provider, config = config)
+              }
+            }
+
             if (is.null(private$auth_client)) {
               stop("The grant_type selected is not supported")
             }
@@ -475,8 +482,13 @@ OpenEOClient <- R6Class(
         #endpoint,user,password
         private$auth_client = BasicAuth$new(endpoint,user,password)
 
+        # user_id is probably user in BasicAuth, is this a relict from openeo 0.4?
         self$user_id = private$auth_client$login()
         cat("Login successful.\n")
+        
+        # in case there was no user_id provided in the authentication, set this user as user_id
+        if (length(self$user_id)==0) self$user_id = user
+        
         return(invisible(self))
 
       },
