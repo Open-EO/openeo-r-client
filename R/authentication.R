@@ -531,8 +531,7 @@ OIDCAuthCodeFlowPKCE <- R6Class(
                         client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
-                        pkce = TRUE,
-                        port = 1410
+                        pkce = TRUE
                       ),
                       value = private$isInteractive()
                     )
@@ -571,8 +570,7 @@ OIDCAuthCodeFlow <- R6Class(
                         client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
-                        pkce = FALSE,
-                        port = 1410
+                        pkce = FALSE
                       ),
                       value = private$isInteractive()
                     )
