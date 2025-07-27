@@ -1,3 +1,9 @@
+# Version 1.4.1
+
+## Changed
+
+* removed parameter `port` from OIDCAuthCodeFlow and OIDCAuthCodeFlowPKCE, because the counterparts in package `httr2` were removed
+
 # Version 1.4.0
 
 ## Added
