@@ -177,6 +177,27 @@
 </table>
 </div>
 <div class="section level1">
+<h1 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
+</h1>
+<p>The testing suite is configured to connect a local instance of the <a href="https://github.com/moregeo-it/openeo-test-api" class="external-link">openEO-test-api</a> at <code>127.0.0.1:8080</code>. For local testing, it is recommended to fetch and run a local instance via the following commands:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/moregeo-it/openeo-test-api</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="bu">cd</span> openeo-test-api</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="ex">npm</span> install</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="ex">npm</span> run adduser r-client r-client <span class="co"># set up the user profile used by the test suite</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="ex">npm</span> run up <span class="co"># start the server at the default port 8080 as configured in config.json</span></span></code></pre></div>
+<p>To configure the test-api startup parameters, refer to the <a href="https://github.com/moregeo-it/openeo-test-api?tab=readme-ov-file#configuration" class="external-link">configuration</a> guide in the openEO-test-api README.”</p>
+<p>For running the tests locally, you first need to install the current version of the project as an R package. This is possible via the following code.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">R</span> CMD INSTALL <span class="at">--no-multiarch</span> <span class="at">--with-keep.source</span> .</span></code></pre></div>
+<p>Executing tests that connect to the <a href="https://github.com/moregeo-it/openeo-test-api" class="external-link">openEO-test-api</a> instance must be explicitly allowed by setting the environment variable <code>CONNECTION_TESTS</code> to <code>true</code>. Otherwise, the tests in <code>test-testapi-test.R</code> and <code>test-client.R</code> will be skipped.</p>
+<p>After installation, testing can be run by executing</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="bu">cd</span> tests</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="va">CONNECTION_TESTS</span><span class="op">=</span>true <span class="ex">R</span> <span class="at">-f</span> testthat.R</span></code></pre></div>
+<p>Alternatively, the more thorough package check can be run via the commands:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="ex">R</span> CMD build <span class="at">--no-manual</span> <span class="at">--no-build-vignettes</span> .</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="ex">R</span> CMD check <span class="at">--no-manual</span> <span class="at">--no-build-vignettes</span> openeo_<span class="pp">*</span>.tar.gz </span></code></pre></div>
+<p>This process includes running the test suite.</p>
+</div>
+<div class="section level1">
 <h1 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
 </h1>
 <p>The ‘openeo’ package won’t process anything on the local machine. It will always interact with a designated back-end. Data storage and computations are performed directly at the back-end. Therefore, please make sure that you are registered with any of the available openEO back-ends in order to obtain credentials and the access URLs (see: <a href="https://hub.openeo.org/" class="external-link">openEO Hub</a> for getting an overview about available back-ends).</p>
@@ -247,7 +268,7 @@
 <span></span>
 <span><span class="fu"><a href="reference/download_results.html">download_results</a></span><span class="op">(</span>job <span class="op">=</span> <span class="va">job_id</span>, folder <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></code></pre>
 <p>To get an overview of the functions offered by the packages and to access the function documentation you can navigate to the “Packages” tab in RStudio, select the “openeo” package and click on the function you are interested in. Another option is to use the following command line operations:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span>help<span class="op">=</span><span class="st">"openeo"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># ?&lt;function_name&gt;, e.g.</span></span>
