@@ -23,6 +23,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: moregeo-it/openeo-test-api
+          ref: refs/tags/v0.1.0
           path: test-api
       - name: setup and run test-api
         working-directory: test-api
