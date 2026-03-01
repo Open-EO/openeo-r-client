@@ -242,6 +242,7 @@ AbstractOIDCAuthentication <- R6Class(
       private$id = provider$id
       private$title = provider$title
       private$description = provider$description
+      private$authorization_parameters = if (is.list(provider$authorization_parameters)) provider$authorization_parameters else list()
 
       private$isJwt = isJwt
       
@@ -404,6 +405,7 @@ AbstractOIDCAuthentication <- R6Class(
     oauth_client = NULL,
     force_use=NULL,
     isJwt = FALSE,
+    authorization_parameters = list(), # additional parameters for the authorization endpoint
     
     auth = NULL, # httr2 oauth2.0 token object
     
@@ -470,7 +472,8 @@ OIDCDeviceCodeFlow <- R6Class(
                       oauth_flow_device(
                         client = private$oauth_client,
                         auth_url = private$endpoints$device_authorization_endpoint,
-                        scope = paste0(private$scopes, collapse = " ")
+                        scope = paste0(private$scopes, collapse = " "),
+                        auth_params = private$authorization_parameters
                       ),
                       value = private$isInteractive()
                     )
@@ -506,7 +509,8 @@ OIDCDeviceCodeFlowPkce <- R6Class(
                         client = private$oauth_client,
                         auth_url = private$endpoints$device_authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
-                        pkce = TRUE
+                        pkce = TRUE,
+                        auth_params = private$authorization_parameters
                       ),
                       value = private$isInteractive()
                     )
@@ -544,7 +548,8 @@ OIDCAuthCodeFlowPKCE <- R6Class(
                         client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
-                        pkce = TRUE
+                        pkce = TRUE,
+                        auth_params = private$authorization_parameters
                       ),
                       value = private$isInteractive()
                     )
@@ -583,7 +588,8 @@ OIDCAuthCodeFlow <- R6Class(
                         client = private$oauth_client,
                         auth_url = private$endpoints$authorization_endpoint,
                         scope = paste0(private$scopes, collapse = " "),
-                        pkce = FALSE
+                        pkce = FALSE,
+                        auth_params = private$authorization_parameters
                       ),
                       value = private$isInteractive()
                     )
